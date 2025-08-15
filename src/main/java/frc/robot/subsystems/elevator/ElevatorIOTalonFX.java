@@ -1,4 +1,3 @@
 package frc.robot.subsystems.elevator;
 
-public class ElevatorIOTalonFX{
-}
+public class ElevatorIOTalonFX {}

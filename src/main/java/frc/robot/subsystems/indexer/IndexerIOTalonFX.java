@@ -1,4 +1,3 @@
 package frc.robot.subsystems.indexer;
 
-public class IndexerIOTalonFX {
-}
+public class IndexerIOTalonFX {}

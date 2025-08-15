@@ -1,4 +1,3 @@
 package frc.robot.subsystems.intake;
 
-public class Climb {
-}
+public class Climb {}
