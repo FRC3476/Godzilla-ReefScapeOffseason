@@ -13,6 +13,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -36,7 +40,6 @@ public final class Constants {
   }
   // ====================Intake (3_)====================
   public static class IntakeConstants {
-
     public static final int intakePivotPort = 30;
     public static final int intakeRollerPort = 31;
     public static final int intakeL1StopperPort = 32;
@@ -44,10 +47,108 @@ public final class Constants {
 
   // ====================Elevator (4_)====================
   public static class ElevatorConstants {
-
     public static final int elevatorRightPort = 40;
     public static final int elevatorLeftPort = 41;
     public static final int elevatorExtraPort = 42;
+
+    public static final double ELEVATOR_kP = 0;
+    public static final double ELEVATOR_kI = 0;
+    public static final double ELEVATOR_kD = 0;
+    public static final double ELEVATOR_kG = 0;
+
+    public static final double ELEVATOR_Velo = 0;
+    public static final double ELEVATOR_Accel = 0;
+    public static final double ELEVATOR_Jerk = 0;
+
+    public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
+
+    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+
+    public static final TalonFXConfiguration elevatorRightTalon =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ELEVATOR_kP)
+                    .withKI(ELEVATOR_kI)
+                    .withKD(ELEVATOR_kD)
+                    .withKG(ELEVATOR_kG)
+                    .withGravityType(GravityTypeValue.Elevator_Static))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
+                    .withMotionMagicAcceleration(ELEVATOR_Accel)
+                    .withMotionMagicJerk(ELEVATOR_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration elevatorLeftTalon =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ELEVATOR_kP)
+                    .withKI(ELEVATOR_kI)
+                    .withKD(ELEVATOR_kD)
+                    .withKG(ELEVATOR_kG)
+                    .withGravityType(GravityTypeValue.Elevator_Static))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
+                    .withMotionMagicAcceleration(ELEVATOR_Accel)
+                    .withMotionMagicJerk(ELEVATOR_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
+
+    public enum ElevatorState {
+      DEFAULT,
+      JOG_UP,
+      JOG_DOWN,
+      STOW_RESET,
+      // ========
+      COLLECT_CORAL_GROUND,
+      COLLECT_CORAL_STATION,
+      STAGE_CORAL_HANDOFF,
+      RESET_CORAL_HANDOFF,
+      COLLECT_BOTTOM_ALGAE,
+      COLLECT_TOP_ALGAE,
+      STOW_ALGAE,
+      // ========
+      SCORE_CORAL_L2,
+      SCORE_CORAL_L3,
+      SCORE_CORAL_L4,
+      SCORE_ALGAE_PROCESSOR,
+      SCORE_ALGAE_NET,
+    }
+
+    // ========Elevator Constant Positions========
+    public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
+    public static final double ELEVATOR_INTAKE_SETPOINT_INCH = 22.0; // 22
+    public static final double ELEVATOR_HANDOFF_RESET_SETPOINT_INCH = 21.0;
+    public static final double ELEVATOR_SOURCE_SETPOINT_INCH = 26.0;
+    public static final double ELEVATOR_ALGAE_STOW_SETPOINT_INCH = 10.0;
+    public static final double ELEVATOR_HANDOFF_SETPOINT_INCH = 20.0; // 18.5
+    public static final double ELEVATOR_BOTTOM_ALGAE_PULL_SETPOINT_INCH = 20.0;
+    public static final double ELEVATOR_TOP_ALGAE_PULL_SETPOINT_INCH = 27.5;
+
+    public static final double ELEVATOR_L2_SETPOINT_INCH = 7.5;
+    public static final double ELEVATOR_L3_SETPOINT_INCH = 17.0; // 18.75
+    public static final double ELEVATOR_L4_SETPOINT_INCH = 30.0;
+    public static final double ELEVATOR_NET_SETPOINT_INCH = 30.0;
+    public static final double ELEVATOR_PROCESSOR_SETPOINT_INCH = 4.0;
+
+    public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
+    public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
   }
 
   // ====================End Effector (5_)====================
@@ -66,6 +167,11 @@ public final class Constants {
     public static final int indexerRightPort = 70;
     public static final int indexerLeftPort = 71;
     public static final int indexerCANrange = 72;
+  }
+
+  // ====================Physical Constants====================
+  public static class PhysicalConstants {
+    public static final double ABSOLUTE_ZERO = 0.0;
   }
 
   public record PIDgains(
