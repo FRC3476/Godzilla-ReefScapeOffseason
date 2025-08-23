@@ -37,9 +37,30 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
-    public static final int intakePivotPort = 30;
-    public static final int intakeRollerPort = 31;
-    public static final int intakeL1StopperPort = 32;
+    public static final int intakePivotID = 30;
+    public static final int intakeRollerID = 31;
+
+    // Sensor IDs
+    public static final int CANCODER_ID = 33;
+    public static final int CANRANGE_ID = 34;
+
+    // Gear ratios
+    public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
+    public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
+
+    // Current limits
+    public static final double MAX_CURRENT_LIMIT = 30.0; // Amps
+
+    // PID constants
+    public static final double KG = 0.0; // Gravity feedforward
+    public static final double KP = 0.0; // Proportional gain
+    public static final double KI = 0.0; // Integral gain
+    public static final double KD = 0.0; // Derivative gain
+
+    // Motion constraints
+    public static final double MAX_ACCEL = 0.0; // rad/s^2
+    public static final double MAX_VELOCITY = 0.0; // rad/s
   }
 
   // ====================Elevator (4_)====================
