@@ -13,38 +13,6 @@ public interface IntakeIO {
     public CanCoderData canCoder = new CanCoderData(0.0, 0.0);
 
     public CanRangeData canRange = new CanRangeData(false, 0.0, 0.0);
-
-    public double pivotVoltage;
-
-    public double pivotSupplyCurrent;
-
-    public double pivotStatorCurrent;
-
-    public double pivotTemperature;
-
-    public double pivotVelocityRPS;
-
-    public double pivotPositionRad;
-
-    public double rollerVoltage;
-
-    public double rollerStatorCurrent;
-
-    public double rollerSupplyCurrent;
-
-    public double rollerTemperature;
-
-    public double rollerVelocityRPS;
-
-    public double canCoderPositionRad;
-
-    public double canCoderVelocityRPS;
-
-    public double canRangeSignalStrength;
-
-    public Boolean canRangeTripped;
-
-    public double canRangeDistanceMeters;
   }
 
   /**
@@ -69,15 +37,5 @@ public interface IntakeIO {
 
   /** CANRange telemetry. */
   record CanRangeData(boolean tripped, double signalStrength, double distanceMeters) {}
-
-  void updateInputs(IntakeIOInputs inputs);
-
-  void stop();
-
-  void setPivotPosition(double positionRad);
-
-  void setRollerVoltage(double voltage);
-
-  void setPivotVoltage(double voltage);
   
 }

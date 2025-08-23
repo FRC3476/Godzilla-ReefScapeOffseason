@@ -59,8 +59,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   public IntakeIOTalonFX() {
     // Initialize hardware
-    pivotMotor = new TalonFX(IntakeConstants.intakePivotPort);
-    rollerMotor = new TalonFX(IntakeConstants.intakeRollerPort);
+    pivotMotor = new TalonFX(IntakeConstants.intakePivotID);
+    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID);
     canCoder = new CANcoder(IntakeConstants.CANCODER_ID);
     canRange = new CANrange(IntakeConstants.CANRANGE_ID);
 
@@ -122,66 +122,4 @@ public class IntakeIOTalonFX implements IntakeIO {
     canRangeDistance = canRange.getDistance();
   }
 
-  @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-    inputs.pivotVoltage = pivotVoltage.getValueAsDouble();
-    inputs.pivotSupplyCurrent = pivotSupplyCurrent.getValueAsDouble();
-    inputs.pivotStatorCurrent = pivotStatorCurrent.getValueAsDouble();
-    inputs.pivotTemperature = pivotTemperature.getValueAsDouble();
-    inputs.pivotVelocityRPS = pivotVelocityRPS.getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
-    inputs.pivotPositionRad = pivotPositionRad.getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
-
-    inputs.rollerVoltage = rollerVoltage.getValueAsDouble();
-    inputs.rollerSupplyCurrent = rollerSupplyCurrent.getValueAsDouble();
-    inputs.rollerStatorCurrent = rollerStatorCurrent.getValueAsDouble();
-    inputs.rollerTemperature = rollerTemperature.getValueAsDouble();
-    inputs.rollerVelocityRPS = rollerVelocityRPS.getValueAsDouble() / IntakeConstants.ROLLER_GEAR_RATIO;
-
-    inputs.canCoderPositionRad = canCoderPositionRad.getValueAsDouble();
-    inputs.canCoderVelocityRPS = canCoderVelocityRPS.getValueAsDouble();
-
-    inputs.canRangeTripped = canRangeTripped.getValue();
-    inputs.canRangeSignalStrength = canRangeSignalStrength.getValueAsDouble();
-    inputs.canRangeDistanceMeters = canRangeDistance.getValueAsDouble();
-
-    // Refresh all status signals
-    BaseStatusSignal.refreshAll(
-        pivotVoltage,
-        pivotSupplyCurrent,
-        pivotStatorCurrent,
-        pivotTemperature,
-        pivotVelocityRPS,
-        pivotPositionRad,
-        rollerVoltage,
-        rollerSupplyCurrent,
-        rollerStatorCurrent,
-        rollerTemperature,
-        rollerVelocityRPS,
-        canCoderPositionRad,
-        canCoderVelocityRPS,
-        canRangeTripped,
-        canRangeSignalStrength,
-        canRangeDistance);
-  }
-
-  @Override
-  public void setPivotVoltage(double voltage) {
-    pivotMotor.setControl(pivotVoltageRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
-  }
-
-  @Override
-  public void setRollerVoltage(double voltage) {
-    rollerMotor.setControl(rollerVoltageRequest.withOutput(MathUtil.clamp(voltage, -12.0, 12.0)));
-  }
-
-  @Override
-  public void setPivotPosition(double positionRad) {
-    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad * IntakeConstants.PIVOT_GEAR_RATIO));
-  }
-
-  @Override
-  public void stop() {
-    pivotMotor.stopMotor();
-    rollerMotor.stopMotor();
-  }
 }

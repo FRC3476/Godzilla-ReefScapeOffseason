@@ -11,41 +11,4 @@ public class Intake extends SubsystemBase {
     this.io = io;
   }
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
-  }
-
-  public void setPivotVoltage(double voltage) {
-    io.setPivotVoltage(voltage);
-  }
-
-  public void setRollerVoltage(double voltage) {
-    io.setRollerVoltage(voltage);
-  }
-
-  public void setPivotPosition(double positionRad) {
-    io.setPivotPosition(positionRad);
-  }
-
-  public void stop() {
-    io.stop();
-  }
-
-  public double getPivotPositionRad() {
-    return inputs.pivotPositionRad;
-  }
-
-  public double getCANCoderPositionRad() {
-    return inputs.canCoderPositionRad;
-  }
-
-  public boolean isCANRangeTripped() {
-    return inputs.canRangeTripped;
-  }
-
-  public double getCANRangeDistanceMeters() {
-    return inputs.canRangeDistanceMeters;
-  }
 }
