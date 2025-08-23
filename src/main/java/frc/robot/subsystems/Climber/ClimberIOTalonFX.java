@@ -31,6 +31,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> torqueCurrentAmps;
   private final StatusSignal<Temperature> temp;
 
+  //control requests 
+  private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
+
+
   public ClimberIOTalonFX(){
     talon = new TalonFX(Constants.ClimbConstants.ID);
     
@@ -40,6 +44,11 @@ public class ClimberIOTalonFX implements ClimberIO {
     supplyCurrentAmps = talon.getSupplyCurrent();
     torqueCurrentAmps = talon.getTorqueCurrent();
     temp = talon.getDeviceTemp();
+  }
+
+  @Override 
+  public void runVolts(double volts){
+    talon.setControl(voltsRequest.withOutput(volts));
   }
     
 }
