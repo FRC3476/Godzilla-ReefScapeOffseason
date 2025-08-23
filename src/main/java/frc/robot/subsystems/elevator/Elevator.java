@@ -3,7 +3,6 @@ package frc.robot.subsystems.elevator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.*;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
@@ -11,7 +10,6 @@ public class Elevator extends SubsystemBase {
   private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  private ElevatorState currentState = ElevatorState.DEFAULT;
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -54,8 +52,7 @@ public class Elevator extends SubsystemBase {
   public boolean isInTolerance() {
     return MathUtil.isNear(
         setpoint,
-        (inputs.data.rightPosition() + inputs.data.leftPosition() + inputs.data.extraPosition())
-            / 3,
+        inputs.data.rightPosition(),
         ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 

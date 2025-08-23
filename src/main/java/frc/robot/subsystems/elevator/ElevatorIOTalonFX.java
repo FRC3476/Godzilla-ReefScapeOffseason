@@ -43,13 +43,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   StatusSignal<Temperature> extraTempCelsius;
 
   public ElevatorIOTalonFX() {
-    rightTalon = new TalonFX(ElevatorConstants.elevatorRightPort);
-    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftPort);
-    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraPort);
+    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
+    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
+    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
 
     rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon);
-    leftTalon.getConfigurator().apply(ElevatorConstants.elevatorLeftTalon);
-    extraTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon);
+    leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
+    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
 
     rightPosition = rightTalon.getPosition();
     rightAppliedVolts = rightTalon.getMotorVoltage();
@@ -146,20 +146,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public void setElevatorVoltage(double voltage) {
     rightTalon.setControl(new VoltageOut(voltage));
-    leftTalon.setControl(new VoltageOut(voltage));
-    extraTalon.setControl(new VoltageOut(voltage));
   }
 
   public void setElevatorTargetPosition(double position) {
     rightTalon.setControl(m_request.withPosition(position));
-    leftTalon.setControl(m_request.withPosition(position));
-    extraTalon.setControl(m_request.withPosition(position));
   }
 
   public void setElevatorZero() {
     rightTalon.setPosition(0.0);
     leftTalon.setPosition(0.0);
     extraTalon.setPosition(0.0);
+
   }
 
   public void stop() {

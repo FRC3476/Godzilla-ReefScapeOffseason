@@ -47,10 +47,10 @@ public final class Constants {
 
   // ====================Elevator (4_)====================
   public static class ElevatorConstants {
-    public static final int elevatorRightPort = 40;
-    public static final int elevatorLeftPort = 41;
-    public static final int elevatorExtraPort = 42;
-
+    public static final int elevatorRightID = 40;
+    public static final int elevatorLeftID= 41;
+    public static final int elevatorExtraID = 42;
+    
     public static final double ELEVATOR_kP = 0;
     public static final double ELEVATOR_kI = 0;
     public static final double ELEVATOR_kD = 0;
@@ -81,29 +81,6 @@ public final class Constants {
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
-
-    public static final TalonFXConfiguration elevatorLeftTalon =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(ELEVATOR_kP)
-                    .withKI(ELEVATOR_kI)
-                    .withKD(ELEVATOR_kD)
-                    .withKG(ELEVATOR_kG)
-                    .withGravityType(GravityTypeValue.Elevator_Static))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
-                    .withMotionMagicAcceleration(ELEVATOR_Accel)
-                    .withMotionMagicJerk(ELEVATOR_Jerk))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()

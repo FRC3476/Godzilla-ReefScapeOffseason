@@ -40,15 +40,4 @@ public interface ElevatorIO {
 
   default void setElevatorZero() {}
 
-  default double getElevatorTargetPosition() {
-    return 0.0;
-  }
-
-  default double getElevatorPosition() {
-    return 0.0;
-  }
-
-  default double getElevatorVoltage() {
-    return 0.0;
-  }
 }
