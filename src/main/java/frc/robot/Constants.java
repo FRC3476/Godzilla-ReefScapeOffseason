@@ -58,7 +58,23 @@ public final class Constants {
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
-    public static final int climbPort = 60;
+
+    public static final double reduction = (23.11/1);
+
+
+    public static final int ID = 60;
+    public static final double GearRatio = 0.0;
+    public static final double motorIDS = 0.0;
+    public static final double maxcurrentLimit = 0.0;
+    public static final double kG = 0.0;
+    public static final double kP = 0.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+
+
+
+
+
   }
 
   // ====================Indexer (7_)====================
