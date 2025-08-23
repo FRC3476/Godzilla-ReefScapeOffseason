@@ -39,11 +39,6 @@ public final class Constants {
 
     public static final int intakePivotPort = 30;
     public static final int intakeRollerPort = 31;
-    public static final int intakeL1StopperPort = 32;
-
-    // Motor IDs
-    public static final int PIVOT_MOTOR_ID = 30; // Using existing intakePivotPort
-    public static final int ROLLER_MOTOR_ID = 31; // Using existing intakeRollerPort
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
