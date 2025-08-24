@@ -70,9 +70,9 @@ public final class Constants {
   // ====================Elevator (4_)====================
   public static class ElevatorConstants {
     public static final int elevatorRightID = 40;
-    public static final int elevatorLeftID= 41;
+    public static final int elevatorLeftID = 41;
     public static final int elevatorExtraID = 42;
-    
+
     public static final double ELEVATOR_kP = 0;
     public static final double ELEVATOR_kI = 0;
     public static final double ELEVATOR_kD = 0;
@@ -159,8 +159,7 @@ public final class Constants {
   // ====================Climb (6_)====================
   public static class ClimbConstants {
 
-    public static final double reduction = (23.11/1);
-
+    public static final double reduction = (23.11 / 1);
 
     public static final int ID = 60;
     public static final double GearRatio = 0.0;
@@ -170,11 +169,6 @@ public final class Constants {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
-
-
-
-
-
   }
 
   // ====================Indexer (7_)====================
