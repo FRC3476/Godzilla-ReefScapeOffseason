@@ -36,8 +36,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   StatusSignal<Temperature> rollerTempCelsius;
 
   public EndEffectorIOTalonFX() {
-    pivotTalonFX = new TalonFX(EndEffectorConstants.endEffectorPivotID);
-    rollerTalonFX = new TalonFX(EndEffectorConstants.endEffectorRollerID);
+    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID);
+    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
 
     pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG);
     rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG);
@@ -107,4 +107,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
             rollerSupplyCurrentAmps.getValueAsDouble(),
             rollerTempCelsius.getValueAsDouble());
   }
+
+
+
+  
 }
