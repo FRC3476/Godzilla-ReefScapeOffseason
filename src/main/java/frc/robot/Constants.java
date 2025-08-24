@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import org.dyn4j.collision.narrowphase.Sat;
+
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -40,39 +42,17 @@ public final class Constants {
   }
   // ====================Intake (3_)====================
   public static class IntakeConstants {
-
-    public static final int intakePivotID = 30;
-    public static final int intakeRollerID = 31;
-
-    // Sensor IDs
-    public static final int CANCODER_ID = 33;
-    public static final int CANRANGE_ID = 34;
-
-    // Gear ratios
-    public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
-    public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
-    public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
-
-    // Current limits
-    public static final double MAX_CURRENT_LIMIT = 30.0; // Amps
-
-    // PID constants
-    public static final double KG = 0.0; // Gravity feedforward
-    public static final double KP = 0.0; // Proportional gain
-    public static final double KI = 0.0; // Integral gain
-    public static final double KD = 0.0; // Derivative gain
-
-    // Motion constraints
-    public static final double MAX_ACCEL = 0.0; // rad/s^2
-    public static final double MAX_VELOCITY = 0.0; // rad/s
+    public static final int intakePivotPort = 30;
+    public static final int intakeRollerPort = 31;
+    public static final int intakeL1StopperPort = 32;
   }
 
   // ====================Elevator (4_)====================
   public static class ElevatorConstants {
     public static final int elevatorRightID = 40;
-    public static final int elevatorLeftID= 41;
+    public static final int elevatorLeftID = 41;
     public static final int elevatorExtraID = 42;
-    
+
     public static final double ELEVATOR_kP = 0;
     public static final double ELEVATOR_kI = 0;
     public static final double ELEVATOR_kD = 0;
@@ -152,29 +132,75 @@ public final class Constants {
 
   // ====================End Effector (5_)====================
   public static class EndEffectorConstants {
-    public static final int endEffectorPivotPort = 50;
-    public static final int endEffectorRollerPort = 51;
+    public static final int endEffectorPivotID = 50;
+    public static final int endEffectorRollerID = 51;
+
+    public static final double END_EFFECTOR_PIVOT_kP = 0;
+    public static final double END_EFFECTOR_PIVOT_kI = 0;
+    public static final double END_EFFECTOR_PIVOT_kD = 0;
+    public static final double END_EFFECTOR_PIVOT_kG = 0;
+
+    public static final double END_EFFECTOR_PIVOT_Velo = 0;
+    public static final double END_EFFECTOR_PIVOT_Accel = 0;
+    public static final double END_EFFECTOR_PIVOT_Jerk = 0;
+
+    public static final double END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS = 0;
+
+    public static final double END_EFFECTOR_ROLLER_kP = 0;
+    public static final double END_EFFECTOR_ROLLER_kI = 0;
+    public static final double END_EFFECTOR_ROLLER_kD = 0;
+    public static final double END_EFFECTOR_ROLLER_kG = 0;
+
+    public static final double END_EFFECTOR_ROLLER_CURRENT_LIMIT_AMPS = 0;
+
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG = 
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                  .withKP(END_EFFECTOR_PIVOT_kP)
+                  .withKI(END_EFFECTOR_PIVOT_kI)
+                  .withKD(END_EFFECTOR_PIVOT_kD)
+                  .withKG(END_EFFECTOR_PIVOT_kG)
+                  .withGravityType(GravityTypeValue.Arm_Cosine)
+            )
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                  .withMotionMagicCruiseVelocity(END_EFFECTOR_PIVOT_Velo)
+                  .withMotionMagicAcceleration(END_EFFECTOR_PIVOT_Accel)
+                  .withMotionMagicJerk(END_EFFECTOR_PIVOT_Jerk)
+            )
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                  .withInverted(InvertedValue.Clockwise_Positive)
+                  .withNeutralMode(NeutralModeValue.Brake)
+            )
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                  .withStatorCurrentLimitEnable(true)
+                  .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG = 
+    new TalonFXConfiguration()
+        .withSlot0(
+            new Slot0Configs()
+              .withKP(END_EFFECTOR_ROLLER_kP)
+              .withKI(END_EFFECTOR_ROLLER_kI)
+              .withKD(END_EFFECTOR_ROLLER_kD)
+        )
+        .withMotorOutput(
+            new MotorOutputConfigs()
+              .withInverted(InvertedValue.Clockwise_Positive)
+              .withNeutralMode(NeutralModeValue.Brake)
+        )
+        .withCurrentLimits(
+            new CurrentLimitsConfigs()
+              .withStatorCurrentLimitEnable(true)
+              .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
-
-    public static final double reduction = (23.11/1);
-
-
-    public static final int ID = 60;
-    public static final double GearRatio = 0.0;
-    public static final double motorIDS = 0.0;
-    public static final double maxcurrentLimit = 0.0;
-    public static final double kG = 0.0;
-    public static final double kP = 0.0;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
-
-
-
-
-
+    public static final int climbPort = 60;
   }
 
   // ====================Indexer (7_)====================
