@@ -38,4 +38,7 @@ public interface IntakeIO {
   /** CANRange telemetry. */
   record CanRangeData(boolean tripped, double signalStrength, double distanceMeters) {}
   
+  /** Run the pivot motor */
+  default void runPivotVolts(double volts) {}
+
 }

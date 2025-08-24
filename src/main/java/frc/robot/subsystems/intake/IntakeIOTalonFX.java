@@ -122,4 +122,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     canRangeDistance = canRange.getDistance();
   }
 
+  @Override
+  public void runPivotVolts(double volts) {
+    pivotMotor.setControl(pivotVoltageRequest.withOutput(volts));
+  }
+
 }
