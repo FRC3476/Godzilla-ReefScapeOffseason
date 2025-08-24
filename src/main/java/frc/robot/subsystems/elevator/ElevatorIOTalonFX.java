@@ -156,7 +156,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rightTalonFX.setPosition(0.0);
     leftTalonFX.setPosition(0.0);
     extraTalonFX.setPosition(0.0);
-
   }
 
   public void stop() {

@@ -1,8 +1,3 @@
 package frc.robot.subsystems.climb;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class ClimberIOSim implements ClimberIO{
-    
-}
+public class ClimberIOSim implements ClimberIO {}

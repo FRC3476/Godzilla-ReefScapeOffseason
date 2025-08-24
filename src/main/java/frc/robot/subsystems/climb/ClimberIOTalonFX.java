@@ -1,26 +1,18 @@
 package frc.robot.subsystems.climb;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClimberIOTalonFX implements ClimberIO {
 
-    // Hardware
+  // Hardware
   private final TalonFX talon;
 
   // Status Signals
@@ -31,13 +23,12 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> torqueCurrentAmps;
   private final StatusSignal<Temperature> temp;
 
-  //control requests 
+  // control requests
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
-
-  public ClimberIOTalonFX(){
+  public ClimberIOTalonFX() {
     talon = new TalonFX(Constants.ClimbConstants.ID);
-    
+
     position = talon.getPosition();
     velocity = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
@@ -46,9 +37,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     temp = talon.getDeviceTemp();
   }
 
-  @Override 
-  public void runVolts(double volts){
+  @Override
+  public void runVolts(double volts) {
     talon.setControl(voltsRequest.withOutput(volts));
   }
-    
 }

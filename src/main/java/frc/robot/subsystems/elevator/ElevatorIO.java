@@ -39,5 +39,4 @@ public interface ElevatorIO {
   default void setElevatorTargetPosition(double position) {}
 
   default void setElevatorZero() {}
-
 }

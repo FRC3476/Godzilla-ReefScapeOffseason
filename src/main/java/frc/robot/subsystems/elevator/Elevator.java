@@ -10,7 +10,6 @@ public class Elevator extends SubsystemBase {
   private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-
   private double setpoint;
   private boolean isZeroed = false;
 
@@ -51,9 +50,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isInTolerance() {
     return MathUtil.isNear(
-        setpoint,
-        inputs.data.rightPosition(),
-        ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+        setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {

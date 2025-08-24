@@ -4,17 +4,13 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface EndEffectorIO {
 
-    @AutoLog
-    class EndEffectorIOInputs {
-        public EndEffectorIOData data =
-            new EndEffectorIOData(
-                false, false,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0
-            );
-    }
+  @AutoLog
+  class EndEffectorIOInputs {
+    public EndEffectorIOData data =
+        new EndEffectorIOData(false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  }
 
-    record EndEffectorIOData(
+  record EndEffectorIOData(
       boolean pivotMotorConnected,
       boolean rollerMotorConnected,
       double pivotPosition,
@@ -26,12 +22,11 @@ public interface EndEffectorIO {
       double rollerAppliedVolts,
       double rollerTorqueCurrentAmps,
       double rollerSupplyCurrentAmps,
-      double rollerTempCelsius
-    ) {}
+      double rollerTempCelsius) {}
 
-    default void updateInputs(EndEffectorIOInputs inputs) {}
+  default void updateInputs(EndEffectorIOInputs inputs) {}
 
-    default void setRollerVoltage(double voltage) {}
+  default void setRollerVoltage(double voltage) {}
 
-    default void setPivotTargetPosition(double position) {}
+  default void setPivotTargetPosition(double position) {}
 }

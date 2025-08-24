@@ -40,7 +40,7 @@ public final class Constants {
   }
   // ====================Intake (3_)====================
   public static class IntakeConstants {
-    public static final int intakePivotPort = 30;
+    public static final int intakePivotID = 30;
     public static final int intakeRollerPort = 31;
     public static final int intakeL1StopperPort = 32;
   }
@@ -151,54 +151,49 @@ public final class Constants {
 
     public static final double END_EFFECTOR_ROLLER_CURRENT_LIMIT_AMPS = 0;
 
-    public static final TalonFXConfiguration PIVOT_TALON_CONFIG = 
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                  .withKP(END_EFFECTOR_PIVOT_kP)
-                  .withKI(END_EFFECTOR_PIVOT_kI)
-                  .withKD(END_EFFECTOR_PIVOT_kD)
-                  .withKG(END_EFFECTOR_PIVOT_kG)
-                  .withGravityType(GravityTypeValue.Arm_Cosine)
-            )
+                    .withKP(END_EFFECTOR_PIVOT_kP)
+                    .withKI(END_EFFECTOR_PIVOT_kI)
+                    .withKD(END_EFFECTOR_PIVOT_kD)
+                    .withKG(END_EFFECTOR_PIVOT_kG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                  .withMotionMagicCruiseVelocity(END_EFFECTOR_PIVOT_Velo)
-                  .withMotionMagicAcceleration(END_EFFECTOR_PIVOT_Accel)
-                  .withMotionMagicJerk(END_EFFECTOR_PIVOT_Jerk)
-            )
+                    .withMotionMagicCruiseVelocity(END_EFFECTOR_PIVOT_Velo)
+                    .withMotionMagicAcceleration(END_EFFECTOR_PIVOT_Accel)
+                    .withMotionMagicJerk(END_EFFECTOR_PIVOT_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                  .withInverted(InvertedValue.Clockwise_Positive)
-                  .withNeutralMode(NeutralModeValue.Brake)
-            )
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                  .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
 
-    public static final TalonFXConfiguration ROLLER_TALON_CONFIG = 
-    new TalonFXConfiguration()
-        .withSlot0(
-            new Slot0Configs()
-              .withKP(END_EFFECTOR_ROLLER_kP)
-              .withKI(END_EFFECTOR_ROLLER_kI)
-              .withKD(END_EFFECTOR_ROLLER_kD)
-        )
-        .withMotorOutput(
-            new MotorOutputConfigs()
-              .withInverted(InvertedValue.Clockwise_Positive)
-              .withNeutralMode(NeutralModeValue.Brake)
-        )
-        .withCurrentLimits(
-            new CurrentLimitsConfigs()
-              .withStatorCurrentLimitEnable(true)
-              .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(END_EFFECTOR_ROLLER_kP)
+                    .withKI(END_EFFECTOR_ROLLER_kI)
+                    .withKD(END_EFFECTOR_ROLLER_kD))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(END_EFFECTOR_PIVOT_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
-    public static final int climbPort = 60;
+    public static final int ID = 60;
   }
 
   // ====================Indexer (7_)====================
