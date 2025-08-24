@@ -159,6 +159,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   public void stop() {
-    setElevatorVoltage(0);
+    rightTalon.stopMotor();
   }
 }
