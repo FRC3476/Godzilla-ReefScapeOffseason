@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import org.dyn4j.collision.narrowphase.Sat;
-
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -66,7 +64,7 @@ public final class Constants {
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
 
-    public static final TalonFXConfiguration elevatorRightTalon =
+    public static final TalonFXConfiguration ELEVATOR_RIGHT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()

@@ -16,9 +16,9 @@ import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-  private TalonFX rightTalon;
-  private TalonFX leftTalon;
-  private TalonFX extraTalon;
+  private TalonFX rightTalonFX;
+  private TalonFX leftTalonFX;
+  private TalonFX extraTalonFX;
 
   private MotionMagicVoltage m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
@@ -43,31 +43,31 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   StatusSignal<Temperature> extraTempCelsius;
 
   public ElevatorIOTalonFX() {
-    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
-    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
-    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
+    rightTalonFX = new TalonFX(ElevatorConstants.elevatorRightID);
+    leftTalonFX = new TalonFX(ElevatorConstants.elevatorLeftID);
+    extraTalonFX = new TalonFX(ElevatorConstants.elevatorExtraID);
 
-    rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon);
-    leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
-    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
+    rightTalonFX.getConfigurator().apply(ElevatorConstants.ELEVATOR_RIGHT_TALON_CONFIG);
+    leftTalonFX.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
+    extraTalonFX.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
 
-    rightPosition = rightTalon.getPosition();
-    rightAppliedVolts = rightTalon.getMotorVoltage();
-    rightTorqueCurrentAmps = rightTalon.getTorqueCurrent();
-    rightSupplyCurrentAmps = rightTalon.getSupplyCurrent();
-    rightTempCelsius = rightTalon.getDeviceTemp();
+    rightPosition = rightTalonFX.getPosition();
+    rightAppliedVolts = rightTalonFX.getMotorVoltage();
+    rightTorqueCurrentAmps = rightTalonFX.getTorqueCurrent();
+    rightSupplyCurrentAmps = rightTalonFX.getSupplyCurrent();
+    rightTempCelsius = rightTalonFX.getDeviceTemp();
 
-    leftPosition = leftTalon.getPosition();
-    leftAppliedVolts = leftTalon.getMotorVoltage();
-    leftTorqueCurrentAmps = leftTalon.getTorqueCurrent();
-    leftSupplyCurrentAmps = leftTalon.getSupplyCurrent();
-    leftTempCelsius = leftTalon.getDeviceTemp();
+    leftPosition = leftTalonFX.getPosition();
+    leftAppliedVolts = leftTalonFX.getMotorVoltage();
+    leftTorqueCurrentAmps = leftTalonFX.getTorqueCurrent();
+    leftSupplyCurrentAmps = leftTalonFX.getSupplyCurrent();
+    leftTempCelsius = leftTalonFX.getDeviceTemp();
 
-    extraPosition = extraTalon.getPosition();
-    extraAppliedVolts = extraTalon.getMotorVoltage();
-    extraTorqueCurrentAmps = extraTalon.getTorqueCurrent();
-    extraSupplyCurrentAmps = extraTalon.getSupplyCurrent();
-    extraTempCelsius = extraTalon.getDeviceTemp();
+    extraPosition = extraTalonFX.getPosition();
+    extraAppliedVolts = extraTalonFX.getMotorVoltage();
+    extraTorqueCurrentAmps = extraTalonFX.getTorqueCurrent();
+    extraSupplyCurrentAmps = extraTalonFX.getSupplyCurrent();
+    extraTempCelsius = extraTalonFX.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -86,7 +86,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         extraTorqueCurrentAmps,
         extraSupplyCurrentAmps,
         extraTempCelsius);
-    ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon, extraTalon);
+    ParentDevice.optimizeBusUtilizationForAll(rightTalonFX, leftTalonFX, extraTalonFX);
     PhoenixUtil.registerSignals(
         true,
         rightPosition,
@@ -145,17 +145,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   public void setElevatorVoltage(double voltage) {
-    rightTalon.setControl(new VoltageOut(voltage));
+    rightTalonFX.setControl(new VoltageOut(voltage));
   }
 
   public void setElevatorTargetPosition(double position) {
-    rightTalon.setControl(m_request.withPosition(position));
+    rightTalonFX.setControl(m_request.withPosition(position));
   }
 
   public void setElevatorZero() {
-    rightTalon.setPosition(0.0);
-    leftTalon.setPosition(0.0);
-    extraTalon.setPosition(0.0);
+    rightTalonFX.setPosition(0.0);
+    leftTalonFX.setPosition(0.0);
+    extraTalonFX.setPosition(0.0);
 
   }
 
