@@ -154,6 +154,7 @@ public final class Constants {
   public static class EndEffectorConstants {
     public static final int pivotID = 50;
     public static final int rollerID = 51;
+    public static final int coralCANRangeID = 52;
 
     public static final double PIVOT_kP = 0;
     public static final double PIVOT_kI = 0;
@@ -169,7 +170,8 @@ public final class Constants {
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
     public static final double ROLLER_kD = 0;
-    public static final double ROLLER_kG = 0;
+    public static final double ROLLER_kS = 0;
+    public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
 
@@ -198,7 +200,12 @@ public final class Constants {
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs().withKP(ROLLER_kP).withKI(ROLLER_kI).withKD(ROLLER_kD))
+            .withSlot0(new Slot0Configs()
+              .withKP(ROLLER_kP)
+              .withKI(ROLLER_kI)
+              .withKD(ROLLER_kD)
+              .withKS(ROLLER_kS)
+              .withKA(ROLLER_kA))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)

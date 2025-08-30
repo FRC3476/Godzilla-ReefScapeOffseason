@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
@@ -18,6 +19,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   private TalonFX pivotTalonFX;
   private TalonFX rollerTalonFX;
+  private CANrange coralCANRange;
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
@@ -35,9 +37,12 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   StatusSignal<Current> rollerSupplyCurrentAmps;
   StatusSignal<Temperature> rollerTempCelsius;
 
+  StatusSignal<Boolean> rangeIsTripped;
+
   public EndEffectorIOTalonFX() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID);
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
+    coralCANRange = new CANrange(EndEffectorConstants.coralCANRangeID);
 
     pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG);
     rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG);
@@ -54,6 +59,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
     rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
     rollerTempCelsius = rollerTalonFX.getDeviceTemp();
 
+    rangeIsTripped = coralCANRange.getIsDetected();
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         pivotPosition,
@@ -65,8 +72,9 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         rollerAppliedVolts,
         rollerTorqueCurrentAmps,
         rollerSupplyCurrentAmps,
-        rollerTempCelsius);
-    ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX, rollerTalonFX);
+        rollerTempCelsius,
+        rangeIsTripped);
+    ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX, rollerTalonFX, coralCANRange);
     PhoenixUtil.registerSignals(
         true,
         pivotPosition,
@@ -78,7 +86,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         rollerAppliedVolts,
         rollerTorqueCurrentAmps,
         rollerSupplyCurrentAmps,
-        rollerTempCelsius);
+        rollerTempCelsius,
+        rangeIsTripped);
   }
 
   public void updateInputs(EndEffectorIOInputs inputs) {
@@ -96,6 +105,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
                 rollerTorqueCurrentAmps,
                 rollerSupplyCurrentAmps,
                 rollerTempCelsius),
+            BaseStatusSignal.isAllGood(
+                rangeIsTripped),
             Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),
@@ -105,10 +116,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
             rollerAppliedVolts.getValueAsDouble(),
             rollerTorqueCurrentAmps.getValueAsDouble(),
             rollerSupplyCurrentAmps.getValueAsDouble(),
-            rollerTempCelsius.getValueAsDouble());
+            rollerTempCelsius.getValueAsDouble(),
+            rangeIsTripped.getValue());
   }
-
-
-
-  
 }
