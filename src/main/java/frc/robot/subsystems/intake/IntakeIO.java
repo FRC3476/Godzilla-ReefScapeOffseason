@@ -50,4 +50,7 @@ public interface IntakeIO {
       boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
 
   default void updateInputs(IntakeIOInputs inputs) {}
+  default void setPivotVoltage(double voltage) {}
+  default void setRollerVoltage(double voltage) {}
+  default void setLvl1BlockerVoltage(double voltage) {}
 }
