@@ -43,6 +43,7 @@ public final class Constants {
 
     public static final int intakePivotID = 30;
     public static final int intakeRollerID = 31;
+    public static final int intakelvl1BlockerID = 32;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -54,17 +55,28 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
 
     // Current limits
-    public static final double MAX_CURRENT_LIMIT = 30.0; // Amps
+    public static final double MAX_SUPPLY_CURRENT_LIMIT = 50.0; // Amps
+    public static final double MAX_STATOR_CURRENT_LIMIT = 60.0; //Amps
 
     // PID constants
-    public static final double KG = 0.0; // Gravity feedforward
-    public static final double KP = 0.0; // Proportional gain
-    public static final double KI = 0.0; // Integral gain
-    public static final double KD = 0.0; // Derivative gain
+    public static final double pivotKG = 0.0; // Gravity feedforward
+    public static final double pivotKP = 0.0; // Proportional gain
+    public static final double pivotKI = 0.0; // Integral gain
+    public static final double pivotKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double MAX_ACCEL = 0.0; // rad/s^2
-    public static final double MAX_VELOCITY = 0.0; // rad/s
+    public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
+    public static final double pivotMAX_VELOCITY = 0.0; // rad/s
+
+    // PID constants
+    public static final double lvl1blockerKG = 0.0; // Gravity feedforward
+    public static final double lvl1blockerKP = 0.0; // Proportional gain
+    public static final double lvl1blockerKI = 0.0; // Integral gain
+    public static final double lvl1blockerKD = 0.0; // Derivative gain
+
+    // Motion constraints
+    public static final double lvl1blockerMAX_ACCEL = 0.0; // rad/s^2
+    public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
   }
 
   // ====================Elevator (4_)====================
