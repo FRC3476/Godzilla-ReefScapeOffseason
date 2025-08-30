@@ -171,8 +171,69 @@ public final class Constants {
 
   // ====================End Effector (5_)====================
   public static class EndEffectorConstants {
-    public static final int endEffectorPivotPort = 50;
-    public static final int endEffectorRollerPort = 51;
+    public static final int pivotID = 50;
+    public static final int rollerID = 51;
+    public static final int coralCANRangeID = 52;
+
+    public static final double PIVOT_kP = 0;
+    public static final double PIVOT_kI = 0;
+    public static final double PIVOT_kD = 0;
+    public static final double PIVOT_kG = 0;
+
+    public static final double PIVOT_Velo = 0;
+    public static final double PIVOT_Accel = 0;
+    public static final double PIVOT_Jerk = 0;
+
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 0;
+
+    public static final double ROLLER_kP = 0;
+    public static final double ROLLER_kI = 0;
+    public static final double ROLLER_kD = 0;
+    public static final double ROLLER_kS = 0;
+    public static final double ROLLER_kA = 0;
+
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(PIVOT_kP)
+                    .withKI(PIVOT_kI)
+                    .withKD(PIVOT_kD)
+                    .withKG(PIVOT_kG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(PIVOT_Velo)
+                    .withMotionMagicAcceleration(PIVOT_Accel)
+                    .withMotionMagicJerk(PIVOT_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================
