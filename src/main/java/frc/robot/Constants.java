@@ -57,13 +57,13 @@ public final class Constants {
     // Current limits
     // Roller, L1, Pivot
     // public static final double MAX_SUPPLY_CURRENT_LIMIT = 50.0; // Amps
-    public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
-    public static final double L1_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
-    public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
-    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
-    public static final double L1_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
-    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    public static final double L1_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
     public static final double pivotKG = 0.0; // Gravity feedforward

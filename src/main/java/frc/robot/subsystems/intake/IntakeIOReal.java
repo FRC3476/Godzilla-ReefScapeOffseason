@@ -106,15 +106,18 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     lvl1blockerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     lvl1blockerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.L1_MAX_SUPPLY_CURRENT_LIMIT;
+    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit =
+        IntakeConstants.L1_MAX_SUPPLY_CURRENT_LIMIT;
     lvl1blockerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.L1_MAX_STATOR_CURRENT_LIMIT;
+    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit =
+        IntakeConstants.L1_MAX_STATOR_CURRENT_LIMIT;
     lvl1blockerConfig.Slot0.kP = IntakeConstants.lvl1blockerKP;
     lvl1blockerConfig.Slot0.kI = IntakeConstants.lvl1blockerKI;
     lvl1blockerConfig.Slot0.kD = IntakeConstants.lvl1blockerKD;
     lvl1blockerConfig.Slot0.kG = IntakeConstants.lvl1blockerKG;
     lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerMAX_ACCEL;
-    lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.lvl1blockerMAX_VELOCITY;
+    lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
+        IntakeConstants.lvl1blockerMAX_VELOCITY;
     lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig);
 
     // Configure CANCoder
