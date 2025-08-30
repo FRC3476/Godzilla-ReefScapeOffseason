@@ -276,12 +276,15 @@ public class IntakeIOReal implements IntakeIO {
             canRangeSignalStrength.getValueAsDouble(),
             canRangeDistance.getValueAsDouble());
   }
+
   public void setPivotVoltage(double voltage) {
     pivotMotor.setControl(pivotVoltageRequest.withOutput(voltage));
   }
+
   public void setRollerVoltage(double voltage) {
     rollerMotor.setControl(rollerVoltageRequest.withOutput(voltage));
   }
+
   public void setLvl1BlockerVoltage(double voltage) {
     lvl1blockerMotor.setControl(lvl1blockerVoltageRequest.withOutput(voltage));
   }

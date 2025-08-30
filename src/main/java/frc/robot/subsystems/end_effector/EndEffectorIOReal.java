@@ -15,7 +15,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 
-public class EndEffectorIOTalonFX implements EndEffectorIO {
+public class EndEffectorIOReal implements EndEffectorIO {
 
   private TalonFX pivotTalonFX;
   private TalonFX rollerTalonFX;
@@ -39,7 +39,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   StatusSignal<Boolean> rangeIsTripped;
 
-  public EndEffectorIOTalonFX() {
+  public EndEffectorIOReal() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID);
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
     coralCANRange = new CANrange(EndEffectorConstants.coralCANRangeID);
