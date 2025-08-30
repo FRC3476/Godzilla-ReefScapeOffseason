@@ -7,7 +7,8 @@ public interface EndEffectorIO {
   @AutoLog
   class EndEffectorIOInputs {
     public EndEffectorIOData data =
-        new EndEffectorIOData(false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, false);
+        new EndEffectorIOData(
+            false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, false);
   }
 
   record EndEffectorIOData(

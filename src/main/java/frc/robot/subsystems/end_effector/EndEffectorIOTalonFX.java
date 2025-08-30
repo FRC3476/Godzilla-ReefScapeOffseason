@@ -105,8 +105,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
                 rollerTorqueCurrentAmps,
                 rollerSupplyCurrentAmps,
                 rollerTempCelsius),
-            BaseStatusSignal.isAllGood(
-                rangeIsTripped),
+            BaseStatusSignal.isAllGood(rangeIsTripped),
             Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),

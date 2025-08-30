@@ -200,12 +200,13 @@ public final class Constants {
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs()
-              .withKP(ROLLER_kP)
-              .withKI(ROLLER_kI)
-              .withKD(ROLLER_kD)
-              .withKS(ROLLER_kS)
-              .withKA(ROLLER_kA))
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
