@@ -55,8 +55,15 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
 
     // Current limits
-    public static final double MAX_SUPPLY_CURRENT_LIMIT = 50.0; // Amps
-    public static final double MAX_STATOR_CURRENT_LIMIT = 60.0; //Amps
+    // Roller, L1, Pivot
+    // public static final double MAX_SUPPLY_CURRENT_LIMIT = 50.0; // Amps
+    public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double L1_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT  = 40.0; // Amps
+
+    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double L1_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
+    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT  = 40.0; // Amps
 
     // PID constants
     public static final double pivotKG = 0.0; // Gravity feedforward

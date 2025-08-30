@@ -80,9 +80,9 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     pivotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.MAX_SUPPLY_CURRENT_LIMIT;
+    pivotConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.PIVOT_MAX_SUPPLY_CURRENT_LIMIT;
     pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.MAX_STATOR_CURRENT_LIMIT;
+    pivotConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.PIVOT_MAX_STATOR_CURRENT_LIMIT;
     pivotConfig.Slot0.kP = IntakeConstants.pivotKP;
     pivotConfig.Slot0.kI = IntakeConstants.pivotKI;
     pivotConfig.Slot0.kD = IntakeConstants.pivotKD;
@@ -96,9 +96,9 @@ public class IntakeIOReal implements IntakeIO {
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.MAX_SUPPLY_CURRENT_LIMIT;
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.MAX_STATOR_CURRENT_LIMIT;
+    rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_MAX_STATOR_CURRENT_LIMIT;
     rollerMotor.getConfigurator().apply(rollerConfig);
 
     // Configure lvl1blocker motor
@@ -106,9 +106,9 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     lvl1blockerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     lvl1blockerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.MAX_SUPPLY_CURRENT_LIMIT;
+    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.L1_MAX_SUPPLY_CURRENT_LIMIT;
     lvl1blockerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.MAX_STATOR_CURRENT_LIMIT;
+    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.L1_MAX_STATOR_CURRENT_LIMIT;
     lvl1blockerConfig.Slot0.kP = IntakeConstants.lvl1blockerKP;
     lvl1blockerConfig.Slot0.kI = IntakeConstants.lvl1blockerKI;
     lvl1blockerConfig.Slot0.kD = IntakeConstants.lvl1blockerKD;
@@ -213,7 +213,7 @@ public class IntakeIOReal implements IntakeIO {
         canRangeDistance);
   }
 
-  public void updatePivotInputs(IntakeIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     inputs.pivotData =
         new PivotData(
             BaseStatusSignal.isAllGood(
