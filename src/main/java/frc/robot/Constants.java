@@ -74,6 +74,7 @@ public final class Constants {
     // Motion constraints
     public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
     public static final double pivotMAX_VELOCITY = 0.0; // rad/s
+    public static final double pivotJERK = 0.0; // rad/s^3
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
@@ -84,6 +85,7 @@ public final class Constants {
     // Motion constraints
     public static final double lvl1blockerMAX_ACCEL= 0.0; // rad/s^2
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
+    public static final double lvl1blockerJERK = 0.0; // rad/s^3
   }
 
   // ====================Elevator (4_)====================
