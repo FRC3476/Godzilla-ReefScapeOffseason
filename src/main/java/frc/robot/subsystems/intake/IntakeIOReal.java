@@ -32,8 +32,8 @@ public class IntakeIOReal implements IntakeIO {
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut lvl1blockerVoltageRequest = new VoltageOut(0.0);
-  private final PositionVoltage pivotPositionRequest = new PositionVoltage(0.0);
-  private final PositionVoltage lvl1blockerPositionRequest = new PositionVoltage(0.0);
+  private final PositionVoltage pivotPositionRequest = new MotionMagicVoltage(0.0);
+  private final PositionVoltage lvl1blockerPositionRequest = new MotionMagicVoltage(0.0);
 
   // Pivot motor status signals
   private final StatusSignal<Voltage> pivotVoltage;
@@ -284,5 +284,11 @@ public class IntakeIOReal implements IntakeIO {
   }
   public void setLvl1BlockerVoltage(double voltage) {
     lvl1blockerMotor.setControl(lvl1blockerVoltageRequest.withOutput(voltage));
+  }
+  public void setPivotPosition(double positionRad) {
+    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad));
+  }
+  public void setLvl1BlockerPosition(double positionRad) {
+    lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRad));
   }
 }
