@@ -72,7 +72,7 @@ public final class Constants {
     public static final double pivotKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
+    public static final double pivotACCELERATION = 0.0; // rad/s^2
     public static final double pivotMAX_VELOCITY = 0.0; // rad/s
 
     // PID constants
@@ -82,7 +82,7 @@ public final class Constants {
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double lvl1blockerMAX_ACCEL = 0.0; // rad/s^2
+    public static final double lvl1blockerACCELERATION = 0.0; // rad/s^2
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
   }
 
