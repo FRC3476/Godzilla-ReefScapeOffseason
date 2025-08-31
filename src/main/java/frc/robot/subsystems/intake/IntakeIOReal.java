@@ -87,7 +87,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.Slot0.kI = IntakeConstants.pivotKI;
     pivotConfig.Slot0.kD = IntakeConstants.pivotKD;
     pivotConfig.Slot0.kG = IntakeConstants.pivotKG;
-    pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotACCELERATION;
+    pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
     pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
     pivotMotor.getConfigurator().apply(pivotConfig);
@@ -116,7 +116,7 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.Slot0.kI = IntakeConstants.lvl1blockerKI;
     lvl1blockerConfig.Slot0.kD = IntakeConstants.lvl1blockerKD;
     lvl1blockerConfig.Slot0.kG = IntakeConstants.lvl1blockerKG;
-    lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerACCELERATION;
+    lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerMAX_ACCEL;
     lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.lvl1blockerMAX_VELOCITY;
     lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
