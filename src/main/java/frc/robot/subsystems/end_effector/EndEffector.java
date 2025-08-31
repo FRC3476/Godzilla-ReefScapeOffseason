@@ -11,7 +11,7 @@ public class EndEffector extends SubsystemBase {
 
   public static EndEffector getInstance() {
     if (endEffectorSubsystem == null) {
-      endEffectorSubsystem = new EndEffector(new EndEffectorIOTalonFX());
+      endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
     }
     return endEffectorSubsystem;
   }

@@ -278,6 +278,7 @@ public class IntakeIOReal implements IntakeIO {
             canRangeSignalStrength.getValueAsDouble(),
             canRangeDistance.getValueAsDouble());
   }
+  
   @Override
   public void setPivotVoltage(double voltage) {
     pivotMotor.setControl(pivotVoltageRequest.withOutput(voltage));
