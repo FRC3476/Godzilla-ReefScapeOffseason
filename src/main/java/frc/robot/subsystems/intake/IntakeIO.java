@@ -56,4 +56,6 @@ public interface IntakeIO {
   default void setRollerVoltage(double voltage) {}
 
   default void setLvl1BlockerVoltage(double voltage) {}
+  default void setPivotPosition(double positionRad) {}
+  default void setLvl1BlockerPosition(double positionRad) {}
 }

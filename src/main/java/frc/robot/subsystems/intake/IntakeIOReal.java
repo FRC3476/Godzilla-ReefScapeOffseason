@@ -32,8 +32,8 @@ public class IntakeIOReal implements IntakeIO {
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut lvl1blockerVoltageRequest = new VoltageOut(0.0);
-  private final PositionVoltage pivotPositionRequest = new PositionVoltage(0.0);
-  private final PositionVoltage lvl1blockerPositionRequest = new PositionVoltage(0.0);
+  private final PositionVoltage pivotPositionRequest = new MotionMagicVoltage(0.0);
+  private final PositionVoltage lvl1blockerPositionRequest = new MotionMagicVoltage(0.0);
 
   // Pivot motor status signals
   private final StatusSignal<Voltage> pivotVoltage;
@@ -89,6 +89,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.Slot0.kG = IntakeConstants.pivotKG;
     pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
+    pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
     pivotMotor.getConfigurator().apply(pivotConfig);
 
     // Configure roller motor
@@ -118,6 +119,7 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerMAX_ACCEL;
     lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.lvl1blockerMAX_VELOCITY;
+    lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
     lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig);
 
     // Configure CANCoder
@@ -276,16 +278,25 @@ public class IntakeIOReal implements IntakeIO {
             canRangeSignalStrength.getValueAsDouble(),
             canRangeDistance.getValueAsDouble());
   }
-
+  
+  @Override
   public void setPivotVoltage(double voltage) {
     pivotMotor.setControl(pivotVoltageRequest.withOutput(voltage));
   }
-
+  @Override
   public void setRollerVoltage(double voltage) {
     rollerMotor.setControl(rollerVoltageRequest.withOutput(voltage));
   }
-
+  @Override
   public void setLvl1BlockerVoltage(double voltage) {
     lvl1blockerMotor.setControl(lvl1blockerVoltageRequest.withOutput(voltage));
+  }
+  @Override
+  public void setPivotPosition(double positionRad) {
+    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad));
+  }
+  @Override
+  public void setLvl1BlockerPosition(double positionRad) {
+    lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRad));
   }
 }
