@@ -31,5 +31,10 @@ public interface EndEffectorIO {
 
   default void setRollerVoltage(double voltage) {}
 
+  default void setRollerVelocity(double velocity){}
+
+
   default void setPivotTargetPosition(double position) {}
+
+
 }

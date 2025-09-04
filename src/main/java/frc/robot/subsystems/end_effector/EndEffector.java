@@ -9,6 +9,8 @@ public class EndEffector extends SubsystemBase {
   private EndEffectorIOInputsAutoLogged inputs;
   private static EndEffector endEffectorSubsystem;
 
+  private double rollerSpeed;
+
   public static EndEffector getInstance() {
     if (endEffectorSubsystem == null) {
       endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
@@ -24,6 +26,17 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Elevator", inputs);
+    Logger.processInputs("EndEffector", inputs);
+    Logger.recordOutput("EndEffector/TargetRollerSpeed", rollerSpeed);
   }
+
+  public void setRollerVelocity(double velocity){
+    rollerSpeed = velocity;
+    io.setRollerVelocity(velocity);
+  }
+
+  public void setRollerVoltage(double voltage){
+    io.setRollerVoltage(voltage);
+  }
+
 }
