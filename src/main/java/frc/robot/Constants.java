@@ -83,7 +83,7 @@ public final class Constants {
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double lvl1blockerMAX_ACCEL= 0.0; // rad/s^2
+    public static final double lvl1blockerMAX_ACCEL = 0.0; // rad/s^2
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
     public static final double lvl1blockerJERK = 0.0; // rad/s^3
   }

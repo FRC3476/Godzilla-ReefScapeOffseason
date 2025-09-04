@@ -14,12 +14,6 @@ public interface IntakeIO {
     public CanRangeData canRangeData = new CanRangeData(false, false, 0, 0);
   }
 
-  public boolean coralInIntake() {
-
-    return canRange.getIsDetected().getValue();
-  
-  }
-
   /** pivot-related telemetry. */
   record PivotData(
       boolean isMotorConnected,
@@ -62,6 +56,8 @@ public interface IntakeIO {
   default void setRollerVoltage(double voltage) {}
 
   default void setLvl1BlockerVoltage(double voltage) {}
+
   default void setPivotPosition(double positionRad) {}
+
   default void setLvl1BlockerPosition(double positionRad) {}
 }

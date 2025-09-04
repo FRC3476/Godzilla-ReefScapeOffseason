@@ -5,8 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -32,8 +31,8 @@ public class IntakeIOReal implements IntakeIO {
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut lvl1blockerVoltageRequest = new VoltageOut(0.0);
-  private final PositionVoltage pivotPositionRequest = new MotionMagicVoltage(0.0);
-  private final PositionVoltage lvl1blockerPositionRequest = new MotionMagicVoltage(0.0);
+  private final MotionMagicVoltage pivotPositionRequest = new MotionMagicVoltage(0.0);
+  private final MotionMagicVoltage lvl1blockerPositionRequest = new MotionMagicVoltage(0.0);
 
   // Pivot motor status signals
   private final StatusSignal<Voltage> pivotVoltage;
@@ -278,23 +277,27 @@ public class IntakeIOReal implements IntakeIO {
             canRangeSignalStrength.getValueAsDouble(),
             canRangeDistance.getValueAsDouble());
   }
-  
+
   @Override
   public void setPivotVoltage(double voltage) {
     pivotMotor.setControl(pivotVoltageRequest.withOutput(voltage));
   }
+
   @Override
   public void setRollerVoltage(double voltage) {
     rollerMotor.setControl(rollerVoltageRequest.withOutput(voltage));
   }
+
   @Override
   public void setLvl1BlockerVoltage(double voltage) {
     lvl1blockerMotor.setControl(lvl1blockerVoltageRequest.withOutput(voltage));
   }
+
   @Override
   public void setPivotPosition(double positionRad) {
     pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad));
   }
+
   @Override
   public void setLvl1BlockerPosition(double positionRad) {
     lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRad));
