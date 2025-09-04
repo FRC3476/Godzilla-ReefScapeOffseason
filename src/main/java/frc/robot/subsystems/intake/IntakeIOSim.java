@@ -10,10 +10,11 @@ public class IntakeIOSim implements IntakeIO {
   private double intakeRollerVolts = 0.0;
   private double intakePivotVolts = 0.0;
   private double intakelvl1BlockerVolts = 0.0;
-  
+
   private DCMotorSim intakeRollerMotor =
       new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.01, Constants.IntakeConstants.ROLLER_GEAR_RATIO),
+          LinearSystemId.createDCMotorSystem(
+              DCMotor.getKrakenX60(1), 0.01, Constants.IntakeConstants.ROLLER_GEAR_RATIO),
           DCMotor.getKrakenX60(1));
 
   @Override
