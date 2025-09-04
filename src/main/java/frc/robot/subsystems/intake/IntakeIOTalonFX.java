@@ -116,5 +116,12 @@ public class IntakeIOTalonFX implements IntakeIO {
     canRangeTripped = canRange.getIsDetected();
     canRangeSignalStrength = canRange.getSignalStrength();
     canRangeDistance = canRange.getDistance();
+
+  public boolean coralInIntake() {
+
+    return canRange.getIsDetected().getValue();
+    
+  }
+
   }
 }

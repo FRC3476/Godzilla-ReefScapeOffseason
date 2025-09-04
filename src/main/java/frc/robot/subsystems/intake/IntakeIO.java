@@ -16,6 +16,12 @@ public interface IntakeIO {
     public CanRangeData canRange = new CanRangeData(false, 0.0, 0.0);
   }
 
+  public boolean coralInIntake() {
+
+    return canRange.getIsDetected().getValue();
+  
+  }
+
   /** pivot-related telemetry. */
   record PivotData(
       double voltage,

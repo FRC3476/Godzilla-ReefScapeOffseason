@@ -14,8 +14,4 @@ public class Intake extends SubsystemBase {
     this.io = io;
   }
 
-  public boolean isCoral() {
-    return canRange.getIsDetected().getValue();
-  }
-
 }
