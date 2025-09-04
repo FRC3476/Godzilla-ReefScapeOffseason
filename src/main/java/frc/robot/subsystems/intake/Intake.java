@@ -16,4 +16,8 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
   }
+
+  public boolean isCoralInIntake() {
+    return inputs.canRangeData.tripped();
+  }
 }
