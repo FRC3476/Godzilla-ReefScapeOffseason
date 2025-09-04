@@ -126,9 +126,9 @@ public class RobotContainer {
   private void BuildTestTab() {
     ShuffleboardTab testTab = Shuffleboard.getTab("Test");
 
-    testTab.add("Intake Full Forward", intake.intakeFullFWD()).withPosition(0, 4).withSize(2, 1);
-    testTab.add("Intake Full Reverse", intake.intakeFullRVS()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Intake Full Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+    testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
+    testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
   }
 
   /**

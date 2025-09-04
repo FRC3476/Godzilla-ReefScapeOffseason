@@ -25,6 +25,13 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
+  public static final boolean tuningMode = true;
+  public static boolean disableHAL = false;
+
+  public static void disableHAL() {
+    disableHAL = true;
+  }
+
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 

@@ -32,7 +32,7 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
-    intakeRollerVolts = MathUtil.clamp(voltage * 12, -12, 12);
+    intakeRollerVolts = MathUtil.clamp(voltage, -12, 12);
     intakeRollerMotor.setInputVoltage(intakeRollerVolts);
   }
 
