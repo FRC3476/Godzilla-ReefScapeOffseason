@@ -43,6 +43,7 @@ public final class Constants {
 
     public static final int intakePivotID = 30;
     public static final int intakeRollerID = 31;
+    public static final int intakelvl1BlockerID = 32;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -54,17 +55,37 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
 
     // Current limits
-    public static final double MAX_CURRENT_LIMIT = 30.0; // Amps
+    // Roller, L1, Pivot
+    // public static final double MAX_SUPPLY_CURRENT_LIMIT = 50.0; // Amps
+    public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+
+    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    public static final double L1_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
-    public static final double KG = 0.0; // Gravity feedforward
-    public static final double KP = 0.0; // Proportional gain
-    public static final double KI = 0.0; // Integral gain
-    public static final double KD = 0.0; // Derivative gain
+    public static final double pivotKG = 0.0; // Gravity feedforward
+    public static final double pivotKP = 0.0; // Proportional gain
+    public static final double pivotKI = 0.0; // Integral gain
+    public static final double pivotKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double MAX_ACCEL = 0.0; // rad/s^2
-    public static final double MAX_VELOCITY = 0.0; // rad/s
+    public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
+    public static final double pivotMAX_VELOCITY = 0.0; // rad/s
+    public static final double pivotJERK = 0.0; // rad/s^3
+
+    // PID constants
+    public static final double lvl1blockerKG = 0.0; // Gravity feedforward
+    public static final double lvl1blockerKP = 0.0; // Proportional gain
+    public static final double lvl1blockerKI = 0.0; // Integral gain
+    public static final double lvl1blockerKD = 0.0; // Derivative gain
+
+    // Motion constraints
+    public static final double lvl1blockerMAX_ACCEL= 0.0; // rad/s^2
+    public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
+    public static final double lvl1blockerJERK = 0.0; // rad/s^3
   }
 
   // ====================Elevator (4_)====================
@@ -152,8 +173,69 @@ public final class Constants {
 
   // ====================End Effector (5_)====================
   public static class EndEffectorConstants {
-    public static final int endEffectorPivotPort = 50;
-    public static final int endEffectorRollerPort = 51;
+    public static final int pivotID = 50;
+    public static final int rollerID = 51;
+    public static final int coralCANRangeID = 52;
+
+    public static final double PIVOT_kP = 0;
+    public static final double PIVOT_kI = 0;
+    public static final double PIVOT_kD = 0;
+    public static final double PIVOT_kG = 0;
+
+    public static final double PIVOT_Velo = 0;
+    public static final double PIVOT_Accel = 0;
+    public static final double PIVOT_Jerk = 0;
+
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 0;
+
+    public static final double ROLLER_kP = 0;
+    public static final double ROLLER_kI = 0;
+    public static final double ROLLER_kD = 0;
+    public static final double ROLLER_kS = 0;
+    public static final double ROLLER_kA = 0;
+
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(PIVOT_kP)
+                    .withKI(PIVOT_kI)
+                    .withKD(PIVOT_kD)
+                    .withKG(PIVOT_kG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(PIVOT_Velo)
+                    .withMotionMagicAcceleration(PIVOT_Accel)
+                    .withMotionMagicJerk(PIVOT_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================

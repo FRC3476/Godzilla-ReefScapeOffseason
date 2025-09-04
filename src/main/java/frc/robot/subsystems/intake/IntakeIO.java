@@ -7,13 +7,11 @@ public interface IntakeIO {
   class IntakeIOInputs {
     // based on:
     // https://github.com/Mechanical-Advantage/RobotCode2025Public/blob/main/src/main/java/org/littletonrobotics/frc2025/subsystems/intake/SlamIO.java
-    public PivotData pivot = new PivotData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    public RollerData roller = new RollerData(0.0, 0.0, 0.0, 0.0, 0.0);
-
-    public CanCoderData canCoder = new CanCoderData(0.0, 0.0);
-
-    public CanRangeData canRange = new CanRangeData(false, 0.0, 0.0);
+    public PivotData pivotData = new PivotData(false, 0, 0, 0, 0, 0, 0);
+    public RollerData rollerData = new RollerData(false, 0, 0, 0, 0, 0);
+    public Lvl1BlockerData blockerData = new Lvl1BlockerData(false, 0, 0, 0, 0, 0, 0);
+    public CanCoderData canCoderData = new CanCoderData(false, 0, 0);
+    public CanRangeData canRangeData = new CanRangeData(false, false, 0, 0);
   }
 
   public boolean coralInIntake() {
@@ -24,6 +22,7 @@ public interface IntakeIO {
 
   /** pivot-related telemetry. */
   record PivotData(
+      boolean isMotorConnected,
       double voltage,
       double supplyCurrent,
       double statorCurrent,
@@ -33,15 +32,36 @@ public interface IntakeIO {
 
   /** roller-related telemetry. */
   record RollerData(
+      boolean isMotorConnected,
       double voltage,
       double supplyCurrent,
       double statorCurrent,
       double temperature,
       double velocityRPS) {}
 
+  record Lvl1BlockerData(
+      boolean isMotorConnected,
+      double voltage,
+      double supplyCurrent,
+      double statorCurrent,
+      double temperature,
+      double velocityRPS,
+      double positionRad) {}
+
   /** CANCoder telemetry. */
-  record CanCoderData(double positionRad, double velocityRPS) {}
+  record CanCoderData(boolean isSensorConnected, double positionRad, double velocityRPS) {}
 
   /** CANRange telemetry. */
-  record CanRangeData(boolean tripped, double signalStrength, double distanceMeters) {}
+  record CanRangeData(
+      boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
+
+  default void updateInputs(IntakeIOInputs inputs) {}
+
+  default void setPivotVoltage(double voltage) {}
+
+  default void setRollerVoltage(double voltage) {}
+
+  default void setLvl1BlockerVoltage(double voltage) {}
+  default void setPivotPosition(double positionRad) {}
+  default void setLvl1BlockerPosition(double positionRad) {}
 }
