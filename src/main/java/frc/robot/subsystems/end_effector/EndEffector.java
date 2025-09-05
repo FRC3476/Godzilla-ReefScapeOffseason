@@ -27,7 +27,8 @@ public class EndEffector extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
   }
 
-  public boolean isCoralInEndEffector() {
+  public boolean isCoralInEndefffector(){
+      return io.CANRangeData.rangeIsTripped && io.CANRangeData.isSensorConnected;
   }
 
 }
