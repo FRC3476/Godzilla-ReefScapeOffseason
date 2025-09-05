@@ -3,7 +3,6 @@ package frc.robot.subsystems.end_effector;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -25,7 +24,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
-  private VelocityVoltage roller_m_request = new VelocityVoltage(0).withEnableFOC(true);
+
+  private VoltageOut roller_m_request =
+      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
@@ -94,39 +96,37 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   public void updateInputs(EndEffectorIOInputs inputs) {
-    inputs.data =
-        new EndEffectorIOData(
+    inputs.pivotData =
+        new PivotData(
             BaseStatusSignal.isAllGood(
                 pivotPosition,
                 pivotAppliedVolts,
                 pivotTorqueCurrentAmps,
                 pivotSupplyCurrentAmps,
                 pivotTempCelsius),
+            Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
+            pivotAppliedVolts.getValueAsDouble(),
+            pivotTorqueCurrentAmps.getValueAsDouble(),
+            pivotSupplyCurrentAmps.getValueAsDouble(),
+            pivotTempCelsius.getValueAsDouble());
+    inputs.rollerData =
+        new RollerData(
             BaseStatusSignal.isAllGood(
                 rollerPosition,
                 rollerAppliedVolts,
                 rollerTorqueCurrentAmps,
                 rollerSupplyCurrentAmps,
                 rollerTempCelsius),
-            BaseStatusSignal.isAllGood(rangeIsTripped),
-            Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
-            pivotAppliedVolts.getValueAsDouble(),
-            pivotTorqueCurrentAmps.getValueAsDouble(),
-            pivotSupplyCurrentAmps.getValueAsDouble(),
-            pivotTempCelsius.getValueAsDouble(),
             Units.rotationsToRadians(rollerPosition.getValueAsDouble()),
             rollerAppliedVolts.getValueAsDouble(),
             rollerTorqueCurrentAmps.getValueAsDouble(),
             rollerSupplyCurrentAmps.getValueAsDouble(),
-            rollerTempCelsius.getValueAsDouble(),
-            rangeIsTripped.getValue());
-  }
-
-  public void setRollerVelocity(double velocity) {
-    rollerTalonFX.setControl(roller_m_request.withVelocity(velocity));
+            rollerTempCelsius.getValueAsDouble());
+    inputs.canRangeData =
+        new CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
   }
 
   public void setRollerVoltage(double voltage) {
-    rollerTalonFX.setControl(new VoltageOut(voltage));
+    rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
   }
 }
