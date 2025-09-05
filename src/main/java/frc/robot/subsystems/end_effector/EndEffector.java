@@ -26,4 +26,8 @@ public class EndEffector extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
   }
+
+  public boolean isCoralInEndEffector() {
+  }
+
 }
