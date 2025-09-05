@@ -262,11 +262,44 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
-  // ====================Indexer (7_)====================
-  public static class IndexerConstants {
-    public static final int indexerRightPort = 70;
-    public static final int indexerLeftPort = 71;
-    public static final int indexerCANrange = 72;
+  // ====================Feeder (7_)====================
+  public static class FeederConstants {
+    public static final int RIGHT_ID = 70;
+    public static final int LEFT_ID = 71;
+    public static final int CANRANGE_ID = 72;
+
+    public static final double ROLLER_kP = 0;
+    public static final double ROLLER_kI = 0;
+    public static final double ROLLER_kD = 0;
+    public static final double ROLLER_kS = 0;
+    public static final double ROLLER_kA = 0;
+
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+
+    public static final CANrangeConfiguration CANRANGE_CONFIG =
+        new CANrangeConfiguration()
+            .withProximityParams(
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(0.05)
+                    .withProximityHysteresis(0.01));
   }
 
   // ====================Physical Constants====================
