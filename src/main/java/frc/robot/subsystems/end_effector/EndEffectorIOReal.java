@@ -25,8 +25,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
-  private VelocityVoltage roller_m_request = 
-      new VelocityVoltage(0).withEnableFOC(true);
+  private VelocityVoltage roller_m_request = new VelocityVoltage(0).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
@@ -123,12 +122,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
             rangeIsTripped.getValue());
   }
 
-
-  public void setRollerVelocity(double velocity){
+  public void setRollerVelocity(double velocity) {
     rollerTalonFX.setControl(roller_m_request.withVelocity(velocity));
   }
 
-  public void setRollerVoltage(double voltage){
+  public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(new VoltageOut(voltage));
   }
 }
