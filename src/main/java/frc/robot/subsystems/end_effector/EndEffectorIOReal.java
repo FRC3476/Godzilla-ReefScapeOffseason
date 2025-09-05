@@ -3,6 +3,8 @@ package frc.robot.subsystems.end_effector;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,6 +25,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private VelocityVoltage roller_m_request = 
+      new VelocityVoltage(0).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
@@ -117,5 +121,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
             rollerSupplyCurrentAmps.getValueAsDouble(),
             rollerTempCelsius.getValueAsDouble(),
             rangeIsTripped.getValue());
+  }
+
+
+  public void setRollerVelocity(double velocity){
+    rollerTalonFX.setControl(roller_m_request.withVelocity(velocity));
+  }
+
+  public void setRollerVoltage(double voltage){
+    rollerTalonFX.setControl(new VoltageOut(voltage));
   }
 }
