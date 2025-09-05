@@ -32,7 +32,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public boolean isCoralInEndeffector(){
-      return io.canRangeData.rangeIsTripped && io.canRangeData.isSensorConnected;
+      return io.canRangeData.rangeIsTripped && io.canRangeData.canRangeConnected;
   }
 
 }
