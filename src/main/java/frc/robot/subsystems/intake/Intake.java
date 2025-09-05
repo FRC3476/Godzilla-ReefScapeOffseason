@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isCoralInIntake() {
-    return inputs.canRangeData.tripped();
+    return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
   }
 
   public Command intakeFWD() {

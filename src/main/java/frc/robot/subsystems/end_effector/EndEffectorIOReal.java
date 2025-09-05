@@ -24,8 +24,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+
   private VoltageOut roller_m_request =
       new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;

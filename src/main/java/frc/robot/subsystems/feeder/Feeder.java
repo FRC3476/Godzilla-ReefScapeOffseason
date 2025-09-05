@@ -18,7 +18,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCoralInFeeder() {
-    return inputs.canRangeData.tripped();
+    return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
   }
 
   public void setRollerVoltage(double voltage) {
