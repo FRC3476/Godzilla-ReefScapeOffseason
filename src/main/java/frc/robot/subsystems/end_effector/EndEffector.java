@@ -30,13 +30,12 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput("EndEffector/TargetRollerSpeed", rollerSpeed);
   }
 
-  public void setRollerVelocity(double velocity){
+  public void setRollerVelocity(double velocity) {
     rollerSpeed = velocity;
     io.setRollerVelocity(velocity);
   }
 
-  public void setRollerVoltage(double voltage){
+  public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
   }
-
 }
