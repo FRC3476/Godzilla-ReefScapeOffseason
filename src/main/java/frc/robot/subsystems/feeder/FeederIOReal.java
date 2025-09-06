@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.MotorStallDetection;
 
 public class FeederIOReal implements FeederIO {
   private final TalonFX rightRoller;
@@ -146,5 +147,12 @@ public class FeederIOReal implements FeederIO {
   @Override
   public void setRollerVoltage(double voltage) {
     rightRoller.setControl(new VoltageOut(0.0).withOutput(voltage));
+  }
+
+  @Override
+  public void checkForJam() {
+    if (MotorStallDetection.isMotorStalled(rightRoller, 10.0, 10.0)) {
+
+    }
   }
 }

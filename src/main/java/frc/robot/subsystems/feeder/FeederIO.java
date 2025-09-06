@@ -25,4 +25,6 @@ public interface FeederIO {
   default void updateInputs(FeederIOInputs inputs) {}
 
   default void setRollerVoltage(double voltage) {}
+
+  default void checkForJam() {}
 }
