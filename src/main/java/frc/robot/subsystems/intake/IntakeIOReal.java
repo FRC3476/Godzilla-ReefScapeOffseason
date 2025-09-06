@@ -89,7 +89,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
     pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
-    pivotMotor.getConfigurator().apply(pivotConfig);
+    tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig));
 
     // Configure roller motor
     var rollerConfig = new TalonFXConfiguration();
