@@ -54,6 +54,8 @@ public final class Constants {
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
 
+    public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;

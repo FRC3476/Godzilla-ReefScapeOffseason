@@ -38,4 +38,7 @@ public class Intake extends SubsystemBase {
   public Command intakeSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
+  public Command setScorePreppedIntakeL1() {
+    return Commands.runOnce(() -> this.io.setRollerVoltage(frc.robot.Constants.IntakeConstants.SCORE_PREPPED_L1_ROLLER_VOLTS), this);
+  }
 }
