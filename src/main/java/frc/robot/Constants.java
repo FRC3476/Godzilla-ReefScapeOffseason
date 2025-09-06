@@ -98,7 +98,8 @@ public final class Constants {
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
     public static final double lvl1blockerJERK = 0.0; // rad/s^3
 
-  public static final double L1_CORAL_ENGAGED_POSITION = 0.0; // radians
+  public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
+  public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
   }
 
   // ====================Elevator (4_)====================

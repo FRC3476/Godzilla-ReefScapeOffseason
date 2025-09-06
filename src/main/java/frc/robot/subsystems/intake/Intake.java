@@ -40,9 +40,14 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command setCoralL1() {
+  public Command engageCoralL1() {
     return Commands.runOnce(
-        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_CORAL_ENGAGED_POSITION),
+        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION),
+        this);
+  }
+  public Command disengageCoralL1() {
+    return Commands.runOnce(
+        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION),
         this);
   }
 
