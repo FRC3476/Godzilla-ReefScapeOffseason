@@ -14,10 +14,10 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
     public Command scoreIntakeL1() {
-      return Commands.runOnce(() -> {
-        io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD);
-        io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS);
-      }, this);
+      return Commands.sequence(
+        Commands.runOnce(() -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD), this),
+        Commands.runOnce(() -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS), this)
+      );
     }
 
   public Intake(IntakeIO io) {
