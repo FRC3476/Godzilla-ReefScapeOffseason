@@ -7,6 +7,13 @@ import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
+
+  private static final double PIVOT_TOLERANCE_RAD = 0.0;
+
+  public boolean isPivotAtSetpoint() {
+    return Math.abs(inputs.pivotData.positionRad() - frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD) < PIVOT_TOLERANCE_RAD;
+  }
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -16,6 +23,7 @@ public class Intake extends SubsystemBase {
     public Command scoreIntakeL1() {
       return Commands.sequence(
         Commands.runOnce(() -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD), this),
+        Commands.waitUntil(this::isPivotAtSetpoint),
         Commands.runOnce(() -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS), this)
       );
     }
