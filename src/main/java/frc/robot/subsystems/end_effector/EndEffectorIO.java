@@ -21,7 +21,7 @@ public interface EndEffectorIO {
 
   record RollerData(
       boolean rollerMotorConnected,
-      double rollerPosition,
+      double rollerVelocityRPS,
       double rollerAppliedVolts,
       double rollerTorqueCurrentAmps,
       double rollerSupplyCurrentAmps,
