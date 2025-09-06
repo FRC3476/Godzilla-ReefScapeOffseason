@@ -18,4 +18,6 @@ public interface ClimberIO {
       double tempCelsius) {}
 
   default void runVolts(double volts) {}
+
+  default void updateInputs(ClimberIOInputs inputs) {}
 }
