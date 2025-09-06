@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
@@ -35,7 +36,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Current> pivotSupplyCurrentAmps;
   StatusSignal<Temperature> pivotTempCelsius;
 
-  StatusSignal<Angle> rollerPosition;
+  StatusSignal<AngularVelocity> rollerVelocityRPS;
   StatusSignal<Voltage> rollerAppliedVolts;
   StatusSignal<Current> rollerTorqueCurrentAmps;
   StatusSignal<Current> rollerSupplyCurrentAmps;
@@ -57,7 +58,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
 
-    rollerPosition = rollerTalonFX.getPosition();
+    rollerVelocityRPS = rollerTalonFX.getRotorVelocity();
     rollerAppliedVolts = rollerTalonFX.getMotorVoltage();
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
@@ -72,7 +73,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        rollerPosition,
+        rollerVelocityRPS,
         rollerAppliedVolts,
         rollerTorqueCurrentAmps,
         rollerSupplyCurrentAmps,
@@ -86,7 +87,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        rollerPosition,
+        rollerVelocityRPS,
         rollerAppliedVolts,
         rollerTorqueCurrentAmps,
         rollerSupplyCurrentAmps,
@@ -111,12 +112,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
     inputs.rollerData =
         new RollerData(
             BaseStatusSignal.isAllGood(
-                rollerPosition,
+                rollerVelocityRPS,
                 rollerAppliedVolts,
                 rollerTorqueCurrentAmps,
                 rollerSupplyCurrentAmps,
                 rollerTempCelsius),
-            Units.rotationsToRadians(rollerPosition.getValueAsDouble()),
+            rollerVelocityRPS.getValueAsDouble(),
             rollerAppliedVolts.getValueAsDouble(),
             rollerTorqueCurrentAmps.getValueAsDouble(),
             rollerSupplyCurrentAmps.getValueAsDouble(),
