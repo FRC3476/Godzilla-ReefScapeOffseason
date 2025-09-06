@@ -13,6 +13,19 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
+    public Command scoreIntakeL1() {
+
+      double pivotL1Setpoint = 0.0; // radians
+      double rollerL1Setpoint = 0.0; // volts
+      double blockerL1Setpoint = 0.0; // radians
+
+      return Commands.runOnce(() -> {
+        io.setPivotPosition(pivotL1Setpoint);
+        io.setRollerVoltage(rollerL1Setpoint);
+        io.setLvl1BlockerPosition(blockerL1Setpoint);
+      }, this);
+    }
+
   public Intake(IntakeIO io) {
     this.io = io;
   }
