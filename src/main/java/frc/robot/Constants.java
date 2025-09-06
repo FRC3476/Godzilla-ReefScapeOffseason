@@ -55,6 +55,9 @@ public final class Constants {
     public static final int intakelvl1BlockerID = 32;
 
     // Sensor IDs
+    // Setpoints for Score Intake L1 (placeholder values)
+    public static final double PIVOT_L1_SETPOINT_RAD = 0.0; 
+    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0; 
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
 
