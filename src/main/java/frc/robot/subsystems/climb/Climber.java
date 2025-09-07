@@ -9,7 +9,8 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  private static final LoggedTunableNumber climberIntakeVolts = new LoggedTunableNumber("ClimbVolts", 12.0);
+  private static final LoggedTunableNumber climberIntakeVolts =
+      new LoggedTunableNumber("ClimberVolts", 0);
 
   public Climber(ClimberIO io) {
     this.io = io;
@@ -20,14 +21,11 @@ public class Climber extends SubsystemBase {
     io.updateInputs(inputs);
   }
 
-  
-  public Command climbDeploy (){
-    return Commands.run(() -> this.io.runVolts(ClimberIntakeVolts.get()), this);
-}
+  public Command climbDeploy() {
+    return Commands.run(() -> this.io.runVolts(climberIntakeVolts.get()), this);
+  }
 
-public Command intakeSTOP() {
-    return Commands.run(() -> this.io.runVoltage(0), this);
-}
-
-
+  public Command intakeSTOP() {
+    return Commands.run(() -> this.io.runVolts(0), this);
+  }
 }
