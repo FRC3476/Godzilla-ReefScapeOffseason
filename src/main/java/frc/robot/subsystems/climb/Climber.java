@@ -25,7 +25,7 @@ public class Climber extends SubsystemBase {
     return Commands.run(() -> this.io.runVolts(climberIntakeVolts.get()), this);
   }
 
-  public Command intakeSTOP() {
+  public Command climbSTOP() {
     return Commands.run(() -> this.io.runVolts(0), this);
   }
 }
