@@ -38,4 +38,8 @@ public class Intake extends SubsystemBase {
   public Command intakeSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
+
+  public Command rejectCoral() {
+    return Commands.run(() -> this.io.setRollerVoltage(-rollerIntakeVolts.get()), this);
+  }
 }
