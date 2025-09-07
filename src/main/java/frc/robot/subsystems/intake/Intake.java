@@ -38,4 +38,12 @@ public class Intake extends SubsystemBase {
   public Command intakeSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
+
+  public Command intakeCoralCommand() {
+    return Commands.sequence(
+      intakeFWD(),
+      Commands.waitUntil(this::isCoralInIntake),
+      intakeSTOP()
+    );
+  }
 }
