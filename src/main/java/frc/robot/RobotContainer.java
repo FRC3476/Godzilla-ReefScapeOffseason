@@ -36,6 +36,8 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.util.CommandStreamdeck;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -51,6 +53,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandStreamdeck streamdeck = new CommandStreamdeck("streamdeckControllerTable");
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -169,6 +172,24 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    // Button 1 on the streamdeck (the top-left-most is 0 and to right of that is 1)
+    // resets the gyro then flashes the image green for one second.
+    streamdeck
+      .button(1)
+      .onTrue(
+          Commands.runOnce(
+                  () ->
+                      drive.setPose(
+                          new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                  drive)
+              .ignoringDisable(true)
+          .andThen(streamdeck.flashButtonImage(1, true, 1))
+      );
+
+      // Pressing y on the controller should behave exactly like pushing button 1 on the streamdeck,
+      // as it publishes the same thing to the same networktable.
+      controller.y().onChange(streamdeck.setButtonValue(1, controller.y().getAsBoolean()));
   }
 
   /**
