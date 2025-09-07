@@ -50,9 +50,12 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
-    public static final int intakePivotID = 30;
-    public static final int intakeRollerID = 31;
-    public static final int intakelvl1BlockerID = 32;
+  public static final int intakePivotID = 30;
+  public static final int intakeRollerID = 31;
+  public static final int intakelvl1BlockerID = 32;
+
+  // Stowed position for intake pivot 
+  public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;

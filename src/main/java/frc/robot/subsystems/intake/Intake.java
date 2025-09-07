@@ -38,4 +38,10 @@ public class Intake extends SubsystemBase {
   public Command intakeSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
+
+
+  public Command intakePivotStow() {
+
+    return Commands.runOnce(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION), this);
+  }
 }
