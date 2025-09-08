@@ -54,6 +54,9 @@ public final class Constants {
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
 
+    // Pivot Positions
+    public static final double PIVOT_INTAKE_POSITION = 0.0;
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;

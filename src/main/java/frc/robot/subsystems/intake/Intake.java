@@ -46,4 +46,7 @@ public class Intake extends SubsystemBase {
       intakeSTOP()
     );
   }
+    public Command movePivotDown() {
+      return Commands.run(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION), this);
+  }
 }
