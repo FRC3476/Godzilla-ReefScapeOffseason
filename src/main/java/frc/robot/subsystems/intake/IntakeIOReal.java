@@ -89,7 +89,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
     pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
-    pivotMotor.getConfigurator().apply(pivotConfig);
+    PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig));
 
     // Configure roller motor
     var rollerConfig = new TalonFXConfiguration();
@@ -99,7 +99,7 @@ public class IntakeIOReal implements IntakeIO {
     rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_MAX_STATOR_CURRENT_LIMIT;
-    rollerMotor.getConfigurator().apply(rollerConfig);
+    PhoenixUtil.tryUntilOk(5, () -> rollerMotor.getConfigurator().apply(rollerConfig));
 
     // Configure lvl1blocker motor
     var lvl1blockerConfig = new TalonFXConfiguration();
@@ -119,17 +119,17 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.lvl1blockerMAX_VELOCITY;
     lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
-    lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig);
+    PhoenixUtil.tryUntilOk(5, () -> lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig));
 
     // Configure CANCoder
     var canCoderConfig = new CANcoderConfiguration();
-    canCoder.getConfigurator().apply(canCoderConfig);
+    PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(canCoderConfig));
 
     // Configure CANRange
     var canRangeConfig = new CANrangeConfiguration();
     canRangeConfig.ProximityParams.ProximityThreshold = 0.05; // 5cm detection threshold
     canRangeConfig.ProximityParams.ProximityHysteresis = 0.01; // 1cm hysteresis
-    canRange.getConfigurator().apply(canRangeConfig);
+    PhoenixUtil.tryUntilOk(5, () -> canRange.getConfigurator().apply(canRangeConfig));
 
     // Initialize status signals
     pivotVoltage = pivotMotor.getMotorVoltage();

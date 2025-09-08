@@ -49,8 +49,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
     coralCANRange = new CANrange(EndEffectorConstants.coralCANRangeID);
 
-    pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG);
-    rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG);
+    PhoenixUtil.tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
 
     pivotPosition = pivotTalonFX.getPosition();
     pivotAppliedVolts = pivotTalonFX.getMotorVoltage();
