@@ -12,7 +12,9 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+    new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+  private static final LoggedTunableNumber rollerRejectVolts =
+    new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -38,6 +40,10 @@ public class Intake extends SubsystemBase {
 
   public Command intakeSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
+  }
+
+  public Command rejectCoral() {
+    return Commands.run(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
   }
 
   public Command intakePivotStow() {
