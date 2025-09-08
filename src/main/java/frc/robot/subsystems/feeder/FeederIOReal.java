@@ -46,8 +46,8 @@ public class FeederIOReal implements FeederIO {
     canRange = new CANrange(FeederConstants.CANRANGE_ID);
 
     // Apply configs
-    rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG);
-    canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG);
+    PhoenixUtil.tryUntilOk(5, () -> rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(5, () -> canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG));
 
     // Set up left roller to follow right roller
     leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
