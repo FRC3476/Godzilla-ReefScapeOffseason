@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,9 +40,19 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-
   public Command intakePivotStow() {
-
     return Commands.runOnce(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION), this);
+  }
+
+  public Command engageCoralL1() {
+    return Commands.runOnce(
+        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION),
+        this);
+  }
+  
+  public Command disengageCoralL1() {
+    return Commands.runOnce(
+        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION),
+        this);
   }
 }

@@ -57,6 +57,8 @@ public final class Constants {
   // Stowed position for intake pivot 
   public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
+    public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
@@ -98,6 +100,9 @@ public final class Constants {
     public static final double lvl1blockerMAX_ACCEL = 0.0; // rad/s^2
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
     public static final double lvl1blockerJERK = 0.0; // rad/s^3
+
+  public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
+  public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
   }
 
   // ====================Elevator (4_)====================
