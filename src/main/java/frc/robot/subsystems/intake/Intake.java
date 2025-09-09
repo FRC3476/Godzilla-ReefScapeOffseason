@@ -8,8 +8,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
 
-  public boolean isPivotAtSetpoint() {
-    return Math.abs(inputs.pivotData.positionRad() - frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD) < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
+  public boolean isPivotAtSetpoint(double setpoint) {
+    return Math.abs(inputs.pivotData.positionRad() - setpoint) < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
   }
 
   private final IntakeIO io;
@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
     public Command scoreIntakeL1() {
       return Commands.sequence(
         Commands.runOnce(() -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD), this),
-        Commands.waitUntil(this::isPivotAtSetpoint),
+        Commands.waitUntil(() -> isPivotAtSetpoint(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD)),
         Commands.runOnce(() -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS), this)
       );
     }
