@@ -59,6 +59,11 @@ public final class Constants {
 
     public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
 
+    // Setpoints
+    public static final double PIVOT_TOLERANCE_RAD = 0.0; 
+    public static final double PIVOT_L1_SETPOINT_RAD = 0.0; 
+    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0; 
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
