@@ -31,6 +31,10 @@ public class EndEffector extends SubsystemBase {
     io.setRollerVoltage(voltage);
   }
 
+  public void setPivotVoltage(double voltage) {
+    io.setPivotVoltage(voltage);
+  }
+
   public boolean isCoralInEndeffector() {
     return inputs.canRangeData.rangeIsTripped() && inputs.canRangeData.canRangeConnected();
   }
