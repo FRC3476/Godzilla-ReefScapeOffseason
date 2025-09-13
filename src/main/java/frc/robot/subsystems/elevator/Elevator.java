@@ -52,14 +52,22 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
+  public double getCurrentPosition() {
+    return inputs.data.rightPosition();
+  }
+
   private boolean checkForJam() {
     if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getTargetPosition(), ElevatorConstants.STALLED_ZERO_MARGIN_INCHES)
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
             || !isZeroed)) {
       // false alarm, elevator is stalling at the bottom
       // make sure to run elevator down every time after turning it on
       io.setElevatorZero();
       isZeroed = true;
+      return false;
+    } else if (io.checkMotorsStalled() && getCurrentPosition() >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH) {
+      // false alarm, elevator is stalling at the top
+      setTargetPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
       return false;
     } else {
       return io.checkMotorsStalled();

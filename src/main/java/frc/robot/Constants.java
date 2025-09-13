@@ -135,7 +135,7 @@ public final class Constants {
 
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
-    public static final double STALLED_ZERO_MARGIN_INCHES = 2.0;
+    public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
 
     public static final TalonFXConfiguration elevatorRightTalon =
@@ -191,6 +191,7 @@ public final class Constants {
     public static final double ELEVATOR_HANDOFF_SETPOINT_INCH = 20.0; // 18.5
     public static final double ELEVATOR_BOTTOM_ALGAE_PULL_SETPOINT_INCH = 20.0;
     public static final double ELEVATOR_TOP_ALGAE_PULL_SETPOINT_INCH = 27.5;
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 35.0;
 
     public static final double ELEVATOR_L2_SETPOINT_INCH = 7.5;
     public static final double ELEVATOR_L3_SETPOINT_INCH = 17.0; // 18.75
