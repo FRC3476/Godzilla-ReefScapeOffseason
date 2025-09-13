@@ -13,6 +13,22 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
+  public enum IntakeState {
+    STOW,
+    INTAKE_L1,
+    INTAKE,
+    REJECT_CORAL,
+    IDLE,
+    HAND_OFF,
+    SCORING
+  }
+
+  private static final double PIVOT_UP_POSITION = 0.0;
+  private static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+  private static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+  private static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+  private static final double PIVOT_SCORING_POSITION = 0.0;
+
   public Intake(IntakeIO io) {
     this.io = io;
   }
@@ -39,12 +55,50 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command intakeCoralCommand() {
-    return Commands.sequence(
-      intakeFWD(),
-      Commands.waitUntil(this::isCoralInIntake),
-      intakeSTOP()
-    );
+  public Command intakeCoralCommand(IntakeState state) {
+    switch (state) {
+      case STOW:
+        return Commands.run(() -> {
+          this.io.setPivotPosition(PIVOT_UP_POSITION);
+          this.io.setRollerVoltage(0);
+        }, this);
+      case INTAKE_L1:
+        return Commands.run(() -> {
+          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setRollerVoltage(rollerIntakeVolts.get());
+          this.io.setLvl1BlockerPosition(L1_BLOCKER_ENGAGED_POSITION);
+        }, this);
+      case INTAKE:
+        return Commands.sequence(
+          Commands.run(() -> {
+            this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+            this.io.setRollerVoltage(rollerIntakeVolts.get());
+            this.io.setLvl1BlockerPosition(L1_BLOCKER_DISENGAGED_POSITION);
+          }, this),
+          Commands.waitUntil(this::isCoralInIntake),
+          intakeSTOP()
+        );
+      case REJECT_CORAL:
+        return Commands.run(() -> {
+          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setRollerVoltage(-rollerIntakeVolts.get());
+        }, this);
+      case IDLE:
+        return Commands.run(() -> {
+          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setRollerVoltage(0);
+        }, this);
+      case HAND_OFF:
+        return Commands.run(() -> this.io.setRollerVoltage(0), this);
+      case SCORING:
+        return Commands.run(() -> {
+          this.io.setPivotPosition(PIVOT_SCORING_POSITION);
+          this.io.setRollerVoltage(ROLLER_SCORING_OUT_VOLTS);
+          this.io.setLvl1BlockerPosition(L1_BLOCKER_ENGAGED_POSITION);
+        }, this);
+      default:
+        return Commands.none();
+    }
   }
     public Command movePivotDown() {
       return Commands.run(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION), this);
