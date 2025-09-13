@@ -4,20 +4,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
   private IntakeState currentState = IntakeState.IDLE;
 
-  public Intake(IntakeIO io) {
+  public Intake(IntakeIO io, Feeder feeder) {
     this.io = io;
+    this.feeder = feeder;
   }
 
   @Override
@@ -62,7 +65,7 @@ public class Intake extends SubsystemBase {
             this.io.setRollerVoltage(rollerIntakeVolts.get());
             this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
           }, this),
-          Commands.waitUntil(this::isCoralInIntake),
+          Commands.waitUntil(feeder::isCoralInFeeder),
           intakeSTOP()
         );
       case REJECT_CORAL:
