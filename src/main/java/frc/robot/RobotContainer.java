@@ -121,6 +121,9 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Initialize arbitrary triggers
+    intake.dejamTrigger.onTrue(intake.feederDejam());
   }
 
   private void BuildTestTab() {
