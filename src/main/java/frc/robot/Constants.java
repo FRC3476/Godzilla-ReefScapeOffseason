@@ -325,6 +325,10 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.05)
                     .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
   }
 
   // ====================Physical Constants====================
