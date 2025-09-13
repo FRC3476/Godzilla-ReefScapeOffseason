@@ -6,9 +6,17 @@ import org.littletonrobotics.junction.Logger;
 public class Feeder extends SubsystemBase {
   private final FeederIO io;
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
+  private static Feeder feederSubsystem;
 
   public Feeder(FeederIO io) {
     this.io = io;
+  }
+
+  public static Feeder getInstance() {
+    if (feederSubsystem == null) {
+      feederSubsystem = new Feeder(new FeederIOTalonFX());
+    }
+    return feederSubsystem;
   }
 
   @Override
