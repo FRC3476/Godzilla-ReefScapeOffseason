@@ -50,19 +50,19 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
-  public static final int intakePivotID = 30;
-  public static final int intakeRollerID = 31;
-  public static final int intakelvl1BlockerID = 32;
+    public static final int intakePivotID = 30;
+    public static final int intakeRollerID = 31;
+    public static final int intakelvl1BlockerID = 32;
 
-  // Stowed position for intake pivot 
-  public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
+    // Stowed position for intake pivot
+    public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
     public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
 
     // Setpoints
-    public static final double PIVOT_TOLERANCE_RAD = 0.0; 
-    public static final double PIVOT_L1_SETPOINT_RAD = 0.0; 
-    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0; 
+    public static final double PIVOT_TOLERANCE_RAD = 0.0;
+    public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
+    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -106,8 +106,12 @@ public final class Constants {
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
     public static final double lvl1blockerJERK = 0.0; // rad/s^3
 
-  public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
-  public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
+    public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
+    public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
+
+    // Stall detection
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
   }
 
   // ====================Elevator (4_)====================
@@ -128,6 +132,11 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double STALLED_ZERO_MARGIN_INCHES = 2.0;
+    public static final double DEJAM_DISTANCE_INCHES = 12.0;
 
     public static final TalonFXConfiguration elevatorRightTalon =
         new TalonFXConfiguration()

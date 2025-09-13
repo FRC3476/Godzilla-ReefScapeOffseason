@@ -1,7 +1,10 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,14 +43,6 @@ public class Elevator extends SubsystemBase {
     io.setElevatorTargetPosition(position);
   }
 
-  public void setZero() {
-    io.setElevatorVoltage(-6);
-    if (inputs.data.rightSupplyCurrentAmps() > ElevatorConstants.ELEVATOR_CURRENT_LIMIT_AMPS) {
-      io.setElevatorZero();
-      isZeroed = true;
-    }
-  }
-
   public boolean isInTolerance() {
     return MathUtil.isNear(
         setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
@@ -56,4 +51,23 @@ public class Elevator extends SubsystemBase {
   public double getTargetPosition() {
     return setpoint;
   }
+
+  private boolean checkForJam() {
+    if (io.checkMotorsStalled()
+        && (MathUtil.isNear(0.0, getTargetPosition(), ElevatorConstants.STALLED_ZERO_MARGIN_INCHES)
+            || !isZeroed)) {
+      io.setElevatorZero();
+      isZeroed = true;
+      return false;
+    } else {
+      return io.checkMotorsStalled();
+    }
+  }
+
+  public Command dejamElevator() {
+    return Commands.run(
+        () -> setTargetPosition(getTargetPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+  }
+
+  public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam());
 }
