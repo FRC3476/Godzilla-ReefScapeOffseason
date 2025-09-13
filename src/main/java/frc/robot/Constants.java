@@ -323,6 +323,85 @@ public final class Constants {
     public static final double ABSOLUTE_ZERO = 0.0;
   }
 
+
+  public static class SuperstructureConstants{
+    public static double STOW_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_CORAL_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_ALGAE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0;
+    public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double INTAKE_CORAL_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0;
+    public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double FEED_ELEVATOR_HEIGHT_INCH = 0;
+    public static double FEED_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double FEED_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L2_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L3_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L4_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L1_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L2_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L3_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L4_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double ALGAE_HIGH_INTAKE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double PROCESSOR_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+  }
+
+
   public record PIDgains(
       double kP, double kI, double kD, double kS, double kV, double kA, double kG) {
 
