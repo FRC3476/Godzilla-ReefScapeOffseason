@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -13,15 +14,7 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
-  public enum IntakeState {
-    STOW,
-    INTAKE_L1,
-    INTAKE,
-    REJECT_CORAL,
-    IDLE,
-    HAND_OFF,
-    SCORING
-  }
+  private frc.robot.Constants.IntakeConstants.IntakeState currentState = frc.robot.Constants.IntakeConstants.IntakeState.IDLE;
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -49,8 +42,8 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command intakeCoralCommand(IntakeState state) {
-    switch (state) {
+  public Command intakeCoralCommand() {
+    switch (this.currentState) {
       case STOW:
         return Commands.run(() -> {
           this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_UP_POSITION);
@@ -94,6 +87,11 @@ public class Intake extends SubsystemBase {
         return Commands.none();
     }
   }
+
+    public Command setIntakeState(IntakeState state) {
+      return Commands.run(() -> this.currentState = state, this);
+    }
+
     public Command movePivotDown() {
       return Commands.run(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }

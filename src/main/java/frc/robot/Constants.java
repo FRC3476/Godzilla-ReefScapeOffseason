@@ -70,6 +70,16 @@ public final class Constants {
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
 
+    public enum IntakeState {
+      STOW,
+      INTAKE_L1,
+      INTAKE,
+      REJECT_CORAL,
+      IDLE,
+      HAND_OFF,
+      SCORING
+    }
+
     // Gear ratios
     public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
