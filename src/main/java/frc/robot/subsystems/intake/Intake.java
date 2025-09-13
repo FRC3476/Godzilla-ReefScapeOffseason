@@ -14,7 +14,7 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
 
-  private frc.robot.Constants.IntakeConstants.IntakeState currentState = frc.robot.Constants.IntakeConstants.IntakeState.IDLE;
+  private IntakeState currentState = IntakeState.IDLE;
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -42,7 +42,7 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command intakeCoralCommand() {
+  public Command intakeDefault() {
     switch (this.currentState) {
       case STOW:
         return Commands.run(() -> {
@@ -78,18 +78,20 @@ public class Intake extends SubsystemBase {
       case HAND_OFF:
         return Commands.run(() -> this.io.setRollerVoltage(0), this);
       case SCORING:
-        return Commands.run(() -> {
-          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_SCORING_POSITION);
-          this.io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
-          this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-        }, this);
+        return Commands.sequence(
+          Commands.run(() -> {
+            this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_SCORING_POSITION);
+            this.io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
+            this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+          }, this)
+        );
       default:
         return Commands.none();
     }
   }
 
     public Command setIntakeState(IntakeState state) {
-      return Commands.run(() -> this.currentState = state, this);
+      return Commands.runOnce(() -> this.currentState = state, this);
     }
 
     public Command movePivotDown() {
