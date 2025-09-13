@@ -56,6 +56,15 @@ public final class Constants {
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION = 0.0;
+    public static final double PIVOT_UP_POSITION = 0.0;
+    public static final double PIVOT_SCORING_POSITION = 0.0;
+
+    // L1 Blocker Positions
+    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+
+    // Roller Voltages
+    public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;

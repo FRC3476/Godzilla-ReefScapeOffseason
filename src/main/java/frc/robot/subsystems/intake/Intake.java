@@ -23,12 +23,6 @@ public class Intake extends SubsystemBase {
     SCORING
   }
 
-  private static final double PIVOT_UP_POSITION = 0.0;
-  private static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
-  private static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
-  private static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-  private static final double PIVOT_SCORING_POSITION = 0.0;
-
   public Intake(IntakeIO io) {
     this.io = io;
   }
@@ -59,21 +53,21 @@ public class Intake extends SubsystemBase {
     switch (state) {
       case STOW:
         return Commands.run(() -> {
-          this.io.setPivotPosition(PIVOT_UP_POSITION);
+          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_UP_POSITION);
           this.io.setRollerVoltage(0);
         }, this);
       case INTAKE_L1:
         return Commands.run(() -> {
           this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(rollerIntakeVolts.get());
-          this.io.setLvl1BlockerPosition(L1_BLOCKER_ENGAGED_POSITION);
+          this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
         }, this);
       case INTAKE:
         return Commands.sequence(
           Commands.run(() -> {
             this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
             this.io.setRollerVoltage(rollerIntakeVolts.get());
-            this.io.setLvl1BlockerPosition(L1_BLOCKER_DISENGAGED_POSITION);
+            this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
           }, this),
           Commands.waitUntil(this::isCoralInIntake),
           intakeSTOP()
@@ -92,9 +86,9 @@ public class Intake extends SubsystemBase {
         return Commands.run(() -> this.io.setRollerVoltage(0), this);
       case SCORING:
         return Commands.run(() -> {
-          this.io.setPivotPosition(PIVOT_SCORING_POSITION);
-          this.io.setRollerVoltage(ROLLER_SCORING_OUT_VOLTS);
-          this.io.setLvl1BlockerPosition(L1_BLOCKER_ENGAGED_POSITION);
+          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_SCORING_POSITION);
+          this.io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
+          this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
         }, this);
       default:
         return Commands.none();
