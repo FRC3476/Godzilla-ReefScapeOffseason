@@ -10,24 +10,29 @@ import org.littletonrobotics.junction.Logger;
 public class Intake extends SubsystemBase {
 
   public boolean isPivotAtSetpoint(double setpoint) {
-    return Math.abs(inputs.pivotData.positionRad() - setpoint) < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
+    return Math.abs(inputs.pivotData.positionRad() - setpoint)
+        < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
   }
 
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-    new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-    new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
 
-    public Command scoreIntakeL1() {
-      return Commands.sequence(
-        Commands.runOnce(() -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD), this),
-        Commands.waitUntil(() -> isPivotAtSetpoint(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD)),
-        Commands.runOnce(() -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS), this)
-      );
-    }
+  public Command scoreIntakeL1() {
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD),
+            this),
+        Commands.waitUntil(
+            () -> isPivotAtSetpoint(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD)),
+        Commands.runOnce(
+            () -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS),
+            this));
+  }
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -60,18 +65,26 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakePivotStow() {
-    return Commands.runOnce(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION), this);
+    return Commands.runOnce(
+        () ->
+            this.io.setPivotPosition(
+                frc.robot.Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION),
+        this);
   }
 
   public Command engageCoralL1() {
     return Commands.runOnce(
-        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION),
+        () ->
+            this.io.setLvl1BlockerPosition(
+                Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION),
         this);
   }
-  
+
   public Command disengageCoralL1() {
     return Commands.runOnce(
-        () -> this.io.setLvl1BlockerPosition(Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION),
+        () ->
+            this.io.setLvl1BlockerPosition(
+                Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION),
         this);
   }
 }
