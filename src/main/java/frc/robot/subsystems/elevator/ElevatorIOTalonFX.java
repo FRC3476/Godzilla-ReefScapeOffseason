@@ -47,7 +47,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
     extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
 
-    PhoenixUtil.tryUntilOk(5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
     extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
 

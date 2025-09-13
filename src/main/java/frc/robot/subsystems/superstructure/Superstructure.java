@@ -6,20 +6,17 @@ import frc.robot.subsystems.end_effector.EndEffector;
 
 public class Superstructure extends SubsystemBase {
 
-    private EndEffector endEffector;
-    private Elevator elevator;
+  private EndEffector endEffector;
+  private Elevator elevator;
 
-    public Superstructure(EndEffector endEffector, Elevator elevator){
-        this.endEffector = endEffector;
-        this.elevator = elevator;
-    }
+  public Superstructure(EndEffector endEffector, Elevator elevator) {
+    this.endEffector = endEffector;
+    this.elevator = elevator;
+  }
 
-    @Override
-    public void periodic(){
-        elevator.periodic();
-        endEffector.periodic();
-    }
-
-
-
+  @Override
+  public void periodic() {
+    elevator.periodic();
+    endEffector.periodic();
+  }
 }
