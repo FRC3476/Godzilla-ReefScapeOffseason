@@ -64,7 +64,7 @@ public class Intake extends SubsystemBase {
             this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
           }, this),
           Commands.waitUntil(() -> Feeder.getInstance().isCoralInFeeder()),
-          intakeSTOP()
+          setIntakeState(IntakeState.IDLE)
         );
       case REJECT_CORAL:
         return Commands.run(() -> {
