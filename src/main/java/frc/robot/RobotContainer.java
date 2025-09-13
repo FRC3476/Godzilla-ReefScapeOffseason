@@ -122,8 +122,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Initialize arbitrary triggers
-    intake.dejamTrigger.onTrue(intake.feederDejam());
+    // Configure arbitrary triggers
+    configureArbitraryTriggers();
   }
 
   private void BuildTestTab() {
@@ -172,6 +172,10 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureArbitraryTriggers() {
+    intake.dejamTrigger.onTrue(intake.feederDejam());
   }
 
   /**
