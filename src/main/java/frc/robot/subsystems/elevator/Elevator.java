@@ -67,7 +67,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command dejamElevator() {
-    return Commands.run(
+    return Commands.runOnce(
         () -> setTargetPosition(getTargetPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
 
