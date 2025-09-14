@@ -15,7 +15,7 @@ public class Elevator extends SubsystemBase {
 
   public static Elevator getInstance() {
     if (elevatorSubsystem == null) {
-      elevatorSubsystem = new Elevator(new ElevatorIOTalonFX());
+      elevatorSubsystem = new Elevator(new ElevatorIOReal());
     }
     return elevatorSubsystem;
   }
