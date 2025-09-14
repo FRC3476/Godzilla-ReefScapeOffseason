@@ -231,6 +231,9 @@ public final class Constants {
     public static final double ALGAE_GEAR_RATIO = 12.22;
     public static final double CORAL_GEAR_RATIO = 6.11;
 
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
+
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(

@@ -34,4 +34,8 @@ public class EndEffector extends SubsystemBase {
   public boolean isCoralInEndeffector() {
     return inputs.canRangeData.rangeIsTripped() && inputs.canRangeData.canRangeConnected();
   }
+
+  public boolean checkForJam() {
+    return io.checkRollerStalled();
+  }
 }

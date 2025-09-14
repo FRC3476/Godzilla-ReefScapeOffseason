@@ -36,4 +36,8 @@ public interface EndEffectorIO {
   default void setRollerVelocity(double velocity) {}
 
   default void setPivotTargetPosition(double position) {}
+
+  default boolean checkRollerStalled() {
+    return false;
+  }
 }

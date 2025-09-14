@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class EndEffectorIOReal implements EndEffectorIO {
@@ -95,6 +96,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         rangeIsTripped);
   }
 
+  @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
     inputs.pivotData =
         new PivotData(
@@ -126,7 +128,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
   }
 
+  @Override
   public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+  }
+
+  @Override
+  public boolean checkRollerStalled() {
+    return MotorStallDetection.isMotorStalled(rollerTalonFX, EndEffectorConstants.ROLLER_STALLED_CURRENT, EndEffectorConstants.ROLLER_STALLED_RPS);
   }
 }
