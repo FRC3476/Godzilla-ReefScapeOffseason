@@ -14,7 +14,7 @@ public class Feeder extends SubsystemBase {
 
   public static Feeder getInstance() {
     if (feederSubsystem == null) {
-      feederSubsystem = new Feeder(new FeederIOTalonFX());
+      feederSubsystem = new Feeder(new FeederIOReal());
     }
     return feederSubsystem;
   }
