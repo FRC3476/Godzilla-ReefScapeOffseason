@@ -15,6 +15,12 @@ public class EndEffectorIOSim{
                 DCMotor.getKraken X60(1), 0.01, Constants.IntakeConstants.ALGAE_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
 
+    private DCMotorSim pivotMotor = 
+        new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(
+                    DCMotor.getKraken X60(1), 0.01, Constants.IntakeConstants.PIVOT_GEAR_RATIO),
+                DCMotor.getKrakenX60(1));
+
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         rollerMotor.update(Constants.LOOP_PERIOD_SECS),
@@ -25,12 +31,29 @@ public class EndEffectorIOSim{
                 rollerVolts,
                 Math.abs(rollerMotor.getCurrentDrawAmps()),
                 Math.abs(rollerMotor.getCurrentDrawAmps()),
-                0.0);        
+                0.0);     
+        pivotMotor.update(Constants.LOOP_PERIOD_SECS),
+        input.pivotData =
+            new RollerData(
+                true,
+                pivotMotor.getAngularVelocityRadPerSec(),
+                pivotVolts,
+                pivotMotor.abs(pivotMotor.getCurrentDrawAmps()),
+                pivotMotor.abs(pivotMotor.getCurrentDrawAmps()),
+                0.0);           
     }
 
     @Override
     public void setRollerVoltage(double voltage) {
         rollerVolts = MathUtil.clamp(voltage, -12, 12);
-        rollerMotor.setInputVoltage(RollerVolts);
+        rollerMotor.setInputVoltage(rollerVolts);
     }
+
+    @Override
+    public void setPivotPosition(double degree) {
+        pivotVolts = MathUtil.clamp(voltage, -12, 12);
+        pivotMotor.setInputVoltage(pivotVolts);
+    }
+
+
 }
