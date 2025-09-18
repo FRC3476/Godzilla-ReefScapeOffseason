@@ -164,8 +164,8 @@ public class RobotContainer {
     ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
 
     testTab.add("Elevator Up", elevator.elevatorUP()).withPosition(0,4).withSize(2,1);
-    testTab.add("Elevator Down", elevator.elevatorDown()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Elevator Stop", elevator.elevatorStop()).withPosition(4,4).withSize(2,1);
+    testTab.add("Elevator Down", elevator.elevatorDWN()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("Elevator Stop", elevator.elevatorSTOP()).withPosition(4,4).withSize(2,1);
   }
 
   /**
