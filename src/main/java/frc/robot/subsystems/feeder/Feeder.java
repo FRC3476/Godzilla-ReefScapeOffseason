@@ -13,9 +13,6 @@ public class Feeder extends SubsystemBase {
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
   private static Feeder feeder = null;
 
-  private static final LoggedTunableNumber feederVolts =
-      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
-
   public Feeder(FeederIO io) {
     this.io = io;
   }
@@ -42,15 +39,12 @@ public class Feeder extends SubsystemBase {
     io.setRollerVoltage(voltage);
   }
 
-  public boolean checkForJam() {
-    return io.checkMotorsStalled() && isCoralInFeeder();
+  public void setRollerVoltageReversed(double voltage) {
+    io.setRollerVoltageReversed(voltage);
   }
 
-  public Command feederDejam() {
-    return Commands.sequence(
-        Commands.runOnce(() -> io.dejamCoral()),
-        Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
-        Commands.runOnce(() -> io.finishDejam()));
+  public boolean checkForJam() {
+    return io.checkMotorsStalled() && isCoralInFeeder();
   }
 
   public Trigger dejamTrigger = new Trigger(() -> checkForJam());

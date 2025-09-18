@@ -26,11 +26,9 @@ public interface FeederIO {
 
   default void setRollerVoltage(double voltage) {}
 
+  default void setRollerVoltageReversed(double voltage) {}
+
   default boolean checkMotorsStalled() {
     return false;
   }
-
-  default void dejamCoral() {}
-
-  default void finishDejam() {}
 }

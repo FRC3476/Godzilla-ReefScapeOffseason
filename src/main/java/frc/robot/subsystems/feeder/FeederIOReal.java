@@ -148,6 +148,19 @@ public class FeederIOReal implements FeederIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
+    if (directionReversed) {
+      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
+      directionReversed = false;
+    }
+    rightRoller.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
+  public void setRollerVoltageReversed(double voltage) {
+    if (!directionReversed) {
+      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, false));
+      directionReversed = true;
+    }
     rightRoller.setControl(new VoltageOut(voltage));
   }
 
@@ -157,24 +170,5 @@ public class FeederIOReal implements FeederIO {
             rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
         || MotorStallDetection.isMotorStalled(
             leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS);
-  }
-
-  @Override
-  public void dejamCoral() {
-    leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, false));
-    if (MotorStallDetection.isMotorStalled(
-        rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)) {
-      setRollerVoltage(0 - rightRoller.getMotorVoltage().getValueAsDouble());
-      directionReversed = true;
-    }
-  }
-
-  @Override
-  public void finishDejam() {
-    leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
-    if (directionReversed) {
-      setRollerVoltage(0 - rightRoller.getMotorVoltage().getValueAsDouble());
-      directionReversed = false;
-    }
   }
 }

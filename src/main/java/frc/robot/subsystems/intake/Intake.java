@@ -24,6 +24,8 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
   private static final LoggedTunableNumber rollerRejectVolts =
       new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
+  private static final LoggedTunableNumber feederVolts =
+      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
 
   public Command scoreIntakeL1() {
     return Commands.sequence(
@@ -97,9 +99,13 @@ public class Intake extends SubsystemBase {
 
   public Trigger intakeJamTrigger = new Trigger(() -> checkForJam());
 
-  public Trigger dejamTrigger = feeder.dejamTrigger;
+  public Trigger feederJamTrigger = feeder.dejamTrigger;
 
-  public Command feederDejam() {
-    return feeder.feederDejam();
+  public Command dejamFeeder() {
+    return Commands.sequence(
+      Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
+      Commands.waitSeconds(Constants.FeederConstants.DEJAM_DURATION_SECONDS),
+      Commands.runOnce(() -> feeder.setRollerVoltage(0.0))
+    );
   }
 }

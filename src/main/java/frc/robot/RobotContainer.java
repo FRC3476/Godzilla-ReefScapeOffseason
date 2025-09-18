@@ -183,7 +183,7 @@ public class RobotContainer {
   }
 
   private void configureArbitraryTriggers() {
-    intake.dejamTrigger.onTrue(intake.feederDejam());
+    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
   }
 
