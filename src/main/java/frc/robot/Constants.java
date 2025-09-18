@@ -304,6 +304,9 @@ public final class Constants {
     public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double DEJAM_DURATION_SECONDS = 0.05;
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()

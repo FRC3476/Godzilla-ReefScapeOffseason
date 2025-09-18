@@ -25,4 +25,12 @@ public interface FeederIO {
   default void updateInputs(FeederIOInputs inputs) {}
 
   default void setRollerVoltage(double voltage) {}
+
+  default boolean checkMotorsStalled() {
+    return false;
+  }
+
+  default void dejamCoral() {}
+
+  default void finishDejam() {}
 }

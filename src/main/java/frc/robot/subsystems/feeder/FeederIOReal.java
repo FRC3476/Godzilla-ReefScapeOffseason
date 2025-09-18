@@ -12,9 +12,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.FeederConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class FeederIOReal implements FeederIO {
+  private boolean directionReversed = false;
+
   private final TalonFX rightRoller;
   private final TalonFX leftRoller;
 
@@ -145,6 +148,33 @@ public class FeederIOReal implements FeederIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
-    rightRoller.setControl(new VoltageOut(0.0).withOutput(voltage));
+    rightRoller.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+            rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
+        || MotorStallDetection.isMotorStalled(
+            leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS);
+  }
+
+  @Override
+  public void dejamCoral() {
+    leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, false));
+    if (MotorStallDetection.isMotorStalled(
+        rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)) {
+      setRollerVoltage(0 - rightRoller.getMotorVoltage().getValueAsDouble());
+      directionReversed = true;
+    }
+  }
+
+  @Override
+  public void finishDejam() {
+    leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
+    if (directionReversed) {
+      setRollerVoltage(0 - rightRoller.getMotorVoltage().getValueAsDouble());
+      directionReversed = false;
+    }
   }
 }
