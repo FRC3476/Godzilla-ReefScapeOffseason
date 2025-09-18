@@ -40,4 +40,8 @@ public interface EndEffectorIO {
   default void setPivotTargetPosition(double position) {}
 
   default void setPivotPosition(double position) {}
+
+  default boolean checkRollerStalled() {
+    return false;
+  }
 }
