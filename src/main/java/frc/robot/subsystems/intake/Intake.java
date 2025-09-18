@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
@@ -16,9 +16,9 @@ public class Intake extends SubsystemBase {
   private final Feeder feeder = Feeder.getInstance();
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-        new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-        new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
       new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
 
@@ -73,9 +73,7 @@ public class Intake extends SubsystemBase {
 
   public Command intakePivotStow() {
     return Commands.runOnce(
-        () ->
-            this.io.setPivotPosition(
-                Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION));
+        () -> this.io.setPivotPosition(Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION));
   }
 
   public Command engageCoralL1() {
@@ -84,7 +82,6 @@ public class Intake extends SubsystemBase {
             this.io.setLvl1BlockerPosition(
                 Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION));
   }
-
 
   public Command disengageCoralL1() {
     return Commands.runOnce(
@@ -111,9 +108,8 @@ public class Intake extends SubsystemBase {
 
   public Command dejamFeeder() {
     return Commands.sequence(
-      Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
-      Commands.waitSeconds(Constants.FeederConstants.DEJAM_DURATION_SECONDS),
-      Commands.runOnce(() -> feeder.setRollerVoltage(0.0))
-    );
+        Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
+        Commands.waitSeconds(Constants.FeederConstants.DEJAM_DURATION_SECONDS),
+        Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 }

@@ -151,6 +151,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public boolean checkRollerStalled() {
-    return MotorStallDetection.isMotorStalled(rollerTalonFX, EndEffectorConstants.ROLLER_STALLED_CURRENT, EndEffectorConstants.ROLLER_STALLED_RPS);
+    return MotorStallDetection.isMotorStalled(
+        rollerTalonFX,
+        EndEffectorConstants.ROLLER_STALLED_CURRENT,
+        EndEffectorConstants.ROLLER_STALLED_RPS);
   }
 }

@@ -40,7 +40,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setTargetPosition(double position) {
-    position = MathUtil.clamp(position, ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH, ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    position =
+        MathUtil.clamp(
+            position,
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
     setpoint = position;
     io.setElevatorTargetPosition(position);
   }
@@ -71,7 +75,10 @@ public class Elevator extends SubsystemBase {
       io.setElevatorZero();
       isZeroed = true;
       return false;
-    } else if (io.checkMotorsStalled() && getCurrentPosition() >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+    } else if (io.checkMotorsStalled()
+        && getCurrentPosition()
+            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
       // false alarm, elevator is stalling at the top
       setTargetPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
       return false;

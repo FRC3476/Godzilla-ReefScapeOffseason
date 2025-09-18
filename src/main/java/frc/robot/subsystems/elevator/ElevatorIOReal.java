@@ -162,7 +162,7 @@ public class ElevatorIOReal implements ElevatorIO {
     leftTalon.setPosition(0.0);
     extraTalon.setPosition(0.0);
   }
-  
+
   public void stop() {
     rightTalon.stopMotor();
   }
