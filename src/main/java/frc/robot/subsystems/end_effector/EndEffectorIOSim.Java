@@ -34,5 +34,10 @@ public class EndEffectorIOSim{
         rollerMotor.setInputVoltage(RollerVolts);
     }
 
+    @Override
+    public void setPivotPosition(double position) {
+        pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+    }
+
 
 }

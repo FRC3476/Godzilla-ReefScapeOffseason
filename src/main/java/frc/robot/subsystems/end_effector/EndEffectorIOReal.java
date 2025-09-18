@@ -1,5 +1,10 @@
 package frc.robot.subsystems.end_effector;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Rotation;
+
+import org.dyn4j.geometry.Rotation;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -128,7 +133,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
   }
 
+  @Override
   public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+  }
+
+  @Override
+  public void setPivotPosition(double position) {
+    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
   }
 }
