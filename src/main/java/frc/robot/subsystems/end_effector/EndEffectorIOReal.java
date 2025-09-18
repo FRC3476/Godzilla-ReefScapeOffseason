@@ -139,6 +139,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
+  public void setPivotVoltage(double voltage) {
+    rollerTalonFX.setControl(pivot_m_request.withPosition(voltage));
+  }
+
+  @Override
   public void setPivotPosition(double position) {
     pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
   }
