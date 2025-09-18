@@ -1,5 +1,8 @@
 package frc.robot.subsystems.end_effector;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -15,7 +18,9 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import org.dyn4j.geometry.Rotation;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
@@ -132,5 +137,23 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+  }
+
+  @Override
+  public void setPivotVoltage(double voltage) {
+    rollerTalonFX.setControl(pivot_m_request.withPosition(voltage));
+  }
+
+  @Override
+  public void setPivotPosition(double position) {
+    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+  }
+
+  @Override
+  public boolean checkRollerStalled() {
+    return MotorStallDetection.isMotorStalled(
+        rollerTalonFX,
+        EndEffectorConstants.ROLLER_STALLED_CURRENT,
+        EndEffectorConstants.ROLLER_STALLED_RPS);
   }
 }

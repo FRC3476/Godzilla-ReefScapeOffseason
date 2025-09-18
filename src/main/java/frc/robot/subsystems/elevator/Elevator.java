@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,19 +36,17 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
     Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
+    Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
   }
 
   public void setTargetPosition(double position) {
+    position =
+        MathUtil.clamp(
+            position,
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
     setpoint = position;
     io.setElevatorTargetPosition(position);
-  }
-
-  public void setZero() {
-    io.setElevatorVoltage(-6);
-    if (inputs.data.rightSupplyCurrentAmps() > ElevatorConstants.ELEVATOR_CURRENT_LIMIT_AMPS) {
-      io.setElevatorZero();
-      isZeroed = true;
-    }
   }
 
   public boolean isInTolerance() {
@@ -58,7 +57,8 @@ public class Elevator extends SubsystemBase {
   public double getTargetPosition() {
     return setpoint;
   }
-  public Command moveToTargetPosition(double position){
+
+  public Command moveToTargetPosition(double position) {
     return Commands.run(() -> this.setTargetPosition(position), this);
   }
 
@@ -74,4 +74,36 @@ public class Elevator extends SubsystemBase {
     return Commands.run(()->this.io.setElevatorVoltage(-4),this);
   }
   
+  public double getCurrentPosition() {
+    return inputs.data.rightPosition();
+  }
+
+  private boolean checkForJam() {
+    if (io.checkMotorsStalled()
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
+            || !isZeroed)) {
+      // false alarm, elevator is stalling at the bottom
+      // make sure to run elevator down every time after turning it on
+      io.setElevatorZero();
+      isZeroed = true;
+      return false;
+    } else if (io.checkMotorsStalled()
+        && getCurrentPosition()
+            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+      // false alarm, elevator is stalling at the top
+      setTargetPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+      return false;
+    } else {
+      return io.checkMotorsStalled();
+    }
+  }
+
+  public Command dejamElevator() {
+    return Commands.runOnce(
+        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+  }
+
+  public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam());
+
 }

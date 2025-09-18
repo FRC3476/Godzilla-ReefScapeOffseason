@@ -52,4 +52,8 @@ public class EndEffector extends SubsystemBase {
   public Command rollerSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
+
+  public boolean checkForJam() {
+    return io.checkRollerStalled();
+  }
 }

@@ -34,8 +34,8 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
@@ -98,7 +98,6 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         break;
 
-
       default:
         // Replayed robot, disable IO implementations
         drive =
@@ -136,11 +135,12 @@ public class RobotContainer {
 
     BuildIntakeTab();
     BuildEndEffectorTab();
-    BuildElevatorTab();
-
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure arbitrary triggers
+    configureArbitraryTriggers();
   }
 
   private void BuildIntakeTab() {
@@ -157,16 +157,6 @@ public class RobotContainer {
     testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
-  }
-
-  private void BuildElevatorTab(){
-    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
-
-    testTab.add("Elevator Up", elevator.elevatorUP()).withPosition(0,4).withSize(2,1);
-    testTab.add("Elevator Down", elevator.elevatorDown()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Elevator Stop", elevator.elevatorStop()).withPosition(4,4).withSize(2,1);
-
-
   }
 
   /**
@@ -207,6 +197,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureArbitraryTriggers() {
+    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
+    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
   }
 
   /**

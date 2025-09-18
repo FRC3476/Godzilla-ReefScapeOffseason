@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOReal implements IntakeIO {
@@ -301,5 +302,11 @@ public class IntakeIOReal implements IntakeIO {
   @Override
   public void setLvl1BlockerPosition(double positionRad) {
     lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRad));
+  }
+
+  @Override
+  public boolean checkRollerStalled() {
+    return MotorStallDetection.isMotorStalled(
+        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT, IntakeConstants.ROLLER_STALLED_RPS);
   }
 }

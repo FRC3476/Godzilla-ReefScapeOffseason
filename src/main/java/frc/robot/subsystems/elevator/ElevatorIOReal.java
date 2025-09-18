@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOReal implements ElevatorIO {
@@ -145,14 +146,17 @@ public class ElevatorIOReal implements ElevatorIO {
             extraTempCelsius.getValueAsDouble());
   }
 
+  @Override
   public void setElevatorVoltage(double voltage) {
     rightTalon.setControl(new VoltageOut(voltage));
   }
 
+  @Override
   public void setElevatorTargetPosition(double position) {
     rightTalon.setControl(m_request.withPosition(position));
   }
 
+  @Override
   public void setElevatorZero() {
     rightTalon.setPosition(0.0);
     leftTalon.setPosition(0.0);
@@ -161,5 +165,13 @@ public class ElevatorIOReal implements ElevatorIO {
 
   public void stop() {
     rightTalon.stopMotor();
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+            rightTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS)
+        || MotorStallDetection.isMotorStalled(
+            leftTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS);
   }
 }

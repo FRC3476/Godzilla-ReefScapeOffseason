@@ -60,4 +60,8 @@ public interface IntakeIO {
   default void setPivotPosition(double positionRad) {}
 
   default void setLvl1BlockerPosition(double positionRad) {}
+
+  default boolean checkRollerStalled() {
+    return false;
+  }
 }
