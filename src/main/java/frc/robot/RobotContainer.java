@@ -32,6 +32,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.end_effector.EndEffectorIO;
+import frc.robot.subsystems.end_effector.EndEffectorIOReal;
+import frc.robot.subsystems.end_effector.EndEffectorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -48,6 +52,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final EndEffector endEffector;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -69,6 +74,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOReal());
+        endEffector = new EndEffector(new EndEffectorIOReal());
         break;
 
       case SIM:
@@ -82,6 +88,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOSim());
+        endEffector = new EndEffector(new EndEffectorIOSim());
         break;
 
       default:
@@ -95,6 +102,7 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
+        endEffector = new EndEffector(new EndEffectorIO() {});
         break;
     }
 
@@ -117,18 +125,27 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    BuildTestTab();
+    BuildIntakeTab();
+    BuildEndEffectorTab();
 
     // Configure the button bindings
     configureButtonBindings();
   }
 
-  private void BuildTestTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Test");
+  private void BuildIntakeTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Intake");
 
     testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void BuildEndEffectorTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("EndEffector");
+
+    testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
+    testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
   }
 
   /**

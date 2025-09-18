@@ -101,9 +101,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
         rangeIsTripped);
   }
 
+  @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
     inputs.pivotData =
-        new PivotData(
+        new EE_PivotData(
             BaseStatusSignal.isAllGood(
                 pivotPosition,
                 pivotAppliedVolts,
@@ -116,7 +117,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
             pivotSupplyCurrentAmps.getValueAsDouble(),
             pivotTempCelsius.getValueAsDouble());
     inputs.rollerData =
-        new RollerData(
+        new EE_RollerData(
             BaseStatusSignal.isAllGood(
                 rollerVelocityRPS,
                 rollerAppliedVolts,
@@ -129,7 +130,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
             rollerSupplyCurrentAmps.getValueAsDouble(),
             rollerTempCelsius.getValueAsDouble());
     inputs.canRangeData =
-        new CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
+        new EE_CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
   }
 
   @Override

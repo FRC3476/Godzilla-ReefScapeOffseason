@@ -6,12 +6,12 @@ public interface EndEffectorIO {
 
   @AutoLog
   class EndEffectorIOInputs {
-    public PivotData pivotData = new PivotData(false, 0, 0, 0, 0, 0);
-    public RollerData rollerData = new RollerData(false, 0, 0, 0, 0, 0);
-    public CANRangeData canRangeData = new CANRangeData(false, null);
+    public EE_PivotData pivotData = new EE_PivotData(false, 0, 0, 0, 0, 0);
+    public EE_RollerData rollerData = new EE_RollerData(false, 0, 0, 0, 0, 0);
+    public EE_CANRangeData canRangeData = new EE_CANRangeData(false, null);
   }
 
-  record PivotData(
+  record EE_PivotData(
       boolean pivotMotorConnected,
       double pivotPosition,
       double pivotAppliedVolts,
@@ -19,7 +19,7 @@ public interface EndEffectorIO {
       double pivotSupplyCurrentAmps,
       double pivotTempCelsius) {}
 
-  record RollerData(
+  record EE_RollerData(
       boolean rollerMotorConnected,
       double rollerVelocityRPS,
       double rollerAppliedVolts,
@@ -27,7 +27,7 @@ public interface EndEffectorIO {
       double rollerSupplyCurrentAmps,
       double rollerTempCelsius) {}
 
-  record CANRangeData(boolean canRangeConnected, Boolean rangeIsTripped) {}
+  record EE_CANRangeData(boolean canRangeConnected, Boolean rangeIsTripped) {}
 
   default void updateInputs(EndEffectorIOInputs inputs) {}
 
