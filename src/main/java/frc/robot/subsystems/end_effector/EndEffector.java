@@ -1,20 +1,26 @@
 package frc.robot.subsystems.end_effector;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
 
-  private EndEffectorIO io;
-  private EndEffectorIOInputsAutoLogged inputs;
-  private static EndEffector endEffectorSubsystem;
+  private final EndEffectorIO io;
+  private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
+  // private static EndEffector endEffectorSubsystem;
 
-  public static EndEffector getInstance() {
-    if (endEffectorSubsystem == null) {
-      endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
-    }
-    return endEffectorSubsystem;
-  }
+  private static final LoggedTunableNumber rollerVolts =
+      new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
+
+  // public static EndEffector getInstance() {
+  //   if (endEffectorSubsystem == null) {
+  //     endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
+  //   }
+  //   return endEffectorSubsystem;
+  // }
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
@@ -33,5 +39,17 @@ public class EndEffector extends SubsystemBase {
 
   public boolean isCoralInEndeffector() {
     return inputs.canRangeData.rangeIsTripped() && inputs.canRangeData.canRangeConnected();
+  }
+
+  public Command rollerFWD() {
+    return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
+  }
+
+  public Command rollerRVS() {
+    return Commands.run(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
+  }
+
+  public Command rollerSTOP() {
+    return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 }
