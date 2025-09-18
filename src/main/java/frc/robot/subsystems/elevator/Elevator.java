@@ -18,7 +18,7 @@ public class Elevator extends SubsystemBase {
 
   public static Elevator getInstance() {
     if (elevatorSubsystem == null) {
-      elevatorSubsystem = new Elevator(new ElevatorIOTalonFX());
+      elevatorSubsystem = new Elevator(new ElevatorIOReal());
     }
     return elevatorSubsystem;
   }
@@ -51,6 +51,10 @@ public class Elevator extends SubsystemBase {
 
   public double getTargetPosition() {
     return setpoint;
+  }
+
+  public Command moveToTargetPosition(double position) {
+    return Commands.run(() -> this.setTargetPosition(position), this);
   }
 
   public double getCurrentPosition() {

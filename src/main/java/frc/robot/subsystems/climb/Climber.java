@@ -12,6 +12,15 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber climberIntakeVolts =
       new LoggedTunableNumber("ClimberVolts", 0);
 
+  private static Climber climberSubsystem;
+
+  public static Climber getInstance() {
+    if (climberSubsystem == null) {
+      climberSubsystem = new Climber(new ClimberIOReal());
+    }
+    return climberSubsystem;
+  }
+
   public Climber(ClimberIO io) {
     this.io = io;
   }

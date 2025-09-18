@@ -17,6 +17,8 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -231,6 +233,8 @@ public final class Constants {
     public static final double ALGAE_GEAR_RATIO = 12.22;
     public static final double CORAL_GEAR_RATIO = 6.11;
 
+    public static final double PIVOT_GEAR_RATIO = 40;
+
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
@@ -337,6 +341,11 @@ public final class Constants {
   // ====================Physical Constants====================
   public static class PhysicalConstants {
     public static final double ABSOLUTE_ZERO = 0.0;
+  }
+
+  public static class VisionConstants {
+    public static final AprilTagFieldLayout fieldLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   }
 
   public record PIDgains(

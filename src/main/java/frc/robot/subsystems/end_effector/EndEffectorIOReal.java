@@ -1,5 +1,8 @@
 package frc.robot.subsystems.end_effector;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -17,6 +20,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import org.dyn4j.geometry.Rotation;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
@@ -50,8 +54,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
     coralCANRange = new CANrange(EndEffectorConstants.coralCANRangeID);
 
-    PhoenixUtil.tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
-    PhoenixUtil.tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
 
     pivotPosition = pivotTalonFX.getPosition();
     pivotAppliedVolts = pivotTalonFX.getMotorVoltage();
@@ -99,7 +105,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
     inputs.pivotData =
-        new PivotData(
+        new EE_PivotData(
             BaseStatusSignal.isAllGood(
                 pivotPosition,
                 pivotAppliedVolts,
@@ -112,7 +118,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
             pivotSupplyCurrentAmps.getValueAsDouble(),
             pivotTempCelsius.getValueAsDouble());
     inputs.rollerData =
-        new RollerData(
+        new EE_RollerData(
             BaseStatusSignal.isAllGood(
                 rollerVelocityRPS,
                 rollerAppliedVolts,
@@ -125,12 +131,17 @@ public class EndEffectorIOReal implements EndEffectorIO {
             rollerSupplyCurrentAmps.getValueAsDouble(),
             rollerTempCelsius.getValueAsDouble());
     inputs.canRangeData =
-        new CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
+        new EE_CANRangeData(BaseStatusSignal.isAllGood(rangeIsTripped), rangeIsTripped.getValue());
   }
 
   @Override
   public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+  }
+
+  @Override
+  public void setPivotPosition(double position) {
+    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
   }
 
   @Override
