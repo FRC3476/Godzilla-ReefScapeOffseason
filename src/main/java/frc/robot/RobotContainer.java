@@ -32,6 +32,14 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOReal;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.end_effector.EndEffectorIO;
+import frc.robot.subsystems.end_effector.EndEffectorIOReal;
+import frc.robot.subsystems.end_effector.EndEffectorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -48,6 +56,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final EndEffector endEffector;
+  private final Elevator elevator;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -69,6 +79,8 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOReal());
+        endEffector = new EndEffector(new EndEffectorIOReal());
+        elevator = new Elevator(new ElevatorIOReal());
         break;
 
       case SIM:
@@ -82,6 +94,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOSim());
+        endEffector = new EndEffector(new EndEffectorIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
       default:
@@ -95,6 +109,8 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
+        endEffector = new EndEffector(new EndEffectorIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -117,18 +133,30 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    BuildTestTab();
+    BuildIntakeTab();
+    BuildEndEffectorTab();
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure arbitrary triggers
+    configureArbitraryTriggers();
   }
 
-  private void BuildTestTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Test");
+  private void BuildIntakeTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Intake");
 
     testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void BuildEndEffectorTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("EndEffector");
+
+    testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
+    testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
   }
 
   /**
@@ -169,6 +197,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureArbitraryTriggers() {
+    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
+    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
   }
 
   /**

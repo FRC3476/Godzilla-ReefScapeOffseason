@@ -12,9 +12,10 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
-public class ElevatorIOTalonFX implements ElevatorIO {
+public class ElevatorIOReal implements ElevatorIO {
 
   private TalonFX rightTalon;
   private TalonFX leftTalon;
@@ -42,12 +43,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   StatusSignal<Current> extraSupplyCurrentAmps;
   StatusSignal<Temperature> extraTempCelsius;
 
-  public ElevatorIOTalonFX() {
+  public ElevatorIOReal() {
     rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
     leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
     extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
 
-    rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon);
+    PhoenixUtil.tryUntilOk(
+        5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
     extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
 
@@ -144,14 +146,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             extraTempCelsius.getValueAsDouble());
   }
 
+  @Override
   public void setElevatorVoltage(double voltage) {
     rightTalon.setControl(new VoltageOut(voltage));
   }
 
+  @Override
   public void setElevatorTargetPosition(double position) {
     rightTalon.setControl(m_request.withPosition(position));
   }
 
+  @Override
   public void setElevatorZero() {
     rightTalon.setPosition(0.0);
     leftTalon.setPosition(0.0);
@@ -160,5 +165,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public void stop() {
     rightTalon.stopMotor();
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+            rightTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS)
+        || MotorStallDetection.isMotorStalled(
+            leftTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS);
   }
 }

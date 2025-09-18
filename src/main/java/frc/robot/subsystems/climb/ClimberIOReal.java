@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
-public class ClimberIOTalonFX implements ClimberIO {
+public class ClimberIOReal implements ClimberIO {
 
   // Hardware
   private final TalonFX talon;
@@ -28,7 +28,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   // control requests
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
-  public ClimberIOTalonFX() {
+  public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID);
 
     position = talon.getPosition();

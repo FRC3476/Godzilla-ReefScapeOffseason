@@ -12,9 +12,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.FeederConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class FeederIOReal implements FeederIO {
+  private boolean directionReversed = false;
+
   private final TalonFX rightRoller;
   private final TalonFX leftRoller;
 
@@ -46,8 +49,10 @@ public class FeederIOReal implements FeederIO {
     canRange = new CANrange(FeederConstants.CANRANGE_ID);
 
     // Apply configs
-    rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG);
-    canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG);
+    PhoenixUtil.tryUntilOk(
+        5, () -> rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG));
 
     // Set up left roller to follow right roller
     leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
@@ -145,6 +150,27 @@ public class FeederIOReal implements FeederIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
-    rightRoller.setControl(new VoltageOut(0.0).withOutput(voltage));
+    if (directionReversed) {
+      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
+      directionReversed = false;
+    }
+    rightRoller.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
+  public void setRollerVoltageReversed(double voltage) {
+    if (!directionReversed) {
+      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, false));
+      directionReversed = true;
+    }
+    rightRoller.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+            rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
+        || MotorStallDetection.isMotorStalled(
+            leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS);
   }
 }
