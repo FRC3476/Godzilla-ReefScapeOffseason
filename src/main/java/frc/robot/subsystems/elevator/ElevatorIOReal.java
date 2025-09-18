@@ -14,7 +14,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 
-public class ElevatorIOTalonFX implements ElevatorIO {
+public class ElevatorIOReal implements ElevatorIO {
 
   private TalonFX rightTalon;
   private TalonFX leftTalon;
@@ -42,12 +42,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   StatusSignal<Current> extraSupplyCurrentAmps;
   StatusSignal<Temperature> extraTempCelsius;
 
-  public ElevatorIOTalonFX() {
+  public ElevatorIOReal() {
     rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
     leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
     extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
 
-    PhoenixUtil.tryUntilOk(5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
     extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
 

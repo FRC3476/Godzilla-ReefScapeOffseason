@@ -17,6 +17,8 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -50,19 +52,19 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
-  public static final int intakePivotID = 30;
-  public static final int intakeRollerID = 31;
-  public static final int intakelvl1BlockerID = 32;
+    public static final int intakePivotID = 30;
+    public static final int intakeRollerID = 31;
+    public static final int intakelvl1BlockerID = 32;
 
-  // Stowed position for intake pivot 
-  public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
+    // Stowed position for intake pivot
+    public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
     public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
 
     // Setpoints
-    public static final double PIVOT_TOLERANCE_RAD = 0.0; 
-    public static final double PIVOT_L1_SETPOINT_RAD = 0.0; 
-    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0; 
+    public static final double PIVOT_TOLERANCE_RAD = 0.0;
+    public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
+    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -106,8 +108,8 @@ public final class Constants {
     public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
     public static final double lvl1blockerJERK = 0.0; // rad/s^3
 
-  public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
-  public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
+    public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
+    public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
   }
 
   // ====================Elevator (4_)====================
@@ -221,6 +223,8 @@ public final class Constants {
     public static final double ALGAE_GEAR_RATIO = 12.22;
     public static final double CORAL_GEAR_RATIO = 6.11;
 
+    public static final double PIVOT_GEAR_RATIO = 40;
+
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
@@ -321,6 +325,11 @@ public final class Constants {
   // ====================Physical Constants====================
   public static class PhysicalConstants {
     public static final double ABSOLUTE_ZERO = 0.0;
+  }
+
+  public static class VisionConstants {
+    public static final AprilTagFieldLayout fieldLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   }
 
   public record PIDgains(

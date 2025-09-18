@@ -1,6 +1,8 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
@@ -15,7 +17,7 @@ public class Elevator extends SubsystemBase {
 
   public static Elevator getInstance() {
     if (elevatorSubsystem == null) {
-      elevatorSubsystem = new Elevator(new ElevatorIOTalonFX());
+      elevatorSubsystem = new Elevator(new ElevatorIOReal());
     }
     return elevatorSubsystem;
   }
@@ -55,5 +57,9 @@ public class Elevator extends SubsystemBase {
 
   public double getTargetPosition() {
     return setpoint;
+  }
+
+  public Command moveToTargetPosition(double position) {
+    return Commands.run(() -> this.setTargetPosition(position), this);
   }
 }
