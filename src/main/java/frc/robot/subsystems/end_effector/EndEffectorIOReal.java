@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import org.dyn4j.geometry.Rotation;
 
@@ -139,7 +140,20 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
+  public void setPivotVoltage(double voltage) {
+    rollerTalonFX.setControl(pivot_m_request.withPosition(voltage));
+  }
+
+  @Override
   public void setPivotPosition(double position) {
     pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+  }
+
+  @Override
+  public boolean checkRollerStalled() {
+    return MotorStallDetection.isMotorStalled(
+        rollerTalonFX,
+        EndEffectorConstants.ROLLER_STALLED_CURRENT,
+        EndEffectorConstants.ROLLER_STALLED_RPS);
   }
 }

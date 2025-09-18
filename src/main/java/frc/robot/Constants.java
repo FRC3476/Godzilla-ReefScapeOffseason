@@ -110,6 +110,10 @@ public final class Constants {
 
     public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
+
+    // Stall detection
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
   }
 
   // ====================Elevator (4_)====================
@@ -130,6 +134,11 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double STALLED_TOLERANCE_INCHES = 2.0;
+    public static final double DEJAM_DISTANCE_INCHES = 12.0;
 
     public static final TalonFXConfiguration elevatorRightTalon =
         new TalonFXConfiguration()
@@ -184,6 +193,7 @@ public final class Constants {
     public static final double ELEVATOR_HANDOFF_SETPOINT_INCH = 20.0; // 18.5
     public static final double ELEVATOR_BOTTOM_ALGAE_PULL_SETPOINT_INCH = 20.0;
     public static final double ELEVATOR_TOP_ALGAE_PULL_SETPOINT_INCH = 27.5;
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 35.0;
 
     public static final double ELEVATOR_L2_SETPOINT_INCH = 7.5;
     public static final double ELEVATOR_L3_SETPOINT_INCH = 17.0; // 18.75
@@ -224,6 +234,9 @@ public final class Constants {
     public static final double CORAL_GEAR_RATIO = 6.11;
 
     public static final double PIVOT_GEAR_RATIO = 40;
+
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -295,6 +308,9 @@ public final class Constants {
     public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double DEJAM_DURATION_SECONDS = 0.05;
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()

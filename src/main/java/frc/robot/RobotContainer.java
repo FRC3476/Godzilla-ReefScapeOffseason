@@ -32,6 +32,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOReal;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
@@ -53,6 +57,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Intake intake;
   private final EndEffector endEffector;
+  private final Elevator elevator;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -75,6 +80,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
+        elevator = new Elevator(new ElevatorIOReal());
         break;
 
       case SIM:
@@ -89,6 +95,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
       default:
@@ -103,6 +110,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -130,6 +138,9 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure arbitrary triggers
+    configureArbitraryTriggers();
   }
 
   private void BuildIntakeTab() {
@@ -186,6 +197,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureArbitraryTriggers() {
+    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
+    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
   }
 
   /**
