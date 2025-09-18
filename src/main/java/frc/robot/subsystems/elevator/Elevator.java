@@ -58,8 +58,8 @@ public class Elevator extends SubsystemBase {
   public double getTargetPosition() {
     return setpoint;
   }
-  public Command moveToTargetPosition(double position){
+
+  public Command moveToTargetPosition(double position) {
     return Commands.run(() -> this.setTargetPosition(position), this);
   }
-  
 }

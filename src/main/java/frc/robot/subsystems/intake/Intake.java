@@ -25,9 +25,6 @@ public class Intake extends SubsystemBase {
     return intakeSubsystem;
   }
 
-
-
-
   public Intake(IntakeIO io) {
     this.io = io;
   }

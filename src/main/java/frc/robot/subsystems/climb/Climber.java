@@ -20,7 +20,7 @@ public class Climber extends SubsystemBase {
     }
     return climberSubsystem;
   }
-      
+
   public Climber(ClimberIO io) {
     this.io = io;
   }
