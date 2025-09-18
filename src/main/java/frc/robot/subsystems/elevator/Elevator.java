@@ -36,6 +36,7 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
     Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
+    Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
   }
 
   public void setTargetPosition(double position) {

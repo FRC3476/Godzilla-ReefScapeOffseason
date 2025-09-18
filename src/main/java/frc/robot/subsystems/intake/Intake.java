@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+    Logger.recordOutput("Intake/JamDetected", checkForJam());
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {

@@ -25,7 +25,7 @@ public class Feeder extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
-    checkForJam();
+    Logger.recordOutput("Feeder/JamDetected", checkForJam());
   }
 
   public boolean isCoralInFeeder() {
