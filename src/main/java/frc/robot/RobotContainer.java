@@ -32,6 +32,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
@@ -53,6 +57,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Intake intake;
   private final EndEffector endEffector;
+  private final Elevator elevator;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -75,6 +80,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
+        elevator = new Elevator(new ElevatorIOReal());
         break;
 
       case SIM:
@@ -89,7 +95,9 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
+
 
       default:
         // Replayed robot, disable IO implementations
@@ -103,6 +111,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -127,6 +136,8 @@ public class RobotContainer {
 
     BuildIntakeTab();
     BuildEndEffectorTab();
+    BuildElevatorTab();
+
 
     // Configure the button bindings
     configureButtonBindings();
@@ -146,6 +157,16 @@ public class RobotContainer {
     testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void BuildElevatorTab(){
+    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+
+    testTab.add("Elevator Up", elevator.elevatorUP()).withPosition(0,4).withSize(2,1);
+    testTab.add("Elevator Down", elevator.elevatorDown()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("Elevator Stop", elevator.elevatorStop()).withPosition(4,4).withSize(2,1);
+
+
   }
 
   /**

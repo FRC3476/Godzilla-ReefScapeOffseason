@@ -61,5 +61,17 @@ public class Elevator extends SubsystemBase {
   public Command moveToTargetPosition(double position){
     return Commands.run(() -> this.setTargetPosition(position), this);
   }
+
+  public Command elevatorStop(){
+    return Commands.run(()->this.io.setElevatorVoltage(0),this);
+  }
+
+  public Command elevatorUP(){
+    return Commands.run(()->this.io.setElevatorVoltage(4),this);
+  }
+
+  public Command elevatorDown(){
+    return Commands.run(()->this.io.setElevatorVoltage(-4),this);
+  }
   
 }
