@@ -62,6 +62,18 @@ public class Elevator extends SubsystemBase {
     return Commands.run(() -> this.setTargetPosition(position), this);
   }
 
+  public Command elevatorSTOP(){
+    return Commands.run(()->this.io.setElevatorVoltage(0),this);
+  }
+
+  public Command elevatorUP(){
+    return Commands.run(()->this.io.setElevatorVoltage(4),this);
+  }
+
+  public Command elevatorDWN(){
+    return Commands.run(()->this.io.setElevatorVoltage(-4),this);
+  }
+  
   public double getCurrentPosition() {
     return inputs.data.rightPosition();
   }
@@ -93,4 +105,5 @@ public class Elevator extends SubsystemBase {
   }
 
   public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam());
+
 }
