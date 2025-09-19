@@ -346,6 +346,15 @@ public final class Constants {
                     .withProximityHysteresis(0.01));
   }
 
+  // ====================LED (8_)====================
+  public static final class LEDConstants {
+    public static final int ID = 80;
+    public static final int kNonCandleLEDCount = 10;
+    public static final int kCandleLEDCount = 8;
+    public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final double kLowBatteryThresholdVolts = 12.3;
+  }
+
   // ====================Physical Constants====================
   public static class PhysicalConstants {
     public static final double ABSOLUTE_ZERO = 0.0;
