@@ -56,6 +56,8 @@ public final class Constants {
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
 
+    // Pivot position for L1 scoring (radians)
+    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0; 
     // Stowed position for intake pivot
     public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
