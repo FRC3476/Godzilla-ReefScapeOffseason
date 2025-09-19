@@ -1,15 +1,15 @@
 package frc.robot.subsystems.led;
 
 public interface LedIO {
-    class LedInputs {}
+  class LedInputs {}
 
-    default void readInputs(LedIO.LedInputs inputs) {}
+  default void readInputs(LedIO.LedInputs inputs) {}
 
-    default void update(final LedIO.LedInputs inputs) {}
+  default void update(final LedIO.LedInputs inputs) {}
 
-    LedState getCurrentState();
+  LedState getCurrentState();
 
-    void writePixels(LedState state);
+  void writePixels(LedState state);
 
-    void writePixels(LedState[] states);
+  void writePixels(LedState[] states);
 }

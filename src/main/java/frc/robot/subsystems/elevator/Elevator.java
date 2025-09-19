@@ -10,18 +10,18 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
-  // private static Elevator elevatorSubsystem;
+  private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private double setpoint;
   private boolean isZeroed = false;
 
-  // public static Elevator getInstance() {
-  //   if (elevatorSubsystem == null) {
-  //     elevatorSubsystem = new Elevator(new ElevatorIOReal());
-  //   }
-  //   return elevatorSubsystem;
-  // }
+  public static Elevator getInstance() {
+    if (elevatorSubsystem == null) {
+      elevatorSubsystem = new Elevator(new ElevatorIOReal());
+    }
+    return elevatorSubsystem;
+  }
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -62,16 +62,16 @@ public class Elevator extends SubsystemBase {
     return Commands.run(() -> this.setTargetPosition(position), this);
   }
 
-  public Command elevatorSTOP(){
-    return Commands.run(()->this.io.setElevatorVoltage(0),this);
+  public Command elevatorSTOP() {
+    return Commands.run(() -> this.io.setElevatorVoltage(0), this);
   }
 
   public Command elevatorUP() {
     return Commands.run(() -> this.io.setElevatorVoltage(4), this);
   }
 
-  public Command elevatorDWN(){
-    return Commands.run(()->this.io.setElevatorVoltage(-4),this);
+  public Command elevatorDWN() {
+    return Commands.run(() -> this.io.setElevatorVoltage(-4), this);
   }
 
   public double getCurrentPosition() {

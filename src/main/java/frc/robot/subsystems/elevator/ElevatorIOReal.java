@@ -23,6 +23,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
   private MotionMagicVoltage m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private VoltageOut m_VoltageOut =
+      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;
@@ -171,7 +173,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
   @Override
   public void setElevatorVoltage(double voltage) {
-    rightTalon.setControl(new VoltageOut(voltage));
+    rightTalon.setControl(m_VoltageOut.withOutput(voltage));
   }
 
   @Override

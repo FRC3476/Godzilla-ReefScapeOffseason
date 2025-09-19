@@ -22,12 +22,12 @@ import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOReal implements IntakeIO {
-  private final TalonFX pivotMotor;
-  private final TalonFX rollerMotor;
-  private final TalonFX lvl1blockerMotor;
+  protected TalonFX pivotMotor;
+  protected TalonFX rollerMotor;
+  protected TalonFX lvl1blockerMotor;
 
-  private final CANcoder canCoder;
-  private final CANrange canRange;
+  protected CANcoder canCoder;
+  protected CANrange canRange;
 
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
@@ -66,6 +66,8 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Boolean> canRangeTripped;
   private final StatusSignal<Double> canRangeSignalStrength;
   private final StatusSignal<Distance> canRangeDistance;
+
+  private final BaseStatusSignal[] signals;
 
   public IntakeIOReal() {
     // Initialize hardware
@@ -160,6 +162,32 @@ public class IntakeIOReal implements IntakeIO {
     canRangeSignalStrength = canRange.getSignalStrength();
     canRangeDistance = canRange.getDistance();
 
+    signals =
+        new BaseStatusSignal[] {
+          pivotVoltage,
+          pivotSupplyCurrent,
+          pivotStatorCurrent,
+          pivotTemperature,
+          pivotVelocityRPS,
+          pivotPositionRad,
+          rollerVoltage,
+          rollerSupplyCurrent,
+          rollerStatorCurrent,
+          rollerTemperature,
+          rollerVelocityRPS,
+          lvl1blockerVoltage,
+          lvl1blockerSupplyCurrent,
+          lvl1blockerStatorCurrent,
+          lvl1blockerTemperature,
+          lvl1blockerVelocityRPS,
+          lvl1blockerPositionRad,
+          canCoderPositionRad,
+          canCoderVelocityRPS,
+          canRangeTripped,
+          canRangeSignalStrength,
+          canRangeDistance
+        };
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         pivotVoltage,
@@ -219,6 +247,8 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   public void updateInputs(IntakeIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
+
     inputs.pivotData =
         new PivotData(
             BaseStatusSignal.isAllGood(
