@@ -11,6 +11,7 @@ import frc.robot.Field.varc.HPSTagTracker;
 import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.vision.PoseObservation;
+import frc.robot.subsystems.led.LedState;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
 import java.util.List;
@@ -33,6 +34,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
+
+  private static LedState ledState = LedState.kCOOrange;
 
   public static void offerVisionObservation(PoseObservation observation) {
     RobotState.poseObservations.offer(observation);
@@ -72,6 +75,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static double getDistanceMetersFromClosestHPS() {
     return RobotState.hpsTracker.getDistanceMeters();
+  }
+
+  public static void setLedState(LedState state) {
+    RobotState.ledState = state;
+  }
+
+  public static LedState getLedState() {
+    return RobotState.ledState;
   }
 
   public static Trigger humanPlayerShouldThrow() {
