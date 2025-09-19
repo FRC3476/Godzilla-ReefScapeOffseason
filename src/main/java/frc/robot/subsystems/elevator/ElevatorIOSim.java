@@ -77,10 +77,8 @@ public class ElevatorIOSim extends ElevatorIOReal {
     double currentAmps = elevatorSim.getCurrentDrawAmps();
 
     // Convert to rotations for TalonFX simulation
-    double positionRotations =
-        positionMeters / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS_METERS);
-    double velocityRPS =
-        velocityMetersPerSecond / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS_METERS);
+    double positionRotations = positionMeters / ElevatorConstants.kElevatorUnitToRotorRatio;
+    double velocityRPS = velocityMetersPerSecond / ElevatorConstants.kElevatorUnitToRotorRatio;
 
     // Update the simulation states for all motors
     rightSimState.setRawRotorPosition(positionRotations);
