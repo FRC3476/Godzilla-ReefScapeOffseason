@@ -205,6 +205,12 @@ public final class Constants {
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
+
+    public static final double GEAR_RATIO = 10.0; // Adjust based on your gearing
+    public static final double CARRIAGE_MASS_KG = 5.0; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_METERS = 0.0254; // Radius of drum/pulley
+    public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
+    public static final double MAX_HEIGHT_METERS = 1.0; // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================

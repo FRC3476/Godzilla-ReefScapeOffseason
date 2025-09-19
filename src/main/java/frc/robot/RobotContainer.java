@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -160,12 +161,30 @@ public class RobotContainer {
     testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
   }
 
-  private void BuildElevatorTab(){
+  private void BuildElevatorTab() {
     ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
 
-    testTab.add("Elevator Up", elevator.elevatorUP()).withPosition(0,4).withSize(2,1);
-    testTab.add("Elevator Down", elevator.elevatorDWN()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Elevator Stop", elevator.elevatorSTOP()).withPosition(4,4).withSize(2,1);
+    // Create boolean entries for while-held functionality
+    var elevatorUpHeld =
+        testTab.add("Elevator Up (While Held)", false).withPosition(0, 5).withSize(2, 1).getEntry();
+
+    var elevatorDownHeld =
+        testTab
+            .add("Elevator Down (While Held)", false)
+            .withPosition(2, 5)
+            .withSize(2, 1)
+            .getEntry();
+
+    // Create triggers based on the boolean entries
+    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
+    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownHeld.getBoolean(false));
+
+    // Configure the while-held behavior
+    elevatorUpTrigger.whileTrue(elevator.elevatorUP());
+    elevatorUpTrigger.onFalse(elevator.elevatorSTOP());
+
+    elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
+    elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
   }
 
   /**

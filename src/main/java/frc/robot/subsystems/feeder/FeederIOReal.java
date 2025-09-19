@@ -113,7 +113,7 @@ public class FeederIOReal implements FeederIO {
 
   public void updateInputs(FeederIOInputs inputs) {
     inputs.rightRollerData =
-        new RollerData(
+        new F_RollerData(
             BaseStatusSignal.isAllGood(
                 rightRollerVoltage,
                 rightRollerSupplyCurrent,
@@ -127,7 +127,7 @@ public class FeederIOReal implements FeederIO {
             rightRollerVelocityRPS.getValueAsDouble());
 
     inputs.leftRollerData =
-        new RollerData(
+        new F_RollerData(
             BaseStatusSignal.isAllGood(
                 leftRollerVoltage,
                 leftRollerSupplyCurrent,
@@ -141,7 +141,7 @@ public class FeederIOReal implements FeederIO {
             leftRollerVelocityRPS.getValueAsDouble());
 
     inputs.canRangeData =
-        new CanRangeData(
+        new F_CanRangeData(
             BaseStatusSignal.isAllGood(canRangeTripped, canRangeDistance, canRangeSignalStrength),
             canRangeTripped.getValue(),
             canRangeSignalStrength.getValueAsDouble(),
