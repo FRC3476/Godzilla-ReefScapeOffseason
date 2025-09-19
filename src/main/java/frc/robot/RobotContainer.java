@@ -181,10 +181,10 @@ public class RobotContainer {
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());
-    elevatorUpTrigger.onFalse(elevator.elevatorStop());
+    elevatorUpTrigger.onFalse(elevator.elevatorSTOP());
 
-    elevatorDownTrigger.whileTrue(elevator.elevatorDown());
-    elevatorDownTrigger.onFalse(elevator.elevatorStop());
+    elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
+    elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
   }
 
   /**

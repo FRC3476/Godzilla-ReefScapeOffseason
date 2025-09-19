@@ -53,7 +53,8 @@ public class EndEffector extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public boolean checkForJam() {
-    return io.checkRollerStalled();
+  public Command moveToTargetRadian(double degree){
+    return Commands.run(() -> this.io.setPivotPosition(degree), this);
   }
+
 }
