@@ -68,7 +68,11 @@ public class Intake extends SubsystemBase {
   }
 
   public Command setScorePreppedIntakeL1() {
-    return Commands.runOnce(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_RAD), this);
+    return Commands.runOnce(
+        () ->
+            this.io.setPivotPosition(
+                frc.robot.Constants.IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_RAD),
+        this);
   }
 
   public Command rejectCoral() {

@@ -57,7 +57,7 @@ public final class Constants {
     public static final int intakelvl1BlockerID = 32;
 
     // Pivot position for L1 scoring (radians)
-    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0; 
+    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0;
     // Stowed position for intake pivot
     public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
@@ -73,9 +73,15 @@ public final class Constants {
     public static final int CANRANGE_ID = 34;
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO =
+        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
-    public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
+
+    // MOI
+    public static final double PIVOT_MOI = 0.01;
+    public static final double L1_BAR_MOI = 0.01;
+    public static final double ROLLER_MOI = 0.001;
 
     // Current limits
     // Roller, L1, Pivot
@@ -206,9 +212,16 @@ public final class Constants {
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
 
-    public static final double GEAR_RATIO = 10.0; // Adjust based on your gearing
-    public static final double CARRIAGE_MASS_KG = 5.0; // Mass of elevator carriage
-    public static final double DRUM_RADIUS_METERS = 0.0254; // Radius of drum/pulley
+    public static final double kElevatorDrumRadius = 0.02866242038;
+    public static final double kGearing = (13.0 / 50.0);
+    public static final double kElevatorUnitToRotorRatio =
+        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
+
+    public static final double GEAR_RATIO =
+        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
+    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_METERS =
+        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
     public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
     public static final double MAX_HEIGHT_METERS = 1.0; // Maximum elevator height
   }
@@ -238,10 +251,10 @@ public final class Constants {
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
 
-    public static final double ALGAE_GEAR_RATIO = 12.22;
-    public static final double CORAL_GEAR_RATIO = 6.11;
+    public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
+    public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
 
-    public static final double PIVOT_GEAR_RATIO = 40;
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 40;
 
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;

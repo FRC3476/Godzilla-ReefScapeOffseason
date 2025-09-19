@@ -6,7 +6,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.Constants.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,7 +28,7 @@ public class ElevatorIOSim extends ElevatorIOReal {
     elevatorSim =
         new ElevatorSim(
             DCMotor.getFalcon500(3), // Three Falcon 500 motors
-            ElevatorConstants.GEAR_RATIO,
+            1.0 / ElevatorConstants.kGearing,
             ElevatorConstants.CARRIAGE_MASS_KG,
             ElevatorConstants.DRUM_RADIUS_METERS,
             ElevatorConstants.MIN_HEIGHT_METERS,
@@ -60,6 +62,9 @@ public class ElevatorIOSim extends ElevatorIOReal {
 
     // Apply the motor voltage to the simulation
     elevatorSim.setInputVoltage(appliedVoltage);
+
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.getCurrentDrawAmps()));
 
     // Update the simulation by 5 ms
     double timestamp = Timer.getFPGATimestamp();
