@@ -15,7 +15,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private static final LoggedTunableNumber elevatorVolts =
-      new LoggedTunableNumber("Elevator/TestVolts", 4.0);
+      new LoggedTunableNumber("Elevator/TestVolts", 2.0);
 
   private double setpoint;
   private boolean isZeroed = false;

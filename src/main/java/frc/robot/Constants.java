@@ -212,7 +212,7 @@ public final class Constants {
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
 
-    public static final double kElevatorDrumRadius = 0.02866242038;
+    public static final double kElevatorDrumRadius = 1.128;
     public static final double kGearing = (13.0 / 50.0);
     public static final double kElevatorUnitToRotorRatio =
         kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
