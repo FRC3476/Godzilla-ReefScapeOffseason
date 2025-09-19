@@ -10,124 +10,92 @@ import frc.robot.Constants;
 public enum SuperstructureState {
     STOW(
         Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.STOW_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIANS
     ),
     STOW_CORAL(
         Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.STOW_CORAL_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIANS
     ),
     STOW_ALGAE(
         Constants.SuperstructureConstants.STOW_ALGAE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.STOW_ALGAE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     INTAKE_CORAL(
         Constants.SuperstructureConstants.INTAKE_CORAL_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.INTAKE_CORAL_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIANS
     ),
     INTAKE_CORAL_L1(
         Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN,
-        true
+        Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIANS
     ),
     FEED(
         Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.FEED_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L1_PIVOT(
         Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L1_PIVOT_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L2_AIM(
         Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L2_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L3_AIM(
         Constants.SuperstructureConstants.L3_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L3_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L4_AIM(
         Constants.SuperstructureConstants.L4_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L4_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L1_SCORE(
         Constants.SuperstructureConstants.L1_SCORE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L1_SCORE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L2_SCORE(
         Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L2_SCORE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L3_SCORE(
         Constants.SuperstructureConstants.L3_SCORE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L3_SCORE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     L4_SCORE(
         Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.L4_SCORE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     ALGAE_HIGH_INTAKE(
         Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     ALGAE_LOW_INTAKE(
         Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIANS
     ),
     PROCESSOR_AIM(
         Constants.SuperstructureConstants.PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.PROCESSOR_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIANS
     ),
     BARGE_AIM_CENTER(
         Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.BARGE_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIANS
     ),
     BARGE_AIM_FORWARD(
         Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.BARGE_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS
     ),
     BARGE_AIM_BACKWARD(
         Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-        Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS,
-        Constants.SuperstructureConstants.BARGE_AIM_INTAKE_ROTATION_RADIAN
+        Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS
     );
     
 
     private final double elevatorHeight;
     private final double endEffectorRotation;
-    private final double intakeRotation;
-    private final boolean isIntakeBarDown;
 
-    SuperstructureState(double elevatorHeight, double endEffectorRotation, double intakeRotation){
+    SuperstructureState(double elevatorHeight, double endEffectorRotation){
         this.elevatorHeight = elevatorHeight;
         this.endEffectorRotation = endEffectorRotation;
-        this.intakeRotation = intakeRotation;
-        this.isIntakeBarDown = false;
-    }
-
-    SuperstructureState(double elevatorHeight, double endEffectorRotation, double intakeRotation, boolean isIntakeBarDown){
-        this.elevatorHeight = elevatorHeight;
-        this.endEffectorRotation = endEffectorRotation;
-        this.intakeRotation = intakeRotation;
-        this.isIntakeBarDown = isIntakeBarDown;
     }
 
     public double getElevatorHeight(){
@@ -138,13 +106,6 @@ public enum SuperstructureState {
         return this.endEffectorRotation;
     }
 
-    public double getIntakeRotation(){
-        return this.intakeRotation;
-    }
-
-    public boolean getIntakeDown(){
-        return this.isIntakeBarDown;
-    }
 
     public boolean isCoralState(){
         switch (this){

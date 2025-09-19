@@ -53,8 +53,7 @@ public class EndEffector extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command moveToTargetRadian(double degree){
+  public Command rotatePivot(double degree){
     return Commands.run(() -> this.io.setPivotPosition(degree), this);
   }
-
 }

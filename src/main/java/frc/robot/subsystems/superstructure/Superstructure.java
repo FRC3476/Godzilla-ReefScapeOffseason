@@ -4,7 +4,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.elevator.Elevator;
@@ -43,6 +45,13 @@ public class Superstructure extends SubsystemBase{
     private Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
         return new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
                 .withName(name);
+    }
+
+    private Command updateStatePosition(){
+        return new ParallelCommandGroup(
+            elevator.moveToTargetPosition(stateMachine.getCurrentState().getElevatorHeight()),
+            endEffector.rotatePivot(stateMachine.getCurrentState().getEndEffectorRotation())
+        );
     }
 
     public void setTriggers(){
