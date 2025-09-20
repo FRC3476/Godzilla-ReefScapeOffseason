@@ -107,8 +107,6 @@ public class Drive extends SubsystemBase {
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
   // Acceleration limiting
-  private double maxTranslationalAccel = 3.0; // m/s²
-  private double maxRotationalAccel = 10.0; // rad/s²
   private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
   private double lastTimeSeconds = 0.0;
 
@@ -239,9 +237,9 @@ public class Drive extends SubsystemBase {
     double desiredOmegaAccel = (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
 
     // Clamp accelerations
-    double clampedVxAccel = Math.max(-maxTranslationalAccel, Math.min(maxTranslationalAccel, desiredVxAccel));
-    double clampedVyAccel = Math.max(-maxTranslationalAccel, Math.min(maxTranslationalAccel, desiredVyAccel));
-    double clampedOmegaAccel = Math.max(-maxRotationalAccel, Math.min(maxRotationalAccel, desiredOmegaAccel));
+    double clampedVxAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVxAccel));
+    double clampedVyAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVyAccel));
+    double clampedOmegaAccel = Math.max(-Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, desiredOmegaAccel));
 
     // Calculate limited speeds
     double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
@@ -398,12 +396,14 @@ public class Drive extends SubsystemBase {
 
   /** Sets the maximum translational acceleration in m/s². */
   public void setMaxTranslationalAcceleration(double accel) {
-    this.maxTranslationalAccel = accel;
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    Logger.recordOutput("Drive/RequestedTranslationalAccel", accel);
   }
 
   /** Sets the maximum rotational acceleration in rad/s². */
   public void setMaxRotationalAcceleration(double accel) {
-    this.maxRotationalAccel = accel;
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    Logger.recordOutput("Drive/RequestedRotationalAccel", accel);
   }
 
   /** Returns an array of module translations. */
