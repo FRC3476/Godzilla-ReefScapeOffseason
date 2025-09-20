@@ -2,6 +2,8 @@ package frc.robot.subsystems.feeder;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.elevator.ElevatorIO;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Feeder extends SubsystemBase {
@@ -9,7 +11,10 @@ public class Feeder extends SubsystemBase {
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
   private static Feeder feederSubsystem;
 
-
+  public Feeder(FeederIO io) {
+      this.io = io;
+      System.out.println("====================Feeder Subsystem Online====================");
+    }
   public static Feeder getInstance() {
     if (feederSubsystem == null) {
       feederSubsystem = new Feeder(new FeederIOReal());
