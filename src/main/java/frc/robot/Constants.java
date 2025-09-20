@@ -380,6 +380,7 @@ public final class Constants {
   }
 
   public static class VisionConstants {
+    public static final String DETECTION_LIMELIGHT = "limelight-center";
     public static final AprilTagFieldLayout fieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     public static final AprilTagFieldLayout kAprilTagLayout =

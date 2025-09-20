@@ -2,7 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.RobotState;
+import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -15,6 +15,9 @@ public class VisionIOHardwareLimelight implements VisionIO {
   RobotState robotState;
   AtomicReference<VisionIOInputs> latestInputs = new AtomicReference<>(new VisionIOInputs());
   int imuMode = 1;
+
+  double coral_tx = 0.0;
+  double coral_ty = 0.0;
 
   private static final double[] DEFAULT_STDDEVS =
       new double[VisionConstants.kExpectedStdDevArrayLength];
@@ -81,5 +84,26 @@ public class VisionIOHardwareLimelight implements VisionIO {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }
     }
+  }
+
+
+  // our code c:
+  // object detection methods
+
+  @Override
+  public boolean isCoralDetected() {
+    return LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
+  }
+
+  @Override
+  public double getCoralTx() {
+    coral_tx = isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_tx;
+    return coral_tx;
+  }
+
+  @Override
+  public double getCoralTy() {
+    coral_ty = isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
+    return coral_ty;
   }
 }
