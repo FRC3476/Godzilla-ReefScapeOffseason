@@ -3,6 +3,8 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.util.LoggedTunableNumber;
@@ -47,61 +49,61 @@ public class Intake extends SubsystemBase {
     switch (this.currentState) {
       case STOW:
         return Commands.run(() -> {
-          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_UP_POSITION);
+          this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION);
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
         }, this);
       case INTAKE_L1:
         return Commands.run(() -> {
-          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(rollerIntakeVolts.get());
-          this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-          Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_IN_VOLTS);
+          this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
         }, this);
       case INTAKE:
         return Commands.sequence(
           Commands.run(() -> {
-            this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+            this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
             this.io.setRollerVoltage(rollerIntakeVolts.get());
-            this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
-            Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_IN_VOLTS);
+            this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
+            Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
           }, this),
           Commands.waitUntil(() -> Feeder.getInstance().isCoralInFeeder()),
           setIntakeState(IntakeState.IDLE)
         );
       case REJECT_CORAL:
         return Commands.run(() -> {
-          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(-rollerIntakeVolts.get());
-          Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_OUT_VOLTS);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
         }, this);
       case IDLE:
         return Commands.run(() -> {
-          this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
         }, this);
       case HAND_OFF:
         return Commands.run(() -> {
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_IN_VOLTS);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
         }, this);
       case SCORING:
         return Commands.sequence(
           Commands.run(() -> {
-            this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_SCORING_POSITION);
-            this.io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
-            this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-            Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
+            this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
+            this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
+            this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+            Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
           }, this)
         );
         case SCORING_PREP:
           return Commands.sequence(
             Commands.runOnce(() -> {
-              this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
+              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
               this.io.setRollerVoltage(0);
-              this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-              Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
+              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+              Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
             }, this)
           );
       default:
@@ -114,6 +116,6 @@ public class Intake extends SubsystemBase {
     }
 
     public Command movePivotDown() {
-      return Commands.run(() -> this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_INTAKE_POSITION), this);
+      return Commands.run(() -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
 }
