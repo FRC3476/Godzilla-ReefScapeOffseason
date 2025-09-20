@@ -12,16 +12,19 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOReal implements ElevatorIO {
 
-  private TalonFX rightTalon;
-  private TalonFX leftTalon;
-  private TalonFX extraTalon;
+  protected TalonFX rightTalon;
+  protected TalonFX leftTalon;
+  protected TalonFX extraTalon;
 
   private MotionMagicVoltage m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private VoltageOut m_VoltageOut =
+      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;
@@ -41,6 +44,8 @@ public class ElevatorIOReal implements ElevatorIO {
   StatusSignal<Current> extraTorqueCurrentAmps;
   StatusSignal<Current> extraSupplyCurrentAmps;
   StatusSignal<Temperature> extraTempCelsius;
+
+  private final BaseStatusSignal[] signals;
 
   public ElevatorIOReal() {
     rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
@@ -70,6 +75,25 @@ public class ElevatorIOReal implements ElevatorIO {
     extraSupplyCurrentAmps = extraTalon.getSupplyCurrent();
     extraTempCelsius = extraTalon.getDeviceTemp();
 
+    signals =
+        new BaseStatusSignal[] {
+          rightPosition,
+          rightAppliedVolts,
+          rightTorqueCurrentAmps,
+          rightSupplyCurrentAmps,
+          rightTempCelsius,
+          leftPosition,
+          leftAppliedVolts,
+          leftTorqueCurrentAmps,
+          leftSupplyCurrentAmps,
+          leftTempCelsius,
+          extraPosition,
+          extraAppliedVolts,
+          extraTorqueCurrentAmps,
+          extraSupplyCurrentAmps,
+          extraTempCelsius
+        };
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         rightPosition,
@@ -89,7 +113,7 @@ public class ElevatorIOReal implements ElevatorIO {
         extraTempCelsius);
     ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon, extraTalon);
     PhoenixUtil.registerSignals(
-        true,
+        false,
         rightPosition,
         rightAppliedVolts,
         rightTorqueCurrentAmps,
@@ -108,6 +132,8 @@ public class ElevatorIOReal implements ElevatorIO {
   }
 
   public void updateInputs(ElevatorIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
+
     inputs.data =
         new ElevatorIOData(
             BaseStatusSignal.isAllGood(
@@ -145,14 +171,17 @@ public class ElevatorIOReal implements ElevatorIO {
             extraTempCelsius.getValueAsDouble());
   }
 
+  @Override
   public void setElevatorVoltage(double voltage) {
-    rightTalon.setControl(new VoltageOut(voltage));
+    rightTalon.setControl(m_VoltageOut.withOutput(voltage));
   }
 
+  @Override
   public void setElevatorTargetPosition(double position) {
     rightTalon.setControl(m_request.withPosition(position));
   }
 
+  @Override
   public void setElevatorZero() {
     rightTalon.setPosition(0.0);
     leftTalon.setPosition(0.0);
@@ -161,5 +190,13 @@ public class ElevatorIOReal implements ElevatorIO {
 
   public void stop() {
     rightTalon.stopMotor();
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+            rightTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS)
+        || MotorStallDetection.isMotorStalled(
+            leftTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS);
   }
 }

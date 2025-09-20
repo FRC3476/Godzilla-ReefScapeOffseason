@@ -1,6 +1,7 @@
 package frc.robot.subsystems.feeder;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.Logger;
 
 public class Feeder extends SubsystemBase {
@@ -24,6 +25,7 @@ public class Feeder extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
+    Logger.recordOutput("Feeder/JamDetected", checkForJam());
   }
 
   public boolean isCoralInFeeder() {
@@ -33,4 +35,14 @@ public class Feeder extends SubsystemBase {
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
   }
+
+  public void setRollerVoltageReversed(double voltage) {
+    io.setRollerVoltageReversed(voltage);
+  }
+
+  public boolean checkForJam() {
+    return io.checkMotorsStalled() && isCoralInFeeder();
+  }
+
+  public Trigger dejamTrigger = new Trigger(() -> checkForJam());
 }

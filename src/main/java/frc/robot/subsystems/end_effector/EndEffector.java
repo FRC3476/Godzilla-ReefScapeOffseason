@@ -10,17 +10,17 @@ public class EndEffector extends SubsystemBase {
 
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
-  // private static EndEffector endEffectorSubsystem;
+  private static EndEffector endEffectorSubsystem;
 
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
 
-  // public static EndEffector getInstance() {
-  //   if (endEffectorSubsystem == null) {
-  //     endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
-  //   }
-  //   return endEffectorSubsystem;
-  // }
+  public static EndEffector getInstance() {
+    if (endEffectorSubsystem == null) {
+      endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
+    }
+    return endEffectorSubsystem;
+  }
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
@@ -51,5 +51,9 @@ public class EndEffector extends SubsystemBase {
 
   public Command rollerSTOP() {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
+  }
+
+  public Command moveToTargetRadian(double degree) {
+    return Commands.run(() -> this.io.setPivotPosition(degree), this);
   }
 }
