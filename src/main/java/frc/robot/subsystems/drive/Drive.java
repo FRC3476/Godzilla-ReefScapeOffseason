@@ -106,6 +106,12 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  // Acceleration limiting
+  private double maxTranslationalAccel = 3.0; // m/s²
+  private double maxRotationalAccel = 10.0; // rad/s²
+  private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
+  private double lastTimeSeconds = 0.0;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -156,6 +162,9 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // Initialize time tracking for acceleration limiting
+    lastTimeSeconds = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
   }
 
   @Override
@@ -217,14 +226,45 @@ public class Drive extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   }
 
+  private ChassisSpeeds applyAccelerationLimits(ChassisSpeeds targetSpeeds) {
+    double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
+    if (dt <= 0) { return targetSpeeds; }
+
+    // Calculate desired accelerations
+    double desiredVxAccel = (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
+    double desiredVyAccel = (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
+    double desiredOmegaAccel = (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
+
+    // Clamp accelerations
+    double clampedVxAccel = Math.max(-maxTranslationalAccel, Math.min(maxTranslationalAccel, desiredVxAccel));
+    double clampedVyAccel = Math.max(-maxTranslationalAccel, Math.min(maxTranslationalAccel, desiredVyAccel));
+    double clampedOmegaAccel = Math.max(-maxRotationalAccel, Math.min(maxRotationalAccel, desiredOmegaAccel));
+
+    // Calculate limited speeds
+    double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
+    double limitedVy = previousSpeeds.vyMetersPerSecond + clampedVyAccel * dt;
+    double limitedOmega = previousSpeeds.omegaRadiansPerSecond + clampedOmegaAccel * dt;
+
+    ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
+    previousSpeeds = limitedSpeeds;
+
+    return limitedSpeeds;
+  }
+
   /**
    * Runs the drive at the desired velocity.
    *
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    // Apply acceleration limits
+    ChassisSpeeds limitedSpeeds = applyAccelerationLimits(speeds);
+
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(limitedSpeeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
@@ -354,6 +394,16 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
+  }
+
+  /** Sets the maximum translational acceleration in m/s². */
+  public void setMaxTranslationalAcceleration(double accel) {
+    this.maxTranslationalAccel = accel;
+  }
+
+  /** Sets the maximum rotational acceleration in rad/s². */
+  public void setMaxRotationalAcceleration(double accel) {
+    this.maxRotationalAccel = accel;
   }
 
   /** Returns an array of module translations. */
