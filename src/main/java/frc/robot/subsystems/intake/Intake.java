@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -53,6 +56,23 @@ public class Intake extends SubsystemBase {
 
   private boolean checkForJam() {
     return io.checkRollerStalled() && isCoralInIntake();
+  }
+
+  public Trigger coralInIntakeTrigger() {
+    return new Trigger(() ->  isCoralInIntake());
+  }
+
+  public Trigger rejectCoralTrigger() { 
+    return coralInIntakeTrigger().and(() -> (
+      CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.AT_FEEDER||
+      CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR||
+      CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR||
+      CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR
+    ));
+  }
+  
+  public Command rejectCoralCommand() {
+    return Commands.run(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
   }
 
   public Command intakeFWD() {

@@ -230,8 +230,8 @@ public class RobotContainer {
   private void configureArbitraryTriggers() {
     intake.feederJamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
