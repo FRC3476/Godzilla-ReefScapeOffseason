@@ -95,6 +95,15 @@ public class Intake extends SubsystemBase {
             Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
           }, this)
         );
+        case SCORING_PREP:
+          return Commands.sequence(
+            Commands.runOnce(() -> {
+              this.io.setPivotPosition(frc.robot.Constants.IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
+              this.io.setRollerVoltage(0);
+              this.io.setLvl1BlockerPosition(frc.robot.Constants.IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+              Feeder.getInstance().setRollerVoltage(frc.robot.Constants.FeederConstants.FEEDER_STOP_VOLTS);
+            }, this)
+          );
       default:
         return Commands.none();
     }

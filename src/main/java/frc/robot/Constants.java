@@ -58,6 +58,7 @@ public final class Constants {
     public static final double PIVOT_INTAKE_POSITION = 0.0;
     public static final double PIVOT_UP_POSITION = 0.0;
     public static final double PIVOT_SCORING_POSITION = 0.0;
+    public static final double SCORING_PREP_PIVOT_POSITION_RAD = 0.0;
 
     // L1 Blocker Positions
     public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
@@ -65,6 +66,7 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -77,7 +79,9 @@ public final class Constants {
       REJECT_CORAL,
       IDLE,
       HAND_OFF,
-      SCORING
+      SCORING,
+      SCORING_PREP,
+      JAM_DETECTED
     }
 
     // Gear ratios
