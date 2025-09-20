@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Trigger coralInIntakeTrigger() {
-    return new Trigger(() ->  isCoralInIntake());
+    return new Trigger(this::isCoralInIntake);
   }
 
   public Trigger rejectCoralTrigger() { 
