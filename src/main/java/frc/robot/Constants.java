@@ -13,12 +13,18 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -68,9 +74,35 @@ public final class Constants {
     public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
     public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
+    // Pivot Positions
+    public static final double PIVOT_INTAKE_POSITION = 0.0;
+    public static final double PIVOT_UP_POSITION = 0.0;
+    public static final double PIVOT_SCORING_POSITION = 0.0;
+    public static final double SCORING_PREP_PIVOT_POSITION_RAD = 0.0;
+
+    // L1 Blocker Positions
+    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+
+    // Roller Voltages
+    public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
+
+    public enum IntakeState {
+      STOW,
+      INTAKE_L1,
+      INTAKE,
+      REJECT_CORAL,
+      IDLE,
+      HAND_OFF,
+      SCORING,
+      SCORING_PREP,
+      JAM_DETECTED
+    }
 
     // Gear ratios
     public static final double PIVOT_GEAR_RATIO =
@@ -357,7 +389,13 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.05)
                     .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
   }
+
+
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
@@ -374,8 +412,47 @@ public final class Constants {
   }
 
   public static class VisionConstants {
+    public static final String DETECTION_LIMELIGHT = "limelight-center";
     public static final AprilTagFieldLayout fieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    public static final AprilTagFieldLayout kAprilTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
+    // Camera A (left side)
+    public static final double kCameraAPitchDegrees = 20.0;
+    public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
+    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final String kLimelightATableName = "limelight-left";
+    public static final double kRobotToCameraAForward = Units.inchesToMeters(7.8757);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.9269);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(0.0);
+
+    // Camera B (right side)
+    public static final double kCameraBPitchDegrees = 20.0;
+    public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
+    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final String kLimelightBTableName = "limelight-right";
+    public static final double kRobotToCameraBForward = Units.inchesToMeters(7.8757);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
+
+    //Validation Constants
+    public static final int kExpectedStdDevArrayLength = 12;
+
+    // April Tags
+
+    public static final int[] kAllowedTagIDs = {17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11};
+
+    public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
+            new AprilTagFieldLayout(
+                    kAprilTagLayout.getTags().stream()
+                            .filter(
+                                    tag ->
+                                            Arrays.stream(kAllowedTagIDs)
+                                                    .anyMatch(element -> element == tag.ID))
+                            .toList(),
+                    kAprilTagLayout.getFieldLength(),
+                    kAprilTagLayout.getFieldWidth());
   }
 
   public record PIDgains(
@@ -397,3 +474,4 @@ public final class Constants {
     }
   }
 }
+
