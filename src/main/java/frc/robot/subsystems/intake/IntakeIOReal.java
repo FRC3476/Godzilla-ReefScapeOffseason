@@ -18,15 +18,16 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOReal implements IntakeIO {
-  private final TalonFX pivotMotor;
-  private final TalonFX rollerMotor;
-  private final TalonFX lvl1blockerMotor;
+  protected TalonFX pivotMotor;
+  protected TalonFX rollerMotor;
+  protected TalonFX lvl1blockerMotor;
 
-  private final CANcoder canCoder;
-  private final CANrange canRange;
+  protected CANcoder canCoder;
+  protected CANrange canRange;
 
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
@@ -66,6 +67,8 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Double> canRangeSignalStrength;
   private final StatusSignal<Distance> canRangeDistance;
 
+  private final BaseStatusSignal[] signals;
+
   public IntakeIOReal() {
     // Initialize hardware
     pivotMotor = new TalonFX(IntakeConstants.intakePivotID);
@@ -89,7 +92,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
     pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
-    pivotMotor.getConfigurator().apply(pivotConfig);
+    PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig));
 
     // Configure roller motor
     var rollerConfig = new TalonFXConfiguration();
@@ -99,7 +102,7 @@ public class IntakeIOReal implements IntakeIO {
     rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_MAX_STATOR_CURRENT_LIMIT;
-    rollerMotor.getConfigurator().apply(rollerConfig);
+    PhoenixUtil.tryUntilOk(5, () -> rollerMotor.getConfigurator().apply(rollerConfig));
 
     // Configure lvl1blocker motor
     var lvl1blockerConfig = new TalonFXConfiguration();
@@ -119,17 +122,17 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
         IntakeConstants.lvl1blockerMAX_VELOCITY;
     lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
-    lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig);
+    PhoenixUtil.tryUntilOk(5, () -> lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig));
 
     // Configure CANCoder
     var canCoderConfig = new CANcoderConfiguration();
-    canCoder.getConfigurator().apply(canCoderConfig);
+    PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(canCoderConfig));
 
     // Configure CANRange
     var canRangeConfig = new CANrangeConfiguration();
     canRangeConfig.ProximityParams.ProximityThreshold = 0.05; // 5cm detection threshold
     canRangeConfig.ProximityParams.ProximityHysteresis = 0.01; // 1cm hysteresis
-    canRange.getConfigurator().apply(canRangeConfig);
+    PhoenixUtil.tryUntilOk(5, () -> canRange.getConfigurator().apply(canRangeConfig));
 
     // Initialize status signals
     pivotVoltage = pivotMotor.getMotorVoltage();
@@ -158,6 +161,32 @@ public class IntakeIOReal implements IntakeIO {
     canRangeTripped = canRange.getIsDetected();
     canRangeSignalStrength = canRange.getSignalStrength();
     canRangeDistance = canRange.getDistance();
+
+    signals =
+        new BaseStatusSignal[] {
+          pivotVoltage,
+          pivotSupplyCurrent,
+          pivotStatorCurrent,
+          pivotTemperature,
+          pivotVelocityRPS,
+          pivotPositionRad,
+          rollerVoltage,
+          rollerSupplyCurrent,
+          rollerStatorCurrent,
+          rollerTemperature,
+          rollerVelocityRPS,
+          lvl1blockerVoltage,
+          lvl1blockerSupplyCurrent,
+          lvl1blockerStatorCurrent,
+          lvl1blockerTemperature,
+          lvl1blockerVelocityRPS,
+          lvl1blockerPositionRad,
+          canCoderPositionRad,
+          canCoderVelocityRPS,
+          canRangeTripped,
+          canRangeSignalStrength,
+          canRangeDistance
+        };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -218,6 +247,8 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   public void updateInputs(IntakeIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
+
     inputs.pivotData =
         new PivotData(
             BaseStatusSignal.isAllGood(
@@ -301,5 +332,11 @@ public class IntakeIOReal implements IntakeIO {
   @Override
   public void setLvl1BlockerPosition(double positionRad) {
     lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRad));
+  }
+
+  @Override
+  public boolean checkRollerStalled() {
+    return MotorStallDetection.isMotorStalled(
+        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT, IntakeConstants.ROLLER_STALLED_RPS);
   }
 }
