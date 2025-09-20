@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -44,7 +45,7 @@ public class Intake extends SubsystemBase {
 
   public boolean isPivotAtSetpoint(double setpoint) {
     return Math.abs(inputs.pivotData.positionRad() - setpoint)
-        < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
+        < IntakeConstants.PIVOT_TOLERANCE_RAD;
   }
 
   public boolean isCoralInIntake() {
@@ -71,7 +72,7 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(
         () ->
             this.io.setPivotPosition(
-                frc.robot.Constants.IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_RAD),
+                IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_RAD),
         this);
   }
 
@@ -81,43 +82,43 @@ public class Intake extends SubsystemBase {
 
   public Command intakePivotStow() {
     return Commands.runOnce(
-        () -> this.io.setPivotPosition(Constants.IntakeConstants.INTAKE_PIVOT_STOWED_POSITION));
+        () -> this.io.setPivotPosition(IntakeConstants.INTAKE_PIVOT_STOWED_POSITION));
   }
 
   public Command engageCoralL1() {
     return Commands.runOnce(
         () ->
             this.io.setLvl1BlockerPosition(
-                Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION));
+                IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION));
   }
 
   public Command disengageCoralL1() {
     return Commands.runOnce(
         () ->
             this.io.setLvl1BlockerPosition(
-                Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
+                IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
   }
 
   public Command scoreIntakeL1() {
     return Commands.sequence(
         Commands.runOnce(
-            () -> io.setPivotPosition(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD),
+            () -> io.setPivotPosition(IntakeConstants.PIVOT_L1_SETPOINT_RAD),
             this),
         Commands.waitUntil(
-            () -> isPivotAtSetpoint(frc.robot.Constants.IntakeConstants.PIVOT_L1_SETPOINT_RAD)),
+            () -> isPivotAtSetpoint(IntakeConstants.PIVOT_L1_SETPOINT_RAD)),
         Commands.runOnce(
-            () -> io.setRollerVoltage(frc.robot.Constants.IntakeConstants.ROLLER_L1_SETPOINT_VOLTS),
+            () -> io.setRollerVoltage(IntakeConstants.ROLLER_L1_SETPOINT_VOLTS),
             this));
   }
 
-  public Trigger intakeJamTrigger = new Trigger(() -> checkForJam());
+  public Trigger intakeJamTrigger = new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
   public Trigger feederJamTrigger = feeder.dejamTrigger;
 
   public Command dejamFeeder() {
     return Commands.sequence(
         Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
-        Commands.waitSeconds(Constants.FeederConstants.DEJAM_DURATION_SECONDS),
+        Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 }
