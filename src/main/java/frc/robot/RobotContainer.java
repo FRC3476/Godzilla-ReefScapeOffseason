@@ -146,6 +146,9 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
+    // Default command for intake subsystem
+    intake.setDefaultCommand(intake.intakeDefault());
+
     // Lock to 0° when A button is held
     controller
         .a()

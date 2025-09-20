@@ -34,81 +34,70 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakeFWD() {
-    return Commands.run(() -> this.io.setRollerVoltage(rollerIntakeVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerIntakeVolts.get()), this);
   }
 
   public Command intakeRVS() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerIntakeVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerIntakeVolts.get()), this);
   }
 
   public Command intakeSTOP() {
-    return Commands.run(() -> this.io.setRollerVoltage(0), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
   }
 
   public Command intakeDefault() {
-    switch (this.currentState) {
-      case STOW:
-        return Commands.run(() -> {
+    return Commands.run(() -> {
+      switch (this.currentState) {
+        case STOW:
           this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION);
           this.io.setRollerVoltage(0);
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
-        }, this);
-      case INTAKE_L1:
-        return Commands.run(() -> {
+          break;
+        case INTAKE_L1:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(rollerIntakeVolts.get());
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
-        }, this);
-      case INTAKE:
-        return Commands.sequence(
-          Commands.run(() -> {
-            this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
-            this.io.setRollerVoltage(rollerIntakeVolts.get());
-            this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
-            Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
-          }, this),
-          Commands.waitUntil(() -> Feeder.getInstance().isCoralInFeeder()),
-          setIntakeState(IntakeState.IDLE)
-        );
-      case REJECT_CORAL:
-        return Commands.run(() -> {
+          break;
+        case INTAKE:
+          this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
+          this.io.setRollerVoltage(rollerIntakeVolts.get());
+          this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+          // Check if coral is detected in feeder and automatically transition to IDLE
+          if (Feeder.getInstance().isCoralInFeeder()) {
+            this.currentState = IntakeState.IDLE;
+          }
+          break;
+        case REJECT_CORAL:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(-rollerIntakeVolts.get());
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
-        }, this);
-      case IDLE:
-        return Commands.run(() -> {
+          break;
+        case HAND_OFF:
+          this.io.setRollerVoltage(0);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+          break;
+        case SCORING:
+          this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
+          this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
+          this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          break;
+        case SCORING_PREP:
+          this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
+          this.io.setRollerVoltage(0);
+          this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          break;
+        case IDLE:
+        default:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(0);
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
-        }, this);
-      case HAND_OFF:
-        return Commands.run(() -> {
-          this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
-        }, this);
-      case SCORING:
-        return Commands.sequence(
-          Commands.run(() -> {
-            this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
-            this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
-            this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-            Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
-          }, this)
-        );
-        case SCORING_PREP:
-          return Commands.sequence(
-            Commands.runOnce(() -> {
-              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
-              this.io.setRollerVoltage(0);
-              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-              Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
-            }, this)
-          );
-      default:
-        return Commands.none();
-    }
+          break;
+      }
+    }, this);
   }
 
     public Command setIntakeState(IntakeState state) {
@@ -116,6 +105,6 @@ public class Intake extends SubsystemBase {
     }
 
     public Command movePivotDown() {
-      return Commands.run(() -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
+      return Commands.runOnce(() -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
 }
