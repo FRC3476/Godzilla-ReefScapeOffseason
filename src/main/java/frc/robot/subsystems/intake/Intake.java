@@ -49,6 +49,33 @@ public class Intake extends SubsystemBase {
     return Commands.run(() -> {
       switch (this.currentState) {
         case STOW:
+          break;
+        case INTAKE_L1:
+          break;
+        case INTAKE:
+          // Check if coral is detected in feeder and automatically transition to IDLE
+          if (Feeder.getInstance().isCoralInFeeder()) {
+            this.currentState = IntakeState.IDLE;
+          }
+          break;
+        case REJECT_CORAL:
+          break;
+        case HAND_OFF:
+          break;
+        case SCORING:
+          break;
+        case SCORING_PREP:
+          break;
+        case IDLE:
+          break;
+        default:
+          this.currentState = IntakeState.IDLE;
+          break;
+      }
+
+      // Execute motor commands based on current state
+      switch (this.currentState) {
+        case STOW:
           this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION);
           this.io.setRollerVoltage(0);
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
@@ -64,10 +91,6 @@ public class Intake extends SubsystemBase {
           this.io.setRollerVoltage(rollerIntakeVolts.get());
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
           Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
-          // Check if coral is detected in feeder and automatically transition to IDLE
-          if (Feeder.getInstance().isCoralInFeeder()) {
-            this.currentState = IntakeState.IDLE;
-          }
           break;
         case REJECT_CORAL:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
