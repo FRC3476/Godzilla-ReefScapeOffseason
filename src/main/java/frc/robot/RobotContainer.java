@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -32,6 +33,14 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOReal;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.end_effector.EndEffectorIO;
+import frc.robot.subsystems.end_effector.EndEffectorIOReal;
+import frc.robot.subsystems.end_effector.EndEffectorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -48,6 +57,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final EndEffector endEffector;
+  private final Elevator elevator;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -69,6 +80,8 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOReal());
+        endEffector = new EndEffector(new EndEffectorIOReal());
+        elevator = new Elevator(new ElevatorIOReal());
         break;
 
       case SIM:
@@ -82,6 +95,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOSim());
+        endEffector = new EndEffector(new EndEffectorIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
       default:
@@ -95,6 +110,8 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
+        endEffector = new EndEffector(new EndEffectorIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -117,18 +134,57 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    BuildTestTab();
+    BuildIntakeTab();
+    BuildEndEffectorTab();
+    BuildElevatorTab();
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure arbitrary triggers
+    configureArbitraryTriggers();
   }
 
-  private void BuildTestTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Test");
+  private void BuildIntakeTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Intake");
 
     testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void BuildEndEffectorTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("EndEffector");
+
+    testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
+    testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
+    testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void BuildElevatorTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+
+    // Create boolean entries for while-held functionality
+    var elevatorUpHeld =
+        testTab.add("Elevator Up (While Held)", false).withPosition(0, 5).withSize(2, 1).getEntry();
+
+    var elevatorDownHeld =
+        testTab
+            .add("Elevator Down (While Held)", false)
+            .withPosition(2, 5)
+            .withSize(2, 1)
+            .getEntry();
+
+    // Create triggers based on the boolean entries
+    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
+    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownHeld.getBoolean(false));
+
+    // Configure the while-held behavior
+    elevatorUpTrigger.whileTrue(elevator.elevatorUP());
+    elevatorUpTrigger.onFalse(elevator.elevatorSTOP());
+
+    elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
+    elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
   }
 
   /**
@@ -171,6 +227,11 @@ public class RobotContainer {
                 .ignoringDisable(true));
   }
 
+  private void configureArbitraryTriggers() {
+    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
+    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

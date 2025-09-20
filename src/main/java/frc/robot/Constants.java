@@ -62,6 +62,8 @@ public final class Constants {
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
 
+    // Pivot position for L1 scoring (radians)
+    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0;
     // Stowed position for intake pivot
     public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
@@ -77,9 +79,15 @@ public final class Constants {
     public static final int CANRANGE_ID = 34;
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO =
+        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
-    public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
+
+    // MOI
+    public static final double PIVOT_MOI = 0.01;
+    public static final double L1_BAR_MOI = 0.01;
+    public static final double ROLLER_MOI = 0.001;
 
     // Current limits
     // Roller, L1, Pivot
@@ -116,6 +124,10 @@ public final class Constants {
 
     public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
+
+    // Stall detection
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
   }
 
   // ====================Elevator (4_)====================
@@ -136,6 +148,11 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double STALLED_TOLERANCE_INCHES = 2.0;
+    public static final double DEJAM_DISTANCE_INCHES = 12.0;
 
     public static final TalonFXConfiguration elevatorRightTalon =
         new TalonFXConfiguration()
@@ -190,6 +207,7 @@ public final class Constants {
     public static final double ELEVATOR_HANDOFF_SETPOINT_INCH = 20.0; // 18.5
     public static final double ELEVATOR_BOTTOM_ALGAE_PULL_SETPOINT_INCH = 20.0;
     public static final double ELEVATOR_TOP_ALGAE_PULL_SETPOINT_INCH = 27.5;
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 35.0;
 
     public static final double ELEVATOR_L2_SETPOINT_INCH = 7.5;
     public static final double ELEVATOR_L3_SETPOINT_INCH = 17.0; // 18.75
@@ -199,6 +217,19 @@ public final class Constants {
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
+
+    public static final double kElevatorDrumRadius = 1.128;
+    public static final double kGearing = (13.0 / 50.0);
+    public static final double kElevatorUnitToRotorRatio =
+        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
+
+    public static final double GEAR_RATIO =
+        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
+    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_METERS =
+        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
+    public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
+    public static final double MAX_HEIGHT_METERS = 1.0; // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
@@ -226,8 +257,13 @@ public final class Constants {
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
 
-    public static final double ALGAE_GEAR_RATIO = 12.22;
-    public static final double CORAL_GEAR_RATIO = 6.11;
+    public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
+    public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
+
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 40;
+
+    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_RPS = 0.0;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -299,6 +335,9 @@ public final class Constants {
     public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double DEJAM_DURATION_SECONDS = 0.05;
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -324,6 +363,15 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.05)
                     .withProximityHysteresis(0.01));
+  }
+
+  // ====================LED (8_)====================
+  public static final class LEDConstants {
+    public static final int ID = 80;
+    public static final int kNonCandleLEDCount = 10;
+    public static final int kCandleLEDCount = 8;
+    public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
   // ====================Physical Constants====================
