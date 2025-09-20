@@ -130,6 +130,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    configureTriggers();
   }
 
   private void BuildIntakeTab() {
@@ -186,6 +187,10 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureTriggers() {
+    intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
 
   /**
