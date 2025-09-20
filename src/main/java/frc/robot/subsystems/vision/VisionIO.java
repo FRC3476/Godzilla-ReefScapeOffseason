@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 public interface VisionIO {
 
   /** Container for all vision input data. */
-  @AutoLog
   class VisionIOInputs {
     /** Input data from a single camera. */
     public static class CameraInputs {
