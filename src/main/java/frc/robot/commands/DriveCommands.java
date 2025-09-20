@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.vision.Vision;
 
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 
@@ -173,16 +174,16 @@ public class DriveCommands {
     boolean isFlipped =
           DriverStation.getAlliance().isPresent()
           && DriverStation.getAlliance().get() == Alliance.Red;
-    DoubleSupplier xSupplier = isFlipped ?
+    DoubleSupplier xSupplier = () -> isFlipped ?
         (vision.getCoralTy() * 0.15) * Rotation2d.fromDegrees(vision.getCoralTx()).getCos() :
         (vision.getCoralTy() * 0.15)*Rotation2d.fromDegrees(vision.getCoralTx()).getCos();
-    DoubleSupplier ySupplier = -3*Rotation2d.fromDegrees(vision.getCoralTx()).getSin();
-    Supplier<Rotation2d> rotSupplier = Rotation2d.fromDegrees(drive.getPose().getRotation().getDegrees() - vision.getCoralTx() + (isFlipped ? 180 : 0));
+    DoubleSupplier ySupplier = () -> -3*Rotation2d.fromDegrees(vision.getCoralTx()).getSin();
+    Supplier<Rotation2d> rotSupplier = () -> Rotation2d.fromDegrees(drive.getPose().getRotation().getDegrees() - vision.getCoralTx() + (isFlipped ? 180 : 0));
     return driveAtAngle(drive,
         xSupplier,
         ySupplier,
         rotSupplier
-        ).onlyIf(() -> !intake.isCoralInIntake());
+        ).onlyWhile(() -> !intake.isCoralInIntake());
   }
 
   /**
