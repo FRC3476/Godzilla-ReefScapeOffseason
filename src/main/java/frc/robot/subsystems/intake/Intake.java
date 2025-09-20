@@ -103,7 +103,7 @@ public class Intake extends SubsystemBase {
           break;
         case INTAKE:
           // Check if coral is detected in feeder and automatically transition to IDLE
-          if (Feeder.getInstance().isCoralInFeeder()) {
+          if (feeder.isCoralInFeeder()) {
             this.currentState = IntakeState.IDLE;
           }
           break;
@@ -127,46 +127,46 @@ public class Intake extends SubsystemBase {
         case STOW:
           this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION);
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
           break;
         case INTAKE_L1:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(rollerIntakeVolts.get());
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
           break;
         case INTAKE:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(rollerIntakeVolts.get());
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
           break;
         case REJECT_CORAL:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(-rollerIntakeVolts.get());
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
           break;
         case HAND_OFF:
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
           break;
         case SCORING:
           this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
           this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
           break;
         case SCORING_PREP:
           this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
           this.io.setRollerVoltage(0);
           this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
           break;
         case IDLE:
         default:
           this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
           this.io.setRollerVoltage(0);
-          Feeder.getInstance().setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
+          feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
           break;
       }
     }, this);

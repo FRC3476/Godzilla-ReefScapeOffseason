@@ -9,18 +9,6 @@ public class Feeder extends SubsystemBase {
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
   private static Feeder feederSubsystem;
 
-  private static Feeder feederSubsystem;
-
-  public static Feeder getInstance() {
-    if (feederSubsystem == null) {
-      feederSubsystem = new Feeder(new FeederIOReal());
-    }
-    return feederSubsystem;
-  }
-
-  public Feeder(FeederIO io) {
-    this.io = io;
-  }
 
   public static Feeder getInstance() {
     if (feederSubsystem == null) {
