@@ -41,6 +41,11 @@ public class EndEffector extends SubsystemBase {
     return inputs.canRangeData.rangeIsTripped() && inputs.canRangeData.canRangeConnected();
   }
 
+
+  public double getCurrentPivotPosition() {
+    return inputs.pivotData.pivotPosition();
+  }
+
   public Command rollerFWD() {
     return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
   }

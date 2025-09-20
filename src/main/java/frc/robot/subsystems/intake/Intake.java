@@ -57,6 +57,11 @@ public class Intake extends SubsystemBase {
         < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
   }
 
+
+  public double getCurrentPivotPosition() {
+    return inputs.pivotData.positionRad();
+  }
+
   public boolean isCoralInIntake() {
     return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
   }
