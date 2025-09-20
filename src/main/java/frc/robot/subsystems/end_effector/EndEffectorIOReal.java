@@ -20,7 +20,6 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
-import org.dyn4j.geometry.Rotation;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
