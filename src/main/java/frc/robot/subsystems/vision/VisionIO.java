@@ -1,11 +1,14 @@
 package frc.robot.subsystems.vision;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.geometry.Pose3d;
 
 /** Interface for vision system hardware abstraction. */
 public interface VisionIO {
 
   /** Container for all vision input data. */
+  @AutoLog
   class VisionIOInputs {
     /** Input data from a single camera. */
     public static class CameraInputs {
