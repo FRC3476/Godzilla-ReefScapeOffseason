@@ -74,9 +74,35 @@ public final class Constants {
     public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
     public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
+    // Pivot Positions
+    public static final double PIVOT_INTAKE_POSITION = 0.0;
+    public static final double PIVOT_UP_POSITION = 0.0;
+    public static final double PIVOT_SCORING_POSITION = 0.0;
+    public static final double SCORING_PREP_PIVOT_POSITION_RAD = 0.0;
+
+    // L1 Blocker Positions
+    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+
+    // Roller Voltages
+    public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
+
+    public enum IntakeState {
+      STOW,
+      INTAKE_L1,
+      INTAKE,
+      REJECT_CORAL,
+      IDLE,
+      HAND_OFF,
+      SCORING,
+      SCORING_PREP,
+      JAM_DETECTED
+    }
 
     // Gear ratios
     public static final double PIVOT_GEAR_RATIO =
@@ -363,7 +389,13 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.05)
                     .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
   }
+
+
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
