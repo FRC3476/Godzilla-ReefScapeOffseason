@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -46,9 +47,6 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-  private static final double SLIP_START_DELAY = 1.0; // Secs
-  private static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
-  private static final double SLIP_MAX_VOLTAGE = 8.0; // Volts
 
   private DriveCommands() {}
 
@@ -244,7 +242,7 @@ public class DriveCommands {
         Commands.run(
                 () -> drive.runCharacterization(0.0),
                 drive)
-            .withTimeout(SLIP_START_DELAY),
+            .withTimeout(Constants.DriveConstants.SLIP_START_DELAY),
 
         // Start timer
         Commands.runOnce(timer::restart),
@@ -252,8 +250,8 @@ public class DriveCommands {
         // Ramp voltage and gather data
         Commands.run(
                 () -> {
-                  double voltage = timer.get() * SLIP_RAMP_RATE;
-                  if (voltage > SLIP_MAX_VOLTAGE) { voltage = SLIP_MAX_VOLTAGE;}
+                  double voltage = timer.get() * Constants.DriveConstants.SLIP_RAMP_RATE;
+                  if (voltage > Constants.DriveConstants.SLIP_MAX_VOLTAGE) { voltage = Constants.DriveConstants.SLIP_MAX_VOLTAGE;}
                   
                   drive.runCharacterization(voltage);
                   
@@ -292,9 +290,9 @@ public class DriveCommands {
    */
   private static double detectSlipCurrent(List<Double> currentSamples, List<Double> velocitySamples) {
     
-    // Thresholds for slip detection
-    final double VELOCITY_THRESHOLD = 3476; // Velocity derivative indicating wheels started spinning
-    final double MIN_CURRENT_THRESHOLD = 0.0; // Minimum current just in case 
+    // Thresholds for slip detection - using Constants from Constants.java
+    final double VELOCITY_THRESHOLD = Constants.DriveConstants.SLIP_VELOCITY_THRESHOLD; // Velocity derivative indicating wheels started spinning
+    final double MIN_CURRENT_THRESHOLD = Constants.DriveConstants.SLIP_MIN_CURRENT_THRESHOLD; // Minimum current just in case 
     
     double maxCurrent = 0.0;
     int slipIndex = currentSamples.size() - 1; 

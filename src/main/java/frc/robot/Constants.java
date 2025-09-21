@@ -67,6 +67,13 @@ public final class Constants {
     public static final double DYNAMIC_ACCEL_WEIGHT_B = 0.0; // Weight for elevator height
     public static final double DYNAMIC_ACCEL_WEIGHT_C = 0.0; // Weight for intake pivot height reduction
     public static final double DYNAMIC_ACCEL_WEIGHT_D = 0.0; // Weight for combined end effector and elevator height reduction
+    
+    // Slip Current Characterization Constants (Wall Test)
+    public static final double SLIP_START_DELAY = 0.0; // Secs
+    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
+    public static final double SLIP_VELOCITY_THRESHOLD = 3476.0; // Velocity derivative indicating wheels started spinning
+    public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
   }
 
   // ====================Intake (3_)====================
