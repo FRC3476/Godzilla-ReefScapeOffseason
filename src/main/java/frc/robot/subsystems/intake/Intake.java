@@ -13,7 +13,6 @@ import frc.robot.Constants.FeederConstants;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -51,6 +50,10 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/JamDetected", checkForJam());
+    
+    // Update CoralStateTracker with intake sensor data
+    boolean intakeSensorTriggered = inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
+    CoralStateTracker.updateIntake(intakeSensorTriggered);
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {

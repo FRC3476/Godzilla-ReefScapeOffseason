@@ -291,7 +291,8 @@ public final class Constants {
   public static class EndEffectorConstants {
     public static final int pivotID = 50;
     public static final int rollerID = 51;
-    public static final int coralCANRangeID = 52;
+    public static final int FIRST_CORAL_CANRANGE_ID = 52;
+    public static final int SECOND_CORAL_CANRANGE_ID = 53;
 
     public static final double PIVOT_kP = 0;
     public static final double PIVOT_kI = 0;
