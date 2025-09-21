@@ -354,6 +354,9 @@ public final class Constants {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
+    public static final double preclimbPosition = 0.0;
+    public static final double currentLimitAmps = 0.0;
+    public static final double currentLimitVelocity = 0.0;
   }
 
   // ====================Feeder (7_)====================

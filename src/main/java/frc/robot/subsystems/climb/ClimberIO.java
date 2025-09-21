@@ -22,4 +22,8 @@ public interface ClimberIO {
   default void setClimbPosition(double position) {}
 
   default void updateInputs(ClimberIOInputs inputs) {}
+
+  default boolean checkClimbMotorStalled() {
+    return false;
+  }
 }
