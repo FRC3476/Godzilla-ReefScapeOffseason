@@ -3,8 +3,10 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Volts;
 
 public class EndEffector extends SubsystemBase {
 
@@ -15,6 +17,10 @@ public class EndEffector extends SubsystemBase {
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
 
+  // SysId routines for characterization
+  private final SysIdRoutine pivotSysId;
+  private final SysIdRoutine rollerSysId;
+
   public static EndEffector getInstance() {
     if (endEffectorSubsystem == null) {
       endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
@@ -24,6 +30,29 @@ public class EndEffector extends SubsystemBase {
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
+    
+    // Configure SysId routines for pivot motor
+    pivotSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("EndEffector/PivotSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setPivotVoltage(voltage.in(Volts)), null, this));
+
+    // Configure SysId routines for roller motor
+    rollerSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("EndEffector/RollerSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setRollerVoltage(voltage.in(Volts)), null, this));
+    
     System.out.println("====================EndEffector Subsystem Online====================");
   }
 
@@ -60,5 +89,22 @@ public class EndEffector extends SubsystemBase {
 
   public Command moveToTargetRadian(double degree) {
     return Commands.run(() -> this.io.setPivotPosition(degree), this);
+  }
+
+  // SysId characterization commands
+  public Command sysIdQuasistaticPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.dynamic(direction);
+  }
+
+  public Command sysIdQuasistaticRoller(SysIdRoutine.Direction direction) {
+    return rollerSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicRoller(SysIdRoutine.Direction direction) {
+    return rollerSysId.dynamic(direction);
   }
 }

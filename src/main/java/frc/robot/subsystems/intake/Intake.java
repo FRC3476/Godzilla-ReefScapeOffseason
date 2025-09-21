@@ -3,19 +3,16 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.FeederConstants;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Volts;
 
 public class Intake extends SubsystemBase {
 
@@ -32,6 +29,10 @@ public class Intake extends SubsystemBase {
 
   private static Intake intakeSubsystem;
 
+  // SysId routines for characterization
+  private final SysIdRoutine pivotSysId;
+  private final SysIdRoutine rollerSysId;
+
   public static Intake getInstance() {
     if (intakeSubsystem == null) {
       intakeSubsystem = new Intake(new IntakeIOReal());
@@ -44,6 +45,28 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeIO io) {
     this.io = io;
+    
+    // Configure SysId routines for pivot motor
+    pivotSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("Intake/PivotSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setPivotVoltage(voltage.in(Volts)), null, this));
+
+    // Configure SysId routines for roller motor
+    rollerSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("Intake/RollerSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setRollerVoltage(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -204,6 +227,23 @@ public class Intake extends SubsystemBase {
         () ->
             this.io.setLvl1BlockerPosition(
                 IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
+  }
+
+  // SysId characterization commands
+  public Command sysIdQuasistaticPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.dynamic(direction);
+  }
+
+  public Command sysIdQuasistaticRoller(SysIdRoutine.Direction direction) {
+    return rollerSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicRoller(SysIdRoutine.Direction direction) {
+    return rollerSysId.dynamic(direction);
   }
 
 

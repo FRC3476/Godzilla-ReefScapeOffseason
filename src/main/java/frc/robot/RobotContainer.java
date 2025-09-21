@@ -134,6 +134,102 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+        //? Based on https://docs.wpilib.org/en/stable/docs/software/advanced-controls/system-identification/creating-routine.html
+
+        // Intake SysId routines
+    autoChooser.addOption(
+        "Intake Pivot SysId (Quasistatic Forward)",
+        intake.sysIdQuasistaticPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Quasistatic Reverse)",
+        intake.sysIdQuasistaticPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Dynamic Forward)",
+        intake.sysIdDynamicPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Dynamic Reverse)",
+        intake.sysIdDynamicPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Intake Roller SysId (Quasistatic Forward)",
+        intake.sysIdQuasistaticRoller(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Roller SysId (Quasistatic Reverse)",
+        intake.sysIdQuasistaticRoller(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Intake Roller SysId (Dynamic Forward)",
+        intake.sysIdDynamicRoller(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Roller SysId (Dynamic Reverse)",
+        intake.sysIdDynamicRoller(SysIdRoutine.Direction.kReverse));
+
+    // Elevator SysId routines
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Forward)",
+        elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Reverse)",
+        elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Forward)",
+        elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Reverse)",
+        elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // EndEffector SysId routines
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Quasistatic Forward)",
+        endEffector.sysIdQuasistaticPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Quasistatic Reverse)",
+        endEffector.sysIdQuasistaticPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Dynamic Forward)",
+        endEffector.sysIdDynamicPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Dynamic Reverse)",
+        endEffector.sysIdDynamicPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "EndEffector Roller SysId (Quasistatic Forward)",
+        endEffector.sysIdQuasistaticRoller(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Roller SysId (Quasistatic Reverse)",
+        endEffector.sysIdQuasistaticRoller(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "EndEffector Roller SysId (Dynamic Forward)",
+        endEffector.sysIdDynamicRoller(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Roller SysId (Dynamic Reverse)",
+        endEffector.sysIdDynamicRoller(SysIdRoutine.Direction.kReverse));
+
+    // Climber SysId routines
+    autoChooser.addOption(
+        "Climber SysId (Quasistatic Forward)",
+        frc.robot.subsystems.climb.Climber.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Climber SysId (Quasistatic Reverse)",
+        frc.robot.subsystems.climb.Climber.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Climber SysId (Dynamic Forward)",
+        frc.robot.subsystems.climb.Climber.getInstance().sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Climber SysId (Dynamic Reverse)",
+        frc.robot.subsystems.climb.Climber.getInstance().sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Feeder SysId routines
+    autoChooser.addOption(
+        "Feeder SysId (Quasistatic Forward)",
+        frc.robot.subsystems.feeder.Feeder.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Feeder SysId (Quasistatic Reverse)",
+        frc.robot.subsystems.feeder.Feeder.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Feeder SysId (Dynamic Forward)",
+        frc.robot.subsystems.feeder.Feeder.getInstance().sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Feeder SysId (Dynamic Reverse)",
+        frc.robot.subsystems.feeder.Feeder.getInstance().sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();

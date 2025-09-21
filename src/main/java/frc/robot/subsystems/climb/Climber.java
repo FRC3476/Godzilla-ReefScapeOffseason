@@ -3,7 +3,10 @@ package frc.robot.subsystems.climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Volts;
 
 public class Climber extends SubsystemBase {
 
@@ -14,6 +17,9 @@ public class Climber extends SubsystemBase {
 
   private static Climber climberSubsystem;
 
+  // SysId routine for characterization
+  private final SysIdRoutine climberSysId;
+
   public static Climber getInstance() {
     if (climberSubsystem == null) {
       climberSubsystem = new Climber(new ClimberIOReal());
@@ -23,6 +29,17 @@ public class Climber extends SubsystemBase {
 
   public Climber(ClimberIO io) {
     this.io = io;
+    
+    // Configure SysId routine for climb motor
+    climberSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("Climber/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -40,5 +57,14 @@ public class Climber extends SubsystemBase {
 
   public Command climbSTOP() {
     return Commands.run(() -> this.io.runVolts(0), this);
+  }
+
+  // SysId characterization commands
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return climberSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return climberSysId.dynamic(direction);
   }
 }
