@@ -124,6 +124,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
+        "Drive Slip Current Characterization (Wall Test)", DriveCommands.slipCurrentCharacterization(drive));
+    autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
