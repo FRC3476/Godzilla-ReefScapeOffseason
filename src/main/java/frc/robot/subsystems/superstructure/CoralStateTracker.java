@@ -3,8 +3,6 @@ package frc.robot.subsystems.superstructure;
 import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 
-import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
-
 public class CoralStateTracker {
     public enum CoralPosition {
         NONE,
@@ -19,37 +17,52 @@ public class CoralStateTracker {
     private static final double TIMEOUT_SECONDS = 0.5;
 
     private static CoralPosition currentPosition = CoralPosition.NONE;
-        private double lastTransitionTime = Timer.getFPGATimestamp();
+    private static double lastTransitionTime = Timer.getFPGATimestamp();
+
+    private static boolean intakeTriggered = false;
+    private static boolean feederTriggered = false;
+    private static boolean firstEndEffectorTriggered = false;
+    private static boolean secondEndEffectorTriggered = false;
+
+    private static CoralStateTracker instance = new CoralStateTracker();
+
+    private CoralStateTracker() {
+    }
+
+    public static CoralStateTracker getInstance() {
+        return instance;
+    }
+
+    public static void updateIntake(boolean value) {
+        intakeTriggered = value;
+        recalcState();
+    }
+
+    public static void updateFeeder(boolean value) {
+        feederTriggered = value;
+        recalcState();
+    }
+
+    public static void updateFirstEndEffector(boolean value) {
+        firstEndEffectorTriggered = value;
+        recalcState();
+    }
+
+    public static void updateSecondEndEffector(boolean value) {
+        secondEndEffectorTriggered = value;
+        recalcState();
+    }
     
-        private boolean intakeTriggered = false;
-        private boolean feederTriggered = false;
-        private boolean firstEndEffectorTriggered = false;
-        private boolean secondEndEffectorTriggered = false;
+    public static void updateBothEndEffectors(boolean firstValue, boolean secondValue) {
+        firstEndEffectorTriggered = firstValue;
+        secondEndEffectorTriggered = secondValue;
+        recalcState();
+    } 
     
-        public void updateIntake(boolean value) {
-         intakeTriggered = value;
-            recalcState();
-        }
-    
-        public void updateFeeder(boolean value) {
-            feederTriggered = value;
-            recalcState();
-        }
-    
-        public void updateFirstEndEffector(boolean value) {
-            firstEndEffectorTriggered = value;
-            recalcState();
-        }
-    
-        public void updateSecondEndEffector(boolean value) {
-            secondEndEffectorTriggered = value;
-            recalcState();
-        }
-    
-        private void recalcState() {
-            double now = Timer.getFPGATimestamp();
-    
-            Logger.recordOutput("CoralStateTracker/lastTransitionTime", lastTransitionTime);
+    private static void recalcState() {
+        double now = Timer.getFPGATimestamp();
+
+        Logger.recordOutput("CoralStateTracker/lastTransitionTime", lastTransitionTime);
     
             switch (currentPosition) {
                 case NONE:
@@ -161,7 +174,7 @@ public class CoralStateTracker {
             return currentPosition;
     }
 
-    public void forceSet(CoralPosition newState) {
+    public static void forceSet(CoralPosition newState) {
         currentPosition = newState;
         lastTransitionTime = Timer.getFPGATimestamp();
     }
