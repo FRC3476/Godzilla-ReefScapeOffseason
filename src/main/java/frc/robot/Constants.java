@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,10 +20,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import java.util.Arrays;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -58,9 +55,18 @@ public final class Constants {
   // ====================Drive (2_)====================
   public static class DriveConstants {
     // Acceleration limits
-    // Large numbers do not cause any limitation. Reduce these if limitations are desired.
+    // Large numnbers so they don't do anything.
     public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
     public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
+
+    // Dynamic acceleration limit formula weights for: E - elevator.height*b -
+    // intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
+    public static final double DYNAMIC_ACCEL_WEIGHT_A = 0.0; // Weight for endEffectorPivotPosition
+    public static final double DYNAMIC_ACCEL_WEIGHT_B = 0.0; // Weight for elevator height
+    public static final double DYNAMIC_ACCEL_WEIGHT_C =
+        0.0; // Weight for intake pivot height reduction
+    public static final double DYNAMIC_ACCEL_WEIGHT_D =
+        0.0; // Weight for combined end effector and elevator height reduction
   }
 
   // ====================Intake (3_)====================
@@ -71,7 +77,8 @@ public final class Constants {
     public static final int intakelvl1BlockerID = 32;
 
     // Pivot position for L1 scoring (radians)
-    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0;
+    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD =
+        Units.degreesToRadians(65.7874127);
     // Stowed position for intake pivot
     public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
@@ -79,13 +86,16 @@ public final class Constants {
 
     // Setpoints
     public static final double PIVOT_TOLERANCE_RAD = 0.0;
-    public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
+    public static final double PIVOT_L1_SETPOINT_RAD = Units.degreesToRadians(65.7874127);
     public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
     // Pivot Positions
-    public static final double PIVOT_INTAKE_POSITION = 0.0;
-    public static final double PIVOT_UP_POSITION = 0.0;
-    public static final double PIVOT_SCORING_POSITION = 0.0;
+    public static final double PIVOT_INTAKE_POSITION =
+        Units.degreesToRadians(-26.9162484); // Intake down angle
+    public static final double PIVOT_UP_POSITION =
+        Units.degreesToRadians(104.5837512); // Intake up angle
+    public static final double PIVOT_SCORING_POSITION =
+        Units.degreesToRadians(65.7874127); // L1 scoring position
     public static final double SCORING_PREP_PIVOT_POSITION_RAD = 0.0;
 
     // L1 Blocker Positions
@@ -94,7 +104,6 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -162,6 +171,7 @@ public final class Constants {
     // Stall detection
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
   }
 
   // ====================Elevator (4_)====================
@@ -187,6 +197,7 @@ public final class Constants {
     public static final double STALLED_RPS = 0.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration elevatorRightTalon =
         new TalonFXConfiguration()
@@ -241,16 +252,29 @@ public final class Constants {
     public static final double ELEVATOR_HANDOFF_SETPOINT_INCH = 20.0; // 18.5
     public static final double ELEVATOR_BOTTOM_ALGAE_PULL_SETPOINT_INCH = 20.0;
     public static final double ELEVATOR_TOP_ALGAE_PULL_SETPOINT_INCH = 27.5;
-    public static final double ELEVATOR_MAX_SETPOINT_INCH = 35.0;
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
 
-    public static final double ELEVATOR_L2_SETPOINT_INCH = 7.5;
-    public static final double ELEVATOR_L3_SETPOINT_INCH = 17.0; // 18.75
-    public static final double ELEVATOR_L4_SETPOINT_INCH = 30.0;
+    public static final double ELEVATOR_L2_SETPOINT_INCH = 7.078988;
+    public static final double ELEVATOR_L3_SETPOINT_INCH = 23.003301;
+    public static final double ELEVATOR_L4_SETPOINT_INCH = 53.4375;
     public static final double ELEVATOR_NET_SETPOINT_INCH = 30.0;
-    public static final double ELEVATOR_PROCESSOR_SETPOINT_INCH = 4.0;
+    public static final double ELEVATOR_PROCESSOR_SETPOINT_INCH = 0.0;
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
+
+    // Coral scoring heights
+    public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111;
+    public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785;
+    public static final double ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH = 53.4375;
+
+    // Algae scoring heights
+    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
+    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
+
+    // Barge heights
+    public static final double ELEVATOR_BARGE_BACK_SETPOINT_INCH = 53.4375;
+    public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
 
     public static final double kElevatorDrumRadius = 1.128;
     public static final double kGearing = (13.0 / 50.0);
@@ -270,7 +294,8 @@ public final class Constants {
   public static class EndEffectorConstants {
     public static final int pivotID = 50;
     public static final int rollerID = 51;
-    public static final int coralCANRangeID = 52;
+    public static final int FIRST_CORAL_CANRANGE_ID = 52;
+    public static final int SECOND_CORAL_CANRANGE_ID = 53;
 
     public static final double PIVOT_kP = 0;
     public static final double PIVOT_kI = 0;
@@ -298,6 +323,27 @@ public final class Constants {
 
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
+
+    // ========End Effector Constant Positions========
+    // Pivot positions in radians
+    public static final double IDLE_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
+    public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-52.0336836);
+    public static final double ALGAE_IDLE_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
+    public static final double PROCESSOR_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
+    public static final double L2_L3_AGAINST_REEF_ANGLE_RAD = Units.degreesToRadians(-16.3769186);
+    public static final double L2_L3_AWAY_FROM_REEF_ANGLE_RAD = Units.degreesToRadians(17.7998883);
+    public static final double L4_AWAY_FROM_REEF_ANGLE_RAD = Units.degreesToRadians(3.1972053);
+    public static final double ALGAE_REMOVAL_ANGLE_RAD = Units.degreesToRadians(-56.8542103);
+    public static final double BARGE_FORWARD_ANGLE_RAD = Units.degreesToRadians(43.8547133);
+    public static final double BARGE_BACKWARD_ANGLE_RAD = Units.degreesToRadians(119.8473749);
+
+    // Hardstop angles
+    public static final double UPPER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(119.8473749);
+    public static final double LOWER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
+
+    // Safe angle range (for elevator up/down movement)
+    public static final double SAFE_ANGLE_UPPER_RAD = Units.degreesToRadians(53.9126895);
+    public static final double SAFE_ANGLE_LOWER_RAD = Units.degreesToRadians(-61.1115004);
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -372,6 +418,7 @@ public final class Constants {
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -402,8 +449,6 @@ public final class Constants {
     public static final double FEEDER_OUT_VOLTS = -12.0;
     public static final double FEEDER_STOP_VOLTS = 0.0;
   }
-
-
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
@@ -444,7 +489,7 @@ public final class Constants {
     public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
     public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
 
-    //Validation Constants
+    // Validation Constants
     public static final int kExpectedStdDevArrayLength = 12;
 
     // April Tags
@@ -452,15 +497,12 @@ public final class Constants {
     public static final int[] kAllowedTagIDs = {17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11};
 
     public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
-            new AprilTagFieldLayout(
-                    kAprilTagLayout.getTags().stream()
-                            .filter(
-                                    tag ->
-                                            Arrays.stream(kAllowedTagIDs)
-                                                    .anyMatch(element -> element == tag.ID))
-                            .toList(),
-                    kAprilTagLayout.getFieldLength(),
-                    kAprilTagLayout.getFieldWidth());
+        new AprilTagFieldLayout(
+            kAprilTagLayout.getTags().stream()
+                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.ID))
+                .toList(),
+            kAprilTagLayout.getFieldLength(),
+            kAprilTagLayout.getFieldWidth());
   }
 
   public record PIDgains(
@@ -482,4 +524,3 @@ public final class Constants {
     }
   }
 }
-
