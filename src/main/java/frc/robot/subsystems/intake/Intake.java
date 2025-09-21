@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -45,11 +44,20 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/JamDetected", checkForJam());
+
+    // Update CoralStateTracker with intake sensor data
+    boolean intakeSensorTriggered =
+        inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
+    CoralStateTracker.updateIntake(intakeSensorTriggered);
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {
     return Math.abs(inputs.pivotData.positionRad() - setpoint)
-        < frc.robot.Constants.IntakeConstants.PIVOT_TOLERANCE_RAD;
+        < IntakeConstants.PIVOT_TOLERANCE_RAD;
+  }
+
+  public double getCurrentPivotPosition() {
+    return inputs.pivotData.positionRad();
   }
 
   public boolean isCoralInIntake() {
@@ -188,26 +196,23 @@ public class Intake extends SubsystemBase {
 
   public Command engageCoralL1() {
     return Commands.runOnce(
-        () ->
-            this.io.setLvl1BlockerPosition(
-                Constants.IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION));
+        () -> this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_CORAL_ENGAGED_POSITION));
   }
 
   public Command disengageCoralL1() {
     return Commands.runOnce(
-        () ->
-            this.io.setLvl1BlockerPosition(
-                Constants.IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
+        () -> this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
   }
 
-  public Trigger intakeJamTrigger = new Trigger(() -> checkForJam());
+  public Trigger intakeJamTrigger =
+      new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
   public Trigger feederJamTrigger = feeder.dejamTrigger;
 
   public Command dejamFeeder() {
     return Commands.sequence(
         Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
-        Commands.waitSeconds(Constants.FeederConstants.DEJAM_DURATION_SECONDS),
+        Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 }
