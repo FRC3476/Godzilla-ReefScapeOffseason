@@ -13,12 +13,18 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -49,6 +55,14 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+  // ====================Drive (2_)====================
+  public static class DriveConstants {
+    // Acceleration limits
+    // Large numbers do not cause any limitation. Reduce these if limitations are desired.
+    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
+    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
+  }
+
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
@@ -56,6 +70,8 @@ public final class Constants {
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
 
+    // Pivot position for L1 scoring (radians)
+    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD = 0.0;
     // Stowed position for intake pivot
     public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
 
@@ -66,14 +82,46 @@ public final class Constants {
     public static final double PIVOT_L1_SETPOINT_RAD = 0.0;
     public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
+    // Pivot Positions
+    public static final double PIVOT_INTAKE_POSITION = 0.0;
+    public static final double PIVOT_UP_POSITION = 0.0;
+    public static final double PIVOT_SCORING_POSITION = 0.0;
+    public static final double SCORING_PREP_PIVOT_POSITION_RAD = 0.0;
+
+    // L1 Blocker Positions
+    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+
+    // Roller Voltages
+    public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+
+
     // Sensor IDs
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
 
+    public enum IntakeState {
+      STOW,
+      INTAKE_L1,
+      INTAKE,
+      REJECT_CORAL,
+      IDLE,
+      HAND_OFF,
+      SCORING,
+      SCORING_PREP,
+      JAM_DETECTED
+    }
+
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO =
+        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
-    public static final double ROLLER_GEAR_RATIO = 5.56; // X44- Rollers: (5.56 : 1)
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
+
+    // MOI
+    public static final double PIVOT_MOI = 0.01;
+    public static final double L1_BAR_MOI = 0.01;
+    public static final double ROLLER_MOI = 0.001;
 
     // Current limits
     // Roller, L1, Pivot
@@ -203,6 +251,19 @@ public final class Constants {
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
+
+    public static final double kElevatorDrumRadius = 1.128;
+    public static final double kGearing = (13.0 / 50.0);
+    public static final double kElevatorUnitToRotorRatio =
+        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
+
+    public static final double GEAR_RATIO =
+        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
+    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_METERS =
+        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
+    public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
+    public static final double MAX_HEIGHT_METERS = 1.0; // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
@@ -230,10 +291,10 @@ public final class Constants {
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
 
-    public static final double ALGAE_GEAR_RATIO = 12.22;
-    public static final double CORAL_GEAR_RATIO = 6.11;
+    public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
+    public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
 
-    public static final double PIVOT_GEAR_RATIO = 40;
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 40;
 
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
@@ -336,6 +397,21 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.05)
                     .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
+  }
+
+
+
+  // ====================LED (8_)====================
+  public static final class LEDConstants {
+    public static final int ID = 80;
+    public static final int kNonCandleLEDCount = 10;
+    public static final int kCandleLEDCount = 8;
+    public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
   // ====================Physical Constants====================
@@ -344,8 +420,47 @@ public final class Constants {
   }
 
   public static class VisionConstants {
+    public static final String DETECTION_LIMELIGHT = "limelight-center";
     public static final AprilTagFieldLayout fieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    public static final AprilTagFieldLayout kAprilTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
+    // Camera A (left side)
+    public static final double kCameraAPitchDegrees = 20.0;
+    public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
+    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final String kLimelightATableName = "limelight-left";
+    public static final double kRobotToCameraAForward = Units.inchesToMeters(7.8757);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.9269);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(0.0);
+
+    // Camera B (right side)
+    public static final double kCameraBPitchDegrees = 20.0;
+    public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
+    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final String kLimelightBTableName = "limelight-right";
+    public static final double kRobotToCameraBForward = Units.inchesToMeters(7.8757);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
+
+    //Validation Constants
+    public static final int kExpectedStdDevArrayLength = 12;
+
+    // April Tags
+
+    public static final int[] kAllowedTagIDs = {17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11};
+
+    public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
+            new AprilTagFieldLayout(
+                    kAprilTagLayout.getTags().stream()
+                            .filter(
+                                    tag ->
+                                            Arrays.stream(kAllowedTagIDs)
+                                                    .anyMatch(element -> element == tag.ID))
+                            .toList(),
+                    kAprilTagLayout.getFieldLength(),
+                    kAprilTagLayout.getFieldWidth());
   }
 
   public static class SuperstructureConstants {
@@ -443,3 +558,4 @@ public final class Constants {
     }
   }
 }
+

@@ -5,13 +5,13 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FeederIO {
   @AutoLog
   class FeederIOInputs {
-    public RollerData rightRollerData = new RollerData(false, 0, 0, 0, 0, 0);
-    public RollerData leftRollerData = new RollerData(false, 0, 0, 0, 0, 0);
-    public CanRangeData canRangeData = new CanRangeData(false, false, 0, 0);
+    public F_RollerData rightRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
+    public F_RollerData leftRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
+    public F_CanRangeData canRangeData = new F_CanRangeData(false, false, 0, 0);
   }
 
   /** roller-related telemetry. */
-  record RollerData(
+  record F_RollerData(
       boolean isMotorConnected,
       double voltage,
       double supplyCurrent,
@@ -19,7 +19,7 @@ public interface FeederIO {
       double temperature,
       double velocityRPS) {}
 
-  record CanRangeData(
+  record F_CanRangeData(
       boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
 
   default void updateInputs(FeederIOInputs inputs) {}

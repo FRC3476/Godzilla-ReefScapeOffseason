@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -135,6 +136,7 @@ public class RobotContainer {
 
     BuildIntakeTab();
     BuildEndEffectorTab();
+    BuildElevatorTab();
 
     RegisterDefaultCommands();
 
@@ -161,6 +163,32 @@ public class RobotContainer {
     testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
   }
 
+  private void BuildElevatorTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+
+    // Create boolean entries for while-held functionality
+    var elevatorUpHeld =
+        testTab.add("Elevator Up (While Held)", false).withPosition(0, 5).withSize(2, 1).getEntry();
+
+    var elevatorDownHeld =
+        testTab
+            .add("Elevator Down (While Held)", false)
+            .withPosition(2, 5)
+            .withSize(2, 1)
+            .getEntry();
+
+    // Create triggers based on the boolean entries
+    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
+    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownHeld.getBoolean(false));
+
+    // Configure the while-held behavior
+    elevatorUpTrigger.whileTrue(elevator.elevatorUP());
+    elevatorUpTrigger.onFalse(elevator.elevatorSTOP());
+
+    elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
+    elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
+  }
+
   private void RegisterDefaultCommands() {
     elevator.setDefaultCommand(elevator.defaultElevatorCommand());
     endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
@@ -180,6 +208,9 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
+
+    // Default command for intake subsystem
+    intake.setDefaultCommand(intake.intakeDefault());
 
     // Lock to 0° when A button is held
     controller
@@ -209,8 +240,8 @@ public class RobotContainer {
   private void configureArbitraryTriggers() {
     intake.feederJamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
