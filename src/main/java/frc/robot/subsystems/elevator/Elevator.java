@@ -108,5 +108,6 @@ public class Elevator extends SubsystemBase {
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
 
-  public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
+  public Trigger elevatorObjectTrigger =
+      new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }

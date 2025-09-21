@@ -4,178 +4,176 @@ import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralStateTracker {
-    public enum CoralPosition {
-        NONE,
-        AT_INTAKE, 
-        GOING_TO_FEEDER,
-        AT_FEEDER, 
-        AT_FIRST_END_EFFECTOR,
-        AT_SECOND_END_EFFECTOR,
-        STAGED_IN_END_EFFECTOR
-    }
+  public enum CoralPosition {
+    NONE,
+    AT_INTAKE,
+    GOING_TO_FEEDER,
+    AT_FEEDER,
+    AT_FIRST_END_EFFECTOR,
+    AT_SECOND_END_EFFECTOR,
+    STAGED_IN_END_EFFECTOR
+  }
 
-    private static final double TIMEOUT_SECONDS = 0.5;
+  private static final double TIMEOUT_SECONDS = 0.5;
 
-    private static CoralPosition currentPosition = CoralPosition.NONE;
-    private static double lastTransitionTime = Timer.getFPGATimestamp();
+  private static CoralPosition currentPosition = CoralPosition.NONE;
+  private static double lastTransitionTime = Timer.getFPGATimestamp();
 
-    private static boolean intakeTriggered = false;
-    private static boolean feederTriggered = false;
-    private static boolean firstEndEffectorTriggered = false;
-    private static boolean secondEndEffectorTriggered = false;
+  private static boolean intakeTriggered = false;
+  private static boolean feederTriggered = false;
+  private static boolean firstEndEffectorTriggered = false;
+  private static boolean secondEndEffectorTriggered = false;
 
-    private static CoralStateTracker instance = new CoralStateTracker();
+  private static CoralStateTracker instance = new CoralStateTracker();
 
-    private CoralStateTracker() {
-    }
+  private CoralStateTracker() {}
 
-    public static CoralStateTracker getInstance() {
-        return instance;
-    }
+  public static CoralStateTracker getInstance() {
+    return instance;
+  }
 
-    public static void updateIntake(boolean value) {
-        intakeTriggered = value;
-        recalcState();
-    }
+  public static void updateIntake(boolean value) {
+    intakeTriggered = value;
+    recalcState();
+  }
 
-    public static void updateFeeder(boolean value) {
-        feederTriggered = value;
-        recalcState();
-    }
+  public static void updateFeeder(boolean value) {
+    feederTriggered = value;
+    recalcState();
+  }
 
-    public static void updateFirstEndEffector(boolean value) {
-        firstEndEffectorTriggered = value;
-        recalcState();
-    }
+  public static void updateFirstEndEffector(boolean value) {
+    firstEndEffectorTriggered = value;
+    recalcState();
+  }
 
-    public static void updateSecondEndEffector(boolean value) {
-        secondEndEffectorTriggered = value;
-        recalcState();
-    }
-    
-    public static void updateBothEndEffectors(boolean firstValue, boolean secondValue) {
-        firstEndEffectorTriggered = firstValue;
-        secondEndEffectorTriggered = secondValue;
-        recalcState();
-    } 
-    
-    private static void recalcState() {
-        double now = Timer.getFPGATimestamp();
+  public static void updateSecondEndEffector(boolean value) {
+    secondEndEffectorTriggered = value;
+    recalcState();
+  }
 
-        Logger.recordOutput("CoralStateTracker/lastTransitionTime", lastTransitionTime);
-    
-            switch (currentPosition) {
-                case NONE:
-                    if (intakeTriggered) {
-                        currentPosition = CoralPosition.AT_INTAKE;
-                        lastTransitionTime = now;
-                    }
-                    if (feederTriggered) {
-                        currentPosition = CoralPosition.AT_FEEDER;
-                        lastTransitionTime = now;
-                    }
-                    break;
-    
-                case AT_INTAKE:
-                    if (intakeTriggered) {
-                        lastTransitionTime = now;
-                    }
-                    else {
-                        currentPosition = CoralPosition.GOING_TO_FEEDER;
-                        lastTransitionTime = now;
-                    }
-                    if (feederTriggered) {
-                        currentPosition = CoralPosition.AT_FEEDER;
-                        lastTransitionTime = now;
-                    }
-                    break;
+  public static void updateBothEndEffectors(boolean firstValue, boolean secondValue) {
+    firstEndEffectorTriggered = firstValue;
+    secondEndEffectorTriggered = secondValue;
+    recalcState();
+  }
 
-                case GOING_TO_FEEDER:
-                    if (firstEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (feederTriggered) {
-                        currentPosition = CoralPosition.AT_FEEDER;
-                        lastTransitionTime = now;
-                    } else if (intakeTriggered) {
-                        currentPosition = CoralPosition.AT_INTAKE;
-                        lastTransitionTime = now;
-                    
-                    } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
-                        currentPosition = CoralPosition.NONE;
-                    }
-                    break;
+  private static void recalcState() {
+    double now = Timer.getFPGATimestamp();
 
-                case AT_FEEDER:
-                    if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (firstEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (feederTriggered) {
-                        lastTransitionTime = now;
-                    } else if (intakeTriggered) {
-                        currentPosition = CoralPosition.AT_INTAKE;
-                        lastTransitionTime = now;
-                    } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
-                        currentPosition = CoralPosition.NONE;
-                    }
-                    break;
-    
-                case AT_FIRST_END_EFFECTOR:
-                    if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (firstEndEffectorTriggered) {
-                        lastTransitionTime = now;
-                    } else if (secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
-                        currentPosition = CoralPosition.NONE;
-                    }
-                    break;
-    
-                case AT_SECOND_END_EFFECTOR:
-                    if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (firstEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (secondEndEffectorTriggered) {
-                        lastTransitionTime = now;
-                    } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
-                        currentPosition = CoralPosition.NONE;
-                    }
-                    break;
-    
-                case STAGED_IN_END_EFFECTOR:
-                    if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
-                        lastTransitionTime = now;
-                    } else if (firstEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (secondEndEffectorTriggered) {
-                        currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
-                        lastTransitionTime = now;
-                    } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
-                        currentPosition = CoralPosition.NONE;
-                    }
-                    break;
-            }
+    Logger.recordOutput("CoralStateTracker/lastTransitionTime", lastTransitionTime);
+
+    switch (currentPosition) {
+      case NONE:
+        if (intakeTriggered) {
+          currentPosition = CoralPosition.AT_INTAKE;
+          lastTransitionTime = now;
         }
-    
-        public static CoralPosition getCurrentPosition() {
-            return currentPosition;
-    }
+        if (feederTriggered) {
+          currentPosition = CoralPosition.AT_FEEDER;
+          lastTransitionTime = now;
+        }
+        break;
 
-    public static void forceSet(CoralPosition newState) {
-        currentPosition = newState;
-        lastTransitionTime = Timer.getFPGATimestamp();
+      case AT_INTAKE:
+        if (intakeTriggered) {
+          lastTransitionTime = now;
+        } else {
+          currentPosition = CoralPosition.GOING_TO_FEEDER;
+          lastTransitionTime = now;
+        }
+        if (feederTriggered) {
+          currentPosition = CoralPosition.AT_FEEDER;
+          lastTransitionTime = now;
+        }
+        break;
+
+      case GOING_TO_FEEDER:
+        if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (feederTriggered) {
+          currentPosition = CoralPosition.AT_FEEDER;
+          lastTransitionTime = now;
+        } else if (intakeTriggered) {
+          currentPosition = CoralPosition.AT_INTAKE;
+          lastTransitionTime = now;
+
+        } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
+          currentPosition = CoralPosition.NONE;
+        }
+        break;
+
+      case AT_FEEDER:
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (feederTriggered) {
+          lastTransitionTime = now;
+        } else if (intakeTriggered) {
+          currentPosition = CoralPosition.AT_INTAKE;
+          lastTransitionTime = now;
+        } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
+          currentPosition = CoralPosition.NONE;
+        }
+        break;
+
+      case AT_FIRST_END_EFFECTOR:
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
+          currentPosition = CoralPosition.NONE;
+        }
+        break;
+
+      case AT_SECOND_END_EFFECTOR:
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          lastTransitionTime = now;
+        } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
+          currentPosition = CoralPosition.NONE;
+        }
+        break;
+
+      case STAGED_IN_END_EFFECTOR:
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
+          currentPosition = CoralPosition.NONE;
+        }
+        break;
     }
+  }
+
+  public static CoralPosition getCurrentPosition() {
+    return currentPosition;
+  }
+
+  public static void forceSet(CoralPosition newState) {
+    currentPosition = newState;
+    lastTransitionTime = Timer.getFPGATimestamp();
+  }
 }

@@ -90,7 +90,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
         rollerTempCelsius,
         firstRangeIsTripped,
         secondRangeIsTripped);
-    ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX, rollerTalonFX, firstCoralCANRange, secondCoralCANRange);
+    ParentDevice.optimizeBusUtilizationForAll(
+        pivotTalonFX, rollerTalonFX, firstCoralCANRange, secondCoralCANRange);
     PhoenixUtil.registerSignals(
         true,
         pivotPosition,
@@ -136,9 +137,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
             rollerSupplyCurrentAmps.getValueAsDouble(),
             rollerTempCelsius.getValueAsDouble());
     inputs.firstCANRangeData =
-        new EE_CANRangeData(BaseStatusSignal.isAllGood(firstRangeIsTripped), firstRangeIsTripped.getValue());
+        new EE_CANRangeData(
+            BaseStatusSignal.isAllGood(firstRangeIsTripped), firstRangeIsTripped.getValue());
     inputs.secondCANRangeData =
-        new EE_CANRangeData(BaseStatusSignal.isAllGood(secondRangeIsTripped), secondRangeIsTripped.getValue());
+        new EE_CANRangeData(
+            BaseStatusSignal.isAllGood(secondRangeIsTripped), secondRangeIsTripped.getValue());
   }
 
   @Override

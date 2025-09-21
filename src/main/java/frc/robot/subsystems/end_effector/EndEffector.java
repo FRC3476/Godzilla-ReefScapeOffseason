@@ -32,15 +32,17 @@ public class EndEffector extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("EndEffector", inputs);
-    
+
     // Update CoralStateTracker with sensor data
-    boolean firstSensorTriggered = inputs.firstCANRangeData.rangeIsTripped() != null 
-        && inputs.firstCANRangeData.rangeIsTripped() 
-        && inputs.firstCANRangeData.canRangeConnected();
-    boolean secondSensorTriggered = inputs.secondCANRangeData.rangeIsTripped() != null 
-        && inputs.secondCANRangeData.rangeIsTripped() 
-        && inputs.secondCANRangeData.canRangeConnected();
-        
+    boolean firstSensorTriggered =
+        inputs.firstCANRangeData.rangeIsTripped() != null
+            && inputs.firstCANRangeData.rangeIsTripped()
+            && inputs.firstCANRangeData.canRangeConnected();
+    boolean secondSensorTriggered =
+        inputs.secondCANRangeData.rangeIsTripped() != null
+            && inputs.secondCANRangeData.rangeIsTripped()
+            && inputs.secondCANRangeData.canRangeConnected();
+
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
   }
@@ -52,20 +54,20 @@ public class EndEffector extends SubsystemBase {
   public boolean isCoralInEndeffector() {
     // Use CoralStateTracker instead of individual sensor readings
     CoralStateTracker.CoralPosition position = CoralStateTracker.getCurrentPosition();
-    return position == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR ||
-           position == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR ||
-           position == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR;
+    return position == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR
+        || position == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR
+        || position == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR;
   }
 
   public boolean isCoralAtFirstSensor() {
-    return inputs.firstCANRangeData.rangeIsTripped() != null 
-        && inputs.firstCANRangeData.rangeIsTripped() 
+    return inputs.firstCANRangeData.rangeIsTripped() != null
+        && inputs.firstCANRangeData.rangeIsTripped()
         && inputs.firstCANRangeData.canRangeConnected();
   }
 
   public boolean isCoralAtSecondSensor() {
-    return inputs.secondCANRangeData.rangeIsTripped() != null 
-        && inputs.secondCANRangeData.rangeIsTripped() 
+    return inputs.secondCANRangeData.rangeIsTripped() != null
+        && inputs.secondCANRangeData.rangeIsTripped()
         && inputs.secondCANRangeData.canRangeConnected();
   }
 
