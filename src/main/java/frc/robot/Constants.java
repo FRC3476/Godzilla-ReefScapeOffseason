@@ -276,7 +276,7 @@ public final class Constants {
     public static final double ELEVATOR_BARGE_BACK_SETPOINT_INCH = 53.4375;
     public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
 
-    public static final double kElevatorDrumRadius = 1.128;
+    public static final double kElevatorDrumRadius = Units.inchesToMeters(1.128);
     public static final double kGearing = (13.0 / 50.0);
     public static final double kElevatorUnitToRotorRatio =
         kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
