@@ -202,6 +202,9 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
+    // Default command for intake subsystem
+    intake.setDefaultCommand(intake.intakeDefault());
+
     // Lock to 0° when A button is held
     controller
         .a()
@@ -230,8 +233,8 @@ public class RobotContainer {
   private void configureArbitraryTriggers() {
     intake.feederJamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
