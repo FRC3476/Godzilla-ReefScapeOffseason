@@ -45,6 +45,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.commands.test.ElevatorEndEffectorTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -134,6 +135,10 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    // Add our new combined test
+    autoChooser.addOption(
+        "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
+
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
@@ -174,6 +179,10 @@ public class RobotContainer {
             .withPosition(2, 5)
             .withSize(2, 1)
             .getEntry();
+
+    // Add our combined test
+    testTab.add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
+        .withPosition(0, 6).withSize(3, 1);
 
     // Create triggers based on the boolean entries
     Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
