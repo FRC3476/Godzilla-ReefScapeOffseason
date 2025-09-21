@@ -47,6 +47,8 @@ import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.commands.test.ElevatorEndEffectorTest;
 import frc.robot.commands.test.DrivetrainTest;
+import frc.robot.commands.test.IntakeTest;
+import frc.robot.commands.test.AutomaticPreMatchTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -136,11 +138,15 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Add our new combined test
+    // Add our test commands
     autoChooser.addOption(
         "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
     autoChooser.addOption(
         "Drivetrain Test", new DrivetrainTest(drive));
+    autoChooser.addOption(
+        "Intake Test", new IntakeTest(intake));
+    autoChooser.addOption(
+        "Automatic Pre-Match Test", new AutomaticPreMatchTest(intake, elevator, endEffector, drive));
 
     BuildIntakeTab();
     BuildEndEffectorTab();
