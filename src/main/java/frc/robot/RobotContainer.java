@@ -46,6 +46,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.commands.test.ElevatorEndEffectorTest;
+import frc.robot.commands.test.DrivetrainTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -138,10 +139,13 @@ public class RobotContainer {
     // Add our new combined test
     autoChooser.addOption(
         "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
+    autoChooser.addOption(
+        "Drivetrain Test", new DrivetrainTest(drive));
 
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
+    BuildDriveTab();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -194,6 +198,19 @@ public class RobotContainer {
 
     elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
+  }
+
+  private void BuildDriveTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
+
+    testTab.add("Drivetrain Test", new DrivetrainTest(drive))
+        .withPosition(0, 4).withSize(3, 1);
+
+    testTab.add("Drive Stop", drive.run(drive::stop))
+        .withPosition(3, 4).withSize(2, 1);
+        
+    testTab.add("Drive X-Lock", drive.run(drive::stopWithX))
+        .withPosition(5, 4).withSize(2, 1);
   }
 
   /**
