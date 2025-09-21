@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.superstructure.SuperStructure;
 import org.littletonrobotics.junction.Logger;
 
 /* **********
@@ -18,6 +19,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double setpoint;
   private boolean isZeroed = false;
+  private SuperStructure superStructure;
 
   public static Elevator getInstance() {
     if (elevatorSubsystem == null) {
@@ -28,6 +30,7 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
+    this.superStructure = SuperStructure.getInstance();
     System.out.println("====================Elevator Subsystem Online====================");
   }
 
@@ -93,6 +96,10 @@ public class Elevator extends SubsystemBase {
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+  }
+
+  public Command defaultElevatorCommand() {
+    return moveToTargetPosition(superStructure.getCurrentState().getElevatorHeight());
   }
 
   public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam());

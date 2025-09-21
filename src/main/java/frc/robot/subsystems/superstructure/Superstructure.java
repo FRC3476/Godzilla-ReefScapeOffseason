@@ -2,7 +2,6 @@ package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
@@ -47,11 +46,8 @@ public class SuperStructure extends SubsystemBase {
         .withName(name);
   }
 
-  // this command should just go in elevator AND ee
-  private Command updateStatePosition() {
-    return new ParallelCommandGroup(
-        elevator.moveToTargetPosition(stateMachine.getCurrentState().getElevatorHeight()),
-        endEffector.rotatePivot(stateMachine.getCurrentState().getEndEffectorRotation()));
+  public SuperstructureState getCurrentState() {
+    return stateMachine.getCurrentState();
   }
 
   public void setTriggers() {}

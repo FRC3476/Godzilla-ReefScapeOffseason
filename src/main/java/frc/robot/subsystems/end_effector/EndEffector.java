@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.superstructure.SuperStructure;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -11,6 +12,7 @@ public class EndEffector extends SubsystemBase {
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
   private static EndEffector endEffectorSubsystem;
+  private SuperStructure superStructure;
 
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
@@ -24,6 +26,7 @@ public class EndEffector extends SubsystemBase {
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
+    this.superStructure = SuperStructure.getInstance();
     System.out.println("====================EndEffector Subsystem Online====================");
   }
 
@@ -55,5 +58,14 @@ public class EndEffector extends SubsystemBase {
 
   public Command rotatePivot(double degree) {
     return Commands.run(() -> this.io.setPivotPosition(degree), this);
+  }
+
+  public boolean hasAlgae() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'hasAlgae'");
+  }
+
+  public Command defaultEndEffectorCommand() {
+    return rotatePivot(superStructure.getCurrentState().getEndEffectorRotation());
   }
 }
