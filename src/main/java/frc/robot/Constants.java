@@ -55,6 +55,14 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+  // ====================Drive (2_)====================
+  public static class DriveConstants {
+    // Acceleration limits
+    // Large numbers do not cause any limitation. Reduce these if limitations are desired.
+    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
+    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
+  }
+
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
