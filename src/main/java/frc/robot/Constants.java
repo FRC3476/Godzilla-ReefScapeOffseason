@@ -348,8 +348,7 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   }
 
-
-  public static class SuperstructureConstants{
+  public static class SuperstructureConstants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = 0;
     public static double STOW_ENDEFFECTOR_ROTATION_RADIANS = 0;
     public static double STOW_INTAKE_ROTATION_RADIAN = 0;
@@ -423,9 +422,7 @@ public final class Constants {
     public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
     public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
     public static double BARGE_AIM_INTAKE_ROTATION_RADIAN = 0;
-
   }
-
 
   public record PIDgains(
       double kP, double kI, double kD, double kS, double kV, double kA, double kG) {

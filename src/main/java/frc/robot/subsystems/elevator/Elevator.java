@@ -8,11 +8,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import org.littletonrobotics.junction.Logger;
 
+/* **********
+ * COLLISION AVOIDANCE SOLUTION: Elevator class gets SS instance, defaul command sets to correct position (periodicially)
+ ***********/
+
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-
   private double setpoint;
   private boolean isZeroed = false;
 

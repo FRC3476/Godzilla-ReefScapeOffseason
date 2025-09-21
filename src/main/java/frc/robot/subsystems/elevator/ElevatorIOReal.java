@@ -16,7 +16,6 @@ import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOReal implements ElevatorIO {
-
   private TalonFX rightTalon;
   private TalonFX leftTalon;
   private TalonFX extraTalon;
