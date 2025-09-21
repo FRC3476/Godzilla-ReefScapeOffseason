@@ -38,6 +38,8 @@ import java.util.function.Supplier;
 
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
 
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
@@ -183,7 +185,7 @@ public class DriveCommands {
         xSupplier,
         ySupplier,
         rotSupplier
-        ).onlyWhile(() -> !intake.isCoralInIntake());
+        ).onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
   }
 
   /**
