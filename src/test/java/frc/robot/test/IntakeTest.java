@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOReal;
 
 class IntakeMotorTest {
     private Intake intake;
 
     @BeforeEach
     void setUp() {
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOReal());
         assertNotNull(intake);
     }
 
