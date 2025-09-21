@@ -168,6 +168,7 @@ public final class Constants {
     // Stall detection
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
   }
 
   // ====================Elevator (4_)====================
@@ -184,15 +185,16 @@ public final class Constants {
     public static final double ELEVATOR_Velo = 0;
     public static final double ELEVATOR_Accel = 0;
     public static final double ELEVATOR_Jerk = 0;
-
+    
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
-
+    
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-
+    
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration elevatorRightTalon =
         new TalonFXConfiguration()
@@ -378,6 +380,7 @@ public final class Constants {
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
