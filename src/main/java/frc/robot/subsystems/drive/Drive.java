@@ -229,17 +229,31 @@ public class Drive extends SubsystemBase {
     double dt = currentTime - lastTimeSeconds;
     lastTimeSeconds = currentTime;
 
-    if (dt <= 0) { return targetSpeeds; }
+    if (dt <= 0) {
+      return targetSpeeds;
+    }
 
     // Calculate desired accelerations
-    double desiredVxAccel = (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
-    double desiredVyAccel = (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
-    double desiredOmegaAccel = (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
+    double desiredVxAccel =
+        (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
+    double desiredVyAccel =
+        (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
+    double desiredOmegaAccel =
+        (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
 
     // Clamp accelerations
-    double clampedVxAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVxAccel));
-    double clampedVyAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVyAccel));
-    double clampedOmegaAccel = Math.max(-Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, desiredOmegaAccel));
+    double clampedVxAccel =
+        Math.max(
+            -Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL,
+            Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVxAccel));
+    double clampedVyAccel =
+        Math.max(
+            -Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL,
+            Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVyAccel));
+    double clampedOmegaAccel =
+        Math.max(
+            -Constants.DriveConstants.MAX_ROTATIONAL_ACCEL,
+            Math.min(Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, desiredOmegaAccel));
 
     // Calculate limited speeds
     double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
@@ -396,13 +410,15 @@ public class Drive extends SubsystemBase {
 
   /** Sets the maximum translational acceleration in m/s². */
   public void setMaxTranslationalAcceleration(double accel) {
-    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
     Logger.recordOutput("Drive/RequestedTranslationalAccel", accel);
   }
 
   /** Sets the maximum rotational acceleration in rad/s². */
   public void setMaxRotationalAcceleration(double accel) {
-    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
     Logger.recordOutput("Drive/RequestedRotationalAccel", accel);
   }
 

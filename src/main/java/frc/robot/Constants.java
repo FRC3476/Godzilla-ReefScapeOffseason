@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,10 +20,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import java.util.Arrays;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -94,7 +91,6 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-
 
     // Sensor IDs
     public static final int CANCODER_ID = 33;
@@ -403,8 +399,6 @@ public final class Constants {
     public static final double FEEDER_STOP_VOLTS = 0.0;
   }
 
-
-
   // ====================LED (8_)====================
   public static final class LEDConstants {
     public static final int ID = 80;
@@ -444,7 +438,7 @@ public final class Constants {
     public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
     public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
 
-    //Validation Constants
+    // Validation Constants
     public static final int kExpectedStdDevArrayLength = 12;
 
     // April Tags
@@ -452,15 +446,12 @@ public final class Constants {
     public static final int[] kAllowedTagIDs = {17, 18, 19, 20, 21, 22, 6, 7, 8, 9, 10, 11};
 
     public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
-            new AprilTagFieldLayout(
-                    kAprilTagLayout.getTags().stream()
-                            .filter(
-                                    tag ->
-                                            Arrays.stream(kAllowedTagIDs)
-                                                    .anyMatch(element -> element == tag.ID))
-                            .toList(),
-                    kAprilTagLayout.getFieldLength(),
-                    kAprilTagLayout.getFieldWidth());
+        new AprilTagFieldLayout(
+            kAprilTagLayout.getTags().stream()
+                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.ID))
+                .toList(),
+            kAprilTagLayout.getFieldLength(),
+            kAprilTagLayout.getFieldWidth());
   }
 
   public static class SuperstructureConstants {
@@ -558,4 +549,3 @@ public final class Constants {
     }
   }
 }
-

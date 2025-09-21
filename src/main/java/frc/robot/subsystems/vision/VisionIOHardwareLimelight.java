@@ -2,8 +2,8 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotState;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
@@ -86,7 +86,6 @@ public class VisionIOHardwareLimelight implements VisionIO {
     }
   }
 
-
   // our code c:
   // object detection methods
 
@@ -97,13 +96,15 @@ public class VisionIOHardwareLimelight implements VisionIO {
 
   @Override
   public double getCoralTx() {
-    coral_tx = isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_tx;
+    coral_tx =
+        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_tx;
     return coral_tx;
   }
 
   @Override
   public double getCoralTy() {
-    coral_ty = isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
+    coral_ty =
+        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
     return coral_ty;
   }
 }
