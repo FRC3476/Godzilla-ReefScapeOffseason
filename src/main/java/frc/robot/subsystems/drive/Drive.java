@@ -50,6 +50,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.subsystems.superstructure.Superstructure;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -236,10 +237,14 @@ public class Drive extends SubsystemBase {
     double desiredVyAccel = (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
     double desiredOmegaAccel = (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
 
-    // Clamp accelerations
-    double clampedVxAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVxAccel));
-    double clampedVyAccel = Math.max(-Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL, desiredVyAccel));
-    double clampedOmegaAccel = Math.max(-Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, Math.min(Constants.DriveConstants.MAX_ROTATIONAL_ACCEL, desiredOmegaAccel));
+    // Calculate dynamic acceleration limits based on subsystem positions
+    double dynamicTranslationalAccel = calculateDynamicTranslationalAccelLimit();
+    double dynamicRotationalAccel = calculateDynamicRotationalAccelLimit();
+
+    // Clamp accelerations using dynamic limits
+    double clampedVxAccel = Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVxAccel));
+    double clampedVyAccel = Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVyAccel));
+    double clampedOmegaAccel = Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
 
     // Calculate limited speeds
     double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
@@ -249,7 +254,21 @@ public class Drive extends SubsystemBase {
     ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
     previousSpeeds = limitedSpeeds;
 
+    // Log the acceleration limits for debugging (actual calculation done in Superstructure)
+    Logger.recordOutput("Drive/DynamicTranslationalAccelLimit", dynamicTranslationalAccel);
+    Logger.recordOutput("Drive/DynamicRotationalAccelLimit", dynamicRotationalAccel);
+
     return limitedSpeeds;
+  }
+
+  private double calculateDynamicTranslationalAccelLimit() {
+    // Delegate to Superstructure
+    return Superstructure.getInstance().calculateDynamicTranslationalAccelLimit();
+  }
+
+
+  private double calculateDynamicRotationalAccelLimit() {
+    return Superstructure.getInstance().calculateDynamicRotationalAccelLimit();
   }
 
   /**
