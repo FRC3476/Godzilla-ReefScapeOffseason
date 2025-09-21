@@ -52,14 +52,15 @@ public final class Constants {
   // ====================Drive (2_)====================
   public static class DriveConstants {
     // Acceleration limits
-    public static final double MAX_TRANSLATIONAL_ACCEL = 3.0; // m/s²
-    public static final double MAX_ROTATIONAL_ACCEL = 10.0; // rad/s²
+    // Large numnbers so they don't do anything.
+    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
+    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
     
-    // Dynamic acceleration limit formula weights for: elevator.height*b - intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
-    public static final double DYNAMIC_ACCEL_WEIGHT_A = 10.0; // Weight for endEffectorPivotPosition
-    public static final double DYNAMIC_ACCEL_WEIGHT_B = 10.0; // Weight for elevator height
-    public static final double DYNAMIC_ACCEL_WEIGHT_C = 10.0; // Weight for intake pivot height reduction
-    public static final double DYNAMIC_ACCEL_WEIGHT_D = 10.0; // Weight for combined end effector and elevator height reduction
+    // Dynamic acceleration limit formula weights for: E - elevator.height*b - intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
+    public static final double DYNAMIC_ACCEL_WEIGHT_A = 0.0; // Weight for endEffectorPivotPosition
+    public static final double DYNAMIC_ACCEL_WEIGHT_B = 0.0; // Weight for elevator height
+    public static final double DYNAMIC_ACCEL_WEIGHT_C = 0.0; // Weight for intake pivot height reduction
+    public static final double DYNAMIC_ACCEL_WEIGHT_D = 0.0; // Weight for combined end effector and elevator height reduction
   }
 
   // ====================Intake (3_)====================
