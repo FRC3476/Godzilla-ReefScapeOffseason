@@ -41,6 +41,9 @@ public class EndEffector extends SubsystemBase {
     return inputs.canRangeData.rangeIsTripped() && inputs.canRangeData.canRangeConnected();
   }
 
+  public boolean hasAlgae() {
+    return io.checkRollerStalled() && !isCoralInEndeffector();
+  }
 
   public double getCurrentPivotPosition() {
     return inputs.pivotData.pivotPosition();
