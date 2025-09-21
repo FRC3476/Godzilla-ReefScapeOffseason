@@ -42,8 +42,9 @@ public class Superstructure extends SubsystemBase {
       double intakePivotPosition = Intake.getInstance().getCurrentPivotPosition(); // radians
       double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
 
-      //  elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
-      double dynamicLimit = elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
+      //  E- elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
+      double dynamicLimit = Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL
+                          - elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
                           - intakePivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_C
                           - (endEffectorPivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_A + elevatorHeight) * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_D;
 
@@ -62,9 +63,10 @@ public class Superstructure extends SubsystemBase {
       double elevatorHeight = elevator.getCurrentPosition(); // inches
       double intakePivotPosition = Intake.getInstance().getCurrentPivotPosition(); // radians
       double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
-      
-      //  elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
-      double dynamicLimit = elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
+
+      //  E  - elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
+      double dynamicLimit = Constants.DriveConstants.MAX_ROTATIONAL_ACCEL
+                          - elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
                           - intakePivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_C
                           - (endEffectorPivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_A + elevatorHeight) * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_D;
 
