@@ -176,9 +176,9 @@ public class RobotContainer {
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry endEffectorForwardEntry =
-        endEffectorTable.getEntry("EndEffector Forward (While Held)");
+        endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry endEffectorReverseEntry =
-        endEffectorTable.getEntry("EndEffector Reverse (While Held)");
+        endEffectorTable.getEntry("Roller Reverse (While Held)");
 
     // Initialize entries with default values
     endEffectorForwardEntry.setBoolean(false);
