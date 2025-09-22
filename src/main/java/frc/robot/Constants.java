@@ -404,9 +404,9 @@ public final class Constants {
 
   // ====================Feeder (7_)====================
   public static class FeederConstants {
-    public static final int RIGHT_ID = 35; //70 not allowed, max ID is 62
-    public static final int LEFT_ID = 36; //71 not allowed, max ID is 62
-    public static final int CANRANGE_ID = 37; //72 not allowed, max ID is 62
+    public static final int RIGHT_ID = 35; // 70 not allowed, max ID is 62
+    public static final int LEFT_ID = 36; // 71 not allowed, max ID is 62
+    public static final int CANRANGE_ID = 37; // 72 not allowed, max ID is 62
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
@@ -452,7 +452,7 @@ public final class Constants {
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
-    public static final int ID = 15; //80 not allowed, max ID is 62
+    public static final int ID = 15; // 80 not allowed, max ID is 62
     public static final int kNonCandleLEDCount = 10;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;

@@ -201,7 +201,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testPeriodic() {
     LoopTimingLogger.startTiming("TestPeriodic");
-// Add any test-specific code here if needed
+    // Add any test-specific code here if needed
     LoopTimingLogger.endTiming("TestPeriodic");
   }
 
@@ -213,12 +213,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic() {
     LoopTimingLogger.startTiming("SimulationPeriodic");
-    
 
     LoopTimingLogger.startTiming("VirtualSubsystemsSimulation");
     MagicVirtualSubsystem.runSimulationPeriodically();
     LoopTimingLogger.endTiming("VirtualSubsystemsSimulation");
-    
+
     LoopTimingLogger.endTiming("SimulationPeriodic");
   }
 }

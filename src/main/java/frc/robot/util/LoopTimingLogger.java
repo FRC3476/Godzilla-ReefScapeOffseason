@@ -5,8 +5,8 @@ import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * Utility class for measuring and logging execution time of robot periodic methods. 
- * integrates with AdvantageKit Logger for data recording.
+ * Utility class for measuring and logging execution time of robot periodic methods. integrates with
+ * AdvantageKit Logger for data recording.
  */
 public class LoopTimingLogger {
   private static final Map<String, Long> startTimes = new HashMap<>();
@@ -20,7 +20,7 @@ public class LoopTimingLogger {
 
   /**
    * Start timing measurement for a named method or operation.
-   * 
+   *
    * @param methodName The name of the method/operation being timed
    */
   public static void startTiming(String methodName) {
@@ -29,75 +29,69 @@ public class LoopTimingLogger {
 
   /**
    * End timing measurement and log the result using AdvantageKit Logger.
-   * 
+   *
    * @param methodName The name of the method/operation being timed
    * @return The execution time in milliseconds, or -1 if timing was not started
    */
   public static double endTiming(String methodName) {
     Long startTime = startTimes.get(methodName);
     if (startTime == null) {
-      Logger.recordOutput("LoopTiming/Error", "endTiming called without startTiming for: " + methodName);
+      Logger.recordOutput(
+          "LoopTiming/Error", "endTiming called without startTiming for: " + methodName);
       return -1.0;
     }
 
     long durationNanos = System.nanoTime() - startTime;
     double durationMs = durationNanos / 1_000_000.0;
-    
+
     Logger.recordOutput("LoopTiming/" + methodName + "Ms", durationMs);
-    
+
     // Track maximum timing and detect loop overruns for robotPeriodic
     if (methodName.equals("RobotPeriodic")) {
       maxLoopTime = Math.max(maxLoopTime, durationMs);
       hasLoopOverrun = durationMs > LOOP_OVERRUN_THRESHOLD_MS;
-      
+
       Logger.recordOutput("LoopTiming/MaxLoopMs", maxLoopTime);
       Logger.recordOutput("LoopTiming/LoopOverrun", hasLoopOverrun);
       Logger.recordOutput("LoopTiming/LoopUtilizationPercent", (durationMs / 20.0) * 100.0);
-      
+
       if (hasLoopOverrun) {
-        Logger.recordOutput("LoopTiming/OverrunWarning", 
-                          "[LoopTiming] WARNING: Loop overrun detected! " + 
-                          String.format("%.3f", durationMs) + "ms exceeds " + 
-                          LOOP_OVERRUN_THRESHOLD_MS + "ms threshold");
+        Logger.recordOutput(
+            "LoopTiming/OverrunWarning",
+            "[LoopTiming] WARNING: Loop overrun detected! "
+                + String.format("%.3f", durationMs)
+                + "ms exceeds "
+                + LOOP_OVERRUN_THRESHOLD_MS
+                + "ms threshold");
       }
     }
-    
+
     startTimes.remove(methodName);
-    
+
     return durationMs;
   }
 
-  /**
-   * Get the current loop overrun threshold in milliseconds.
-   */
+  /** Get the current loop overrun threshold in milliseconds. */
   public static double getLoopOverrunThreshold() {
     return LOOP_OVERRUN_THRESHOLD_MS;
   }
 
-  /**
-   * Get the maximum recorded loop time since startup.
-   */
+  /** Get the maximum recorded loop time since startup. */
   public static double getMaxLoopTime() {
     return maxLoopTime;
   }
 
-  /**
-   * Check if there has been a loop overrun since the last robotPeriodic call.
-   */
+  /** Check if there has been a loop overrun since the last robotPeriodic call. */
   public static boolean hasLoopOverrun() {
     return hasLoopOverrun;
   }
 
-  /**
-   * Reset the maximum loop time tracking 
-   */
+  /** Reset the maximum loop time tracking */
   public static void resetMaxLoopTime() {
     maxLoopTime = 0.0;
   }
 
-  /**
-   * Clear all active timings 
-   */
+  /** Clear all active timings */
   public static void clearAllTimings() {
     startTimes.clear();
   }
