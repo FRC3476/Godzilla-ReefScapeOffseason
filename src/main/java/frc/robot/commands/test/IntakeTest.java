@@ -30,9 +30,8 @@ public class IntakeTest extends SequentialCommandGroup {
       new WaitCommand(1.0),
       
       intake.disengageCoralL1(),
-      new WaitCommand(1.0),
-      
-      intake.intakeSTOP()
+      new WaitCommand(1.0)
+
     );
   }
 }
