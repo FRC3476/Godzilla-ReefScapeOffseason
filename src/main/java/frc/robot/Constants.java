@@ -263,6 +263,10 @@ public final class Constants {
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
 
+    // Homing sequence constants
+    public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
+    public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
+
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785;
