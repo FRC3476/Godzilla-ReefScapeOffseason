@@ -56,4 +56,18 @@ public class EndEffector extends SubsystemBase {
   public Command moveToTargetRadian(double degree) {
     return Commands.run(() -> this.io.setPivotPosition(degree), this);
   }
+
+  public double getCurrentAngle() {
+    return inputs.pivotData.pivotPosition();
+  }
+
+  public boolean isInTolerance(double targetAngle, double toleranceRad) {
+    return Math.abs(getCurrentAngle() - targetAngle) <= toleranceRad;
+  }
+
+  public boolean isInSafeAngleRange() {
+    double currentAngle = getCurrentAngle();
+    return currentAngle >= frc.robot.Constants.EndEffectorConstants.SAFE_ANGLE_LOWER_RAD
+        && currentAngle <= frc.robot.Constants.EndEffectorConstants.SAFE_ANGLE_UPPER_RAD;
+  }
 }

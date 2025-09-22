@@ -52,7 +52,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   public EndEffectorIOReal() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID);
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
-    coralCANRange = new CANrange(EndEffectorConstants.coralCANRangeID);
+    coralCANRange = new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID);
 
     PhoenixUtil.tryUntilOk(
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
