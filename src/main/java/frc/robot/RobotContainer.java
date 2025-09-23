@@ -229,10 +229,11 @@ public class RobotContainer {
     // Create triggers based on the NetworkTableEntry values
     Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
     Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
+
     // Add our combined test
+    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
     testTab.add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
         .withPosition(0, 6).withSize(3, 1);
-
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());
