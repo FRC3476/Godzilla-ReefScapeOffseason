@@ -19,7 +19,6 @@ public class EndEffector extends SubsystemBase {
 
   // SysId routines for characterization
   private final SysIdRoutine pivotSysId;
-  private final SysIdRoutine rollerSysId;
 
   public static EndEffector getInstance() {
     if (endEffectorSubsystem == null) {
@@ -41,17 +40,6 @@ public class EndEffector extends SubsystemBase {
                 state -> Logger.recordOutput("EndEffector/PivotSysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 voltage -> io.setPivotVoltage(voltage.in(Volts)), null, this));
-
-    // Configure SysId routines for roller motor
-    rollerSysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                state -> Logger.recordOutput("EndEffector/RollerSysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                voltage -> io.setRollerVoltage(voltage.in(Volts)), null, this));
     
     System.out.println("====================EndEffector Subsystem Online====================");
   }
@@ -98,13 +86,5 @@ public class EndEffector extends SubsystemBase {
 
   public Command sysIdDynamicPivot(SysIdRoutine.Direction direction) {
     return pivotSysId.dynamic(direction);
-  }
-
-  public Command sysIdQuasistaticRoller(SysIdRoutine.Direction direction) {
-    return rollerSysId.quasistatic(direction);
-  }
-
-  public Command sysIdDynamicRoller(SysIdRoutine.Direction direction) {
-    return rollerSysId.dynamic(direction);
   }
 }
