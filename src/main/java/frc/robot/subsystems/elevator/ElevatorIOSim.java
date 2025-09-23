@@ -37,7 +37,9 @@ public class ElevatorIOSim extends ElevatorIOReal {
             ,
             0);
 
-    rightTalon.getSimState().Orientation = ChassisReference.Clockwise_Positive;
+    rightTalon.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
+    leftTalon.getSimState().Orientation = ChassisReference.Clockwise_Positive;
+    extraTalon.getSimState().Orientation = ChassisReference.Clockwise_Positive;
     // Access the simulation state of the TalonFX motors
     rightSimState = rightTalon.getSimState();
     leftSimState = leftTalon.getSimState();
