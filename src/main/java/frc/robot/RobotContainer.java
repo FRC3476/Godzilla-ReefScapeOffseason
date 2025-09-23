@@ -139,9 +139,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Add our new combined test
-    autoChooser.addOption(
-        "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
+
     autoChooser.addOption(
         "Drivetrain Test", new DrivetrainTest(drive));
 
