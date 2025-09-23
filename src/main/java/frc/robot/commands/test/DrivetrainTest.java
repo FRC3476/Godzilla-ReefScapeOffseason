@@ -61,13 +61,6 @@ public class DrivetrainTest extends SequentialCommandGroup {
         drive.run(drive::stop),
         new WaitCommand(0.5),
         
-        // forward + rotation
-        drive.run(() -> drive.runVelocity(new ChassisSpeeds(0.3, 0.0, 0.3))),
-        new WaitCommand(2.0),
-        
-        drive.run(drive::stop),
-        new WaitCommand(0.5),
-        
         // X-lock test 
         drive.run(drive::stopWithX),
         new WaitCommand(2.0),
