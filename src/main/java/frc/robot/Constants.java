@@ -52,7 +52,7 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
-  // ====================Drive (2_)====================
+  // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     // Acceleration limits
     // Large numnbers so they don't do anything.
@@ -72,9 +72,13 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
+    // Motor IDs
     public static final int intakePivotID = 30;
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
+    // Sensor IDs
+    public static final int CANCODER_ID = 33;
+    public static final int CANRANGE_ID = 34;
 
     // Pivot position for L1 scoring (radians)
     public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD =
@@ -104,10 +108,6 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-
-    // Sensor IDs
-    public static final int CANCODER_ID = 33;
-    public static final int CANRANGE_ID = 34;
 
     public enum IntakeState {
       STOW,
@@ -215,7 +215,7 @@ public final class Constants {
                     .withMotionMagicJerk(ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -262,8 +262,6 @@ public final class Constants {
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
-
-    // Homing constants
     public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
     public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
 
@@ -406,11 +404,11 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
-  // ====================Feeder (7_)====================
+  // ====================Feeder (2_)====================
   public static class FeederConstants {
-    public static final int RIGHT_ID = 35; // 70 not allowed, max ID is 62
-    public static final int LEFT_ID = 36; // 71 not allowed, max ID is 62
-    public static final int CANRANGE_ID = 37; // 72 not allowed, max ID is 62
+    public static final int RIGHT_ID = 20;
+    public static final int LEFT_ID = 21;
+    public static final int CANRANGE_ID = 22;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
@@ -456,7 +454,7 @@ public final class Constants {
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
-    public static final int ID = 15; // 80 not allowed, max ID is 62
+    public static final int ID = 19; // 80 not allowed, max ID is 62
     public static final int kNonCandleLEDCount = 10;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
