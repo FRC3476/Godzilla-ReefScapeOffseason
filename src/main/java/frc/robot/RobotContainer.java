@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -148,9 +149,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-
-    autoChooser.addOption(
-        "Drivetrain Test", new DrivetrainTest(drive));
+    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
     BuildIntakeTab();
     BuildEndEffectorTab();
@@ -246,14 +245,11 @@ public class RobotContainer {
   private void BuildDriveTab() {
     ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
 
-    testTab.add("Drivetrain Test", new DrivetrainTest(drive))
-        .withPosition(0, 4).withSize(3, 1);
+    testTab.add("Drivetrain Test", new DrivetrainTest(drive)).withPosition(0, 4).withSize(3, 1);
 
-    testTab.add("Drive Stop", drive.run(drive::stop))
-        .withPosition(3, 4).withSize(2, 1);
-        
-    testTab.add("Drive X-Lock", drive.run(drive::stopWithX))
-        .withPosition(5, 4).withSize(2, 1);
+    testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
+
+    testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
   }
 
   /**
