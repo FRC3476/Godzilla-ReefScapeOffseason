@@ -19,14 +19,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.ElevatorEndEffectorTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -46,7 +47,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.commands.test.ElevatorEndEffectorTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -215,12 +215,15 @@ public class RobotContainer {
     elevatorDownEntry.setBoolean(false);
 
     // Add our combined test
-    testTab.add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
-        .withPosition(0, 6).withSize(3, 1);
+    ShuffleboardTab testTab = Shuffleboard.getTab("Test");
+    testTab
+        .add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
+        .withPosition(0, 6)
+        .withSize(3, 1);
 
     // Create triggers based on the boolean entries
-    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
-    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownHeld.getBoolean(false));
+    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
+    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());
@@ -278,6 +281,7 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
