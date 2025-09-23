@@ -16,10 +16,11 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -151,34 +152,67 @@ public class RobotContainer {
   }
 
   private void BuildIntakeTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Intake");
+    // Get the NetworkTable for the Intake tab
+    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
-    testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
-    testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Intake Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Intake Reverse (While Held)");
+
+    // Initialize entries with default values
+    intakeForwardEntry.setBoolean(false);
+    intakeReverseEntry.setBoolean(false);
+
+    // Create triggers based on the NetworkTableEntry values
+    Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
+    Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
+
+    // Configure the while-held behavior
+    intakeForwardTrigger.whileTrue(intake.intakeFWD());
+    intakeForwardTrigger.onFalse(intake.intakeSTOP());
+
+    intakeReverseTrigger.whileTrue(intake.intakeRVS());
+    intakeReverseTrigger.onFalse(intake.intakeSTOP());
   }
 
   private void BuildEndEffectorTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("EndEffector");
+    // Get the NetworkTable for the EndEffector tab
+    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
-    testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
-    testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry endEffectorForwardEntry =
+        endEffectorTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry endEffectorReverseEntry =
+        endEffectorTable.getEntry("Roller Reverse (While Held)");
+
+    // Initialize entries with default values
+    endEffectorForwardEntry.setBoolean(false);
+    endEffectorReverseEntry.setBoolean(false);
+
+    // Create triggers based on the NetworkTableEntry values
+    Trigger endEffectorForwardTrigger =
+        new Trigger(() -> endEffectorForwardEntry.getBoolean(false));
+    Trigger endEffectorReverseTrigger =
+        new Trigger(() -> endEffectorReverseEntry.getBoolean(false));
+    // Configure the while-held behavior
+    endEffectorForwardTrigger.whileTrue(endEffector.rollerFWD());
+    endEffectorForwardTrigger.onFalse(endEffector.rollerSTOP());
+
+    endEffectorReverseTrigger.whileTrue(endEffector.rollerRVS());
+    endEffectorReverseTrigger.onFalse(endEffector.rollerSTOP());
   }
 
   private void BuildElevatorTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+    // Get the NetworkTable for the Elevator tab
+    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
 
-    // Create boolean entries for while-held functionality
-    var elevatorUpHeld =
-        testTab.add("Elevator Up (While Held)", false).withPosition(0, 5).withSize(2, 1).getEntry();
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
+    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elevator Down (While Held)");
 
-    var elevatorDownHeld =
-        testTab
-            .add("Elevator Down (While Held)", false)
-            .withPosition(2, 5)
-            .withSize(2, 1)
-            .getEntry();
+    // Initialize entries with default values
+    elevatorUpEntry.setBoolean(false);
+    elevatorDownEntry.setBoolean(false);
 
     // Add our combined test
     testTab.add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
@@ -212,7 +246,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
 
     // Default command for intake subsystem
-    intake.setDefaultCommand(intake.intakeDefault());
+    // intake.setDefaultCommand(intake.intakeDefault());
 
     // Lock to 0° when A button is held
     controller
