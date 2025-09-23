@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.littletonrobotics.junction.Logger;
 import frc.robot.Constants.FeederConstants;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import org.littletonrobotics.junction.Logger;
 
 public class Feeder extends SubsystemBase {
   private final FeederIO io;
@@ -28,6 +30,11 @@ public class Feeder extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
     Logger.recordOutput("Feeder/JamDetected", checkForJam());
+
+    // Update CoralStateTracker with feeder sensor data
+    boolean feederSensorTriggered =
+        inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
+    CoralStateTracker.updateFeeder(feederSensorTriggered);
   }
 
   public boolean isCoralInFeeder() {
@@ -46,5 +53,6 @@ public class Feeder extends SubsystemBase {
     return io.checkMotorsStalled() && isCoralInFeeder();
   }
 
-  public Trigger dejamTrigger = new Trigger(() -> checkForJam()).debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS);
+  public Trigger dejamTrigger =
+      new Trigger(() -> checkForJam()).debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS);
 }

@@ -125,6 +125,7 @@ public class Elevator extends SubsystemBase {
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
 
+
   // SysId characterization commands
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return elevatorSysId.quasistatic(direction);

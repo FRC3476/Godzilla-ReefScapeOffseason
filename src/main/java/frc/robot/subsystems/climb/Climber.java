@@ -47,10 +47,6 @@ public class Climber extends SubsystemBase {
     io.updateInputs(inputs);
   }
 
-  public Command climbMoveToTargetPosition(double position) {
-    return Commands.run(() -> this.io.setClimbPosition(position), this);
-  }
-
   public Command climbDeploy() {
     return Commands.run(() -> this.io.runVolts(climberIntakeVolts.get()), this);
   }

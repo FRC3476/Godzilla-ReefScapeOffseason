@@ -2,7 +2,6 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
@@ -28,8 +27,6 @@ public class ClimberIOReal implements ClimberIO {
 
   // control requests
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
-
-  private MotionMagicVoltage climb_m_request = new MotionMagicVoltage(0).withEnableFOC(true);
 
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID);
@@ -64,9 +61,5 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void runVolts(double volts) {
     talon.setControl(voltsRequest.withOutput(volts));
-  }
-
-  public void setClimbPosition(double position) {
-    talon.setControl(climb_m_request.withPosition(position));
   }
 }

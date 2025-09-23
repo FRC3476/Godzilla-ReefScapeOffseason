@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Pose3d;
 
 /** Interface for vision system hardware abstraction. */
@@ -31,13 +29,16 @@ public interface VisionIO {
 
   default boolean isCoralDetected() {
     return false;
-  };
+  }
+  ;
 
   default double getCoralTx() {
     return 0.0;
-  };
+  }
+  ;
 
   default double getCoralTy() {
     return 0.0;
-  };
+  }
+  ;
 }
