@@ -26,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -36,6 +37,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
+import frc.robot.subsystems.vision.Vision;
+
+import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -108,7 +119,7 @@ public class DriveCommands {
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
    * absolute rotation with a joystick.
    */
-  public static Command joystickDriveAtAngle(
+  public static Command driveAtAngle(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -155,6 +166,28 @@ public class DriveCommands {
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+  }
+
+  // drive using object detection for coral
+
+  public static Command driveToCoral(
+    Drive drive,
+    Vision vision,
+    Intake intake
+  ) {
+    boolean isFlipped =
+          DriverStation.getAlliance().isPresent()
+          && DriverStation.getAlliance().get() == Alliance.Red;
+    DoubleSupplier xSupplier = () -> isFlipped ?
+        (vision.getCoralTy() * 0.15) * Rotation2d.fromDegrees(vision.getCoralTx()).getCos() :
+        (vision.getCoralTy() * 0.15)*Rotation2d.fromDegrees(vision.getCoralTx()).getCos();
+    DoubleSupplier ySupplier = () -> -3*Rotation2d.fromDegrees(vision.getCoralTx()).getSin();
+    Supplier<Rotation2d> rotSupplier = () -> Rotation2d.fromDegrees(drive.getPose().getRotation().getDegrees() - vision.getCoralTx() + (isFlipped ? 180 : 0));
+    return driveAtAngle(drive,
+        xSupplier,
+        ySupplier,
+        rotSupplier
+        ).onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
   }
 
   /**
