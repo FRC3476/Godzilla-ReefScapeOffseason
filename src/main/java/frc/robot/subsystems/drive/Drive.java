@@ -49,8 +49,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
-import frc.robot.util.LocalADStarAK;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -230,21 +230,29 @@ public class Drive extends SubsystemBase {
     double dt = currentTime - lastTimeSeconds;
     lastTimeSeconds = currentTime;
 
-    if (dt <= 0) { return targetSpeeds; }
+    if (dt <= 0) {
+      return targetSpeeds;
+    }
 
     // Calculate desired accelerations
-    double desiredVxAccel = (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
-    double desiredVyAccel = (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
-    double desiredOmegaAccel = (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
+    double desiredVxAccel =
+        (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
+    double desiredVyAccel =
+        (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
+    double desiredOmegaAccel =
+        (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
 
     // Calculate dynamic acceleration limits based on subsystem positions
     double dynamicTranslationalAccel = calculateDynamicTranslationalAccelLimit();
     double dynamicRotationalAccel = calculateDynamicRotationalAccelLimit();
 
     // Clamp accelerations using dynamic limits
-    double clampedVxAccel = Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVxAccel));
-    double clampedVyAccel = Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVyAccel));
-    double clampedOmegaAccel = Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
+    double clampedVxAccel =
+        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVxAccel));
+    double clampedVyAccel =
+        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVyAccel));
+    double clampedOmegaAccel =
+        Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
 
     // Calculate limited speeds
     double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
@@ -265,7 +273,6 @@ public class Drive extends SubsystemBase {
     // Delegate to Superstructure
     return Superstructure.getInstance().calculateDynamicTranslationalAccelLimit();
   }
-
 
   private double calculateDynamicRotationalAccelLimit() {
     return Superstructure.getInstance().calculateDynamicRotationalAccelLimit();
@@ -424,13 +431,15 @@ public class Drive extends SubsystemBase {
 
   /** Sets the maximum translational acceleration in m/s². */
   public void setMaxTranslationalAcceleration(double accel) {
-    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
     Logger.recordOutput("Drive/RequestedTranslationalAccel", accel);
   }
 
   /** Sets the maximum rotational acceleration in rad/s². */
   public void setMaxRotationalAcceleration(double accel) {
-    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at runtime
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
     Logger.recordOutput("Drive/RequestedRotationalAccel", accel);
   }
 

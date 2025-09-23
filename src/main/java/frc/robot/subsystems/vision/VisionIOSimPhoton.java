@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import com.google.flatbuffers.Constants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,10 +9,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
-import frc.robot.RobotState;
-import frc.robot.SimulatedRobotState;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotState;
+import frc.robot.SimulatedRobotState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

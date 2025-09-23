@@ -1,11 +1,10 @@
 package frc.robot.subsystems.vision;
 
-import java.nio.ByteBuffer;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import frc.robot.util.MathHelpers;
+import java.nio.ByteBuffer;
 
 public record MegatagPoseEstimate(
     Pose2d fieldToRobot,
