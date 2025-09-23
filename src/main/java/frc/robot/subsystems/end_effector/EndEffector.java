@@ -79,6 +79,10 @@ public class EndEffector extends SubsystemBase {
     return inputs.pivotData.pivotPosition();
   }
 
+  public boolean isInTolerance(double targetAngle, double toleranceRad) {
+    return Math.abs(getCurrentPivotPosition() - targetAngle) <= toleranceRad;
+  }
+
   public Command rollerFWD() {
     return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
   }
