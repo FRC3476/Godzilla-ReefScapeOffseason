@@ -268,8 +268,6 @@ public final class Constants {
 
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
-
-    // Homing sequence constants
     public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
     public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
 

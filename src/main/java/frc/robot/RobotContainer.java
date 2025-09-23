@@ -49,6 +49,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.commands.test.ElevatorEndEffectorTest;
+import frc.robot.commands.test.DrivetrainTest;
+import frc.robot.commands.test.IntakeTest;
+import frc.robot.commands.test.AutomaticPreMatchTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -140,7 +144,15 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+    // Add our test commands
+    autoChooser.addOption(
+        "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
+    autoChooser.addOption(
+        "Drivetrain Test", new DrivetrainTest(drive));
+    autoChooser.addOption(
+        "Intake Test", new IntakeTest(intake));
+    autoChooser.addOption(
+        "Automatic Pre-Match Test", new AutomaticPreMatchTest(intake, elevator, endEffector, drive));
 
     BuildIntakeTab();
     BuildEndEffectorTab();
@@ -220,6 +232,11 @@ public class RobotContainer {
     // Create triggers based on the NetworkTableEntry values
     Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
     Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
+
+    // Add our combined test
+    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+    testTab.add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
+        .withPosition(0, 6).withSize(3, 1);
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());

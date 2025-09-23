@@ -8,19 +8,30 @@ public class IntakeTest extends SequentialCommandGroup {
   /** Creates a new IntakeTest. */
   public IntakeTest(Intake intake) {
     addCommands(
-        intake.intakeFWD(),
-        new WaitCommand(2.0),
-        intake.intakeSTOP(),
-        new WaitCommand(0.5),
-        intake.intakeRVS(),
-        new WaitCommand(2.0),
-        intake.intakeSTOP(),
-        new WaitCommand(0.5),
-        intake.movePivotDown(),
-        new WaitCommand(1.0),
-        intake.engageCoralL1(),
-        new WaitCommand(1.0),
-        intake.disengageCoralL1(),
-        new WaitCommand(1.0));
+
+      intake.intakeFWD(),
+      new WaitCommand(2.0),
+      
+
+      intake.intakeSTOP(),
+      new WaitCommand(0.5),
+      
+
+      intake.intakeRVS(),
+      new WaitCommand(2.0),
+      
+      intake.intakeSTOP(),
+      new WaitCommand(0.5),
+      
+      intake.movePivotDown(),
+      new WaitCommand(1.0),
+      
+      intake.engageCoralL1(),
+      new WaitCommand(1.0),
+      
+      intake.disengageCoralL1(),
+      new WaitCommand(1.0)
+
+    );
   }
 }

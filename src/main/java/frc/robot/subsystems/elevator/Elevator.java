@@ -115,10 +115,11 @@ public class Elevator extends SubsystemBase {
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
 
-  /** Command to home the elevator by running it slowly downward until it zeros. */
+  /**
+   * Command to home the elevator by running it slowly downward until it zeros.
+   */
   public Command homeElevator() {
-    return Commands.run(
-            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+    return Commands.run(() -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
         .until(() -> isHomingComplete())
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))

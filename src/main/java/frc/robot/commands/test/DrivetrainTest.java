@@ -47,8 +47,8 @@ public class DrivetrainTest extends SequentialCommandGroup {
         new WaitCommand(2.0),
         drive.run(drive::stop),
         new WaitCommand(0.5),
-
-        // X-lock test
+        
+        // X-lock test 
         drive.run(drive::stopWithX),
         new WaitCommand(2.0),
         drive.run(drive::stop));
