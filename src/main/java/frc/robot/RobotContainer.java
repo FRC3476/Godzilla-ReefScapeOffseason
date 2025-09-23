@@ -16,11 +16,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -50,12 +46,8 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.Led;
-import frc.robot.subsystems.led.LedIO;
 import frc.robot.subsystems.led.LedIOHardware;
-import frc.robot.subsystems.led.LedState;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
-import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.subsystems.led.LedIOSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -113,22 +105,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
-        led = new Led(new LedIO() {
-          @Override
-          public LedState getCurrentState() {
-            return LedState.kOff;
-          }
-          
-          @Override
-          public void writePixels(LedState state) {
-            // No-op for SIM
-          }
-          
-          @Override
-          public void writePixels(LedState[] states) {
-            // No-op for SIM
-          }
-        }, robotState);
+        led = new Led(new LedIOSim(), robotState);
         break;
 
       default:
@@ -144,22 +121,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        led = new Led(new LedIO() {
-          @Override
-          public LedState getCurrentState() {
-            return LedState.kOff;
-          }
-          
-          @Override
-          public void writePixels(LedState state) {
-            // No-op for default/replay
-          }
-          
-          @Override
-          public void writePixels(LedState[] states) {
-            // No-op for default/replay
-          }
-        }, robotState);
+        led = new Led(new LedIOSim(), robotState);
         break;
     }
 
@@ -192,9 +154,9 @@ public class RobotContainer {
     // Configure arbitrary triggers
     configureArbitraryTriggers();
     
-    led.setDefaultCommand(createLedDefaultCommand());
+    led.setDefaultCommand(led.createDefaultCommand(intake, endEffector, elevator));
     
-    setupLedSpecialPatterns();
+    led.setupSpecialPatterns(intake, elevator);
   }
 
   private void BuildIntakeTab() {
@@ -288,144 +250,8 @@ public class RobotContainer {
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
 
-  /**
-   * Creates the default LED command that manages LED patterns based on robot state.
-   */
-  private Command createLedDefaultCommand() {
-    return led.commandSolidColor(() -> {
 
-      double batteryVoltage = RobotController.getBatteryVoltage();
-      if (batteryVoltage < Constants.LEDConstants.kLowBatteryThresholdVolts) {
-        return LedState.kLowBattery;
-      }
 
-      if (DriverStation.isDisabled()) {
-        // Show alliance color when disabled
-        if (DriverStation.getAlliance().isPresent()) {
-          Alliance alliance = DriverStation.getAlliance().get();
-          return alliance == Alliance.Red ? LedState.kRed : LedState.kBlue;
-        }
-        return LedState.kWhite; 
-      }
-
-      CoralPosition coralPosition = CoralStateTracker.getCurrentPosition();
-      switch (coralPosition) {
-        case AT_INTAKE:
-          return LedState.kGreen; 
-        case GOING_TO_FEEDER:
-          return LedState.kYellow; 
-        case AT_FEEDER:
-          return LedState.kOrange; 
-        case AT_FIRST_END_EFFECTOR:
-          return LedState.kCyan; 
-        case AT_SECOND_END_EFFECTOR:
-          return LedState.kBlue; 
-        case STAGED_IN_END_EFFECTOR:
-          return LedState.kPurple; 
-        case NONE:
-        default:
-          break; 
-      }
-
-      IntakeState intakeState = intake.getCurrentState();
-      switch (intakeState) {
-        case SCORING:
-        case SCORING_PREP:
-          return LedState.kCoralMode; 
-        case REJECT_CORAL:
-          return LedState.kRed; 
-        case HAND_OFF:
-          return LedState.kYellow; 
-        case JAM_DETECTED:
-          return LedState.kPink; 
-        default:
-          break; 
-      }
-
-      if (elevator.elevatorObjectTrigger.getAsBoolean()) {
-        return LedState.kPink; 
-      }
-
-      if (endEffector.isCoralInEndeffector()) {
-        return LedState.kCoralMode; 
-      }
-      if (endEffector.hasAlgae()) {
-        return LedState.kAlgaeMode; 
-      }
-
-      if (DriverStation.isAutonomous()) {
-        return LedState.kPurple; 
-      }
-
-      if (DriverStation.isTeleop()) {
-        double time = Timer.getFPGATimestamp();
-        double brightness = (Math.sin(time * 2.0) + 1.0) / 2.0; // https://www.desmos.com/calculator/qt2phfeona
-        int scaledBrightness = (int) (brightness * 255);
-        return new LedState(scaledBrightness, scaledBrightness, scaledBrightness);
-      }
-
-      // Fallback Default color
-      return LedState.kCOOrange;
-    }).withName("LED Default State Control");
-  }
-
-  /**
-   * Sets up special LED pattern triggers for specific robot conditions, like a specific intake state, specific elevator state, CoralStateTracker, DriverStation, etc.
-   * These patterns have higher priority and will override the default patterns.
-   */
-  private void setupLedSpecialPatterns() {
-// These were just added so that some of the functions are locally used
-    new Trigger(() -> intake.getCurrentState() == IntakeState.SCORING_PREP)
-        .whileTrue(led.commandBlinkingState(LedState.kWhite, LedState.kCoralMode, 0.3));
-        
-    new Trigger(() -> elevator.elevatorObjectTrigger.getAsBoolean() || checkAnyJamCondition())
-        .whileTrue(led.commandBlinkingState(LedState.kRed, LedState.kOff, 0.1));
-        
- 
-    new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR)
-        .whileTrue(led.commandSolidPattern(getStagingLedPattern()));
-
-    new Trigger(() -> DriverStation.isTeleop() && DriverStation.getMatchTime() <= 30.0 && DriverStation.getMatchTime() > 0.0)
-        .whileTrue(led.commandSolidColor(() -> getAllianceEndgameColor()));
-  }
-
-  private boolean checkAnyJamCondition() {
-    return intake.getCurrentState() == IntakeState.JAM_DETECTED;
-  }
-
-  /**
-   * Gets the appropriate LED pattern based on elevator position for staging.
-   */
-  private LedState[] getStagingLedPattern() {
-    double elevatorPosition = elevator.getCurrentPosition();
-    
-    if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L4_SETPOINT_INCH) { 
-      return createFullLedArray(LedState.kPurple);
-    } else if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L3_SETPOINT_INCH) { 
-      return LedState.kL3StagingLeds;
-    } else if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L2_SETPOINT_INCH) { 
-      return LedState.kL2StagingLeds;
-    } else {
-      return LedState.kL2StagingLeds; 
-    }
-  }
-
-  private LedState[] createFullLedArray(LedState color) {
-    LedState[] fullArray = new LedState[Constants.LEDConstants.kMaxLEDCount];
-    for (int i = 0; i < fullArray.length; i++) {
-      fullArray[i] = color;
-    }
-    return fullArray;
-  }
-
-  private LedState getAllianceEndgameColor() {
-    if (DriverStation.getAlliance().isPresent()) {
-      Alliance alliance = DriverStation.getAlliance().get();
-
-      return alliance == Alliance.Red ? LedState.kRed : LedState.kBlue;
-    }
-    return LedState.kYellow; 
-  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

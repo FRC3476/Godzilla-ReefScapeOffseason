@@ -1,34 +1,42 @@
 package frc.robot.subsystems.led;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotState;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Led extends SubsystemBase {
   private final LedIO io;
-  private final RobotState state;
 
   public record PercentageSetpoint(double pct, LedState color) {}
 
   public Led(final LedIO io, RobotState state) {
     this.io = io;
-    this.state = state;
   }
 
   @Override
   public void periodic() {
     super.periodic();
 
-    state.setLedState(getCurrentState());
+    RobotState.setLedState(getCurrentState());
     Logger.recordOutput(
         "LED/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
@@ -142,5 +150,127 @@ public class Led extends SubsystemBase {
     }
 
     return fullPixels;
+  }
+
+  public Command createDefaultCommand(Intake intake, EndEffector endEffector, Elevator elevator) {
+    return commandSolidColor(() -> {
+
+      double batteryVoltage = RobotController.getBatteryVoltage();
+      if (batteryVoltage < Constants.LEDConstants.kLowBatteryThresholdVolts) {
+        return LedState.kLowBattery;
+      }
+
+      if (DriverStation.isDisabled()) {
+        if (DriverStation.getAlliance().isPresent()) {
+          Alliance alliance = DriverStation.getAlliance().get();
+          return alliance == Alliance.Red ? LedState.kRed : LedState.kBlue;
+        }
+        return LedState.kWhite; 
+      }
+
+      CoralPosition coralPosition = CoralStateTracker.getCurrentPosition();
+      switch (coralPosition) {
+        case AT_INTAKE:
+          return LedState.kGreen; 
+        case GOING_TO_FEEDER:
+          return LedState.kYellow; 
+        case AT_FEEDER:
+          return LedState.kOrange; 
+        case AT_FIRST_END_EFFECTOR:
+          return LedState.kCyan; 
+        case AT_SECOND_END_EFFECTOR:
+          return LedState.kBlue; 
+        case STAGED_IN_END_EFFECTOR:
+          return LedState.kPurple; 
+        case NONE:
+        default:
+          break; 
+      }
+
+      IntakeState intakeState = intake.getCurrentState();
+      switch (intakeState) {
+        case SCORING:
+        case SCORING_PREP:
+          return LedState.kCoralMode; 
+        case REJECT_CORAL:
+          return LedState.kRed; 
+        case HAND_OFF:
+          return LedState.kYellow; 
+        case JAM_DETECTED:
+          return LedState.kPink; 
+        default:
+          break; 
+      }
+
+      if (elevator.elevatorObjectTrigger.getAsBoolean()) {
+        return LedState.kPink; 
+      }
+
+      if (endEffector.isCoralInEndeffector()) {
+        return LedState.kCoralMode; 
+      }
+      if (endEffector.hasAlgae()) {
+        return LedState.kAlgaeMode; 
+      }
+
+      if (DriverStation.isAutonomous()) {
+        return LedState.kPurple; 
+      }
+
+      if (DriverStation.isTeleop()) {
+        double time = Timer.getFPGATimestamp();
+        double brightness = (Math.sin(time * 2.0) + 1.0) / 2.0; // https://www.desmos.com/calculator/qt2phfeona
+        int scaledBrightness = (int) (brightness * 255);
+        return new LedState(scaledBrightness, scaledBrightness, scaledBrightness);
+      }
+
+      return LedState.kCOOrange;
+    }).withName("LED Default State Control");
+  }
+
+  public void setupSpecialPatterns(Intake intake, Elevator elevator) {
+    // These were just added so that some of the functions are locally used
+    new Trigger(() -> intake.getCurrentState() == IntakeState.SCORING_PREP)
+        .whileTrue(commandBlinkingState(LedState.kWhite, LedState.kCoralMode, 0.3));
+        
+    new Trigger(() -> elevator.elevatorObjectTrigger.getAsBoolean())
+        .whileTrue(commandBlinkingState(LedState.kRed, LedState.kOff, 0.1));
+        
+    new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR)
+        .whileTrue(commandSolidPattern(getStagingLedPattern(elevator)));
+
+    new Trigger(() -> DriverStation.isTeleop() && DriverStation.getMatchTime() <= 30.0 && DriverStation.getMatchTime() > 0.0)
+        .whileTrue(commandSolidColor(() -> getAllianceEndgameColor()));
+  }
+
+  public LedState[] getStagingLedPattern(Elevator elevator) {
+    double elevatorPosition = elevator.getCurrentPosition();
+    
+    if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L4_SETPOINT_INCH) { 
+      return createFullLedArray(LedState.kPurple);
+    } else if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L3_SETPOINT_INCH) { 
+      return LedState.kL3StagingLeds;
+    } else if (elevatorPosition >= Constants.ElevatorConstants.ELEVATOR_L2_SETPOINT_INCH) { 
+      return LedState.kL2StagingLeds;
+    } else {
+      return LedState.kL2StagingLeds; 
+    }
+  }
+
+  private LedState[] createFullLedArray(LedState color) {
+    LedState[] fullArray = new LedState[Constants.LEDConstants.kMaxLEDCount];
+    for (int i = 0; i < fullArray.length; i++) {
+      fullArray[i] = color;
+    }
+    return fullArray;
+  }
+
+  public static LedState getAllianceEndgameColor() {
+    if (DriverStation.getAlliance().isPresent()) {
+      Alliance alliance = DriverStation.getAlliance().get();
+
+      return alliance == Alliance.Red ? LedState.kRed : LedState.kBlue;
+    }
+    return LedState.kYellow; 
   }
 }
