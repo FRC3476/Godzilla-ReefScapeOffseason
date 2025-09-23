@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -36,7 +37,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.util.CommandStreamdeck;
+import frc.robot.util.Controls.StreamDeck;
+import frc.robot.util.Controls.StreamDeckButton;
+import frc.robot.util.Controls.StreamDeckButtonConfig;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -53,7 +56,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandStreamdeck streamdeck = new CommandStreamdeck("streamdeckControllerTable");
+  private final StreamDeck streamDeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -123,7 +126,7 @@ public class RobotContainer {
     BuildTestTab();
 
     // Configure the button bindings
-    configureButtonBindings();
+    configureDriverBindings();
   }
 
   private void BuildTestTab() {
@@ -132,6 +135,11 @@ public class RobotContainer {
     testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
     testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
     testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+  }
+
+  private void configureDriverBindings() {
+    configureButtonBindings();
+    configureStreamDeckBindings();
   }
 
   /**
@@ -173,23 +181,15 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // Button 1 on the streamdeck (the top-left-most is 0 and to right of that is 1)
-    // resets the gyro then flashes the image green for one second.
-    streamdeck
-      .button(1)
-      .onTrue(
-          Commands.runOnce(
-                  () ->
-                      drive.setPose(
-                          new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                  drive)
-              .ignoringDisable(true)
-          .andThen(streamdeck.flashButtonImage(1, true, 1))
-      );
+  }
 
-      // Pressing y on the controller should behave exactly like pushing button 1 on the streamdeck,
-      // as it publishes the same thing to the same networktable.
-      controller.y().onChange(streamdeck.setButtonValue(1, controller.y().getAsBoolean()));
+  private void configureStreamDeckBindings() {
+    StreamDeckButtonConfig simpleConfig = new StreamDeckButtonConfig("#000000","#FFFFFF", "");
+    Command homeElevatorCommandEXAMPLE = Commands.print("homeElevatorCommandEXAMPLE");
+    StreamDeckButton homeEleavtorButton = new StreamDeckButton(0, 0, "Home Eleavtor").withActiveConfig(simpleConfig).withText("HD");
+    streamDeck.configureButton(config -> config.addDefault(homeEleavtorButton));
+    streamDeck.button(homeEleavtorButton).onTrue(homeElevatorCommandEXAMPLE);
+
   }
 
   /**

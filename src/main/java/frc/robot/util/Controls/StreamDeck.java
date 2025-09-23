@@ -1,10 +1,12 @@
 package frc.robot.util.Controls;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -17,13 +19,12 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class StreamDeck extends SubsystemBase {
-    private final Map<StreamDeckButton, Button> buttons = new HashMap<>();
-
-    private static record Button(LoggedNetworkBoolean pressed, BooleanSupplier selected, BooleanPublisher activePub) {}
+    private final Map<StreamDeckButton, ButtonRecord> buttonMap = new HashMap<>();
+    private static record ButtonRecord(LoggedNetworkBoolean pressed, BooleanSupplier selected, BooleanPublisher activePub) {}
 
     @Override
     public void periodic() {
-        buttons.values().forEach(button -> button.activePub.set(button.selected.getAsBoolean()));
+        buttonMap.values().forEach(button -> button.activePub.set(button.selected.getAsBoolean()));
     }
 
     public StreamDeck configureButton(Consumer<ButtonConfiguration> config) {
@@ -32,16 +33,17 @@ public class StreamDeck extends SubsystemBase {
 
         var nt = NetworkTableInstance.getDefault();
         var deckTable = nt.getTable("StreamDeck");
+        List<String> networkTableKeys = StreamDeckButton.getNetworkTableKeys();
         configuration.buttonConfigurations.forEach((button, selected) -> {
-            var table = deckTable.getSubTable("Button/" + button.index);
-            table.getStringTopic("Key").publish().set("/Dashboard/" + button.key);
-            table.getStringTopic("Icon").publish().set(button.icon);
-            table.getStringTopic("Label").publish().set(button.label);
+            var table = deckTable.getSubTable("Button/" + button.getIndex());
+            List<String> dataToPublish = button.getDataToPublish();
+            IntStream.range(0, Math.min(networkTableKeys.size(), dataToPublish.size()))
+                .forEach(i -> table.getStringTopic(networkTableKeys.get(i)).publish().set(dataToPublish.get(i)));
 
-            var loggedBoolean = new LoggedNetworkBoolean(button.key, false);
-            buttons.put(
+            var loggedBoolean = new LoggedNetworkBoolean(dataToPublish.get(0), false);
+            buttonMap.put(
                     button,
-                    new Button(
+                    new ButtonRecord(
                         loggedBoolean,
                             selected.orElse(loggedBoolean::get),
                             table.getBooleanTopic("Selected").publish()));
@@ -53,47 +55,17 @@ public class StreamDeck extends SubsystemBase {
     }
 
     public Trigger button(StreamDeckButton button) {
-        if (!buttons.containsKey(button)) {
-            Alert.warning("Stream Deck button trigger added for invalid button " + button.index)
+        if (!buttonMap.containsKey(button)) {
+            Alert.warning("Stream Deck button trigger added for invalid button " + button.getIndex())
                     .enable();
             return new Trigger(() -> false);
         }
 
-        return new Trigger(buttons.get(button).pressed::get);
+        return new Trigger(buttonMap.get(button).pressed::get);
     }
 
     public ButtonGroup buttonGroup() {
         return new ButtonGroup();
-    }
-
-    public static enum StreamDeckButton {
-        kStopIntakeButton(1, 0, "Controls/StopIntakingButton", "StopIntakingIcon", "Stop"),
-        kRejectButton(2, 0, "Controls/RejectButton", "RejectIntakeIcon", "Reject"),
-        kForwardButton(0, 0, "Controls/ForwardButton", "ForceIntakeIcon", "Intake"),
-        kLeftClimbButton(0, 1, "Controls/LeftClimbButton", "LeftClimbIcon", "Left"),
-        kRightClimbButton(2, 1, "Controls/RightClimbButton", "RightClimbIcon", "Right"),
-        kCenterClimbButton(1, 1, "Controls/CenterClimbButton", "CenterClimbIcon", "Center"),
-        kRaiseShooterButton(0, 3, "Controls/ShooterUpButton", "RaiseShooterIcon", "Raise"),
-        kLowerShooterButton(2, 3, "Controls/ShooterDownButton", "LowerShooterIcon", "Lower"),
-        kShootButton(1, 2, "Controls/ShootButton", "ShootIcon", "Shoot"),
-        kStopShootButton(1, 3, "Controls/StopShootButton", "StopShooterIcon", "Stop"),
-        kSpeakerModeButton(0, 4, "Controls/SpeakerModeButton", "SpeakerModeIcon", "Speaker"),
-        kAmpModeButton(1, 4, "Controls/AmpModeButton", "AmpModeIcon", "Amp"),
-        kDriveAssistButton(2, 4, "Controls/DriveAssistButton", "Circle", "Assist"),
-        kExtendWinchButton(0, 2, "Controls/ExtendWinchButton", "ExtendWinchIcon", "Extend"),
-        kRetractWinchButton(2, 2, "Controls/RetractWinchButton", "RetractWinchIcon", "Retract");
-
-        private final int index;
-        private final String key;
-        private final String icon;
-        private final String label;
-
-        private StreamDeckButton(int row, int col, String key, String icon, String label) {
-            index = row * 5 + col % 5;
-            this.key = key;
-            this.icon = icon;
-            this.label = label;
-        }
     }
 
     public class ButtonConfiguration {
