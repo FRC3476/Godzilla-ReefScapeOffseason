@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.LoopTimingLogger;
+import frc.robot.util.MagicVirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -108,6 +110,9 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
+    // Start timing measurement for the entire robotPeriodic method
+    LoopTimingLogger.startTiming("RobotPeriodic");
+
     // Optionally switch the thread to high priority to improve loop
     // timing (see the template project documentation for details)
     // Threads.setCurrentThreadPriority(true, 99);
@@ -117,10 +122,21 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
+    LoopTimingLogger.startTiming("CommandScheduler");
     CommandScheduler.getInstance().run();
+    LoopTimingLogger.endTiming("CommandScheduler");
+
+    // Run all registered MagicVirtualSubsystem periodic methods
+    // This includes RobotState and SimulatedRobotState subsystems
+    LoopTimingLogger.startTiming("VirtualSubsystems");
+    MagicVirtualSubsystem.runPeriodically();
+    LoopTimingLogger.endTiming("VirtualSubsystems");
 
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
+
+    // End timing measurement for the entire robotPeriodic method
+    LoopTimingLogger.endTiming("RobotPeriodic");
   }
 
   /** This function is called once when the robot is disabled. */
@@ -129,7 +145,11 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    LoopTimingLogger.startTiming("DisabledPeriodic");
+
+    LoopTimingLogger.endTiming("DisabledPeriodic");
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -144,7 +164,11 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    LoopTimingLogger.startTiming("AutonomousPeriodic");
+
+    LoopTimingLogger.endTiming("AutonomousPeriodic");
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -160,7 +184,11 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    LoopTimingLogger.startTiming("TeleopPeriodic");
+
+    LoopTimingLogger.endTiming("TeleopPeriodic");
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -171,7 +199,11 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    LoopTimingLogger.startTiming("TestPeriodic");
+    // Add any test-specific code here if needed
+    LoopTimingLogger.endTiming("TestPeriodic");
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -179,5 +211,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    LoopTimingLogger.startTiming("SimulationPeriodic");
+
+    LoopTimingLogger.startTiming("VirtualSubsystemsSimulation");
+    MagicVirtualSubsystem.runSimulationPeriodically();
+    LoopTimingLogger.endTiming("VirtualSubsystemsSimulation");
+
+    LoopTimingLogger.endTiming("SimulationPeriodic");
+  }
 }

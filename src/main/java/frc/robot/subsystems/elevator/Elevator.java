@@ -83,15 +83,8 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
-            || !isZeroed)) {
-      // false alarm, elevator is stalling at the bottom
-      // make sure to run elevator down every time after turning it on
-      io.setElevatorZero();
-      isZeroed = true;
-      return false;
-    } else if (io.checkMotorsStalled()
+    if (isHomingComplete()) { return false; }
+    else if (io.checkMotorsStalled()
         && getCurrentPosition()
             >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
                 - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
@@ -103,9 +96,33 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  private boolean isHomingComplete() {
+    // Check if homing is complete using the same logic as checkForJam for bottom detection
+    if (io.checkMotorsStalled()
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
+            || !isZeroed)) {
+
+      io.setElevatorZero();
+      isZeroed = true;
+      return true;
+    }
+    return false;
+  }
+
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+  }
+
+  /**
+   * Command to home the elevator by running it slowly downward until it zeros.
+   */
+  public Command homeElevator() {
+    return Commands.run(() -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+        .until(() -> isHomingComplete())
+        .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
+        .finallyDo(() -> this.io.setElevatorVoltage(0.0))
+        .withName("HomeElevator");
   }
 
   public Trigger elevatorObjectTrigger =
