@@ -100,13 +100,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
-            || !isZeroed)) {
-      // false alarm, elevator is stalling at the bottom
-      // make sure to run elevator down every time after turning it on
-      io.setElevatorZero();
-      isZeroed = true;
+    if (isHomingComplete()) {
       return false;
     } else if (io.checkMotorsStalled()
         && getCurrentPosition()
@@ -120,12 +114,24 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  private boolean isHomingComplete() {
+    // Check if homing is complete using the same logic as checkForJam for bottom detection
+    if (io.checkMotorsStalled()
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
+            || !isZeroed)) {
+
+      io.setElevatorZero();
+      isZeroed = true;
+      return true;
+    }
+    return false;
+  }
+
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
-
-
+  
   // SysId characterization commands
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return elevatorSysId.quasistatic(direction);
@@ -135,5 +141,4 @@ public class Elevator extends SubsystemBase {
     return elevatorSysId.dynamic(direction);
   }
 
-  public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }
