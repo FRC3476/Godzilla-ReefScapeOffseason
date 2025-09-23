@@ -185,10 +185,15 @@ public class RobotContainer {
 
   private void configureStreamDeckBindings() {
     StreamDeckButtonConfig simpleConfig = new StreamDeckButtonConfig("#000000","#FFFFFF", "");
-    Command homeElevatorCommandEXAMPLE = Commands.print("homeElevatorCommandEXAMPLE");
+    
     StreamDeckButton homeEleavtorButton = new StreamDeckButton(0, 0, "Home Eleavtor").withActiveConfig(simpleConfig).withText("HD");
-    streamDeck.configureButton(config -> config.addDefault(homeEleavtorButton));
+    StreamDeckButton swerveXButton = new StreamDeckButton(3, 2, "Swerve X").withActiveConfig(simpleConfig).withText("X");
+
+    streamDeck.configureButton(config -> config.addDefault(homeEleavtorButton).addDefault(swerveXButton));
+
+    Command homeElevatorCommandEXAMPLE = Commands.print("homeElevatorCommandEXAMPLE");
     streamDeck.button(homeEleavtorButton).onTrue(homeElevatorCommandEXAMPLE);
+    streamDeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
 
   }
 
