@@ -55,7 +55,7 @@ public class ElevatorIOReal implements ElevatorIO {
     PhoenixUtil.tryUntilOk(
         5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
-    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
+    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
 
     rightPosition = rightTalon.getPosition();
     rightAppliedVolts = rightTalon.getMotorVoltage();
