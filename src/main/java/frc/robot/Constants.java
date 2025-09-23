@@ -72,9 +72,13 @@ public final class Constants {
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
+    // Motor IDs
     public static final int intakePivotID = 30;
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
+    // Sensor IDs
+    public static final int CANCODER_ID = 33;
+    public static final int CANRANGE_ID = 34;
 
     // Pivot position for L1 scoring (radians)
     public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD =
@@ -104,10 +108,6 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-
-    // Sensor IDs
-    public static final int CANCODER_ID = 33;
-    public static final int CANRANGE_ID = 34;
 
     public enum IntakeState {
       STOW,
