@@ -1,12 +1,10 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
-
-import edu.wpi.first.util.struct.Struct;
 
 /**
  * Represents an observation of a fiducial marker (AprilTag) with position and quality data.

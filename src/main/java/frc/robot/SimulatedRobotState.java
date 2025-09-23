@@ -19,7 +19,8 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.littletonrobotics.junction.Logger;
 
-// Use import "import frc.robot.SimulatedSimulatedRobotState" instead of wpilib's SimulatedSimulatedRobotState
+// Use import "import frc.robot.SimulatedSimulatedRobotState" instead of wpilib's
+// SimulatedSimulatedRobotState
 
 public class SimulatedRobotState extends MagicVirtualSubsystem {
   private static final String logRoot = "SimulatedRobotState/";
@@ -89,7 +90,8 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
     return new Trigger(
         () ->
             PoseUtils.getPerpendicularError(
-                    SimulatedRobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d())
+                    SimulatedRobotState.getGlobalPose(),
+                    FieldUtils.getClosestHPSTag().pose().toPose2d())
                 < 0.5);
   }
 
@@ -121,7 +123,8 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
 
       String calcLogRoot = logRoot + "HPS/";
       Logger.recordOutput(calcLogRoot + "Closest Tag", FieldUtils.getClosestHPSTag());
-      Logger.recordOutput(calcLogRoot + "Distance", SimulatedRobotState.hpsTracker.getDistanceMeters());
+      Logger.recordOutput(
+          calcLogRoot + "Distance", SimulatedRobotState.hpsTracker.getDistanceMeters());
       Logger.recordOutput(
           calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
       Logger.recordOutput(
