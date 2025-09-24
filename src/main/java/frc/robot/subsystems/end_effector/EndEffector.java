@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
@@ -94,11 +95,11 @@ public class EndEffector extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command rotatePivot(double degree) {
-    return Commands.run(() -> this.io.setPivotPosition(degree), this);
+  public Command rotatePivot(DoubleSupplier degreeSupplier) {
+    return Commands.run(() -> this.io.setPivotPosition(degreeSupplier.getAsDouble()), this);
   }
 
   public Command defaultEndEffectorCommand() {
-    return rotatePivot(superStructure.getCurrentState().getEndEffectorRotation());
+    return rotatePivot(() -> superStructure.getCurrentState().getEndEffectorRotation());
   }
 }

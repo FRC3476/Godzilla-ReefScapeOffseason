@@ -192,6 +192,7 @@ public class RobotContainer {
   private void RegisterDefaultCommands() {
     elevator.setDefaultCommand(elevator.defaultElevatorCommand());
     endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
+    intake.setDefaultCommand(intake.intakeDefault());
   }
 
   /**
@@ -208,9 +209,6 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-
-    // Default command for intake subsystem
-    intake.setDefaultCommand(intake.intakeDefault());
 
     // Lock to 0° when A button is held
     controller

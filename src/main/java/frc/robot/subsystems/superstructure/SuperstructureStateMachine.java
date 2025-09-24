@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.RobotState;
 import frc.robot.subsystems.end_effector.EndEffector;
 import java.io.BufferedReader;
 import java.io.File;
@@ -200,10 +201,7 @@ public class SuperstructureStateMachine {
 
   private boolean isTransitionBlocked(SuperstructureTransition transition) {
     SuperstructureState toState = transition.getToState();
-    if (toState.isCoralState() && endEffector.hasAlgae()) {
-      return true;
-    }
-    return false;
+    return toState.isCoralState() && RobotState.hasAlgae();
   }
 
   public SuperstructureState getCurrentState() {

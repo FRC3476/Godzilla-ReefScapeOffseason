@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /* **********
@@ -69,8 +70,8 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
-  public Command moveToTargetPosition(double position) {
-    return Commands.run(() -> this.setTargetPosition(position), this);
+  public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
+    return Commands.run(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
   }
 
   public Command elevatorSTOP() {
@@ -116,7 +117,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command defaultElevatorCommand() {
-    return moveToTargetPosition(superStructure.getCurrentState().getElevatorHeight());
+    return moveToTargetPosition(() -> superStructure.getCurrentState().getElevatorHeight());
   }
 
   public Trigger elevatorObjectTrigger =

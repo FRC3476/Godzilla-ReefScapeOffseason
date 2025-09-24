@@ -27,12 +27,13 @@ public class Superstructure extends SubsystemBase {
   public Superstructure(EndEffector endEffector, Elevator elevator) {
     this.endEffector = endEffector;
     this.elevator = elevator;
+    this.stateMachine = new SuperstructureStateMachine(endEffector);
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
   }
 
   @Override
   public void periodic() {
-    
+    stateMachine.continueTransition();
   }
 
   private Command setStateCommand(SuperstructureState state, String name) {

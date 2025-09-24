@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.RobotState;
 import frc.robot.subsystems.end_effector.EndEffector;
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,17 +83,15 @@ public class SuperstructureStateMachine {
   // Constants
   private static final double DEFAULT_TRANSITION_COST = 1.0;
   private static final double FUTURE_STATE_TIMEOUT_SECONDS = 3.0;
-  private static final double HEURISTIC_COST = 1.0;
   private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
   private static final String TRANSITION_KEY_SEPARATOR = "->";
   private static final String COMMAND_NAME = "SuperstructureMove";
 
   // Core data structures
   private final Map<SuperstructureState, List<SuperstructureTransition>> graph = new HashMap<>();
-  private final Set<SuperstructureState> states = new HashSet<>();
+  private final Set<SuperstructureState> registeredStates = new HashSet<>();
   private final List<SuperstructureTransition> transitions = new ArrayList<>();
   private final Map<String, Double> transitionCostMap = new HashMap<>();
-  private final EndEffector endEffector;
 
   // State management
   private final StateManager stateManager = new StateManager();
@@ -109,11 +108,8 @@ public class SuperstructureStateMachine {
 
   /**
    * Constructs a new SuperstructureStateMachine.
-   * 
-   * @param endEffector The end effector subsystem for collision detection
    */
   public SuperstructureStateMachine(EndEffector endEffector) {
-    this.endEffector = endEffector;
     initializeStateMachine();
   }
 
@@ -162,7 +158,7 @@ public class SuperstructureStateMachine {
    * @throws IllegalArgumentException if the state is not registered
    */
   public void setCurrentState(SuperstructureState state) {
-    stateManager.setCurrentState(state, states);
+    stateManager.setCurrentState(state, registeredStates);
   }
 
   /**
@@ -172,7 +168,7 @@ public class SuperstructureStateMachine {
    * @throws IllegalArgumentException if the state is not registered
    */
   public void setTargetState(SuperstructureState state) {
-    stateManager.setTargetState(state, states);
+    stateManager.setTargetState(state, registeredStates);
     continueTransition();
   }
 
@@ -186,12 +182,12 @@ public class SuperstructureStateMachine {
   public void setTargetState(SuperstructureState state, boolean setFuture, boolean wipeFuture) {
     if (stateManager.getCurrentState() == null && stateManager.getTargetState() != null) {
       if (setFuture) {
-        stateManager.setCurrentTargetState(state, states);
+        stateManager.setCurrentTargetState(state, registeredStates);
       }
       return;
     }
     
-    stateManager.setTargetState(state, states);
+    stateManager.setTargetState(state, registeredStates);
     
     if (!DriverStation.isAutonomous() && wipeFuture) {
       stateManager.clearCurrentTargetState();
@@ -255,7 +251,7 @@ public class SuperstructureStateMachine {
   private void handleInitialStateTransition(SuperstructureState targetState) {
     Command command = commandFactory.createStateTransitionCommand(
         () -> {
-          stateManager.setCurrentState(targetState, states);
+          stateManager.setCurrentState(targetState, registeredStates);
           isTransitioning = false;
           if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
             continueTransition();
@@ -272,7 +268,8 @@ public class SuperstructureStateMachine {
     List<SuperstructureTransition> path = getPrecomputedPath(currentState, targetState);
     
     if (path == null || path.isEmpty()) {
-      stateManager.setTargetState(currentState, states);
+      // No path available - set target to current state to effectively cancel the transition
+      stateManager.setTargetState(currentState, registeredStates);
       return;
     }
 
@@ -305,7 +302,7 @@ public class SuperstructureStateMachine {
     );
     
     List<SuperstructureTransition> alternativePath = 
-        pathfinder.computeDynamicTransitionPath(currentState, targetState, transitions, states, this::isTransitionBlocked);
+        pathfinder.computeDynamicTransitionPath(currentState, targetState, transitions, registeredStates, this::isTransitionBlocked);
     
     if (alternativePath != null && !alternativePath.isEmpty()) {
       return alternativePath.get(0);
@@ -325,7 +322,7 @@ public class SuperstructureStateMachine {
     isTransitioning = true;
     Command command = commandFactory.createStateTransitionCommand(
         () -> {
-          stateManager.setCurrentState(transition.getToState(), states);
+          stateManager.setCurrentState(transition.getToState(), registeredStates);
           isTransitioning = false;
           if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
             continueTransition();
@@ -340,7 +337,7 @@ public class SuperstructureStateMachine {
    */
   private boolean isTransitionBlocked(SuperstructureTransition transition) {
     SuperstructureState toState = transition.getToState();
-    return toState.isCoralState() && endEffector.hasAlgae();
+    return toState.isCoralState() && RobotState.hasAlgae();
   }
 
   /**
@@ -410,8 +407,8 @@ public class SuperstructureStateMachine {
    * Adds a transition to the state machine.
    */
   public void addTransition(SuperstructureTransition transition) {
-    states.add(transition.getFromState());
-    states.add(transition.getToState());
+    registeredStates.add(transition.getFromState());
+    registeredStates.add(transition.getToState());
     transitions.add(transition);
   }
 
@@ -429,7 +426,7 @@ public class SuperstructureStateMachine {
           precomputedPaths[from.ordinal()][to.ordinal()] = new ArrayList<>();
         } else {
           precomputedPaths[from.ordinal()][to.ordinal()] = 
-              pathfinder.computeTransitionPaths(from, to, transitions, states);
+              pathfinder.computeTransitionPaths(from, to, transitions, registeredStates);
         }
       }
     }
@@ -505,9 +502,9 @@ public class SuperstructureStateMachine {
         SuperstructureState from, 
         SuperstructureState to, 
         List<SuperstructureTransition> transitions,
-        Set<SuperstructureState> states) {
+        Set<SuperstructureState> registeredStates) {
       
-      Map<SuperstructureState, List<SuperstructureTransition>> graph = buildGraph(transitions, states, false);
+      Map<SuperstructureState, List<SuperstructureTransition>> graph = buildGraph(transitions, registeredStates, false, transition -> false);
       return findPath(from, to, graph);
     }
 
@@ -518,36 +515,28 @@ public class SuperstructureStateMachine {
         SuperstructureState from, 
         SuperstructureState to, 
         List<SuperstructureTransition> transitions,
-        Set<SuperstructureState> states,
+        Set<SuperstructureState> registeredStates,
         java.util.function.Predicate<SuperstructureTransition> isBlocked) {
       
       Map<SuperstructureState, List<SuperstructureTransition>> graph = 
-          buildGraph(transitions, states, true, isBlocked);
+          buildGraph(transitions, registeredStates, true, isBlocked);
       return findPath(from, to, graph);
     }
 
-    /**
-     * Builds a graph from transitions for pathfinding.
-     */
-    private Map<SuperstructureState, List<SuperstructureTransition>> buildGraph(
-        List<SuperstructureTransition> transitions,
-        Set<SuperstructureState> states,
-        boolean checkCollisions) {
-      return buildGraph(transitions, states, checkCollisions, t -> false);
-    }
+
 
     /**
      * Builds a graph from transitions for pathfinding with blocking check.
      */
     private Map<SuperstructureState, List<SuperstructureTransition>> buildGraph(
         List<SuperstructureTransition> transitions,
-        Set<SuperstructureState> states,
+        Set<SuperstructureState> registeredStates,
         boolean checkCollisions,
         java.util.function.Predicate<SuperstructureTransition> isBlocked) {
       
       Map<SuperstructureState, List<SuperstructureTransition>> graph = new HashMap<>();
       
-      for (SuperstructureState state : states) {
+      for (SuperstructureState state : registeredStates) {
         graph.put(state, new ArrayList<>());
       }
       
@@ -572,7 +561,7 @@ public class SuperstructureStateMachine {
       List<SuperstructureState> statePath = solver.solve(
           from,
           to,
-          (current, goal) -> current != null && current.equals(goal) ? 0 : HEURISTIC_COST,
+          (current, goal) -> current != null && current.equals(goal) ? 0 : 1,
           state -> {
             List<AStarSolver.Edge<SuperstructureState>> neighbors = new ArrayList<>();
             for (SuperstructureTransition transition : graph.get(state)) {

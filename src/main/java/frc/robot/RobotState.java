@@ -99,6 +99,10 @@ public class RobotState extends MagicVirtualSubsystem {
         .get();
   }
 
+  public static boolean hasAlgae() {
+    return frc.robot.subsystems.end_effector.EndEffector.getInstance().hasAlgae();
+  }
+
   @Override
   public void periodic() {
     Logger.recordOutput("Robot Pose", getGlobalPose());
