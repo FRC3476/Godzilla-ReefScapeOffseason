@@ -128,7 +128,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
-        "Drive Slip Current Characterization (Wall Test)", DriveCommands.slipCurrentCharacterization(drive));
+        "Drive Slip Current Characterization (Wall Test)",
+        DriveCommands.slipCurrentCharacterization(drive));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -146,6 +147,8 @@ public class RobotContainer {
     BuildEndEffectorTab();
     BuildElevatorTab();
     BuildDriveTab();
+
+    RegisterDefaultCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -229,6 +232,12 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
   }
 
+  private void RegisterDefaultCommands() {
+    elevator.setDefaultCommand(elevator.defaultElevatorCommand());
+    endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
+    intake.setDefaultCommand(intake.intakeDefault());
+  }
+
   private void BuildDriveTab() {
     ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
 
@@ -253,9 +262,6 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-
-    // Default command for intake subsystem
-    // intake.setDefaultCommand(intake.intakeDefault());
 
     // Lock to 0° when A button is held
     controller

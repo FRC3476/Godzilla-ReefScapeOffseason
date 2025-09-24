@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
@@ -12,6 +14,7 @@ public class EndEffector extends SubsystemBase {
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
   private static EndEffector endEffectorSubsystem;
+  private Superstructure superStructure;
 
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
@@ -25,6 +28,7 @@ public class EndEffector extends SubsystemBase {
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
+    this.superStructure = Superstructure.getInstance();
     System.out.println("====================EndEffector Subsystem Online====================");
   }
 
@@ -91,7 +95,11 @@ public class EndEffector extends SubsystemBase {
     return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command moveToTargetRadian(double degree) {
-    return Commands.run(() -> this.io.setPivotPosition(degree), this);
+  public Command rotatePivot(DoubleSupplier degreeSupplier) {
+    return Commands.run(() -> this.io.setPivotPosition(degreeSupplier.getAsDouble()), this);
+  }
+
+  public Command defaultEndEffectorCommand() {
+    return rotatePivot(() -> superStructure.getCurrentState().getEndEffectorRotation());
   }
 }
