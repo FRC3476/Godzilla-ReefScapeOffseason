@@ -52,7 +52,7 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
-  // ====================Drive (2_)====================
+  // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     // Acceleration limits
     // Large numnbers so they don't do anything.
@@ -63,18 +63,28 @@ public final class Constants {
     // intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
     public static final double DYNAMIC_ACCEL_WEIGHT_A = 0.0; // Weight for endEffectorPivotPosition
     public static final double DYNAMIC_ACCEL_WEIGHT_B = 0.0; // Weight for elevator height
-    public static final double DYNAMIC_ACCEL_WEIGHT_C =
-        0.0; // Weight for intake pivot height reduction
-    public static final double DYNAMIC_ACCEL_WEIGHT_D =
-        0.0; // Weight for combined end effector and elevator height reduction
+    public static final double DYNAMIC_ACCEL_WEIGHT_C = 0.0; // Weight for intake pivot height reduction
+    public static final double DYNAMIC_ACCEL_WEIGHT_D = 0.0; // Weight for combined end effector and elevator height reduction
+    
+    // Slip Current Characterization Constants (Wall Test)
+    public static final double SLIP_START_DELAY = 0.0; // Secs
+    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
+    public static final double SLIP_VELOCITY_THRESHOLD = 3476.0; // Velocity derivative indicating wheels started spinning
+    public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
+
   }
 
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
+    // Motor IDs
     public static final int intakePivotID = 30;
     public static final int intakeRollerID = 31;
     public static final int intakelvl1BlockerID = 32;
+    // Sensor IDs
+    public static final int CANCODER_ID = 33;
+    public static final int CANRANGE_ID = 34;
 
     // Pivot position for L1 scoring (radians)
     public static final double SCORE_PREPPED_L1_PIVOT_POSITION_RAD =
@@ -104,10 +114,6 @@ public final class Constants {
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
-
-    // Sensor IDs
-    public static final int CANCODER_ID = 33;
-    public static final int CANRANGE_ID = 34;
 
     public enum IntakeState {
       STOW,
@@ -215,7 +221,7 @@ public final class Constants {
                     .withMotionMagicJerk(ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -263,6 +269,10 @@ public final class Constants {
     public static final double ELEVATOR_JOG_UP_DUTY = 0.15;
     public static final double ELEVATOR_JOG_DOWN_DUTY = -0.15;
 
+    // Homing sequence constants
+    public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
+    public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
+
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785;
@@ -276,7 +286,7 @@ public final class Constants {
     public static final double ELEVATOR_BARGE_BACK_SETPOINT_INCH = 53.4375;
     public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
 
-    public static final double kElevatorDrumRadius = 1.128;
+    public static final double kElevatorDrumRadius = Units.inchesToMeters(1.128);
     public static final double kGearing = (13.0 / 50.0);
     public static final double kElevatorUnitToRotorRatio =
         kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
@@ -402,11 +412,11 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
-  // ====================Feeder (7_)====================
+  // ====================Feeder (2_)====================
   public static class FeederConstants {
-    public static final int RIGHT_ID = 70;
-    public static final int LEFT_ID = 71;
-    public static final int CANRANGE_ID = 72;
+    public static final int RIGHT_ID = 20;
+    public static final int LEFT_ID = 21;
+    public static final int CANRANGE_ID = 22;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
@@ -452,7 +462,7 @@ public final class Constants {
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
-    public static final int ID = 80;
+    public static final int ID = 19; // 80 not allowed, max ID is 62
     public static final int kNonCandleLEDCount = 10;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;

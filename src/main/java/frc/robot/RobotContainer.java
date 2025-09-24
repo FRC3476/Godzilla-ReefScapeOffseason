@@ -16,6 +16,9 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -26,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -124,6 +128,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
+        "Drive Slip Current Characterization (Wall Test)", DriveCommands.slipCurrentCharacterization(drive));
+    autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
@@ -134,11 +140,14 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
+    BuildDriveTab();
 
-    RegisterDefaultCommands();
+    RegisterDefaultCommands();  
 
     // Configure the button bindings
     configureButtonBindings();
@@ -148,38 +157,71 @@ public class RobotContainer {
   }
 
   private void BuildIntakeTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Intake");
+    // Get the NetworkTable for the Intake tab
+    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
-    testTab.add("Intake Forward", intake.intakeFWD()).withPosition(0, 4).withSize(2, 1);
-    testTab.add("Intake Reverse", intake.intakeRVS()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("Intake Stop", intake.intakeSTOP()).withPosition(4, 4).withSize(2, 1);
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Intake Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Intake Reverse (While Held)");
+
+    // Initialize entries with default values
+    intakeForwardEntry.setBoolean(false);
+    intakeReverseEntry.setBoolean(false);
+
+    // Create triggers based on the NetworkTableEntry values
+    Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
+    Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
+
+    // Configure the while-held behavior
+    intakeForwardTrigger.whileTrue(intake.intakeFWD());
+    intakeForwardTrigger.onFalse(intake.intakeSTOP());
+
+    intakeReverseTrigger.whileTrue(intake.intakeRVS());
+    intakeReverseTrigger.onFalse(intake.intakeSTOP());
   }
 
   private void BuildEndEffectorTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("EndEffector");
+    // Get the NetworkTable for the EndEffector tab
+    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
-    testTab.add("EndEffector Forward", endEffector.rollerFWD()).withPosition(0, 4).withSize(2, 1);
-    testTab.add("EndEffector Reverse", endEffector.rollerRVS()).withPosition(2, 4).withSize(2, 1);
-    testTab.add("EndEffector Stop", endEffector.rollerSTOP()).withPosition(4, 4).withSize(2, 1);
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry endEffectorForwardEntry =
+        endEffectorTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry endEffectorReverseEntry =
+        endEffectorTable.getEntry("Roller Reverse (While Held)");
+
+    // Initialize entries with default values
+    endEffectorForwardEntry.setBoolean(false);
+    endEffectorReverseEntry.setBoolean(false);
+
+    // Create triggers based on the NetworkTableEntry values
+    Trigger endEffectorForwardTrigger =
+        new Trigger(() -> endEffectorForwardEntry.getBoolean(false));
+    Trigger endEffectorReverseTrigger =
+        new Trigger(() -> endEffectorReverseEntry.getBoolean(false));
+    // Configure the while-held behavior
+    endEffectorForwardTrigger.whileTrue(endEffector.rollerFWD());
+    endEffectorForwardTrigger.onFalse(endEffector.rollerSTOP());
+
+    endEffectorReverseTrigger.whileTrue(endEffector.rollerRVS());
+    endEffectorReverseTrigger.onFalse(endEffector.rollerSTOP());
   }
 
   private void BuildElevatorTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Elevator");
+    // Get the NetworkTable for the Elevator tab
+    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
 
-    // Create boolean entries for while-held functionality
-    var elevatorUpHeld =
-        testTab.add("Elevator Up (While Held)", false).withPosition(0, 5).withSize(2, 1).getEntry();
+    // Create NetworkTableEntry instances for while-held functionality
+    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
+    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elevator Down (While Held)");
 
-    var elevatorDownHeld =
-        testTab
-            .add("Elevator Down (While Held)", false)
-            .withPosition(2, 5)
-            .withSize(2, 1)
-            .getEntry();
+    // Initialize entries with default values
+    elevatorUpEntry.setBoolean(false);
+    elevatorDownEntry.setBoolean(false);
 
-    // Create triggers based on the boolean entries
-    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpHeld.getBoolean(false));
-    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownHeld.getBoolean(false));
+    // Create triggers based on the NetworkTableEntry values
+    Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
+    Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());
@@ -193,6 +235,16 @@ public class RobotContainer {
     elevator.setDefaultCommand(elevator.defaultElevatorCommand());
     endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
+  }
+
+  private void BuildDriveTab() {
+    ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
+
+    testTab.add("Drivetrain Test", new DrivetrainTest(drive)).withPosition(0, 4).withSize(3, 1);
+
+    testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
+
+    testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
   }
 
   /**
@@ -214,7 +266,7 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
+            DriveCommands.driveAtAngle(
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),

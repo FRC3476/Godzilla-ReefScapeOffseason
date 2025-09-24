@@ -1,0 +1,157 @@
+{
+  "version": 1.0,
+  "grid_size": 75,
+  "tabs": [
+    {
+      "name": "Teleoperated",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
+    {
+      "name": "EndEffector",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "EndEffector Forward (While Held)",
+            "x": 0.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/EndEffector/EndEffector Forward (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "EndEffector Reverse (While Held)",
+            "x": 300.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/EndEffector/EndEffector Reverse (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "RollerVolts",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 150.0,
+            "height": 150.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Tuning/EndEffector/RollerVolts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Elevator",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "TestVolts",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 150.0,
+            "height": 150.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Tuning/Elevator/TestVolts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Elevator Up (While Held)",
+            "x": 0.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elevator/Elevator Up (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Elevator Down (While Held)",
+            "x": 300.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elevator/Elevator Down (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Intake",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Intake Forward (While Held)",
+            "x": 0.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Intake/Intake Forward (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Intake Reverse (While Held)",
+            "x": 300.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Intake/Intake Reverse (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "RollerVolts",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 150.0,
+            "height": 150.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Tuning/Intake/RollerVolts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
