@@ -49,6 +49,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.LedIOHardware;
+import frc.robot.subsystems.led.LedIOSim;
+import frc.robot.commands.test.DrivetrainTest;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -63,6 +67,8 @@ public class RobotContainer {
   private final Intake intake;
   private final EndEffector endEffector;
   private final Elevator elevator;
+  private final Led led;
+  private final RobotState robotState;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -72,6 +78,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    robotState = new RobotState();
+    
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -86,6 +94,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
+        led = new Led(new LedIOHardware(), robotState);
         break;
 
       case SIM:
@@ -101,6 +110,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
+        led = new Led(new LedIOSim(), robotState);
         break;
 
       default:
@@ -116,6 +126,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
+        led = new Led(new LedIOSim(), robotState);
         break;
     }
 
@@ -155,6 +166,10 @@ public class RobotContainer {
 
     // Configure arbitrary triggers
     configureArbitraryTriggers();
+    
+    led.setDefaultCommand(led.createDefaultCommand(intake, endEffector, elevator));
+    
+    led.setupSpecialPatterns(intake, elevator);
   }
 
   private void BuildIntakeTab() {
@@ -293,6 +308,9 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
+
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

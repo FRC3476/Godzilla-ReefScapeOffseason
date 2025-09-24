@@ -60,6 +60,10 @@ public class Intake extends SubsystemBase {
     return inputs.pivotData.positionRad();
   }
 
+  public IntakeState getCurrentState() {
+    return currentState;
+  }
+
   public boolean isCoralInIntake() {
     return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
   }
