@@ -137,10 +137,8 @@ public class Elevator extends SubsystemBase {
         .withName("HomeElevator");
   }
 
-<<<<<<< HEAD
   public Command defaultElevatorCommand() {
     return moveToTargetPosition(() -> superStructure.getCurrentState().getElevatorHeight());
-=======
   /** Command to home the elevator by running it slowly downward until it zeros. */
   public Command homeElevator() {
     return Commands.run(
@@ -149,7 +147,6 @@ public class Elevator extends SubsystemBase {
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
         .withName("HomeElevator");
->>>>>>> origin/DEV
   }
 
   public Trigger elevatorObjectTrigger =
