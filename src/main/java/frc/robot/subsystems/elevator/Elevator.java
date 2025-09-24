@@ -137,8 +137,6 @@ public class Elevator extends SubsystemBase {
         .withName("HomeElevator");
   }
 
-
-
   public Trigger elevatorObjectTrigger =
       new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }

@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
-/* 
+/*
 Pompt
 I am working inside of SuperstructureStateMachine
 
@@ -74,9 +74,8 @@ These changes maintain the exact same functionality while making the code much m
 Here's the refactored code with these improvements: */
 
 /**
- * Manages state transitions for the superstructure using A* pathfinding.
- * This class calculates optimal paths between states and handles dynamic
- * re-routing when transitions are blocked.
+ * Manages state transitions for the superstructure using A* pathfinding. This class calculates
+ * optimal paths between states and handles dynamic re-routing when transitions are blocked.
  */
 public class SuperstructureStateMachine {
 
@@ -95,10 +94,10 @@ public class SuperstructureStateMachine {
 
   // State management
   private final StateManager stateManager = new StateManager();
-  
+
   // Pathfinding
   private final Pathfinder pathfinder = new Pathfinder();
-  
+
   // Command execution
   private final CommandFactory commandFactory = new CommandFactory();
 
@@ -106,9 +105,7 @@ public class SuperstructureStateMachine {
   private List<SuperstructureTransition>[][] precomputedPaths;
   private boolean isTransitioning = false;
 
-  /**
-   * Constructs a new SuperstructureStateMachine.
-   */
+  /** Constructs a new SuperstructureStateMachine. */
   public SuperstructureStateMachine(EndEffector endEffector) {
     initializeStateMachine();
   }
@@ -126,7 +123,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Gets the current state of the superstructure.
-   * 
+   *
    * @return The current state, or null if not set
    */
   public SuperstructureState getCurrentState() {
@@ -135,7 +132,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Gets the target state the superstructure is trying to reach.
-   * 
+   *
    * @return The target state, or null if not set
    */
   public SuperstructureState getTargetState() {
@@ -144,7 +141,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Gets the immediate next state in the transition path.
-   * 
+   *
    * @return The current target state, or null if not set
    */
   public SuperstructureState getCurrentTargetState() {
@@ -153,7 +150,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Sets the current state of the superstructure.
-   * 
+   *
    * @param state The new current state
    * @throws IllegalArgumentException if the state is not registered
    */
@@ -163,7 +160,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Sets the target state for the superstructure.
-   * 
+   *
    * @param state The new target state
    * @throws IllegalArgumentException if the state is not registered
    */
@@ -174,7 +171,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Sets the target state with additional options for future state management.
-   * 
+   *
    * @param state The new target state
    * @param setFuture Whether to set this as a future desired state
    * @param wipeFuture Whether to clear future states in teleop
@@ -186,19 +183,19 @@ public class SuperstructureStateMachine {
       }
       return;
     }
-    
+
     stateManager.setTargetState(state, registeredStates);
-    
+
     if (!DriverStation.isAutonomous() && wipeFuture) {
       stateManager.clearCurrentTargetState();
     }
-    
+
     continueTransition();
   }
 
   /**
    * Gets the future desired state if it hasn't timed out.
-   * 
+   *
    * @return The future desired state, or null if none or timed out
    */
   public SuperstructureState getFutureDesiredState() {
@@ -207,7 +204,7 @@ public class SuperstructureStateMachine {
 
   /**
    * Gets the transition cost between two states.
-   * 
+   *
    * @param from The source state
    * @param to The destination state
    * @return The transition cost, or default cost if not specified
@@ -217,8 +214,8 @@ public class SuperstructureStateMachine {
   }
 
   /**
-   * Continues the transition process to reach the target state.
-   * This method handles the main transition logic and command scheduling.
+   * Continues the transition process to reach the target state. This method handles the main
+   * transition logic and command scheduling.
    */
   public void continueTransition() {
     if (isTransitioning) {
@@ -245,28 +242,25 @@ public class SuperstructureStateMachine {
 
   // ==================== PRIVATE METHODS ====================
 
-  /**
-   * Handles the initial state transition when current state is null.
-   */
+  /** Handles the initial state transition when current state is null. */
   private void handleInitialStateTransition(SuperstructureState targetState) {
-    Command command = commandFactory.createStateTransitionCommand(
-        () -> {
-          stateManager.setCurrentState(targetState, registeredStates);
-          isTransitioning = false;
-          if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
-            continueTransition();
-          }
-        }
-    );
+    Command command =
+        commandFactory.createStateTransitionCommand(
+            () -> {
+              stateManager.setCurrentState(targetState, registeredStates);
+              isTransitioning = false;
+              if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
+                continueTransition();
+              }
+            });
     command.schedule();
   }
 
-  /**
-   * Executes the next transition in the path to the target state.
-   */
-  private void executeNextTransition(SuperstructureState currentState, SuperstructureState targetState) {
+  /** Executes the next transition in the path to the target state. */
+  private void executeNextTransition(
+      SuperstructureState currentState, SuperstructureState targetState) {
     List<SuperstructureTransition> path = getPrecomputedPath(currentState, targetState);
-    
+
     if (path == null || path.isEmpty()) {
       // No path available - set target to current state to effectively cancel the transition
       stateManager.setTargetState(currentState, registeredStates);
@@ -281,16 +275,14 @@ public class SuperstructureStateMachine {
     executeTransition(nextTransition);
   }
 
-  /**
-   * Finds a valid transition from the given path, using dynamic pathfinding if needed.
-   */
+  /** Finds a valid transition from the given path, using dynamic pathfinding if needed. */
   private SuperstructureTransition findValidTransition(
-      List<SuperstructureTransition> path, 
-      SuperstructureState currentState, 
+      List<SuperstructureTransition> path,
+      SuperstructureState currentState,
       SuperstructureState targetState) {
-    
+
     SuperstructureTransition nextTransition = path.get(0);
-    
+
     if (!isTransitionBlocked(nextTransition)) {
       return nextTransition;
     }
@@ -298,72 +290,63 @@ public class SuperstructureStateMachine {
     // Try dynamic pathfinding for blocked transitions
     Logger.recordOutput(
         "Superstructure/BlockedTransition",
-        "Precomputed transition " + nextTransition.toString() + " is blocked. Searching for alternative."
-    );
-    
-    List<SuperstructureTransition> alternativePath = 
-        pathfinder.computeDynamicTransitionPath(currentState, targetState, transitions, registeredStates, this::isTransitionBlocked);
-    
+        "Precomputed transition "
+            + nextTransition.toString()
+            + " is blocked. Searching for alternative.");
+
+    List<SuperstructureTransition> alternativePath =
+        pathfinder.computeDynamicTransitionPath(
+            currentState, targetState, transitions, registeredStates, this::isTransitionBlocked);
+
     if (alternativePath != null && !alternativePath.isEmpty()) {
       return alternativePath.get(0);
     } else {
       Logger.recordOutput(
           "Superstructure/BlockedTransition",
-          "No alternative transition available from " + currentState
-      );
+          "No alternative transition available from " + currentState);
       return null;
     }
   }
 
-  /**
-   * Executes a transition by scheduling the appropriate command.
-   */
+  /** Executes a transition by scheduling the appropriate command. */
   private void executeTransition(SuperstructureTransition transition) {
     isTransitioning = true;
-    Command command = commandFactory.createStateTransitionCommand(
-        () -> {
-          stateManager.setCurrentState(transition.getToState(), registeredStates);
-          isTransitioning = false;
-          if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
-            continueTransition();
-          }
-        }
-    );
+    Command command =
+        commandFactory.createStateTransitionCommand(
+            () -> {
+              stateManager.setCurrentState(transition.getToState(), registeredStates);
+              isTransitioning = false;
+              if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
+                continueTransition();
+              }
+            });
     command.schedule();
   }
 
-  /**
-   * Checks if a transition is blocked by current conditions.
-   */
+  /** Checks if a transition is blocked by current conditions. */
   private boolean isTransitionBlocked(SuperstructureTransition transition) {
     SuperstructureState toState = transition.getToState();
     return toState.isCoralState() && RobotState.hasAlgae();
   }
 
-  /**
-   * Gets a precomputed path between two states.
-   */
+  /** Gets a precomputed path between two states. */
   private List<SuperstructureTransition> getPrecomputedPath(
       SuperstructureState from, SuperstructureState to) {
     return precomputedPaths[from.ordinal()][to.ordinal()];
   }
 
-  /**
-   * Generates a transition key for cost lookup.
-   */
+  /** Generates a transition key for cost lookup. */
   private String getTransitionKey(SuperstructureState from, SuperstructureState to) {
     return from.name() + TRANSITION_KEY_SEPARATOR + to.name();
   }
 
   // ==================== INITIALIZATION METHODS ====================
 
-  /**
-   * Loads transition costs from the configuration file.
-   */
+  /** Loads transition costs from the configuration file. */
   private void loadTransitionCosts() {
     transitionCostMap.clear();
     File costFile = new File(Filesystem.getDeployDirectory(), TRANSITION_COSTS_FILE);
-    
+
     try (BufferedReader br = new BufferedReader(new FileReader(costFile))) {
       String line;
       while ((line = br.readLine()) != null) {
@@ -372,16 +355,12 @@ public class SuperstructureStateMachine {
       Logger.recordOutput("Using Transition Costs", true);
     } catch (IOException e) {
       Logger.recordOutput(
-          "Superstructure/Error", 
-          "Failed to load transition costs: " + e.getMessage()
-      );
+          "Superstructure/Error", "Failed to load transition costs: " + e.getMessage());
       Logger.recordOutput("Using Transition Costs", false);
     }
   }
 
-  /**
-   * Parses a single line from the transition costs file.
-   */
+  /** Parses a single line from the transition costs file. */
   private void parseTransitionCostLine(String line) {
     String[] parts = line.split(",");
     if (parts.length == 3) {
@@ -391,9 +370,7 @@ public class SuperstructureStateMachine {
     }
   }
 
-  /**
-   * Automatically generates transitions between all allowed states.
-   */
+  /** Automatically generates transitions between all allowed states. */
   public void autoGenerateTransitions() {
     for (SuperstructureState from : SuperstructureState.values()) {
       for (SuperstructureState to : from.getAllowedStates()) {
@@ -403,18 +380,14 @@ public class SuperstructureStateMachine {
     }
   }
 
-  /**
-   * Adds a transition to the state machine.
-   */
+  /** Adds a transition to the state machine. */
   public void addTransition(SuperstructureTransition transition) {
     registeredStates.add(transition.getFromState());
     registeredStates.add(transition.getToState());
     transitions.add(transition);
   }
 
-  /**
-   * Precomputes all possible paths between states for performance.
-   */
+  /** Precomputes all possible paths between states for performance. */
   @SuppressWarnings("unchecked")
   private void precomputeAllPaths() {
     int numStates = SuperstructureState.values().length;
@@ -425,7 +398,7 @@ public class SuperstructureStateMachine {
         if (from.equals(to)) {
           precomputedPaths[from.ordinal()][to.ordinal()] = new ArrayList<>();
         } else {
-          precomputedPaths[from.ordinal()][to.ordinal()] = 
+          precomputedPaths[from.ordinal()][to.ordinal()] =
               pathfinder.computeTransitionPaths(from, to, transitions, registeredStates);
         }
       }
@@ -434,9 +407,7 @@ public class SuperstructureStateMachine {
 
   // ==================== INNER CLASSES ====================
 
-  /**
-   * Manages state-related operations and validation.
-   */
+  /** Manages state-related operations and validation. */
   private static class StateManager {
     private SuperstructureState currentState;
     private SuperstructureState targetState;
@@ -465,7 +436,8 @@ public class SuperstructureStateMachine {
       targetState = state;
     }
 
-    public void setCurrentTargetState(SuperstructureState state, Set<SuperstructureState> validStates) {
+    public void setCurrentTargetState(
+        SuperstructureState state, Set<SuperstructureState> validStates) {
       validateState(state, validStates);
       currentTargetState = state;
       currentTargetStateTime = Timer.getFPGATimestamp();
@@ -476,8 +448,8 @@ public class SuperstructureStateMachine {
     }
 
     public SuperstructureState getFutureDesiredState() {
-      if (currentTargetState != null && 
-          Timer.getFPGATimestamp() - currentTargetStateTime > FUTURE_STATE_TIMEOUT_SECONDS) {
+      if (currentTargetState != null
+          && Timer.getFPGATimestamp() - currentTargetStateTime > FUTURE_STATE_TIMEOUT_SECONDS) {
         currentTargetState = null;
       }
       return currentTargetState;
@@ -490,138 +462,121 @@ public class SuperstructureStateMachine {
     }
   }
 
-  /**
-   * Handles pathfinding operations using A* algorithm.
-   */
+  /** Handles pathfinding operations using A* algorithm. */
   private static class Pathfinder {
-    
-    /**
-     * Computes transition paths between two states using A* pathfinding.
-     */
+
+    /** Computes transition paths between two states using A* pathfinding. */
     public List<SuperstructureTransition> computeTransitionPaths(
-        SuperstructureState from, 
-        SuperstructureState to, 
+        SuperstructureState from,
+        SuperstructureState to,
         List<SuperstructureTransition> transitions,
         Set<SuperstructureState> registeredStates) {
-      
-      Map<SuperstructureState, List<SuperstructureTransition>> graph = buildGraph(transitions, registeredStates, false, transition -> false);
+
+      Map<SuperstructureState, List<SuperstructureTransition>> graph =
+          buildGraph(transitions, registeredStates, false, transition -> false);
       return findPath(from, to, graph);
     }
 
-    /**
-     * Computes dynamic transition paths considering current blocking conditions.
-     */
+    /** Computes dynamic transition paths considering current blocking conditions. */
     public List<SuperstructureTransition> computeDynamicTransitionPath(
-        SuperstructureState from, 
-        SuperstructureState to, 
+        SuperstructureState from,
+        SuperstructureState to,
         List<SuperstructureTransition> transitions,
         Set<SuperstructureState> registeredStates,
         java.util.function.Predicate<SuperstructureTransition> isBlocked) {
-      
-      Map<SuperstructureState, List<SuperstructureTransition>> graph = 
+
+      Map<SuperstructureState, List<SuperstructureTransition>> graph =
           buildGraph(transitions, registeredStates, true, isBlocked);
       return findPath(from, to, graph);
     }
 
-
-
-    /**
-     * Builds a graph from transitions for pathfinding with blocking check.
-     */
+    /** Builds a graph from transitions for pathfinding with blocking check. */
     private Map<SuperstructureState, List<SuperstructureTransition>> buildGraph(
         List<SuperstructureTransition> transitions,
         Set<SuperstructureState> registeredStates,
         boolean checkCollisions,
         java.util.function.Predicate<SuperstructureTransition> isBlocked) {
-      
+
       Map<SuperstructureState, List<SuperstructureTransition>> graph = new HashMap<>();
-      
+
       for (SuperstructureState state : registeredStates) {
         graph.put(state, new ArrayList<>());
       }
-      
+
       for (SuperstructureTransition transition : transitions) {
         if (!checkCollisions || (!transition.hasCollision() && !isBlocked.test(transition))) {
           graph.get(transition.getFromState()).add(transition);
         }
       }
-      
+
       return graph;
     }
 
-    /**
-     * Finds a path between two states using A* algorithm.
-     */
+    /** Finds a path between two states using A* algorithm. */
     private List<SuperstructureTransition> findPath(
-        SuperstructureState from, 
-        SuperstructureState to, 
+        SuperstructureState from,
+        SuperstructureState to,
         Map<SuperstructureState, List<SuperstructureTransition>> graph) {
-      
+
       AStarSolver<SuperstructureState> solver = new AStarSolver<>();
-      List<SuperstructureState> statePath = solver.solve(
-          from,
-          to,
-          (current, goal) -> current != null && current.equals(goal) ? 0 : 1,
-          state -> {
-            List<AStarSolver.Edge<SuperstructureState>> neighbors = new ArrayList<>();
-            for (SuperstructureTransition transition : graph.get(state)) {
-              neighbors.add(new AStarSolver.Edge<>(transition.getToState(), transition.getTransitionTime()));
-            }
-            return neighbors;
-          }
-      );
-      
+      List<SuperstructureState> statePath =
+          solver.solve(
+              from,
+              to,
+              (current, goal) -> current != null && current.equals(goal) ? 0 : 1,
+              state -> {
+                List<AStarSolver.Edge<SuperstructureState>> neighbors = new ArrayList<>();
+                for (SuperstructureTransition transition : graph.get(state)) {
+                  neighbors.add(
+                      new AStarSolver.Edge<>(
+                          transition.getToState(), transition.getTransitionTime()));
+                }
+                return neighbors;
+              });
+
       if (statePath == null) {
         return null;
       }
-      
+
       return convertStatePathToTransitionPath(statePath, graph);
     }
 
-    /**
-     * Converts a state path to a transition path.
-     */
+    /** Converts a state path to a transition path. */
     private List<SuperstructureTransition> convertStatePathToTransitionPath(
         List<SuperstructureState> statePath,
         Map<SuperstructureState, List<SuperstructureTransition>> graph) {
-      
+
       List<SuperstructureTransition> transitionPath = new ArrayList<>();
-      
+
       for (int i = 0; i < statePath.size() - 1; i++) {
         SuperstructureState currentFrom = statePath.get(i);
         SuperstructureState currentTo = statePath.get(i + 1);
-        
-        Optional<SuperstructureTransition> transition = graph.get(currentFrom).stream()
-            .filter(t -> t.getToState().equals(currentTo))
-            .findFirst();
-            
+
+        Optional<SuperstructureTransition> transition =
+            graph.get(currentFrom).stream()
+                .filter(t -> t.getToState().equals(currentTo))
+                .findFirst();
+
         if (transition.isPresent()) {
           transitionPath.add(transition.get());
         } else {
           throw new IllegalStateException(
-              "No transition found from " + currentFrom + " to " + currentTo
-          );
+              "No transition found from " + currentFrom + " to " + currentTo);
         }
       }
-      
+
       return transitionPath;
     }
   }
 
-  /**
-   * Factory for creating and configuring commands.
-   */
+  /** Factory for creating and configuring commands. */
   private static class CommandFactory {
-    
-    /**
-     * Creates a command for state transitions.
-     */
+
+    /** Creates a command for state transitions. */
     public Command createStateTransitionCommand(Runnable action) {
-      return new ParallelCommandGroup(
-          new InstantCommand(action)
-      )
-      .withName(COMMAND_NAME)
-      .ignoringDisable(true);
+      return new ParallelCommandGroup(new InstantCommand(action))
+          .withName(COMMAND_NAME)
+          .ignoringDisable(true);
     }
   }
 }
