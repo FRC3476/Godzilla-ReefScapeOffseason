@@ -49,6 +49,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -63,6 +64,7 @@ public class RobotContainer {
   private final Intake intake;
   private final EndEffector endEffector;
   private final Elevator elevator;
+  private final Superstructure superstructure;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -86,6 +88,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
+        superstructure = new Superstructure();
         break;
 
       case SIM:
@@ -101,6 +104,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
+        superstructure = new Superstructure();
         break;
 
       default:
@@ -116,6 +120,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
+        superstructure = new Superstructure();
         break;
     }
 
@@ -233,9 +238,9 @@ public class RobotContainer {
   }
 
   private void RegisterDefaultCommands() {
-    elevator.setDefaultCommand(elevator.defaultElevatorCommand());
-    endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
-    intake.setDefaultCommand(intake.intakeDefault());
+    // elevator.setDefaultCommand(elevator.defaultElevatorCommand());
+    // endEffector.setDefaultCommand(endEffector.defaultEndEffectorCommand());
+    // intake.setDefaultCommand(intake.intakeDefault());
   }
 
   private void BuildDriveTab() {
@@ -300,5 +305,14 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public Command defaultElevatorCommand() {
+    return elevator.moveToTargetPosition(
+        () -> superstructure.getCurrentState().getElevatorHeight());
+  }
+
+  public Command defaultEndEffectorCommand() {
+    return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
   }
 }
