@@ -111,17 +111,21 @@ public class Drive extends SubsystemBase {
   private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
   private double lastTimeSeconds = 0.0;
 
+  private Superstructure superstructure;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      Superstructure superstructure) {
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
+    this.superstructure = superstructure;
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -271,11 +275,11 @@ public class Drive extends SubsystemBase {
 
   private double calculateDynamicTranslationalAccelLimit() {
     // Delegate to Superstructure
-    return Superstructure.getInstance().calculateDynamicTranslationalAccelLimit();
+    return superstructure.calculateDynamicTranslationalAccelLimit();
   }
 
   private double calculateDynamicRotationalAccelLimit() {
-    return Superstructure.getInstance().calculateDynamicRotationalAccelLimit();
+    return superstructure.calculateDynamicRotationalAccelLimit();
   }
 
   /**

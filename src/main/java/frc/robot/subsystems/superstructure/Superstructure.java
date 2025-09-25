@@ -16,16 +16,9 @@ public class Superstructure extends SubsystemBase {
   private Elevator elevator;
   private SuperstructureStateMachine stateMachine;
 
-  public static Superstructure getInstance() {
-    if (superstructureSubsystem == null) {
-      superstructureSubsystem = new Superstructure();
-    }
-    return superstructureSubsystem;
-  }
-
-  public Superstructure() {
-    this.endEffector = EndEffector.getInstance();
-    this.elevator = Elevator.getInstance();
+  public Superstructure(Elevator elevator, EndEffector endEffector) {
+    this.endEffector = endEffector;
+    this.elevator = elevator;
     this.stateMachine = new SuperstructureStateMachine();
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
   }
