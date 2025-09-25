@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
@@ -245,6 +246,107 @@ public class DriveCommands {
                   System.out.println("\tkS: " + formatter.format(kS));
                   System.out.println("\tkV: " + formatter.format(kV));
                 }));
+  }
+
+  /** Measures the wheel slip current by driving against a wall (wall test). */
+  public static Command slipCurrentCharacterization(Drive drive) {
+    List<Double> currentSamples = new LinkedList<>();
+    List<Double> velocitySamples = new LinkedList<>();
+    List<Double> voltageSamples = new LinkedList<>();
+    Timer timer = new Timer();
+
+    return Commands.sequence(
+        // Reset data
+        Commands.runOnce(
+            () -> {
+              currentSamples.clear();
+              velocitySamples.clear();
+              voltageSamples.clear();
+            }),
+
+        // Allow modules to orient and stabilize
+        Commands.run(() -> drive.runCharacterization(0.0), drive)
+            .withTimeout(Constants.DriveConstants.SLIP_START_DELAY),
+
+        // Start timer
+        Commands.runOnce(timer::restart),
+
+        // Ramp voltage and gather data
+        Commands.run(
+                () -> {
+                  double voltage = timer.get() * Constants.DriveConstants.SLIP_RAMP_RATE;
+                  if (voltage > Constants.DriveConstants.SLIP_MAX_VOLTAGE) {
+                    voltage = Constants.DriveConstants.SLIP_MAX_VOLTAGE;
+                  }
+
+                  drive.runCharacterization(voltage);
+
+                  // Collect data from all modules
+                  double[] currents = drive.getSlipCharacterizationCurrents();
+                  double avgCurrent = 0.0;
+                  for (double current : currents) {
+                    avgCurrent += current / 4.0;
+                  }
+
+                  currentSamples.add(avgCurrent);
+                  velocitySamples.add(drive.getFFCharacterizationVelocity());
+                  voltageSamples.add(voltage);
+                },
+                drive)
+
+            // When cancelled, calculate and print results
+            .finallyDo(
+                () -> {
+
+                  // Analyze data for slip detection
+                  double[] currents = drive.getSlipCharacterizationCurrents();
+                  double slipCurrent = detectSlipCurrent(currentSamples, velocitySamples);
+
+                  NumberFormat formatter = new DecimalFormat("#0.0");
+                  System.out.println(
+                      "\tDetected Slip Current: " + formatter.format(slipCurrent) + " A");
+                  System.out.println("\tIndividual Module Currents:");
+                  for (int i = 0; i < 4; i++) {
+                    System.out.println(
+                        "\t\tModule " + i + ": " + formatter.format(currents[i]) + " A");
+                  }
+                }));
+  }
+  // based on
+  // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/docs/getting-started/template-projects/talonfx-swerve-template.md#L116-L239
+  /**
+   * Detects the slip current from collected data samples. Slip occurs when wheels first start
+   * spinning significantly (velocity derivative increases).
+   */
+  private static double detectSlipCurrent(
+      List<Double> currentSamples, List<Double> velocitySamples) {
+
+    // Thresholds for slip detection - using Constants from Constants.java
+    final double VELOCITY_THRESHOLD =
+        Constants.DriveConstants
+            .SLIP_VELOCITY_THRESHOLD; // Velocity derivative indicating wheels started spinning
+    final double MIN_CURRENT_THRESHOLD =
+        Constants.DriveConstants.SLIP_MIN_CURRENT_THRESHOLD; // Minimum current just in case
+
+    double maxCurrent = 0.0;
+    int slipIndex = currentSamples.size() - 1;
+
+    // Check all samples for slip detection
+    for (int i = 1; i < currentSamples.size() - 1; i++) {
+      // Calculate velocity derivative
+      double velocityDerivative = velocitySamples.get(i + 1) - velocitySamples.get(i - 1);
+      double currentValue = currentSamples.get(i);
+
+      // This indicates wheels have overcome grip have begun to slip
+      if (velocityDerivative > VELOCITY_THRESHOLD && currentValue > MIN_CURRENT_THRESHOLD) {
+        slipIndex = i;
+        break;
+      }
+
+      maxCurrent = Math.max(maxCurrent, currentValue);
+    }
+
+    return slipIndex < currentSamples.size() ? currentSamples.get(slipIndex) : maxCurrent;
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */

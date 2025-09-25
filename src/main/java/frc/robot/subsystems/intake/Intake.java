@@ -15,7 +15,6 @@ import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.Volts;
 
 public class Intake extends SubsystemBase {
-
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final Feeder feeder = Feeder.getInstance();

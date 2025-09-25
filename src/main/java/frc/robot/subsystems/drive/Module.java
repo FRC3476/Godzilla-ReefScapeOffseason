@@ -144,4 +144,9 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
+
+  /** Returns the drive motor current in amperes. */
+  public double getCurrentAmps() {
+    return inputs.driveCurrentAmps;
+  }
 }

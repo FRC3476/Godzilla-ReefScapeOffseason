@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.elevator.Elevator;
@@ -12,6 +14,7 @@ public class Superstructure extends SubsystemBase {
   private static Superstructure superstructureSubsystem;
   private EndEffector endEffector;
   private Elevator elevator;
+  private SuperstructureStateMachine stateMachine;
 
   public static Superstructure getInstance() {
     if (superstructureSubsystem == null) {
@@ -24,13 +27,26 @@ public class Superstructure extends SubsystemBase {
   public Superstructure(EndEffector endEffector, Elevator elevator) {
     this.endEffector = endEffector;
     this.elevator = elevator;
+    this.stateMachine = new SuperstructureStateMachine(endEffector);
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
   }
 
   @Override
   public void periodic() {
-    elevator.periodic();
-    endEffector.periodic();
+    stateMachine.continueTransition();
+  }
+
+  private Command setStateCommand(SuperstructureState state, String name) {
+    return new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name);
+  }
+
+  private Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
+    return new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
+        .withName(name);
+  }
+
+  public SuperstructureState getCurrentState() {
+    return stateMachine.getCurrentState();
   }
 
   public double calculateDynamicTranslationalAccelLimit() {
@@ -77,4 +93,6 @@ public class Superstructure extends SubsystemBase {
 
     return dynamicLimit;
   }
+
+  public void setTriggers() {}
 }

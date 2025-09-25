@@ -67,6 +67,14 @@ public final class Constants {
         0.0; // Weight for intake pivot height reduction
     public static final double DYNAMIC_ACCEL_WEIGHT_D =
         0.0; // Weight for combined end effector and elevator height reduction
+
+    // Slip Current Characterization Constants (Wall Test)
+    public static final double SLIP_START_DELAY = 0.0; // Secs
+    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
+    public static final double SLIP_VELOCITY_THRESHOLD =
+        3476.0; // Velocity derivative indicating wheels started spinning
+    public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
   }
 
   // ====================Intake (3_)====================
@@ -507,6 +515,82 @@ public final class Constants {
                 .toList(),
             kAprilTagLayout.getFieldLength(),
             kAprilTagLayout.getFieldWidth());
+  }
+
+  public static class SuperstructureConstants {
+    public static double STOW_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_CORAL_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double STOW_ALGAE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0;
+    public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double INTAKE_CORAL_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0;
+    public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double FEED_ELEVATOR_HEIGHT_INCH = 0;
+    public static double FEED_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double FEED_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L2_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L3_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L4_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L1_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L2_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L3_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double L4_SCORE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double ALGAE_HIGH_INTAKE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = 0;
+    public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double PROCESSOR_AIM_INTAKE_ROTATION_RADIAN = 0;
+
+    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = 0;
+    public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS = 0;
+    public static double BARGE_AIM_INTAKE_ROTATION_RADIAN = 0;
   }
 
   public record PIDgains(
