@@ -77,50 +77,50 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        intake = new Intake(new IntakeIOReal());
+        endEffector = new EndEffector(new EndEffectorIOReal());
+        elevator = new Elevator(new ElevatorIOReal());
+        superstructure = new Superstructure(elevator, endEffector);
         drive =
             new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-
-        intake = new Intake(new IntakeIOReal());
-        endEffector = new EndEffector(new EndEffectorIOReal());
-        elevator = new Elevator(new ElevatorIOReal());
-        superstructure = new Superstructure(endEffector, elevator);
+                new ModuleIOTalonFX(TunerConstants.BackRight),
+                superstructure);
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        intake = new Intake(new IntakeIOSim());
+        endEffector = new EndEffector(new EndEffectorIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
+        superstructure = new Superstructure(elevator, endEffector);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-
-        intake = new Intake(new IntakeIOSim());
-        endEffector = new EndEffector(new EndEffectorIOSim());
-        elevator = new Elevator(new ElevatorIOSim());
-        superstructure = new Superstructure(endEffector, elevator);
+                new ModuleIOSim(TunerConstants.BackRight),
+                superstructure);
         break;
 
       default:
         // Replayed robot, disable IO implementations
+        intake = new Intake(new IntakeIO() {});
+        endEffector = new EndEffector(new EndEffectorIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
+        superstructure = new Superstructure(elevator, endEffector);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
-
-        intake = new Intake(new IntakeIO() {});
-        endEffector = new EndEffector(new EndEffectorIO() {});
-        elevator = new Elevator(new ElevatorIO() {});
-        superstructure = new Superstructure(endEffector, elevator);
+                new ModuleIO() {},
+                superstructure);
         break;
     }
 

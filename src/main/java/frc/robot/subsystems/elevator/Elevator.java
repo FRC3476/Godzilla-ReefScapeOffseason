@@ -25,13 +25,6 @@ public class Elevator extends SubsystemBase {
   private double setpoint;
   private boolean isZeroed = false;
 
-  public static Elevator getInstance() {
-    if (elevatorSubsystem == null) {
-      elevatorSubsystem = new Elevator(new ElevatorIOReal());
-    }
-    return elevatorSubsystem;
-  }
-
   public Elevator(ElevatorIO io) {
     this.io = io;
     System.out.println("====================Elevator Subsystem Online====================");

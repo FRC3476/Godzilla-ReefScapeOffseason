@@ -17,13 +17,6 @@ public class EndEffector extends SubsystemBase {
   protected static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
 
-  public static EndEffector getInstance() {
-    if (endEffectorSubsystem == null) {
-      endEffectorSubsystem = new EndEffector(new EndEffectorIOReal());
-    }
-    return endEffectorSubsystem;
-  }
-
   public EndEffector(EndEffectorIO io) {
     this.io = io;
     System.out.println("====================EndEffector Subsystem Online====================");

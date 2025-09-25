@@ -100,7 +100,7 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public static boolean hasAlgae() {
-    return frc.robot.subsystems.end_effector.EndEffector.getInstance().hasAlgae();
+    return false;
   }
 
   @Override
