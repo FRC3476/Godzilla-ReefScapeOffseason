@@ -227,7 +227,7 @@ public final class Constants {
                     .withMotionMagicJerk(ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()

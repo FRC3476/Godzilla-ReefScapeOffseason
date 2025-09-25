@@ -86,7 +86,6 @@ public class SuperstructureStateMachine {
   private static final String COMMAND_NAME = "SuperstructureMove";
 
   // Core data structures
-  private final Map<SuperstructureState, List<SuperstructureTransition>> graph = new HashMap<>();
   private final Set<SuperstructureState> registeredStates = new HashSet<>();
   private final List<SuperstructureTransition> transitions = new ArrayList<>();
   private final Map<String, Double> transitionCostMap = new HashMap<>();

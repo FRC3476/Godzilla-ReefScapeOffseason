@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
@@ -35,6 +36,8 @@ public class EndEffector extends SubsystemBase {
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
+
+    RobotState.setHasAlgae(hasAlgae());
   }
 
   public void setRollerVoltage(double voltage) {
