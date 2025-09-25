@@ -3,14 +3,16 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.FeederConstants;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Volts;
 
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
@@ -26,6 +28,9 @@ public class Intake extends SubsystemBase {
 
   private static Intake intakeSubsystem;
 
+  // SysId routines for characterization
+  private final SysIdRoutine pivotSysId;
+
   public static Intake getInstance() {
     if (intakeSubsystem == null) {
       intakeSubsystem = new Intake(new IntakeIOReal());
@@ -37,6 +42,17 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeIO io) {
     this.io = io;
+    
+    // Configure SysId routines for pivot motor
+    pivotSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("Intake/PivotSysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setPivotVoltage(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -204,8 +220,17 @@ public class Intake extends SubsystemBase {
         () -> this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
   }
 
-  public Trigger intakeJamTrigger =
-      new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
+  // SysId characterization commands
+  public Command sysIdQuasistaticPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.quasistatic(direction);
+  }
+
+  public Command sysIdDynamicPivot(SysIdRoutine.Direction direction) {
+    return pivotSysId.dynamic(direction);
+  }
+
+
+  public Trigger intakeJamTrigger = new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
   public Trigger feederJamTrigger = feeder.dejamTrigger;
 

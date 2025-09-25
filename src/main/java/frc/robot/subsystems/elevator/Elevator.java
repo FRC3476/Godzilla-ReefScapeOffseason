@@ -5,11 +5,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Volts;
 
 /* **********
  * COLLISION AVOIDANCE SOLUTION: Elevator class gets SS instance, defaul command sets to correct position (periodicially)
@@ -27,6 +29,9 @@ public class Elevator extends SubsystemBase {
   private boolean isZeroed = false;
   private Superstructure superStructure;
 
+  // SysId routine for characterization
+  private final SysIdRoutine elevatorSysId;
+
   public static Elevator getInstance() {
     if (elevatorSubsystem == null) {
       elevatorSubsystem = new Elevator(new ElevatorIOReal());
@@ -36,6 +41,18 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
+    
+    // Configure SysId routine for elevator motors
+    elevatorSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                state -> Logger.recordOutput("Elevator/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                voltage -> io.setElevatorVoltage(voltage.in(Volts)), null, this));
+    
     this.superStructure = Superstructure.getInstance();
     System.out.println("====================Elevator Subsystem Online====================");
   }
@@ -136,7 +153,15 @@ public class Elevator extends SubsystemBase {
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
         .withName("HomeElevator");
   }
+  
+  // SysId characterization commands
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return elevatorSysId.quasistatic(direction);
+  }
 
-  public Trigger elevatorObjectTrigger =
-      new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return elevatorSysId.dynamic(direction);
+  }
+
+  public Trigger elevatorJamTrigger = new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }

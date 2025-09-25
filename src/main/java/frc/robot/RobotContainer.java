@@ -141,7 +141,51 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+        //? Based on https://docs.wpilib.org/en/stable/docs/software/advanced-controls/system-identification/creating-routine.html
+
+        // Intake SysId routines
+    autoChooser.addOption(
+        "Intake Pivot SysId (Quasistatic Forward)",
+        intake.sysIdQuasistaticPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Quasistatic Reverse)",
+        intake.sysIdQuasistaticPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Dynamic Forward)",
+        intake.sysIdDynamicPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Intake Pivot SysId (Dynamic Reverse)",
+        intake.sysIdDynamicPivot(SysIdRoutine.Direction.kReverse));
+
+    // Elevator SysId routines
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Forward)",
+        elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Elevator SysId (Quasistatic Reverse)",
+        elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Forward)",
+        elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Elevator SysId (Dynamic Reverse)",
+        elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // EndEffector SysId routines
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Quasistatic Forward)",
+        endEffector.sysIdQuasistaticPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Quasistatic Reverse)",
+        endEffector.sysIdQuasistaticPivot(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Dynamic Forward)",
+        endEffector.sysIdDynamicPivot(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "EndEffector Pivot SysId (Dynamic Reverse)",
+        endEffector.sysIdDynamicPivot(SysIdRoutine.Direction.kReverse));
+
+
 
     BuildIntakeTab();
     BuildEndEffectorTab();
@@ -290,7 +334,7 @@ public class RobotContainer {
 
   private void configureArbitraryTriggers() {
     intake.feederJamTrigger.onTrue(intake.dejamFeeder());
-    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    elevator.elevatorJamTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
   /**
