@@ -52,6 +52,10 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public static String drive_canivore = "DRIVE";
+  public static String misc_canivore = "MISC";
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     // Acceleration limits
@@ -223,7 +227,7 @@ public final class Constants {
                     .withMotionMagicJerk(ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -373,7 +377,7 @@ public final class Constants {
                     .withMotionMagicJerk(PIVOT_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()

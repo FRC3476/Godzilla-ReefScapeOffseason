@@ -69,11 +69,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command elevatorUP() {
-    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
   }
 
   public Command elevatorDWN() {
-    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
   }
 
   public double getCurrentPosition() {

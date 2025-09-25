@@ -29,7 +29,7 @@ public class ClimberIOReal implements ClimberIO {
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
   public ClimberIOReal() {
-    talon = new TalonFX(Constants.ClimbConstants.ID);
+    talon = new TalonFX(Constants.ClimbConstants.ID, Constants.drive_canivore);
 
     position = talon.getPosition();
     velocity = talon.getVelocity();
