@@ -385,6 +385,15 @@ public class Drive extends SubsystemBase {
     return output;
   }
 
+  /** Returns the current draw of each module in amperes. */
+  public double[] getSlipCharacterizationCurrents() {
+    double[] currents = new double[4];
+    for (int i = 0; i < 4; i++) {
+      currents[i] = modules[i].getCurrentAmps();
+    }
+    return currents;
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
