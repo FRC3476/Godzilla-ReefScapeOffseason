@@ -88,7 +88,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
-        superstructure = new Superstructure();
+        superstructure = new Superstructure(endEffector, elevator);
         break;
 
       case SIM:
@@ -104,7 +104,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
-        superstructure = new Superstructure();
+        superstructure = new Superstructure(endEffector, elevator);
         break;
 
       default:
@@ -120,7 +120,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        superstructure = new Superstructure();
+        superstructure = new Superstructure(endEffector, elevator);
         break;
     }
 

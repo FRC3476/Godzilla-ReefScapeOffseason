@@ -70,7 +70,7 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
+        BatterySim.calculateDefaultBatteryLoadedVoltage(rollerSim.getCurrentDrawAmps()));
 
     double timestamp = Timer.getFPGATimestamp();
     double dt = timestamp - lastUpdateTimestamp;
@@ -81,6 +81,12 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
 
     updatePivotSimStates();
     updateRollerSimStates();
+
+    firstCoralCANRange.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
+    secondCoralCANRange.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    firstCoralCANRange.getSimState().setDistance(0.1);
+    secondCoralCANRange.getSimState().setDistance(0.1);
 
     logSimulationData();
   }
