@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
@@ -51,10 +52,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Boolean> secondRangeIsTripped;
 
   public EndEffectorIOReal() {
-    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID);
-    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID);
-    firstCoralCANRange = new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID);
-    secondCoralCANRange = new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID);
+    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
+    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.misc_canivore);
+    firstCoralCANRange =
+        new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.misc_canivore);
+    secondCoralCANRange =
+        new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.misc_canivore);
 
     PhoenixUtil.tryUntilOk(
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));

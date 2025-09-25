@@ -52,6 +52,10 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public static String drive_canivore = "DRIVE";
+  public static String misc_canivore = "MISC";
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     // Acceleration limits
