@@ -29,13 +29,9 @@ public class EndEffector extends SubsystemBase {
 
     // Update CoralStateTracker with sensor data
     boolean firstSensorTriggered =
-        inputs.firstCANRangeData.rangeIsTripped() != null
-            && inputs.firstCANRangeData.rangeIsTripped()
-            && inputs.firstCANRangeData.canRangeConnected();
+        inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
     boolean secondSensorTriggered =
-        inputs.secondCANRangeData.rangeIsTripped() != null
-            && inputs.secondCANRangeData.rangeIsTripped()
-            && inputs.secondCANRangeData.canRangeConnected();
+        inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
@@ -54,14 +50,12 @@ public class EndEffector extends SubsystemBase {
   }
 
   public boolean isCoralAtFirstSensor() {
-    return inputs.firstCANRangeData.rangeIsTripped() != null
-        && inputs.firstCANRangeData.rangeIsTripped()
+    return inputs.firstCANRangeData.rangeIsTripped()
         && inputs.firstCANRangeData.canRangeConnected();
   }
 
   public boolean isCoralAtSecondSensor() {
-    return inputs.secondCANRangeData.rangeIsTripped() != null
-        && inputs.secondCANRangeData.rangeIsTripped()
+    return inputs.secondCANRangeData.rangeIsTripped()
         && inputs.secondCANRangeData.canRangeConnected();
   }
 

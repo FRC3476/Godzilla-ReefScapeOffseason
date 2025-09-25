@@ -409,7 +409,7 @@ public class SuperstructureStateMachine {
   /** Manages state-related operations and validation. */
   private static class StateManager {
     private SuperstructureState currentState;
-    private SuperstructureState targetState;
+    private SuperstructureState targetState = SuperstructureState.STOW;
     private SuperstructureState currentTargetState;
     private double currentTargetStateTime = 0;
 
