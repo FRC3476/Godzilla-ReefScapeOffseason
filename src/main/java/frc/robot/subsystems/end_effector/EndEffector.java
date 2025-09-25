@@ -13,7 +13,7 @@ public class EndEffector extends SubsystemBase {
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
   private static EndEffector endEffectorSubsystem;
 
-  private static final LoggedTunableNumber rollerVolts =
+  protected static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
 
   public static EndEffector getInstance() {

@@ -23,10 +23,10 @@ import frc.robot.util.PhoenixUtil;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
-  private TalonFX pivotTalonFX;
-  private TalonFX rollerTalonFX;
-  private CANrange firstCoralCANRange;
-  private CANrange secondCoralCANRange;
+  protected TalonFX pivotTalonFX;
+  protected TalonFX rollerTalonFX;
+  protected CANrange firstCoralCANRange;
+  protected CANrange secondCoralCANRange;
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
