@@ -182,19 +182,7 @@ public class RobotContainer {
         "EndEffector Pivot SysId (Dynamic Reverse)",
         endEffector.sysIdDynamicPivot(SysIdRoutine.Direction.kReverse));
 
-    // Climber SysId routines
-    autoChooser.addOption(
-        "Climber SysId (Quasistatic Forward)",
-        frc.robot.subsystems.climb.Climber.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Climber SysId (Quasistatic Reverse)",
-        frc.robot.subsystems.climb.Climber.getInstance().sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Climber SysId (Dynamic Forward)",
-        frc.robot.subsystems.climb.Climber.getInstance().sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Climber SysId (Dynamic Reverse)",
-        frc.robot.subsystems.climb.Climber.getInstance().sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
 
     BuildIntakeTab();
     BuildEndEffectorTab();
@@ -338,7 +326,7 @@ public class RobotContainer {
 
   private void configureArbitraryTriggers() {
     intake.feederJamTrigger.onTrue(intake.dejamFeeder());
-    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    elevator.elevatorJamTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
   /**

@@ -141,4 +141,5 @@ public class Elevator extends SubsystemBase {
     return elevatorSysId.dynamic(direction);
   }
 
+  public Trigger elevatorJamTrigger = new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }
