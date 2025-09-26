@@ -28,11 +28,11 @@ public class Superstructure extends SubsystemBase {
     stateMachine.continueTransition();
   }
 
-  private Command setStateCommand(SuperstructureState state, String name) {
+  public Command setStateCommand(SuperstructureState state, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name);
   }
 
-  private Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
+  public Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
         .withName(name);
   }

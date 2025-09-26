@@ -50,6 +50,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -151,6 +152,7 @@ public class RobotContainer {
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
+    BuildSuperstructureTab();
     BuildDriveTab();
 
     RegisterDefaultCommands();
@@ -235,6 +237,108 @@ public class RobotContainer {
 
     elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
+  }
+
+  private void BuildSuperstructureTab() {
+    // Get the NetworkTable for the Superstructure tab
+    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
+
+    // Create NetworkTableEntry instances for each SuperstructureState
+    NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
+    NetworkTableEntry stowCoralEntry = superstructureTable.getEntry("STOW_CORAL");
+    NetworkTableEntry stowAlgaeEntry = superstructureTable.getEntry("STOW_ALGAE");
+    NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("INTAKE_CORAL");
+    NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("INTAKE_CORAL_L1");
+    NetworkTableEntry feedEntry = superstructureTable.getEntry("FEED");
+    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("L1_PIVOT");
+    NetworkTableEntry l2AimEntry = superstructureTable.getEntry("L2_AIM");
+    NetworkTableEntry l3AimEntry = superstructureTable.getEntry("L3_AIM");
+    NetworkTableEntry l4AimEntry = superstructureTable.getEntry("L4_AIM");
+    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("L1_SCORE");
+    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
+    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
+    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
+    NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
+    NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
+    NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("BARGE_AIM_CENTER");
+    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
+    NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("BARGE_AIM_BACKWARD");
+
+    // Initialize entries with default values
+    stowEntry.setBoolean(false);
+    stowCoralEntry.setBoolean(false);
+    stowAlgaeEntry.setBoolean(false);
+    intakeCoralEntry.setBoolean(false);
+    intakeCoralL1Entry.setBoolean(false);
+    feedEntry.setBoolean(false);
+    l1PivotEntry.setBoolean(false);
+    l2AimEntry.setBoolean(false);
+    l3AimEntry.setBoolean(false);
+    l4AimEntry.setBoolean(false);
+    l1ScoreEntry.setBoolean(false);
+    l2ScoreEntry.setBoolean(false);
+    l3ScoreEntry.setBoolean(false);
+    l4ScoreEntry.setBoolean(false);
+    algaeHighIntakeEntry.setBoolean(false);
+    algaeLowIntakeEntry.setBoolean(false);
+    processorAimEntry.setBoolean(false);
+    bargeAimCenterEntry.setBoolean(false);
+    bargeAimForwardEntry.setBoolean(false);
+    bargeAimBackwardEntry.setBoolean(false);
+
+    // Create triggers for each button
+    Trigger stowTrigger = new Trigger(() -> stowEntry.getBoolean(false));
+    Trigger stowCoralTrigger = new Trigger(() -> stowCoralEntry.getBoolean(false));
+    Trigger stowAlgaeTrigger = new Trigger(() -> stowAlgaeEntry.getBoolean(false));
+    Trigger intakeCoralTrigger = new Trigger(() -> intakeCoralEntry.getBoolean(false));
+    Trigger intakeCoralL1Trigger = new Trigger(() -> intakeCoralL1Entry.getBoolean(false));
+    Trigger feedTrigger = new Trigger(() -> feedEntry.getBoolean(false));
+    Trigger l1PivotTrigger = new Trigger(() -> l1PivotEntry.getBoolean(false));
+    Trigger l2AimTrigger = new Trigger(() -> l2AimEntry.getBoolean(false));
+    Trigger l3AimTrigger = new Trigger(() -> l3AimEntry.getBoolean(false));
+    Trigger l4AimTrigger = new Trigger(() -> l4AimEntry.getBoolean(false));
+    Trigger l1ScoreTrigger = new Trigger(() -> l1ScoreEntry.getBoolean(false));
+    Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
+    Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
+    Trigger l4ScoreTrigger = new Trigger(() -> l4ScoreEntry.getBoolean(false));
+    Trigger algaeHighIntakeTrigger = new Trigger(() -> algaeHighIntakeEntry.getBoolean(false));
+    Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
+    Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
+    Trigger bargeAimCenterTrigger = new Trigger(() -> bargeAimCenterEntry.getBoolean(false));
+    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
+    Trigger bargeAimBackwardTrigger = new Trigger(() -> bargeAimBackwardEntry.getBoolean(false));
+
+    // Wire triggers to superstructure state commands
+    stowTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW"));
+    stowCoralTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.STOW_CORAL, "Set STOW_CORAL"));
+    stowAlgaeTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Set STOW_ALGAE"));
+    intakeCoralTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.INTAKE_CORAL, "Set INTAKE_CORAL"));
+    intakeCoralL1Trigger.onTrue(superstructure.setStateCommand(SuperstructureState.INTAKE_CORAL_L1, "Set INTAKE_CORAL_L1"));
+    feedTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.FEED, "Set FEED"));
+    l1PivotTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_PIVOT"));
+    l2AimTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L2_AIM, "Set L2_AIM"));
+    l3AimTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L3_AIM, "Set L3_AIM"));
+    l4AimTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L4_AIM, "Set L4_AIM"));
+    l1ScoreTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L1_SCORE, "Set L1_SCORE"));
+    l2ScoreTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L2_SCORE, "Set L2_SCORE"));
+    l3ScoreTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L3_SCORE, "Set L3_SCORE"));
+    l4ScoreTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.L4_SCORE, "Set L4_SCORE"));
+    algaeHighIntakeTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.ALGAE_HIGH_INTAKE, "Set ALGAE_HIGH_INTAKE"));
+    algaeLowIntakeTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.ALGAE_LOW_INTAKE, "Set ALGAE_LOW_INTAKE"));
+    processorAimTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Set PROCESSOR_AIM"));
+    bargeAimCenterTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.BARGE_AIM_CENTER, "Set BARGE_AIM_CENTER"));
+    bargeAimForwardTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD"));
+    bargeAimBackwardTrigger.onTrue(superstructure.setStateCommand(SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD"));
+
+    // Add current state and target state monitoring
+    NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Current State");
+    NetworkTableEntry targetStateEntry = superstructureTable.getEntry("Target State");
+    
+    // Update these entries periodically in the periodic method of RobotContainer
+    // For now, we'll create them so they appear on the dashboard
+    currentStateEntry.setString("Unknown");
+    targetStateEntry.setString("Unknown");
   }
 
   private void RegisterDefaultCommands() {
