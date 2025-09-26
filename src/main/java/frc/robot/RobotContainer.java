@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -40,7 +39,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -180,21 +178,31 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-
   }
 
   private void configureStreamDeckBindings() {
-    StreamDeckButtonConfig simpleConfig = new StreamDeckButtonConfig("#000000","#FFFFFF", "");
-    
-    StreamDeckButton homeEleavtorButton = new StreamDeckButton(0, 0, "Home Eleavtor").withActiveConfig(simpleConfig).withText("HD");
-    StreamDeckButton swerveXButton = new StreamDeckButton(3, 2, "Swerve X").withActiveConfig(simpleConfig).withText("X");
+    StreamDeckButtonConfig inactiveConfig = new StreamDeckButtonConfig("#000000", "#FFFFFF", "");
+    StreamDeckButtonConfig activeConfig = new StreamDeckButtonConfig("#FFFFFF", "#000000", "");
 
-    streamDeck.configureButton(config -> config.addDefault(homeEleavtorButton).addDefault(swerveXButton));
+    StreamDeckButton homeEleavtorButton =
+        new StreamDeckButton(0, 0, "Home Eleavtor")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withInactiveText("HD")
+            .withActiveText("Homing Down");
+    StreamDeckButton swerveXButton =
+        new StreamDeckButton(3, 2, "Swerve X")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withInactiveText("X")
+            .withActiveText("Swerve X");
+
+    streamDeck.configureButton(
+        config -> config.addDefault(homeEleavtorButton).addDefault(swerveXButton));
 
     Command homeElevatorCommandEXAMPLE = Commands.print("homeElevatorCommandEXAMPLE");
     streamDeck.button(homeEleavtorButton).onTrue(homeElevatorCommandEXAMPLE);
     streamDeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
-
   }
 
   /**
