@@ -184,6 +184,10 @@ public class RobotContainer {
     NetworkTableEntry pivotDownEntry = intakeTable.getEntry("Pivot Down");
     NetworkTableEntry engageL1Entry = intakeTable.getEntry("Engage L1 Blocker");
     NetworkTableEntry disengageL1Entry = intakeTable.getEntry("Disengage L1 Blocker");
+    
+    // Manual test entries for pivot
+    NetworkTableEntry pivotManualForwardEntry = intakeTable.getEntry("Pivot Manual Forward (While Held)");
+    NetworkTableEntry pivotManualReverseEntry = intakeTable.getEntry("Pivot Manual Reverse (While Held)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
@@ -191,6 +195,8 @@ public class RobotContainer {
     pivotDownEntry.setBoolean(false);
     engageL1Entry.setBoolean(false);
     disengageL1Entry.setBoolean(false);
+    pivotManualForwardEntry.setBoolean(false);
+    pivotManualReverseEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
@@ -198,6 +204,10 @@ public class RobotContainer {
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
     Trigger engageL1Trigger = new Trigger(() -> engageL1Entry.getBoolean(false));
     Trigger disengageL1Trigger = new Trigger(() -> disengageL1Entry.getBoolean(false));
+    
+    // Manual test triggers for pivot
+    Trigger pivotManualForwardTrigger = new Trigger(() -> pivotManualForwardEntry.getBoolean(false));
+    Trigger pivotManualReverseTrigger = new Trigger(() -> pivotManualReverseEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -210,6 +220,13 @@ public class RobotContainer {
     pivotDownTrigger.onTrue(intake.movePivotDown());
     engageL1Trigger.onTrue(intake.engageCoralL1());
     disengageL1Trigger.onTrue(intake.disengageCoralL1());
+
+    // Configure manual test actions for pivot
+    pivotManualForwardTrigger.whileTrue(intake.pivotManualTestForward());
+    pivotManualForwardTrigger.onFalse(intake.pivotManualTestStop());
+
+    pivotManualReverseTrigger.whileTrue(intake.pivotManualTestReverse());
+    pivotManualReverseTrigger.onFalse(intake.pivotManualTestStop());
   }
 
   private void BuildEndEffectorTab() {

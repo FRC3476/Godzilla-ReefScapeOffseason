@@ -23,6 +23,14 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
       new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+  
+  // Tunable numbers for manual testing
+  private static final LoggedTunableNumber pivotKG =
+      new LoggedTunableNumber("Intake/PivotKG", 0.0);
+  private static final LoggedTunableNumber pivotManualTestVolts =
+      new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
+  private static final LoggedTunableNumber pivotDirection =
+      new LoggedTunableNumber("Intake/PivotDirection", 1.0); 
 
   private static Intake intakeSubsystem;
 
@@ -49,6 +57,11 @@ public class Intake extends SubsystemBase {
     boolean intakeSensorTriggered =
         inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
     CoralStateTracker.updateIntake(intakeSensorTriggered);
+
+    // Update kG value if it has changed
+    if (pivotKG.hasChanged(hashCode())) {
+      io.updatePivotKG(pivotKG.get());
+    }
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {
@@ -202,6 +215,28 @@ public class Intake extends SubsystemBase {
   public Command disengageCoralL1() {
     return Commands.runOnce(
         () -> this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
+  }
+
+  // Manual test functions for intake pivot
+  public Command pivotManualTestForward() {
+    return Commands.run(
+        () -> this.io.setPivotVoltage(Math.abs(pivotManualTestVolts.get()) * pivotDirection.get()),
+        this);
+  }
+
+  public Command pivotManualTestReverse() {
+    return Commands.run(
+        () -> this.io.setPivotVoltage(-Math.abs(pivotManualTestVolts.get()) * pivotDirection.get()),
+        this);
+  }
+
+  public Command pivotManualTestStop() {
+    return Commands.runOnce(() -> this.io.setPivotVoltage(0.0), this);
+  }
+
+  // Getter for kG tuning
+  public double getPivotKG() {
+    return pivotKG.get();
   }
 
   public Trigger intakeJamTrigger =
