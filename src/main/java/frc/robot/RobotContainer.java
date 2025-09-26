@@ -303,17 +303,35 @@ public class RobotContainer {
 
     NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (While Held)");
     NetworkTableEntry climberStopEntry = climberTable.getEntry("Climber Stop");
+    NetworkTableEntry climberManualUpEntry = climberTable.getEntry("Climber Manual Up (While Held)");
+    NetworkTableEntry climberManualDownEntry = climberTable.getEntry("Climber Manual Down (While Held)");
+    NetworkTableEntry climberHoldEntry = climberTable.getEntry("Climber Hold (While Held)");
 
     climberDeployEntry.setBoolean(false);
     climberStopEntry.setBoolean(false);
+    climberManualUpEntry.setBoolean(false);
+    climberManualDownEntry.setBoolean(false);
+    climberHoldEntry.setBoolean(false);
 
     Trigger climberDeployTrigger = new Trigger(() -> climberDeployEntry.getBoolean(false));
     Trigger climberStopTrigger = new Trigger(() -> climberStopEntry.getBoolean(false));
+    Trigger climberManualUpTrigger = new Trigger(() -> climberManualUpEntry.getBoolean(false));
+    Trigger climberManualDownTrigger = new Trigger(() -> climberManualDownEntry.getBoolean(false));
+    Trigger climberHoldTrigger = new Trigger(() -> climberHoldEntry.getBoolean(false));
 
     climberDeployTrigger.whileTrue(climber.climbDeploy());
     climberDeployTrigger.onFalse(climber.climbSTOP());
 
     climberStopTrigger.onTrue(climber.climbSTOP());
+
+    climberManualUpTrigger.whileTrue(climber.climberManualUp());
+    climberManualUpTrigger.onFalse(climber.climberHold());
+
+    climberManualDownTrigger.whileTrue(climber.climberManualDown());
+    climberManualDownTrigger.onFalse(climber.climberHold());
+
+    climberHoldTrigger.whileTrue(climber.climberHold());
+    climberHoldTrigger.onFalse(climber.climbSTOP());
   }
 
   /**
