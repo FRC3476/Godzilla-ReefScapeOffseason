@@ -11,8 +11,6 @@ public class Claw extends SubsystemBase {
 
   private final ClawIO io;
   private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
-  private static Claw clawSubsystem;
-
   public Claw(ClawIO io) {
     this.io = io;
   }
