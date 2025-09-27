@@ -41,6 +41,10 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawIO;
+import frc.robot.subsystems.end_effector.ClawIOReal;
+import frc.robot.subsystems.end_effector.ClawIOSim;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
@@ -63,6 +67,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Intake intake;
   private final EndEffector endEffector;
+  private final Claw claw;
   private final Elevator elevator;
   private final Superstructure superstructure;
 
@@ -79,6 +84,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         intake = new Intake(new IntakeIOReal());
         endEffector = new EndEffector(new EndEffectorIOReal());
+        claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
         drive =
@@ -96,6 +102,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
+        claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector);
         drive =
             new Drive(
@@ -111,6 +118,7 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         intake = new Intake(new IntakeIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
+        claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
         drive =
@@ -191,26 +199,26 @@ public class RobotContainer {
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry endEffectorForwardEntry =
+    NetworkTableEntry clawForwardEntry =
         endEffectorTable.getEntry("Roller Forward (While Held)");
-    NetworkTableEntry endEffectorReverseEntry =
+    NetworkTableEntry clawReverseEntry =
         endEffectorTable.getEntry("Roller Reverse (While Held)");
 
     // Initialize entries with default values
-    endEffectorForwardEntry.setBoolean(false);
-    endEffectorReverseEntry.setBoolean(false);
+    clawForwardEntry.setBoolean(false);
+    clawReverseEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
-    Trigger endEffectorForwardTrigger =
-        new Trigger(() -> endEffectorForwardEntry.getBoolean(false));
-    Trigger endEffectorReverseTrigger =
-        new Trigger(() -> endEffectorReverseEntry.getBoolean(false));
+    Trigger clawForwardTrigger =
+        new Trigger(() -> clawForwardEntry.getBoolean(false));
+    Trigger clawReverseTrigger =
+        new Trigger(() -> clawReverseEntry.getBoolean(false));
     // Configure the while-held behavior
-    endEffectorForwardTrigger.whileTrue(endEffector.rollerFWD());
-    endEffectorForwardTrigger.onFalse(endEffector.rollerSTOP());
+    clawForwardTrigger.whileTrue(claw.rollerFWD());
+    clawForwardTrigger.onFalse(claw.rollerSTOP());
 
-    endEffectorReverseTrigger.whileTrue(endEffector.rollerRVS());
-    endEffectorReverseTrigger.onFalse(endEffector.rollerSTOP());
+    clawReverseTrigger.whileTrue(claw.rollerRVS());
+    clawReverseTrigger.onFalse(claw.rollerSTOP());
   }
 
   private void BuildElevatorTab() {

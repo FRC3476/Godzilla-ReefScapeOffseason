@@ -534,45 +534,50 @@ public final class Constants {
     public static double STOW_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-95.1526249);
     public static double STOW_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-38.3080987);
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-38.3080987);
     public static double STOW_ALGAE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-95.1526249);
     public static double INTAKE_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
-    public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
+    public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-95.1526249);
+    public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN =
+        Units.degreesToRadians(-26.9162484);
 
     public static double FEED_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double FEED_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
     public static double FEED_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
-
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
     public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
-    //Away from reef 7.078988deg
+    // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
-    //Away from reef 17.7998883deg
+    // Away from reef 17.7998883deg
     public static double L2_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L3_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
-    //Away from reef 23.003301deg
+    // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
-    //Away from reef 17.7998883deg
+    // Away from reef 17.7998883deg
     public static double L3_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L4_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
-    //Away from reef 53.4375
-    public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(3.1972053);//Away from reef (no against)
+    // Away from reef 53.4375
+    public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0.0;
@@ -580,38 +585,49 @@ public final class Constants {
     public static double L1_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
     public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
-    //Away from reef 7.078988deg
+    // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
-    //Away from reef 17.7998883deg
+    // Away from reef 17.7998883deg
     public static double L2_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
-    //Away from reef 23.003301deg
+    // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
-    //Away from reef 17.7998883deg
+    // Away from reef 17.7998883deg
     public static double L3_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
-    //Away from reef 53.4375
-    public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(3.1972053);//Away from reef (no against)
+    // Away from reef 53.4375
+    public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 45.325558;
-    public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-56.8542103);
-    public static double ALGAE_HIGH_INTAKE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
+    public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-56.8542103);
+    public static double ALGAE_HIGH_INTAKE_INTAKE_ROTATION_RADIAN =
+        Units.degreesToRadians(-26.9162484);
 
     public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = 30.907161;
-    public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-56.8542103);
-    public static double ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
+    public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-56.8542103);
+    public static double ALGAE_LOW_INTAKE_INTAKE_ROTATION_RADIAN =
+        Units.degreesToRadians(-26.9162484);
 
     public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-38.3080987);
+    public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(-38.3080987);
     public static double PROCESSOR_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = 53.4375;
-    public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(43.8547133);
-    public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(119.8473749);
-    public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN = (BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN)/2;
+    public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(43.8547133);
+    public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(119.8473749);
+    public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN =
+        (BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN
+                + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN)
+            / 2;
     public static double BARGE_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
   }
 
