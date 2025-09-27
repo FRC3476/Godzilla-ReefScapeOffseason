@@ -602,6 +602,15 @@ public final class Constants {
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
+    
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
+
+    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
+
     public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 45.325558;
     public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(-56.8542103);
