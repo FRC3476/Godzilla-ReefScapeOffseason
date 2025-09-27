@@ -95,7 +95,15 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
-  public void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS, double velo, double accel, double jerk) {
+  public void updatePivotPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {
     var pivotConfig = new TalonFXConfiguration();
     pivotTalonFX.getConfigurator().refresh(pivotConfig);
     pivotConfig.Slot0.kP = kP;

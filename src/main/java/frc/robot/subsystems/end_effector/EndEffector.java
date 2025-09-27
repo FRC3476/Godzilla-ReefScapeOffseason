@@ -52,7 +52,14 @@ public class EndEffector extends SubsystemBase {
         || pivotAccel.hasChanged(hashCode())
         || pivotJerk.hasChanged(hashCode())) {
       io.updatePivotPIDFF(
-          pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get(), pivotVelo.get(), pivotAccel.get(), pivotJerk.get());
+          pivotKP.get(),
+          pivotKI.get(),
+          pivotKD.get(),
+          pivotKG.get(),
+          pivotKS.get(),
+          pivotVelo.get(),
+          pivotAccel.get(),
+          pivotJerk.get());
     }
   }
 
