@@ -45,6 +45,10 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawIO;
+import frc.robot.subsystems.end_effector.ClawIOReal;
+import frc.robot.subsystems.end_effector.ClawIOSim;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
@@ -71,6 +75,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Intake intake;
   private final EndEffector endEffector;
+  private final Claw claw;
   private final Elevator elevator;
   private final Superstructure superstructure;
   private final Climber climber;
@@ -90,6 +95,7 @@ public class RobotContainer {
         feeder = new Feeder(new FeederIOReal());
         intake = new Intake(new IntakeIOReal(), feeder);
         endEffector = new EndEffector(new EndEffectorIOReal());
+        claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
         climber = new Climber(new ClimberIOReal());
@@ -109,6 +115,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim(), feeder);
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
+        claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector);
         climber = new Climber(new ClimberIOSim());
         drive =
@@ -126,6 +133,7 @@ public class RobotContainer {
         feeder = new Feeder(new FeederIO() {});
         intake = new Intake(new IntakeIO() {}, feeder);
         endEffector = new EndEffector(new EndEffectorIO() {});
+        claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
         climber = new Climber(new ClimberIO() {});
@@ -236,33 +244,34 @@ public class RobotContainer {
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry endEffectorForwardEntry =
+    NetworkTableEntry clawForwardEntry =
         endEffectorTable.getEntry("Roller Forward (While Held)");
-    NetworkTableEntry endEffectorReverseEntry =
+    NetworkTableEntry clawReverseEntry =
         endEffectorTable.getEntry("Roller Reverse (While Held)");
-    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
-    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
-
+    NetworkTableEntry pivotUpEntry = 
+		endEffectorTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = 
+		endEffectorTable.getEntry("Pivot Down (While Held)");
     // Initialize entries with default values
-    endEffectorForwardEntry.setBoolean(false);
-    endEffectorReverseEntry.setBoolean(false);
+    clawForwardEntry.setBoolean(false);
+    clawReverseEntry.setBoolean(false);
     pivotUpEntry.setBoolean(false);
     pivotDownEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
-    Trigger endEffectorForwardTrigger =
-        new Trigger(() -> endEffectorForwardEntry.getBoolean(false));
-    Trigger endEffectorReverseTrigger =
-        new Trigger(() -> endEffectorReverseEntry.getBoolean(false));
+    Trigger clawForwardTrigger =
+        new Trigger(() -> clawForwardEntry.getBoolean(false));
+    Trigger clawReverseTrigger =
+        new Trigger(() -> clawReverseEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
 
     // Configure the while-held behavior
-    endEffectorForwardTrigger.whileTrue(endEffector.rollerFWD());
-    endEffectorForwardTrigger.onFalse(endEffector.rollerSTOP());
+    clawForwardTrigger.whileTrue(claw.rollerFWD());
+    clawForwardTrigger.onFalse(claw.rollerSTOP());
 
-    endEffectorReverseTrigger.whileTrue(endEffector.rollerRVS());
-    endEffectorReverseTrigger.onFalse(endEffector.rollerSTOP());
+    clawReverseTrigger.whileTrue(claw.rollerRVS());
+    clawReverseTrigger.onFalse(claw.rollerSTOP());
 
     pivotUpTrigger.whileTrue(endEffector.pivotUP());
     pivotUpTrigger.onFalse(endEffector.pivotSTOP());
