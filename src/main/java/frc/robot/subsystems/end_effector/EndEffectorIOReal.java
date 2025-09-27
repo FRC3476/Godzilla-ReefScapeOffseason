@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -103,6 +104,18 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void setPivotPosition(double position) {
     pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+  }
+
+  @Override
+  public void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS) {
+    var pivotConfig = new TalonFXConfiguration();
+    pivotTalonFX.getConfigurator().refresh(pivotConfig);
+    pivotConfig.Slot0.kP = kP;
+    pivotConfig.Slot0.kI = kI;
+    pivotConfig.Slot0.kD = kD;
+    pivotConfig.Slot0.kG = kG;
+    pivotConfig.Slot0.kS = kS;
+    PhoenixUtil.tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.050));
   }
 
   @Override

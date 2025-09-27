@@ -14,6 +14,13 @@ public class EndEffector extends SubsystemBase {
   private static final LoggedTunableNumber pivotTestVolts =
       new LoggedTunableNumber("EndEffector/PivotTestVolts", 1.0);
 
+  // Tunable numbers for manual testing
+  private static final LoggedTunableNumber pivotKP = new LoggedTunableNumber("EndEffector/PivotKP", 0.0);
+  private static final LoggedTunableNumber pivotKI = new LoggedTunableNumber("EndEffector/PivotKI", 0.0);
+  private static final LoggedTunableNumber pivotKD = new LoggedTunableNumber("EndEffector/PivotKD", 0.0);
+  private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("EndEffector/PivotKG", 0.0);
+  private static final LoggedTunableNumber pivotKS = new LoggedTunableNumber("EndEffector/PivotKS", 0.0);
+
   public EndEffector(EndEffectorIO io) {
     this.io = io;
     System.out.println("====================EndEffector Subsystem Online====================");
@@ -23,6 +30,12 @@ public class EndEffector extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("EndEffector", inputs);
+
+    // Update PID/FF values if they have changed
+    if (pivotKP.hasChanged(hashCode()) || pivotKI.hasChanged(hashCode()) || pivotKD.hasChanged(hashCode()) || pivotKG.hasChanged(hashCode()) || pivotKS.hasChanged(hashCode())) {
+      io.updatePivotPIDFF(
+          pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get());
+    }
   }
 
   public double getCurrentPivotPosition() {

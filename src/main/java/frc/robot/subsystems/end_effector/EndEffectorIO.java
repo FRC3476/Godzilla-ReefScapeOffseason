@@ -25,5 +25,7 @@ public interface EndEffectorIO {
 
   default void setPivotPosition(double position) {}
 
+  default void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS) {}
+
   default void setPivotZero() {}
 }

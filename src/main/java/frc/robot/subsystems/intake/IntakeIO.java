@@ -61,7 +61,7 @@ public interface IntakeIO {
 
   default void setLvl1BlockerPosition(double positionRad) {}
 
-  default void updatePivotKG(double kG) {}
+  default void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS) {}
 
   default boolean checkRollerStalled() {
     return false;
