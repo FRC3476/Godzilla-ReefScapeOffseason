@@ -252,7 +252,6 @@ public class RobotContainer {
 		endEffectorTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry pivotDownEntry = 
 		endEffectorTable.getEntry("Pivot Down (While Held)");
-        
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
@@ -266,7 +265,7 @@ public class RobotContainer {
         new Trigger(() -> clawReverseEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
-    
+
     // Configure the while-held behavior
     clawForwardTrigger.whileTrue(claw.rollerFWD());
     clawForwardTrigger.onFalse(claw.rollerSTOP());
