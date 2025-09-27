@@ -26,7 +26,12 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
 
   // Tunable numbers for manual testing
+  private static final LoggedTunableNumber pivotKP = new LoggedTunableNumber("Intake/PivotKP", 0.0);
+  private static final LoggedTunableNumber pivotKI = new LoggedTunableNumber("Intake/PivotKI", 0.0);
+  private static final LoggedTunableNumber pivotKD = new LoggedTunableNumber("Intake/PivotKD", 0.0);
   private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
+  private static final LoggedTunableNumber pivotKS = new LoggedTunableNumber("Intake/PivotKS", 0.0);
+
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
 
@@ -50,9 +55,10 @@ public class Intake extends SubsystemBase {
         inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
     CoralStateTracker.updateIntake(intakeSensorTriggered);
 
-    // Update kG value if it has changed
-    if (pivotKG.hasChanged(hashCode())) {
-      io.updatePivotKG(pivotKG.get());
+    // Update PID/FF values if they have changed
+    if (pivotKP.hasChanged(hashCode()) || pivotKI.hasChanged(hashCode()) || pivotKD.hasChanged(hashCode()) || pivotKG.hasChanged(hashCode()) || pivotKS.hasChanged(hashCode())) {
+      io.updatePivotPIDFF(
+          pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get());
     }
   }
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -199,5 +200,17 @@ public class ElevatorIOReal implements ElevatorIO {
             rightTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS)
         || MotorStallDetection.isMotorStalled(
             leftTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS);
+  }
+
+  @Override
+  public void updateElevatorPIDFF(double kP, double kI, double kD, double kG, double kS) {
+    var rightConfig = new TalonFXConfiguration();
+    rightTalon.getConfigurator().refresh(rightConfig);
+    rightConfig.Slot0.kP = kP;
+    rightConfig.Slot0.kI = kI;
+    rightConfig.Slot0.kD = kD;
+    rightConfig.Slot0.kG = kG;
+    rightConfig.Slot0.kS = kS;
+    PhoenixUtil.tryUntilOk(5, () -> rightTalon.getConfigurator().apply(rightConfig, 0.050));
   }
 }

@@ -16,11 +16,17 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
-  private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private static final LoggedTunableNumber elevatorVolts =
       new LoggedTunableNumber("Elevator/TestVolts", 1.0);
+
+  // Tunable numbers for manual testing
+  private static final LoggedTunableNumber elevatorKP = new LoggedTunableNumber("Elevator/ElevatorKP", 0.0);
+  private static final LoggedTunableNumber elevatorKI = new LoggedTunableNumber("Elevator/ElevatorKI", 0.0);
+  private static final LoggedTunableNumber elevatorKD = new LoggedTunableNumber("Elevator/ElevatorKD", 0.0);
+  private static final LoggedTunableNumber elevatorKG = new LoggedTunableNumber("Elevator/ElevatorKG", 0.0);
+  private static final LoggedTunableNumber elevatorKS = new LoggedTunableNumber("Elevator/ElevatorKS", 0.0);
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -39,6 +45,11 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
     Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
+
+    if (elevatorKP.hasChanged(hashCode()) || elevatorKI.hasChanged(hashCode()) || elevatorKD.hasChanged(hashCode()) || elevatorKG.hasChanged(hashCode()) || elevatorKS.hasChanged(hashCode())) {
+      io.updateElevatorPIDFF(
+          elevatorKP.get(), elevatorKI.get(), elevatorKD.get(), elevatorKG.get(), elevatorKS.get());
+    }
   }
 
   public void setTargetPosition(double position) {

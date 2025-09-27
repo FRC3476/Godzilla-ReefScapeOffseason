@@ -42,4 +42,6 @@ public interface ElevatorIO {
   default boolean checkMotorsStalled() {
     return false;
   }
+
+  default void updateElevatorPIDFF(double kP, double kI, double kD, double kG, double kS) {}
 }

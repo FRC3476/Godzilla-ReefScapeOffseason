@@ -299,10 +299,14 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
-  public void updatePivotKG(double kG) {
+  public void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS) {
     var pivotConfig = new TalonFXConfiguration();
     pivotMotor.getConfigurator().refresh(pivotConfig);
+    pivotConfig.Slot0.kP = kP;
+    pivotConfig.Slot0.kI = kI;
+    pivotConfig.Slot0.kD = kD;
     pivotConfig.Slot0.kG = kG;
+    pivotConfig.Slot0.kS = kS;
     PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig, 0.050));
   }
 
