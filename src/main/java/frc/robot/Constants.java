@@ -370,6 +370,7 @@ public final class Constants {
     public static final int rollerID = 51;
     public static final int FIRST_CORAL_CANRANGE_ID = 52;
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
+    public static final int PIVOT_CANCODER_ID = 54;
 
     public static final double PIVOT_kP = 0;
     public static final double PIVOT_kI = 0;
@@ -440,7 +441,8 @@ public final class Constants {
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
-            .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(PIVOT_GEAR_RATIO))
+            .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(PIVOT_GEAR_RATIO)
+                    .with)
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
