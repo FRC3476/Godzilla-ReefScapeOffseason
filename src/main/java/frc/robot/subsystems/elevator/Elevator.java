@@ -32,6 +32,12 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/ElevatorKG", 0.0);
   private static final LoggedTunableNumber elevatorKS =
       new LoggedTunableNumber("Elevator/ElevatorKS", 0.0);
+  private static final LoggedTunableNumber elevatorVelo =
+      new LoggedTunableNumber("Elevator/ElevatorVelo", 0.0);
+  private static final LoggedTunableNumber elevatorAccel =
+      new LoggedTunableNumber("Elevator/ElevatorAccel", 0.0);
+  private static final LoggedTunableNumber elevatorJerk =
+      new LoggedTunableNumber("Elevator/ElevatorJerk", 0.0);
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -55,9 +61,19 @@ public class Elevator extends SubsystemBase {
         || elevatorKI.hasChanged(hashCode())
         || elevatorKD.hasChanged(hashCode())
         || elevatorKG.hasChanged(hashCode())
-        || elevatorKS.hasChanged(hashCode())) {
+        || elevatorKS.hasChanged(hashCode())
+        || elevatorVelo.hasChanged(hashCode())
+        || elevatorAccel.hasChanged(hashCode())
+        || elevatorJerk.hasChanged(hashCode())) {
       io.updateElevatorPIDFF(
-          elevatorKP.get(), elevatorKI.get(), elevatorKD.get(), elevatorKG.get(), elevatorKS.get());
+          elevatorKP.get(),
+          elevatorKI.get(),
+          elevatorKD.get(),
+          elevatorKG.get(),
+          elevatorKS.get(),
+          elevatorVelo.get(),
+          elevatorAccel.get(),
+          elevatorJerk.get());
     }
   }
 

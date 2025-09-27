@@ -43,5 +43,13 @@ public interface ElevatorIO {
     return false;
   }
 
-  default void updateElevatorPIDFF(double kP, double kI, double kD, double kG, double kS) {}
+  default void updateElevatorPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {}
 }

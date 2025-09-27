@@ -31,6 +31,12 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber pivotKD = new LoggedTunableNumber("Intake/PivotKD", 0.0);
   private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotKS = new LoggedTunableNumber("Intake/PivotKS", 0.0);
+  private static final LoggedTunableNumber pivotVelo =
+      new LoggedTunableNumber("Intake/PivotVelo", 0.0);
+  private static final LoggedTunableNumber pivotAccel =
+      new LoggedTunableNumber("Intake/PivotAccel", 0.0);
+  private static final LoggedTunableNumber pivotJerk =
+      new LoggedTunableNumber("Intake/PivotJerk", 0.0);
 
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
@@ -60,9 +66,19 @@ public class Intake extends SubsystemBase {
         || pivotKI.hasChanged(hashCode())
         || pivotKD.hasChanged(hashCode())
         || pivotKG.hasChanged(hashCode())
-        || pivotKS.hasChanged(hashCode())) {
+        || pivotKS.hasChanged(hashCode())
+        || pivotVelo.hasChanged(hashCode())
+        || pivotAccel.hasChanged(hashCode())
+        || pivotJerk.hasChanged(hashCode())) {
       io.updatePivotPIDFF(
-          pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get());
+          pivotKP.get(),
+          pivotKI.get(),
+          pivotKD.get(),
+          pivotKG.get(),
+          pivotKS.get(),
+          pivotVelo.get(),
+          pivotAccel.get(),
+          pivotJerk.get());
     }
   }
 
