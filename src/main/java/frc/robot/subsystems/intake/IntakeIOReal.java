@@ -336,6 +336,14 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
+  public void updatePivotKG(double kG) {
+    var pivotConfig = new TalonFXConfiguration();
+    pivotMotor.getConfigurator().refresh(pivotConfig);
+    pivotConfig.Slot0.kG = kG;
+    PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig, 0.050));
+  }
+
+  @Override
   public boolean checkRollerStalled() {
     return MotorStallDetection.isMotorStalled(
         rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT, IntakeConstants.ROLLER_STALLED_RPS);
