@@ -32,6 +32,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private VoltageOut pivotVoltageRequest =
       new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
+  private final BaseStatusSignal[] signals;
+
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
   StatusSignal<Voltage> pivotAppliedVolts;
@@ -48,6 +50,15 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
+
+    signals =
+        new BaseStatusSignal[] {
+          pivotPosition,
+          pivotAppliedVolts,
+          pivotTorqueCurrentAmps,
+          pivotSupplyCurrentAmps,
+          pivotTempCelsius
+        };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -68,6 +79,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
     inputs.pivotData =
         new EE_PivotData(
             BaseStatusSignal.isAllGood(
@@ -91,5 +103,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void setPivotPosition(double position) {
     pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+  }
+
+  @Override
+  public void setPivotZero() {
+    pivotTalonFX.setPosition(0.0);
   }
 }

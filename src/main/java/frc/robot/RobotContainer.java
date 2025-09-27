@@ -62,6 +62,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -265,17 +266,44 @@ public class RobotContainer {
     NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
     NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
+
+    NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Pivot Safe Up (When Pressed)");
+    NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Pivot Fully Up (When Pressed)");
+    NetworkTableEntry pivotSafeDownPosEntry =
+        endEffectorTable.getEntry("Pivot Safe Down (When Pressed)");
+    NetworkTableEntry pivotDownPosEntry =
+        endEffectorTable.getEntry("Pivot Fully Down (When Pressed)");
+    NetworkTableEntry pivotMiddlePosEntry =
+        endEffectorTable.getEntry("Pivot Middle (When Pressed)");
+    NetworkTableEntry pivotManualZeroEntry = endEffectorTable.getEntry("Pivot Zero (When Pressed)");
+
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
     pivotUpEntry.setBoolean(false);
     pivotDownEntry.setBoolean(false);
 
+    pivotSafeUpEntry.setBoolean(false);
+    pivotUpPosEntry.setBoolean(false);
+    pivotSafeDownPosEntry.setBoolean(false);
+    pivotDownPosEntry.setBoolean(false);
+    pivotMiddlePosEntry.setBoolean(false);
+
+    pivotManualZeroEntry.setBoolean(false);
+
     // Create triggers based on the NetworkTableEntry values
     Trigger clawForwardTrigger = new Trigger(() -> clawForwardEntry.getBoolean(false));
     Trigger clawReverseTrigger = new Trigger(() -> clawReverseEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
+
+    Trigger pivotUpPosTrigger = new Trigger(() -> pivotUpPosEntry.getBoolean(false));
+    Trigger pivotSafeUpPosTrigger = new Trigger(() -> pivotSafeUpEntry.getBoolean(false));
+    Trigger pivotDownPosTrigger = new Trigger(() -> pivotDownPosEntry.getBoolean(false));
+    Trigger pivotSafeDownPosTrigger = new Trigger(() -> pivotSafeDownPosEntry.getBoolean(false));
+    Trigger pivotMiddlePosTrigger = new Trigger(() -> pivotMiddlePosEntry.getBoolean(false));
+
+    Trigger pivotManualZeroTrigger = new Trigger(() -> pivotManualZeroEntry.getBoolean(false));
 
     // Configure the while-held behavior
     clawForwardTrigger.whileTrue(claw.rollerFWD());
@@ -289,6 +317,22 @@ public class RobotContainer {
 
     pivotDownTrigger.whileTrue(endEffector.pivotDOWN());
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
+
+    pivotUpPosTrigger.onTrue(
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN));
+    pivotSafeUpPosTrigger.onTrue(
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN));
+    pivotSafeDownPosTrigger.onTrue(
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN));
+    pivotDownPosTrigger.onTrue(
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN));
+    pivotMiddlePosTrigger.onTrue(
+        endEffector.rotatePivot(
+            () ->
+                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
+                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                    / 2));
+    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero());
   }
 
   private void BuildElevatorTab() {
@@ -299,13 +343,32 @@ public class RobotContainer {
     NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
     NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elevator Down (While Held)");
 
+    NetworkTableEntry elevatorL2Entry = elevatorTable.getEntry("Elevator L2 (When Pressed)");
+    NetworkTableEntry elevatorL3Entry = elevatorTable.getEntry("Elevator L3 (When Pressed)");
+    NetworkTableEntry elevatorL4Entry = elevatorTable.getEntry("Elevator L4 (When Pressed)");
+    NetworkTableEntry elevatorDownPosEntry =
+        elevatorTable.getEntry("Elevator Down Pos (When Pressed)");
+    NetworkTableEntry elevatorManualZeroEntry =
+        elevatorTable.getEntry("Zero the Elevator (When Pressed)");
+
     // Initialize entries with default values
     elevatorUpEntry.setBoolean(false);
     elevatorDownEntry.setBoolean(false);
+    elevatorL2Entry.setBoolean(false);
+    elevatorL3Entry.setBoolean(false);
+    elevatorL4Entry.setBoolean(false);
+    elevatorDownPosEntry.setBoolean(false);
+    elevatorManualZeroEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
     Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
+    Trigger elevatorL2Trigger = new Trigger(() -> elevatorL2Entry.getBoolean(false));
+    Trigger elevatorL3Trigger = new Trigger(() -> elevatorL3Entry.getBoolean(false));
+    Trigger elevatorL4Trigger = new Trigger(() -> elevatorL4Entry.getBoolean(false));
+    Trigger elevatorDownPosTrigger = new Trigger(() -> elevatorDownPosEntry.getBoolean(false));
+    Trigger elevatorManualZeroTrigger =
+        new Trigger(() -> elevatorManualZeroEntry.getBoolean(false));
 
     // Configure the while-held behavior
     elevatorUpTrigger.whileTrue(elevator.elevatorUP());
@@ -313,6 +376,16 @@ public class RobotContainer {
 
     elevatorDownTrigger.whileTrue(elevator.elevatorDWN());
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
+
+    elevatorL2Trigger.onTrue(
+        elevator.moveToTargetPosition(() -> SuperstructureState.L2_SCORE.getElevatorHeight()));
+    elevatorL3Trigger.onTrue(
+        elevator.moveToTargetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
+    elevatorL4Trigger.onTrue(
+        elevator.moveToTargetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
+    elevatorDownPosTrigger.onTrue(
+        elevator.moveToTargetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
+    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero());
   }
 
   private void RegisterDefaultCommands() {

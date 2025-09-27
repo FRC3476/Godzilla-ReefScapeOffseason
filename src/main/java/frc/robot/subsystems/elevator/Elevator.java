@@ -108,6 +108,11 @@ public class Elevator extends SubsystemBase {
     return false;
   }
 
+  public Command manualSetElevatorZero() {
+    isZeroed = true;
+    return Commands.runOnce(() -> io.setElevatorZero());
+  }
+
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
