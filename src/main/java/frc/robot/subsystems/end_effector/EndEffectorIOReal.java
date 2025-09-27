@@ -35,6 +35,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private VoltageOut roller_m_request =
       new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
+      
+  private VoltageOut pivotVoltageRequest =
+  new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
   StatusSignal<Voltage> pivotAppliedVolts;
@@ -154,7 +158,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotVoltage(double voltage) {
-    pivotTalonFX.setControl(roller_m_request.withOutput(voltage));
+    pivotTalonFX.setControl(pivotVoltageRequest.withOutput(voltage));
   }
 
   @Override
