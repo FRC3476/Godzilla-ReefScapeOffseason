@@ -209,8 +209,6 @@ public class RobotContainer {
     NetworkTableEntry pivotDownEntry = 
 		endEffectorTable.getEntry("Pivot Down (While Held)");
         
-
-
     // Initialize entries with default values
     endEffectorForwardEntry.setBoolean(false);
     endEffectorReverseEntry.setBoolean(false);
