@@ -198,14 +198,21 @@ public class RobotContainer {
     NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
+    NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("L1 Bar Up (While Held)");
+    NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("L1 Bar Down (While Held)");
+
     NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
     NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
+
     intakeUpEntry.setBoolean(false);
     intakeDownEntry.setBoolean(false);
+
+    l1BarUpEntry.setBoolean(false);
+    l1BarDownEntry.setBoolean(false);
 
     feederForwardEntry.setBoolean(false);
     feederReverseEntry.setBoolean(false);
@@ -213,8 +220,12 @@ public class RobotContainer {
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
+
     Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
     Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
+
+    Trigger l1BarUpTrigger = new Trigger(() -> l1BarUpEntry.getBoolean(false));
+    Trigger l1BarDownTrigger = new Trigger(() -> l1BarDownEntry.getBoolean(false));
 
     Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.getBoolean(false));
     Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.getBoolean(false));
@@ -231,6 +242,12 @@ public class RobotContainer {
 
     intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
     intakeDownTrigger.onFalse(intake.pivotStop());
+
+    l1BarUpTrigger.whileTrue(intake.l1BarFWD());
+    l1BarUpTrigger.onFalse(intake.l1BarSTOP());
+
+    l1BarDownTrigger.whileTrue(intake.l1BarRVS());
+    l1BarDownTrigger.onFalse(intake.l1BarSTOP());
 
     feederInTrigger.whileTrue(intake.feederFWD());
     feederInTrigger.onFalse(intake.feederSTOP());

@@ -380,7 +380,7 @@ public final class Constants {
     public static final double PIVOT_Accel = 0;
     public static final double PIVOT_Jerk = 0;
 
-    public static final double PIVOT_CURRENT_LIMIT_AMPS = 0;
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
@@ -388,7 +388,7 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -514,7 +514,7 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;

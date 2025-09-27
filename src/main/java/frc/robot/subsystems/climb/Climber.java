@@ -15,7 +15,7 @@ public class Climber extends SubsystemBase {
 
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
-      new LoggedTunableNumber("Climber/DeployVolts", 0);
+      new LoggedTunableNumber("Climber/DeployVolts", 1);
 
   private static Climber climberSubsystem;
 

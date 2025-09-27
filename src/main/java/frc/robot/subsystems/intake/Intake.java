@@ -18,16 +18,17 @@ public class Intake extends SubsystemBase {
   private Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 1.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 1.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
-      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+      new LoggedTunableNumber("Feeder/RollerVolts", 1.0);
+  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotManualTestVolts =
-      new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
+      new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
 
   private IntakeState currentState = IntakeState.IDLE;
 
@@ -233,12 +234,24 @@ public class Intake extends SubsystemBase {
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 
+  public Command l1BarFWD() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(l1Volts.get()));
+  }
+
+  public Command l1BarRVS() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(-l1Volts.get()));
+  }
+
+  public Command l1BarSTOP() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
+  }
+
   public Command feederFWD() {
-    return Commands.run(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
+    return Commands.runOnce(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
   }
 
   public Command feederRVS() {
-    return Commands.run(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
+    return Commands.runOnce(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
   }
 
   public Command feederSTOP() {

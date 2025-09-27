@@ -85,7 +85,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotVoltage(double voltage) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(voltage));
     pivotTalonFX.setControl(pivotVoltageRequest.withOutput(voltage));
   }
 
