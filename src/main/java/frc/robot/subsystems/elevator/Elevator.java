@@ -7,7 +7,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+
+/* **********
+ * COLLISION AVOIDANCE SOLUTION: Elevator class gets SS instance, defaul command sets to correct position (periodicially)
+ ***********/
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
@@ -19,13 +24,6 @@ public class Elevator extends SubsystemBase {
 
   private double setpoint;
   private boolean isZeroed = false;
-
-  public static Elevator getInstance() {
-    if (elevatorSubsystem == null) {
-      elevatorSubsystem = new Elevator(new ElevatorIOReal());
-    }
-    return elevatorSubsystem;
-  }
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -62,8 +60,8 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
-  public Command moveToTargetPosition(double position) {
-    return Commands.run(() -> this.setTargetPosition(position), this);
+  public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
+    return Commands.run(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
   }
 
   public Command elevatorSTOP() {
@@ -71,11 +69,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command elevatorUP() {
-    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
   }
 
   public Command elevatorDWN() {
-    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
   }
 
   public double getCurrentPosition() {
@@ -83,13 +81,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
-            || !isZeroed)) {
-      // false alarm, elevator is stalling at the bottom
-      // make sure to run elevator down every time after turning it on
-      io.setElevatorZero();
-      isZeroed = true;
+    if (isHomingComplete()) {
       return false;
     } else if (io.checkMotorsStalled()
         && getCurrentPosition()
@@ -103,10 +95,34 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  private boolean isHomingComplete() {
+    // Check if homing is complete using the same logic as checkForJam for bottom detection
+    if (io.checkMotorsStalled()
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
+            || !isZeroed)) {
+
+      io.setElevatorZero();
+      isZeroed = true;
+      return true;
+    }
+    return false;
+  }
+
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
   }
 
-  public Trigger elevatorObjectTrigger = new Trigger(() -> checkForJam());
+  /** Command to home the elevator by running it slowly downward until it zeros. */
+  public Command homeElevator() {
+    return Commands.run(
+            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+        .until(() -> isHomingComplete())
+        .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
+        .finallyDo(() -> this.io.setElevatorVoltage(0.0))
+        .withName("HomeElevator");
+  }
+
+  public Trigger elevatorObjectTrigger =
+      new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }

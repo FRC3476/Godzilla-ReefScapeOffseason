@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
@@ -71,11 +72,11 @@ public class IntakeIOReal implements IntakeIO {
 
   public IntakeIOReal() {
     // Initialize hardware
-    pivotMotor = new TalonFX(IntakeConstants.intakePivotID);
-    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID);
-    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID);
-    canCoder = new CANcoder(IntakeConstants.CANCODER_ID);
-    canRange = new CANrange(IntakeConstants.CANRANGE_ID);
+    pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.misc_canivore);
+    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.misc_canivore);
+    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.misc_canivore);
+    canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.misc_canivore);
+    canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.misc_canivore);
 
     // Configure pivot motor
     var pivotConfig = new TalonFXConfiguration();

@@ -32,6 +32,8 @@ public class RobotState extends MagicVirtualSubsystem {
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
 
+  private static boolean hasAlgae = false;
+
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
 
@@ -97,6 +99,14 @@ public class RobotState extends MagicVirtualSubsystem {
     return autoAlignmentTrackers.stream()
         .reduce((a, b) -> a.getDistanceMeters() < b.getDistanceMeters() ? a : b)
         .get();
+  }
+
+  public static boolean hasAlgae() {
+    return hasAlgae;
+  }
+
+  public static void setHasAlgae(boolean input) {
+    hasAlgae = input;
   }
 
   @Override
