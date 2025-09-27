@@ -239,12 +239,10 @@ public class RobotContainer {
     NetworkTableEntry endEffectorForwardEntry =
         endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry endEffectorReverseEntry =
-		endEffectorTable.getEntry("Roller Reverse (While Held)");
-    NetworkTableEntry pivotUpEntry = 
-		endEffectorTable.getEntry("Pivot Up (While Held)");
-    NetworkTableEntry pivotDownEntry = 
-		endEffectorTable.getEntry("Pivot Down (While Held)");
-        
+        endEffectorTable.getEntry("Roller Reverse (While Held)");
+    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
+
     // Initialize entries with default values
     endEffectorForwardEntry.setBoolean(false);
     endEffectorReverseEntry.setBoolean(false);
@@ -258,7 +256,7 @@ public class RobotContainer {
         new Trigger(() -> endEffectorReverseEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
-    
+
     // Configure the while-held behavior
     endEffectorForwardTrigger.whileTrue(endEffector.rollerFWD());
     endEffectorForwardTrigger.onFalse(endEffector.rollerSTOP());

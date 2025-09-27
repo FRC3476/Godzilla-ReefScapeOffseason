@@ -35,9 +35,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private VoltageOut roller_m_request =
       new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
-      
   private VoltageOut pivotVoltageRequest =
-  new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;

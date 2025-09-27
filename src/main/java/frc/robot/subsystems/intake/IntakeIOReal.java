@@ -9,8 +9,6 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -79,51 +77,16 @@ public class IntakeIOReal implements IntakeIO {
     canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.misc_canivore);
 
     // Configure pivot motor
-    var pivotConfig = new TalonFXConfiguration();
-    pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    pivotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.PIVOT_MAX_SUPPLY_CURRENT_LIMIT;
-    pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.PIVOT_MAX_STATOR_CURRENT_LIMIT;
-    pivotConfig.Slot0.kP = IntakeConstants.pivotKP;
-    pivotConfig.Slot0.kI = IntakeConstants.pivotKI;
-    pivotConfig.Slot0.kD = IntakeConstants.pivotKD;
-    pivotConfig.Slot0.kG = IntakeConstants.pivotKG;
-    pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
-    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
-    pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
-    PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotMotor.getConfigurator().apply(IntakeConstants.PIVOT_TALON_CONFIG));
 
     // Configure roller motor
-    var rollerConfig = new TalonFXConfiguration();
-    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
-    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_MAX_STATOR_CURRENT_LIMIT;
-    PhoenixUtil.tryUntilOk(5, () -> rollerMotor.getConfigurator().apply(rollerConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rollerMotor.getConfigurator().apply(IntakeConstants.ROLLER_TALON_CONFIG));
 
     // Configure lvl1blocker motor
-    var lvl1blockerConfig = new TalonFXConfiguration();
-    lvl1blockerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    lvl1blockerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit =
-        IntakeConstants.L1_MAX_SUPPLY_CURRENT_LIMIT;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit =
-        IntakeConstants.L1_MAX_STATOR_CURRENT_LIMIT;
-    lvl1blockerConfig.Slot0.kP = IntakeConstants.lvl1blockerKP;
-    lvl1blockerConfig.Slot0.kI = IntakeConstants.lvl1blockerKI;
-    lvl1blockerConfig.Slot0.kD = IntakeConstants.lvl1blockerKD;
-    lvl1blockerConfig.Slot0.kG = IntakeConstants.lvl1blockerKG;
-    lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerMAX_ACCEL;
-    lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        IntakeConstants.lvl1blockerMAX_VELOCITY;
-    lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
-    PhoenixUtil.tryUntilOk(5, () -> lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
 
     // Configure CANCoder
     var canCoderConfig = new CANcoderConfiguration();

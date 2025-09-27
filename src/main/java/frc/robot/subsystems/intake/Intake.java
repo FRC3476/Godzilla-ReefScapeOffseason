@@ -23,13 +23,11 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
       new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
-  
+
   // Tunable numbers for manual testing
-  private static final LoggedTunableNumber pivotKG =
-      new LoggedTunableNumber("Intake/PivotKG", 0.0);
+  private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
-
 
   private IntakeState currentState = IntakeState.IDLE;
 
@@ -210,15 +208,11 @@ public class Intake extends SubsystemBase {
 
   // Manual test functions for intake pivot
   public Command pivotManualTestForward() {
-    return Commands.run(
-        () -> this.io.setPivotVoltage(-pivotManualTestVolts.get()),
-        this);
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
   }
 
   public Command pivotManualTestReverse() {
-    return Commands.run(
-        () -> this.io.setPivotVoltage(pivotManualTestVolts.get()),
-        this);
+    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
   }
 
   public Command pivotStop() {
@@ -237,15 +231,15 @@ public class Intake extends SubsystemBase {
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 
-  public Command feederFWD(){
-    return Commands.run(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
-  }
-
-  public Command feederRVS(){
+  public Command feederFWD() {
     return Commands.run(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
   }
 
-  public Command feederSTOP(){
+  public Command feederRVS() {
+    return Commands.run(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
+  }
+
+  public Command feederSTOP() {
     return Commands.runOnce(() -> feeder.setRollerVoltage(0));
   }
-} 
+}

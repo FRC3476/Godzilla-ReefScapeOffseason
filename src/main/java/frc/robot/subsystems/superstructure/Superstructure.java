@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
-import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
