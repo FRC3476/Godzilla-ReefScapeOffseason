@@ -10,7 +10,7 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  
+
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
       new LoggedTunableNumber("Climber/DeployVolts", 0);
@@ -37,7 +37,7 @@ public class Climber extends SubsystemBase {
   public Command climbVoltOut() {
     return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }
-  
+
   public Command climbDeploy(double position) {
     if (inputs.data.positionRads() > position) {
       return climbSTOP();
@@ -52,5 +52,4 @@ public class Climber extends SubsystemBase {
   public Command climbSTOP() {
     return Commands.run(() -> this.io.runVolts(0.0), this);
   }
-
 }
