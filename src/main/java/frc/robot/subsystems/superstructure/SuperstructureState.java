@@ -9,64 +9,64 @@ import java.util.Set;
 public enum SuperstructureState {
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
   STOW_CORAL(
       Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN),
   STOW_ALGAE(
       Constants.SuperstructureConstants.STOW_ALGAE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIAN),
   INTAKE_CORAL(
       Constants.SuperstructureConstants.INTAKE_CORAL_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN),
   INTAKE_CORAL_L1(
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN),
   FEED(
       Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIAN),
   L1_PIVOT(
       Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN),
   L2_AIM(
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_RADIAN),
   L3_AIM(
       Constants.SuperstructureConstants.L3_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_RADIAN),
   L4_AIM(
       Constants.SuperstructureConstants.L4_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_RADIAN),
   L1_SCORE(
       Constants.SuperstructureConstants.L1_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
   L2_SCORE(
       Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
   L3_SCORE(
       Constants.SuperstructureConstants.L3_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
   L4_SCORE(
       Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
   ALGAE_HIGH_INTAKE(
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
   ALGAE_LOW_INTAKE(
       Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
   PROCESSOR_AIM(
       Constants.SuperstructureConstants.PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIAN),
   BARGE_AIM_CENTER(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN),
   BARGE_AIM_FORWARD(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIANS),
+      Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN),
   BARGE_AIM_BACKWARD(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIANS);
+      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN);
 
   private final double elevatorHeight;
   private final double endEffectorRotation;

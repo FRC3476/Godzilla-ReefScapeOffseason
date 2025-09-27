@@ -34,8 +34,18 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
   }
 
-  // Original commands (kept for compatibility)
   public Command climbVoltOut() {
+    return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
+  }
+  
+  public Command climbDeploy(double position) {
+    if (inputs.data.positionRads() > position) {
+      return climbSTOP();
+    }
+    return climbOut().until(() -> inputs.data.positionRads() > position).andThen(climbSTOP());
+  }
+
+  public Command climbOut() {
     return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
