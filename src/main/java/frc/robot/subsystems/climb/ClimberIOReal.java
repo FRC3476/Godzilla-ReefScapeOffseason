@@ -29,8 +29,6 @@ public class ClimberIOReal implements ClimberIO {
   // control requests
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
-  private MotionMagicVoltage climb_m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID);
 
@@ -64,9 +62,5 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void runVolts(double volts) {
     talon.setControl(voltsRequest.withOutput(volts));
-  }
-
-  public void setClimbPosition(double position) {
-    talon.setControl(climb_m_request.withPosition(position));
   }
 }
