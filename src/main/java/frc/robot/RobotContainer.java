@@ -49,6 +49,10 @@ import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
 import frc.robot.subsystems.end_effector.EndEffectorIOSim;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOReal;
+import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -70,6 +74,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Superstructure superstructure;
   private final Climber climber;
+  private final Feeder feeder;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -82,7 +87,8 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        intake = new Intake(new IntakeIOReal());
+        feeder = new Feeder(new FeederIOReal());
+        intake = new Intake(new IntakeIOReal(), feeder);
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
@@ -99,7 +105,8 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        intake = new Intake(new IntakeIOSim());
+        feeder = new Feeder(new FeederIOSim());
+        intake = new Intake(new IntakeIOSim(), feeder);
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         superstructure = new Superstructure(elevator, endEffector);
@@ -116,7 +123,8 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        intake = new Intake(new IntakeIO() {});
+        feeder = new Feeder(new FeederIO() {});
+        intake = new Intake(new IntakeIO() {}, feeder);
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
@@ -182,17 +190,26 @@ public class RobotContainer {
     NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
+    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
+    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
+
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
     intakeUpEntry.setBoolean(false);
     intakeDownEntry.setBoolean(false);
 
+    feederForwardEntry.setBoolean(false);
+    feederReverseEntry.setBoolean(false);
+
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
     Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
     Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
+
+    Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.setBoolean(false));
+    Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.setBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -206,6 +223,12 @@ public class RobotContainer {
 
     intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
     intakeDownTrigger.onFalse(intake.pivotStop());
+
+    feederInTrigger.whileTrue(intake.feederFWD());
+    feederInTrigger.onFalse(intake.feederSTOP());
+
+    feederOutTrigger.whileTrue(intake.feederRVS());
+    feederOutTrigger.onFalse(intake.feederSTOP());
   }
 
   private void BuildEndEffectorTab() {
