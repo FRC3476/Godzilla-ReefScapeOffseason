@@ -176,16 +176,23 @@ public class RobotContainer {
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Intake Forward (While Held)");
-    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Intake Reverse (While Held)");
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Roller Reverse (While Held)");
+
+    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
+    intakeUpEntry.setBoolean(false);
+    intakeDownEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
+    Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
+    Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -193,6 +200,12 @@ public class RobotContainer {
 
     intakeReverseTrigger.whileTrue(intake.intakeRVS());
     intakeReverseTrigger.onFalse(intake.intakeSTOP());
+
+    intakeUpTrigger.whileTrue(intake.pivotManualTestForward());
+    intakeDownTrigger.onFalse(intake.pivotStop());
+
+    intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
+    intakeDownTrigger.onFalse(intake.pivotStop());
   }
 
   private void BuildEndEffectorTab() {

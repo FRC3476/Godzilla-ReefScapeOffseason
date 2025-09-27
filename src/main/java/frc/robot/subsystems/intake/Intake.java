@@ -29,8 +29,6 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
-  private static final LoggedTunableNumber pivotDirection =
-      new LoggedTunableNumber("Intake/PivotDirection", 1.0); 
 
   private static Intake intakeSubsystem;
 
@@ -220,23 +218,18 @@ public class Intake extends SubsystemBase {
   // Manual test functions for intake pivot
   public Command pivotManualTestForward() {
     return Commands.run(
-        () -> this.io.setPivotVoltage(Math.abs(pivotManualTestVolts.get()) * pivotDirection.get()),
+        () -> this.io.setPivotVoltage(Math.abs(pivotManualTestVolts.get())),
         this);
   }
 
   public Command pivotManualTestReverse() {
     return Commands.run(
-        () -> this.io.setPivotVoltage(-Math.abs(pivotManualTestVolts.get()) * pivotDirection.get()),
+        () -> this.io.setPivotVoltage(-Math.abs(pivotManualTestVolts.get())),
         this);
   }
 
-  public Command pivotManualTestStop() {
+  public Command pivotStop() {
     return Commands.runOnce(() -> this.io.setPivotVoltage(0.0), this);
-  }
-
-  // Getter for kG tuning
-  public double getPivotKG() {
-    return pivotKG.get();
   }
 
   public Trigger intakeJamTrigger =
