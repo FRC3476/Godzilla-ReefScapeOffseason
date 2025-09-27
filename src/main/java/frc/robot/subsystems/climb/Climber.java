@@ -35,7 +35,7 @@ public class Climber extends SubsystemBase {
   }
 
   // Original commands (kept for compatibility)
-  public Command climbDeploy() {
+  public Command climbVoltOut() {
     return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
