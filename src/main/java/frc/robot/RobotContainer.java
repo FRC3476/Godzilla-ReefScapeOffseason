@@ -288,7 +288,6 @@ public class RobotContainer {
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
-
   }
 
   /**
