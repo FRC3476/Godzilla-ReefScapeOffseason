@@ -51,6 +51,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Boolean> firstRangeIsTripped;
   StatusSignal<Boolean> secondRangeIsTripped;
 
+  private final BaseStatusSignal[] signals;
+
   public EndEffectorIOReal() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.misc_canivore);
@@ -78,6 +80,22 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     firstRangeIsTripped = firstCoralCANRange.getIsDetected();
     secondRangeIsTripped = secondCoralCANRange.getIsDetected();
+
+    signals =
+        new BaseStatusSignal[] {
+          pivotPosition,
+          pivotAppliedVolts,
+          pivotTorqueCurrentAmps,
+          pivotSupplyCurrentAmps,
+          pivotTempCelsius,
+          rollerVelocityRPS,
+          rollerAppliedVolts,
+          rollerTorqueCurrentAmps,
+          rollerSupplyCurrentAmps,
+          rollerTempCelsius,
+          firstRangeIsTripped,
+          secondRangeIsTripped
+        };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -113,6 +131,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
+
     inputs.pivotData =
         new EE_PivotData(
             BaseStatusSignal.isAllGood(
@@ -154,7 +174,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotVoltage(double voltage) {
-    rollerTalonFX.setControl(pivot_m_request.withPosition(voltage));
+    pivotTalonFX.setControl(pivot_m_request.withPosition(voltage));
   }
 
   @Override
