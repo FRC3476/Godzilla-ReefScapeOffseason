@@ -10,7 +10,6 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -19,16 +18,17 @@ public class Intake extends SubsystemBase {
   private Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 1.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 1.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
-      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+      new LoggedTunableNumber("Feeder/RollerVolts", 1.0);
+  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotManualTestVolts =
-      new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
+      new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
 
   private IntakeState currentState = IntakeState.IDLE;
 
@@ -70,7 +70,8 @@ public class Intake extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    return io.checkRollerStalled() && isCoralInIntake();
+    return false;
+    // return io.checkRollerStalled() && isCoralInIntake();
   }
 
   public Trigger coralInIntakeTrigger() {
@@ -183,7 +184,8 @@ public class Intake extends SubsystemBase {
               break;
           }
         },
-        this);
+        this,
+        feeder);
   }
 
   public Command setIntakeState(IntakeState state) {
@@ -211,11 +213,11 @@ public class Intake extends SubsystemBase {
 
   // Manual test functions for intake pivot
   public Command pivotManualTestForward() {
-    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
   }
 
   public Command pivotManualTestReverse() {
-    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
   }
 
   public Command pivotStop() {
@@ -225,21 +227,31 @@ public class Intake extends SubsystemBase {
   public Trigger intakeJamTrigger =
       new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
-  public Trigger feederJamTrigger = feeder.dejamTrigger;
-
   public Command dejamFeeder() {
     return Commands.sequence(
-        Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
+        Commands.runOnce(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble())),
         Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
 
+  public Command l1BarFWD() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(l1Volts.get()));
+  }
+
+  public Command l1BarRVS() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(-l1Volts.get()));
+  }
+
+  public Command l1BarSTOP() {
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
+  }
+
   public Command feederFWD() {
-    return Commands.run(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
+    return Commands.runOnce(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
   }
 
   public Command feederRVS() {
-    return Commands.run(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
+    return Commands.runOnce(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
   }
 
   public Command feederSTOP() {

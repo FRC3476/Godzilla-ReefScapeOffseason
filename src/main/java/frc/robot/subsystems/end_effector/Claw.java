@@ -11,12 +11,13 @@ public class Claw extends SubsystemBase {
 
   private final ClawIO io;
   private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
+
   public Claw(ClawIO io) {
     this.io = io;
   }
 
   private static final LoggedTunableNumber rollerVolts =
-      new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
+      new LoggedTunableNumber("EndEffector/RollerVolts", 1.0);
 
   public void periodic() {
     boolean firstSensorTriggered =

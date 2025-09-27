@@ -20,7 +20,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private static final LoggedTunableNumber elevatorVolts =
-      new LoggedTunableNumber("Elevator/TestVolts", 2.0);
+      new LoggedTunableNumber("Elevator/TestVolts", 1.0);
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -69,11 +69,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command elevatorUP() {
-    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
   }
 
   public Command elevatorDWN() {
-    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
   }
 
   public double getCurrentPosition() {

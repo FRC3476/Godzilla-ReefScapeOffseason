@@ -3,20 +3,16 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.util.LoggedTunableNumber;
 
 public class EndEffector extends SubsystemBase {
 
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
-  private static EndEffector endEffectorSubsystem;
-
-  private static final LoggedTunableNumber rollerVolts =
-      new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
   private static final LoggedTunableNumber pivotTestVolts =
-      new LoggedTunableNumber("EndEffector/PivotTestVolts", 2.0);
+      new LoggedTunableNumber("EndEffector/PivotTestVolts", 1.0);
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
@@ -38,11 +34,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command pivotUP() {
-    return Commands.run(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
   }
 
   public Command pivotDOWN() {
-    return Commands.run(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
   }
 
   public Command pivotSTOP() {

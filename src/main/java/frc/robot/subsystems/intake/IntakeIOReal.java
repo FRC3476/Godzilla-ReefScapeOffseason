@@ -309,6 +309,6 @@ public class IntakeIOReal implements IntakeIO {
   @Override
   public boolean checkRollerStalled() {
     return MotorStallDetection.isMotorStalled(
-        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT, IntakeConstants.ROLLER_STALLED_RPS);
+        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT_A, IntakeConstants.ROLLER_STALLED_RPS);
   }
 }
