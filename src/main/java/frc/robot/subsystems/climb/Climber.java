@@ -4,13 +4,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  private static final LoggedTunableNumber climberIntakeVolts =
-      new LoggedTunableNumber("ClimberVolts", 0);
+  
+  // Tunable numbers for manual testing and gravity compensation
+  private static final LoggedTunableNumber climberVolts =
+      new LoggedTunableNumber("Climber/DeployVolts", 0);
 
   private static Climber climberSubsystem;
 
@@ -28,8 +31,13 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Climber", inputs);
   }
 
+  public Command climbVoltOut() {
+    return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
+  }
+  
   public Command climbDeploy(double position) {
     if (inputs.data.positionRads() > position) {
       return climbSTOP();
@@ -38,10 +46,11 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbOut() {
-    return Commands.run(() -> this.io.runVolts(climberIntakeVolts.get()), this);
+    return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
   public Command climbSTOP() {
-    return Commands.run(() -> this.io.runVolts(0), this);
+    return Commands.run(() -> this.io.runVolts(0.0), this);
   }
+
 }

@@ -49,6 +49,11 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimberIO;
+import frc.robot.subsystems.climb.ClimberIOReal;
+import frc.robot.subsystems.climb.ClimberIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -65,6 +70,7 @@ public class RobotContainer {
   private final EndEffector endEffector;
   private final Elevator elevator;
   private final Superstructure superstructure;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -81,6 +87,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIOReal());
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -97,6 +104,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIOSim());
         drive =
             new Drive(
                 new GyroIO() {},
@@ -113,6 +121,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -151,6 +160,7 @@ public class RobotContainer {
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
+    BuildClimberTab();
     BuildDriveTab();
 
     RegisterDefaultCommands();
@@ -251,6 +261,19 @@ public class RobotContainer {
     testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
 
     testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
+  }
+
+  private void BuildClimberTab() {
+    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
+
+    NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
+
+    climberOutEntry.setBoolean(false);
+
+    Trigger climberOutTrigger = new Trigger(() -> climberOutEntry.getBoolean(false));
+
+    climberOutTrigger.whileTrue(climber.climbVoltOut());
+    climberOutTrigger.onFalse(climber.climbSTOP());
   }
 
   /**
