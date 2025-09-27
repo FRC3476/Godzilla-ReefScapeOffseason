@@ -51,6 +51,9 @@ import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimberIO;
+import frc.robot.subsystems.climb.ClimberIOReal;
+import frc.robot.subsystems.climb.ClimberIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -67,7 +70,6 @@ public class RobotContainer {
   private final EndEffector endEffector;
   private final Elevator elevator;
   private final Superstructure superstructure;
-  private final Feeder feeder;
   private final Climber climber;
 
   // Controller
@@ -85,8 +87,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOReal());
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
-        feeder = Feeder.getInstance();
-        climber = Climber.getInstance();
+        climber = new Climber(new ClimberIOReal());
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -103,8 +104,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         superstructure = new Superstructure(elevator, endEffector);
-        feeder = Feeder.getInstance();
-        climber = Climber.getInstance();
+        climber = new Climber(new ClimberIOSim());
         drive =
             new Drive(
                 new GyroIO() {},
@@ -121,8 +121,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
-        feeder = Feeder.getInstance();
-        climber = Climber.getInstance();
+        climber = new Climber(new ClimberIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -161,7 +160,6 @@ public class RobotContainer {
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
-    BuildFeederTab();
     BuildClimberTab();
     BuildDriveTab();
 
@@ -279,59 +277,18 @@ public class RobotContainer {
     testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
   }
 
-  private void BuildFeederTab() {
-    NetworkTable feederTable = NetworkTableInstance.getDefault().getTable("Feeder");
-
-    NetworkTableEntry feederForwardEntry = feederTable.getEntry("Feeder Forward (While Held)");
-    NetworkTableEntry feederReverseEntry = feederTable.getEntry("Feeder Reverse (While Held)");
-
-    feederForwardEntry.setBoolean(false);
-    feederReverseEntry.setBoolean(false);
-
-    Trigger feederForwardTrigger = new Trigger(() -> feederForwardEntry.getBoolean(false));
-    Trigger feederReverseTrigger = new Trigger(() -> feederReverseEntry.getBoolean(false));
-
-    feederForwardTrigger.whileTrue(Commands.run(() -> feeder.setRollerVoltage(12.0), feeder));
-    feederForwardTrigger.onFalse(Commands.runOnce(() -> feeder.setRollerVoltage(0), feeder));
-
-    feederReverseTrigger.whileTrue(Commands.run(() -> feeder.setRollerVoltageReversed(12.0), feeder));
-    feederReverseTrigger.onFalse(Commands.runOnce(() -> feeder.setRollerVoltage(0), feeder));
-  }
-
   private void BuildClimberTab() {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (While Held)");
-    NetworkTableEntry climberStopEntry = climberTable.getEntry("Climber Stop");
-    NetworkTableEntry climberManualUpEntry = climberTable.getEntry("Climber Manual Up (While Held)");
-    NetworkTableEntry climberManualDownEntry = climberTable.getEntry("Climber Manual Down (While Held)");
-    NetworkTableEntry climberHoldEntry = climberTable.getEntry("Climber Hold (While Held)");
 
     climberDeployEntry.setBoolean(false);
-    climberStopEntry.setBoolean(false);
-    climberManualUpEntry.setBoolean(false);
-    climberManualDownEntry.setBoolean(false);
-    climberHoldEntry.setBoolean(false);
 
     Trigger climberDeployTrigger = new Trigger(() -> climberDeployEntry.getBoolean(false));
-    Trigger climberStopTrigger = new Trigger(() -> climberStopEntry.getBoolean(false));
-    Trigger climberManualUpTrigger = new Trigger(() -> climberManualUpEntry.getBoolean(false));
-    Trigger climberManualDownTrigger = new Trigger(() -> climberManualDownEntry.getBoolean(false));
-    Trigger climberHoldTrigger = new Trigger(() -> climberHoldEntry.getBoolean(false));
 
     climberDeployTrigger.whileTrue(climber.climbDeploy());
     climberDeployTrigger.onFalse(climber.climbSTOP());
 
-    climberStopTrigger.onTrue(climber.climbSTOP());
-
-    climberManualUpTrigger.whileTrue(climber.climberManualUp());
-    climberManualUpTrigger.onFalse(climber.climberHold());
-
-    climberManualDownTrigger.whileTrue(climber.climberManualDown());
-    climberManualDownTrigger.onFalse(climber.climberHold());
-
-    climberHoldTrigger.whileTrue(climber.climberHold());
-    climberHoldTrigger.onFalse(climber.climbSTOP());
   }
 
   /**
