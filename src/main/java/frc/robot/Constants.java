@@ -423,6 +423,10 @@ public final class Constants {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
+    public static final double STALL_AMPS = 0.0;
+    public static final double STALL_VELOCITY = 0.0;
+    public static final double CLIMB_DEPLOY_POSITION = 0.0;
+    public static final double CLIMB_CLIMB_POSITION = 0.0;
   }
 
   // ====================Feeder (2_)====================
