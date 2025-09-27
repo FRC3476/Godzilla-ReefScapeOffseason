@@ -376,9 +376,9 @@ public final class Constants {
     public static final double PIVOT_kD = 0;
     public static final double PIVOT_kG = 0;
 
-    public static final double PIVOT_Velo = 0;
-    public static final double PIVOT_Accel = 0;
-    public static final double PIVOT_Jerk = 0;
+    public static final double PIVOT_Velo = 1000;
+    public static final double PIVOT_Accel = 10;
+    public static final double PIVOT_Jerk = 1000;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
@@ -414,16 +414,13 @@ public final class Constants {
     // Hardstop angles
     public static final double UPPER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(119.8473749);
     public static final double LOWER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
-
-    // Safe angle range (for elevator up/down movement)
-    public static final double SAFE_ANGLE_UPPER_RAD = Units.degreesToRadians(53.9126895);
-    public static final double SAFE_ANGLE_LOWER_RAD = Units.degreesToRadians(-61.1115004);
-
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_RADIAN = Units.degreesToRadians(119.8473749);
     public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-95.1526249);
-    public static final double MAX_SAFE_ANGLE_RADIAN = Units.degreesToRadians(53.9126895);
-    public static final double MIN_SAFE_ANGLE_RADIAN = Units.degreesToRadians(-61.1115004);
+    public static final double MAX_SAFE_ANGLE_RADIAN =
+        Units.degreesToRadians(35); // old value 53.9126895
+    public static final double MIN_SAFE_ANGLE_RADIAN =
+        Units.degreesToRadians(-21); // old value -61.1115004
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -443,6 +440,7 @@ public final class Constants {
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(PIVOT_GEAR_RATIO))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)

@@ -1,6 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
-import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ControlModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -41,6 +42,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Current> pivotTorqueCurrentAmps;
   StatusSignal<Current> pivotSupplyCurrentAmps;
   StatusSignal<Temperature> pivotTempCelsius;
+  StatusSignal<Double> pivotSetpoint;
+  StatusSignal<ControlModeValue> pivotControlMode;
 
   public EndEffectorIOReal() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
@@ -51,6 +54,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
+    pivotSetpoint = pivotTalonFX.getClosedLoopReference();
+    pivotControlMode = pivotTalonFX.getControlMode();
 
     signals =
         new BaseStatusSignal[] {
@@ -58,7 +63,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
           pivotAppliedVolts,
           pivotTorqueCurrentAmps,
           pivotSupplyCurrentAmps,
-          pivotTempCelsius
+          pivotTempCelsius,
+          pivotSetpoint,
+          pivotControlMode
         };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -67,7 +74,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotAppliedVolts,
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
-        pivotTempCelsius);
+        pivotTempCelsius,
+        pivotSetpoint,
+        pivotControlMode);
     ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX);
     PhoenixUtil.registerSignals(
         true,
@@ -75,7 +84,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotAppliedVolts,
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
-        pivotTempCelsius);
+        pivotTempCelsius,
+        pivotSetpoint,
+        pivotControlMode);
   }
 
   @Override
@@ -88,12 +99,16 @@ public class EndEffectorIOReal implements EndEffectorIO {
                 pivotAppliedVolts,
                 pivotTorqueCurrentAmps,
                 pivotSupplyCurrentAmps,
-                pivotTempCelsius),
+                pivotTempCelsius,
+                pivotSetpoint,
+                pivotControlMode),
             Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),
             pivotSupplyCurrentAmps.getValueAsDouble(),
-            pivotTempCelsius.getValueAsDouble());
+            pivotTempCelsius.getValueAsDouble(),
+            pivotSetpoint.getValueAsDouble(),
+            pivotControlMode.getValue().toString());
   }
 
   @Override
@@ -103,7 +118,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotPosition(double position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Radians)));
   }
 
   @Override
