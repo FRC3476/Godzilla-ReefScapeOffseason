@@ -426,6 +426,8 @@ public final class Constants {
     public static final double preclimbPosition = 0.0;
     public static final double currentLimitAmps = 0.0;
     public static final double currentLimitVelocity = 0.0;
+    public static final double CLIMB_DEPLOY_POSITION = 0.0;
+    public static final double CLIMB_CLIMB_POSITION = 0.0;
   }
 
   // ====================Feeder (2_)====================

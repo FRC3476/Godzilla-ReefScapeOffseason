@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.util.LoggedTunableNumber;
 
-
 public class Climber extends SubsystemBase {
 
   private final ClimberIO io;
@@ -33,7 +32,15 @@ public class Climber extends SubsystemBase {
     io.updateInputs(inputs);
   }
 
-  public Command climbDeploy(double position) {
+  public Command climbDeploy() {
+    return climbDeployToPosition(ClimbConstants.CLIMB_DEPLOY_POSITION);
+  }
+
+  public Command climbClimb() {
+    return climbDeployToPosition(ClimbConstants.CLIMB_CLIMB_POSITION);
+  }
+
+  public Command climbDeployToPosition(double position) {
     if (inputs.data.positionRads() > position) {
       return climbSTOP();
     }
@@ -49,15 +56,10 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbRun() {
-    return Commands.run(()-> this.io.runVolts(12),this).onlyWhile(climbFinished().negate());
-    
-  }
-  
-  public Trigger climbFinished(){
-    return new Trigger(()-> this.io.checkClimbMotorStalled());
-
+    return Commands.run(() -> this.io.runVolts(12), this).onlyWhile(climbFinished().negate());
   }
 
-
-
+  public Trigger climbFinished() {
+    return new Trigger(() -> this.io.checkClimbMotorStalled());
+  }
 }
