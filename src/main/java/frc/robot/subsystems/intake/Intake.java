@@ -56,7 +56,11 @@ public class Intake extends SubsystemBase {
     CoralStateTracker.updateIntake(intakeSensorTriggered);
 
     // Update PID/FF values if they have changed
-    if (pivotKP.hasChanged(hashCode()) || pivotKI.hasChanged(hashCode()) || pivotKD.hasChanged(hashCode()) || pivotKG.hasChanged(hashCode()) || pivotKS.hasChanged(hashCode())) {
+    if (pivotKP.hasChanged(hashCode())
+        || pivotKI.hasChanged(hashCode())
+        || pivotKD.hasChanged(hashCode())
+        || pivotKG.hasChanged(hashCode())
+        || pivotKS.hasChanged(hashCode())) {
       io.updatePivotPIDFF(
           pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get());
     }
