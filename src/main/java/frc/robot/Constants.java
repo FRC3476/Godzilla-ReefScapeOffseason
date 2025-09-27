@@ -181,8 +181,8 @@ public final class Constants {
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
 
     // Stall detection
-    public static final double ROLLER_STALLED_CURRENT = 0.0;
-    public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double ROLLER_STALLED_CURRENT_A = 60;
+    public static final double ROLLER_STALLED_RPS = 10000;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
@@ -680,13 +680,16 @@ public final class Constants {
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
-    public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
-    
+    public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
+
     public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
-    public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
+    public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
 
     public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
-    public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(53.9126895);
+    public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
 
     public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 45.325558;
     public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN =

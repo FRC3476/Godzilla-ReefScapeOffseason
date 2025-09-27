@@ -216,8 +216,8 @@ public class RobotContainer {
     Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
     Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
 
-    Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.setBoolean(false));
-    Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.setBoolean(false));
+    Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.getBoolean(false));
+    Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -227,7 +227,7 @@ public class RobotContainer {
     intakeReverseTrigger.onFalse(intake.intakeSTOP());
 
     intakeUpTrigger.whileTrue(intake.pivotManualTestForward());
-    intakeDownTrigger.onFalse(intake.pivotStop());
+    intakeUpTrigger.onFalse(intake.pivotStop());
 
     intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
     intakeDownTrigger.onFalse(intake.pivotStop());
@@ -244,14 +244,10 @@ public class RobotContainer {
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry clawForwardEntry =
-        endEffectorTable.getEntry("Roller Forward (While Held)");
-    NetworkTableEntry clawReverseEntry =
-        endEffectorTable.getEntry("Roller Reverse (While Held)");
-    NetworkTableEntry pivotUpEntry = 
-		endEffectorTable.getEntry("Pivot Up (While Held)");
-    NetworkTableEntry pivotDownEntry = 
-		endEffectorTable.getEntry("Pivot Down (While Held)");
+    NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
+    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
@@ -259,10 +255,8 @@ public class RobotContainer {
     pivotDownEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
-    Trigger clawForwardTrigger =
-        new Trigger(() -> clawForwardEntry.getBoolean(false));
-    Trigger clawReverseTrigger =
-        new Trigger(() -> clawReverseEntry.getBoolean(false));
+    Trigger clawForwardTrigger = new Trigger(() -> clawForwardEntry.getBoolean(false));
+    Trigger clawReverseTrigger = new Trigger(() -> clawReverseEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
 
@@ -374,7 +368,7 @@ public class RobotContainer {
   }
 
   private void configureArbitraryTriggers() {
-    intake.feederJamTrigger.onTrue(intake.dejamFeeder());
+    feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }

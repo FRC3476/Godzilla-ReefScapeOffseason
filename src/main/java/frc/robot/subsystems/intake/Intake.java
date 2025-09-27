@@ -10,7 +10,6 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -70,7 +69,8 @@ public class Intake extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    return io.checkRollerStalled() && isCoralInIntake();
+    return false;
+    // return io.checkRollerStalled() && isCoralInIntake();
   }
 
   public Trigger coralInIntakeTrigger() {
@@ -183,7 +183,8 @@ public class Intake extends SubsystemBase {
               break;
           }
         },
-        this);
+        this,
+        feeder);
   }
 
   public Command setIntakeState(IntakeState state) {
@@ -211,11 +212,11 @@ public class Intake extends SubsystemBase {
 
   // Manual test functions for intake pivot
   public Command pivotManualTestForward() {
-    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
   }
 
   public Command pivotManualTestReverse() {
-    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
   }
 
   public Command pivotStop() {
@@ -225,11 +226,9 @@ public class Intake extends SubsystemBase {
   public Trigger intakeJamTrigger =
       new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
-  public Trigger feederJamTrigger = feeder.dejamTrigger;
-
   public Command dejamFeeder() {
     return Commands.sequence(
-        Commands.runOnce(() -> feeder.setRollerVoltageReversed(feederVolts.getAsDouble())),
+        Commands.runOnce(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble())),
         Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }

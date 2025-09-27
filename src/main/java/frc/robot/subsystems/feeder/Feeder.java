@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
 import org.littletonrobotics.junction.Logger;
 
 public class Feeder extends SubsystemBase {
@@ -36,10 +35,6 @@ public class Feeder extends SubsystemBase {
 
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
-  }
-
-  public void setRollerVoltageReversed(double voltage) {
-    io.setRollerVoltageReversed(voltage);
   }
 
   public boolean checkForJam() {
