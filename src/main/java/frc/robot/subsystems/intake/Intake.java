@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  private final Feeder feeder = Feeder.getInstance();
+  private Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
       new LoggedTunableNumber("Intake/RollerVolts", 12.0);
@@ -23,20 +23,19 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
       new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+  
+  // Tunable numbers for manual testing
+  private static final LoggedTunableNumber pivotKG =
+      new LoggedTunableNumber("Intake/PivotKG", 0.0);
+  private static final LoggedTunableNumber pivotManualTestVolts =
+      new LoggedTunableNumber("Intake/PivotManualTestVolts", 2.0);
 
-  private static Intake intakeSubsystem;
-
-  public static Intake getInstance() {
-    if (intakeSubsystem == null) {
-      intakeSubsystem = new Intake(new IntakeIOReal());
-    }
-    return intakeSubsystem;
-  }
 
   private IntakeState currentState = IntakeState.IDLE;
 
-  public Intake(IntakeIO io) {
+  public Intake(IntakeIO io, Feeder feeder) {
     this.io = io;
+    this.feeder = feeder;
   }
 
   @Override
@@ -49,6 +48,11 @@ public class Intake extends SubsystemBase {
     boolean intakeSensorTriggered =
         inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
     CoralStateTracker.updateIntake(intakeSensorTriggered);
+
+    // Update kG value if it has changed
+    if (pivotKG.hasChanged(hashCode())) {
+      io.updatePivotKG(pivotKG.get());
+    }
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {
@@ -204,6 +208,23 @@ public class Intake extends SubsystemBase {
         () -> this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_CORAL_DISENGAGED_POSITION));
   }
 
+  // Manual test functions for intake pivot
+  public Command pivotManualTestForward() {
+    return Commands.run(
+        () -> this.io.setPivotVoltage(-pivotManualTestVolts.get()),
+        this);
+  }
+
+  public Command pivotManualTestReverse() {
+    return Commands.run(
+        () -> this.io.setPivotVoltage(pivotManualTestVolts.get()),
+        this);
+  }
+
+  public Command pivotStop() {
+    return Commands.runOnce(() -> this.io.setPivotVoltage(0.0), this);
+  }
+
   public Trigger intakeJamTrigger =
       new Trigger(() -> checkForJam()).debounce(IntakeConstants.DEJAM_DEBOUNCE_SECONDS);
 
@@ -215,4 +236,16 @@ public class Intake extends SubsystemBase {
         Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
         Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
   }
-}
+
+  public Command feederFWD(){
+    return Commands.run(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble()));
+  }
+
+  public Command feederRVS(){
+    return Commands.run(() -> feeder.setRollerVoltage(feederVolts.getAsDouble()));
+  }
+
+  public Command feederSTOP(){
+    return Commands.runOnce(() -> feeder.setRollerVoltage(0));
+  }
+} 

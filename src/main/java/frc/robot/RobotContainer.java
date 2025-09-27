@@ -31,6 +31,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimberIO;
+import frc.robot.subsystems.climb.ClimberIOReal;
+import frc.robot.subsystems.climb.ClimberIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -49,6 +53,10 @@ import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.end_effector.EndEffectorIO;
 import frc.robot.subsystems.end_effector.EndEffectorIOReal;
 import frc.robot.subsystems.end_effector.EndEffectorIOSim;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOReal;
+import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
@@ -70,6 +78,8 @@ public class RobotContainer {
   private final Claw claw;
   private final Elevator elevator;
   private final Superstructure superstructure;
+  private final Climber climber;
+  private final Feeder feeder;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -82,11 +92,13 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        intake = new Intake(new IntakeIOReal());
+        feeder = new Feeder(new FeederIOReal());
+        intake = new Intake(new IntakeIOReal(), feeder);
         endEffector = new EndEffector(new EndEffectorIOReal());
         claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIOReal());
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -99,11 +111,13 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        intake = new Intake(new IntakeIOSim());
+        feeder = new Feeder(new FeederIOSim());
+        intake = new Intake(new IntakeIOSim(), feeder);
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIOSim());
         drive =
             new Drive(
                 new GyroIO() {},
@@ -116,11 +130,13 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        intake = new Intake(new IntakeIO() {});
+        feeder = new Feeder(new FeederIO() {});
+        intake = new Intake(new IntakeIO() {}, feeder);
         endEffector = new EndEffector(new EndEffectorIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector);
+        climber = new Climber(new ClimberIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -159,6 +175,7 @@ public class RobotContainer {
     BuildIntakeTab();
     BuildEndEffectorTab();
     BuildElevatorTab();
+    BuildClimberTab();
     BuildDriveTab();
 
     RegisterDefaultCommands();
@@ -175,16 +192,32 @@ public class RobotContainer {
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Intake Forward (While Held)");
-    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Intake Reverse (While Held)");
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Roller Reverse (While Held)");
+
+    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
+
+    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
+    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
+    intakeUpEntry.setBoolean(false);
+    intakeDownEntry.setBoolean(false);
+
+    feederForwardEntry.setBoolean(false);
+    feederReverseEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
+    Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
+    Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
+
+    Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.setBoolean(false));
+    Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.setBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -192,6 +225,18 @@ public class RobotContainer {
 
     intakeReverseTrigger.whileTrue(intake.intakeRVS());
     intakeReverseTrigger.onFalse(intake.intakeSTOP());
+
+    intakeUpTrigger.whileTrue(intake.pivotManualTestForward());
+    intakeDownTrigger.onFalse(intake.pivotStop());
+
+    intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
+    intakeDownTrigger.onFalse(intake.pivotStop());
+
+    feederInTrigger.whileTrue(intake.feederFWD());
+    feederInTrigger.onFalse(intake.feederSTOP());
+
+    feederOutTrigger.whileTrue(intake.feederRVS());
+    feederOutTrigger.onFalse(intake.feederSTOP());
   }
 
   private void BuildEndEffectorTab() {
@@ -203,22 +248,37 @@ public class RobotContainer {
         endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry clawReverseEntry =
         endEffectorTable.getEntry("Roller Reverse (While Held)");
-
+    NetworkTableEntry pivotUpEntry = 
+		endEffectorTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = 
+		endEffectorTable.getEntry("Pivot Down (While Held)");
+        
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
+    pivotUpEntry.setBoolean(false);
+    pivotDownEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger clawForwardTrigger =
         new Trigger(() -> clawForwardEntry.getBoolean(false));
     Trigger clawReverseTrigger =
         new Trigger(() -> clawReverseEntry.getBoolean(false));
+    Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
+    Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
+    
     // Configure the while-held behavior
     clawForwardTrigger.whileTrue(claw.rollerFWD());
     clawForwardTrigger.onFalse(claw.rollerSTOP());
 
     clawReverseTrigger.whileTrue(claw.rollerRVS());
     clawReverseTrigger.onFalse(claw.rollerSTOP());
+
+    pivotUpTrigger.whileTrue(endEffector.pivotUP());
+    pivotUpTrigger.onFalse(endEffector.pivotSTOP());
+
+    pivotDownTrigger.whileTrue(endEffector.pivotDOWN());
+    pivotDownTrigger.onFalse(endEffector.pivotSTOP());
   }
 
   private void BuildElevatorTab() {
@@ -259,6 +319,19 @@ public class RobotContainer {
     testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
 
     testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
+  }
+
+  private void BuildClimberTab() {
+    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
+
+    NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
+
+    climberOutEntry.setBoolean(false);
+
+    Trigger climberOutTrigger = new Trigger(() -> climberOutEntry.getBoolean(false));
+
+    climberOutTrigger.whileTrue(climber.climbVoltOut());
+    climberOutTrigger.onFalse(climber.climbSTOP());
   }
 
   /**

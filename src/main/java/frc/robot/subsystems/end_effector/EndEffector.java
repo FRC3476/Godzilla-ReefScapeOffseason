@@ -12,6 +12,11 @@ public class EndEffector extends SubsystemBase {
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
   private static EndEffector endEffectorSubsystem;
 
+  private static final LoggedTunableNumber rollerVolts =
+      new LoggedTunableNumber("EndEffector/RollerVolts", 12.0);
+  private static final LoggedTunableNumber pivotTestVolts =
+      new LoggedTunableNumber("EndEffector/PivotTestVolts", 2.0);
+
   public EndEffector(EndEffectorIO io) {
     this.io = io;
     System.out.println("====================EndEffector Subsystem Online====================");
@@ -29,5 +34,17 @@ public class EndEffector extends SubsystemBase {
 
   public Command rotatePivot(DoubleSupplier degreeSupplier) {
     return Commands.run(() -> this.io.setPivotPosition(degreeSupplier.getAsDouble()), this);
+  }
+
+  public Command pivotUP() {
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
+  }
+
+  public Command pivotDOWN() {
+    return Commands.run(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
+  }
+
+  public Command pivotSTOP() {
+    return Commands.run(() -> this.io.setPivotVoltage(0), this);
   }
 }

@@ -10,6 +10,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.Constants.ClimbConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class ClimberIOReal implements ClimberIO {
@@ -61,5 +63,10 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void runVolts(double volts) {
     talon.setControl(voltsRequest.withOutput(volts));
+  }
+
+  @Override
+  public boolean checkClimbMotorStalled(){
+    return MotorStallDetection.isMotorStalled(talon, ClimbConstants.STALL_AMPS, ClimbConstants.STALL_VELOCITY);
   }
 }
