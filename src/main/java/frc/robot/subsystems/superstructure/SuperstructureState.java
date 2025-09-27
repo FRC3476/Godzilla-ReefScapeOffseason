@@ -49,6 +49,15 @@ public enum SuperstructureState {
   L4_SCORE(
       Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+  L2_FADEAWAY(
+      Constants.SuperstructureConstants.L2_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+  L3_FADEAWAY(
+      Constants.SuperstructureConstants.L3_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+  L4_FADEAWAY(
+      Constants.SuperstructureConstants.L4_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
   ALGAE_HIGH_INTAKE(
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
