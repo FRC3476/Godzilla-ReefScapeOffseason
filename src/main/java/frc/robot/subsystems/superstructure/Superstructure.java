@@ -26,6 +26,10 @@ public class Superstructure extends SubsystemBase {
   @Override
   public void periodic() {
     stateMachine.continueTransition();
+    Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
+    Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
+    Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
+    Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
   }
 
   private Command setStateCommand(SuperstructureState state, String name) {
