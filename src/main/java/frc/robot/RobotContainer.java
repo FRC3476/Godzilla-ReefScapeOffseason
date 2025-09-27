@@ -179,23 +179,14 @@ public class RobotContainer {
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Intake Forward (While Held)");
     NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Intake Reverse (While Held)");
-    NetworkTableEntry pivotDownEntry = intakeTable.getEntry("Pivot Down");
-    NetworkTableEntry engageL1Entry = intakeTable.getEntry("Engage L1 Blocker");
-    NetworkTableEntry disengageL1Entry = intakeTable.getEntry("Disengage L1 Blocker");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
-    pivotDownEntry.setBoolean(false);
-    engageL1Entry.setBoolean(false);
-    disengageL1Entry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
-    Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
-    Trigger engageL1Trigger = new Trigger(() -> engageL1Entry.getBoolean(false));
-    Trigger disengageL1Trigger = new Trigger(() -> disengageL1Entry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -203,11 +194,6 @@ public class RobotContainer {
 
     intakeReverseTrigger.whileTrue(intake.intakeRVS());
     intakeReverseTrigger.onFalse(intake.intakeSTOP());
-
-    // Configure one-shot actions
-    pivotDownTrigger.onTrue(intake.movePivotDown());
-    engageL1Trigger.onTrue(intake.engageCoralL1());
-    disengageL1Trigger.onTrue(intake.disengageCoralL1());
   }
 
   private void BuildEndEffectorTab() {
@@ -216,9 +202,9 @@ public class RobotContainer {
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry endEffectorForwardEntry =
-        endEffectorTable.getEntry("EndEffector Forward (While Held)");
+        endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry endEffectorReverseEntry =
-        endEffectorTable.getEntry("EndEffector Reverse (While Held)");
+        endEffectorTable.getEntry("Roller Reverse (While Held)");
 
     // Initialize entries with default values
     endEffectorForwardEntry.setBoolean(false);
