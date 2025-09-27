@@ -154,7 +154,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotVoltage(double voltage) {
-    pivotTalonFX.setControl(new VoltageOut(voltage).withEnableFOC(true));
+    pivotTalonFX.setControl(roller_m_request.withOutput(voltage));
   }
 
   @Override
