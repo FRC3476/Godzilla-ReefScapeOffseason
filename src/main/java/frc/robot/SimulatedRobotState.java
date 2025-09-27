@@ -19,10 +19,11 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.littletonrobotics.junction.Logger;
 
-// Use import "import frc.robot.RobotState" instead of wpilib's RobotState
+// Use import "import frc.robot.SimulatedSimulatedRobotState" instead of wpilib's
+// SimulatedSimulatedRobotState
 
-public class RobotState extends MagicVirtualSubsystem {
-  private static final String logRoot = "RobotState/";
+public class SimulatedRobotState extends MagicVirtualSubsystem {
+  private static final String logRoot = "SimulatedRobotState/";
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
@@ -32,27 +33,25 @@ public class RobotState extends MagicVirtualSubsystem {
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
 
-  private static boolean hasAlgae = false;
-
   private static List<TargetAngleTracker> autoAlignmentTrackers =
-      List.of(RobotState.hpsTracker, RobotState.reefTracker);
+      List.of(SimulatedRobotState.hpsTracker, SimulatedRobotState.reefTracker);
 
   private static LedState ledState = LedState.kCOOrange;
 
   public static void offerVisionObservation(PoseObservation observation) {
-    RobotState.poseObservations.offer(observation);
+    SimulatedRobotState.poseObservations.offer(observation);
   }
 
   public static Queue<PoseObservation> getVisionObservations() {
-    return RobotState.poseObservations;
+    return SimulatedRobotState.poseObservations;
   }
 
   public static void updateGlobalPose(Pose2d pose) {
-    RobotState.globalPose = pose;
+    SimulatedRobotState.globalPose = pose;
   }
 
   public static Pose2d getGlobalPose() {
-    return RobotState.globalPose;
+    return SimulatedRobotState.globalPose;
   }
 
   public static Trigger onTeamSide() {
@@ -64,34 +63,35 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public static Rotation2d getRotationToClosestReef() {
-    return RobotState.reefTracker.getRotationTarget();
+    return SimulatedRobotState.reefTracker.getRotationTarget();
   }
 
   public static Rotation2d getRotationToClosestHPS() {
-    return RobotState.hpsTracker.getRotationTarget();
+    return SimulatedRobotState.hpsTracker.getRotationTarget();
   }
 
   public static Rotation2d getRotationToClosestBarge() {
-    return RobotState.bargeTracker.getRotationTarget();
+    return SimulatedRobotState.bargeTracker.getRotationTarget();
   }
 
   public static double getDistanceMetersFromClosestHPS() {
-    return RobotState.hpsTracker.getDistanceMeters();
+    return SimulatedRobotState.hpsTracker.getDistanceMeters();
   }
 
   public static void setLedState(LedState state) {
-    RobotState.ledState = state;
+    SimulatedRobotState.ledState = state;
   }
 
   public static LedState getLedState() {
-    return RobotState.ledState;
+    return SimulatedRobotState.ledState;
   }
 
   public static Trigger humanPlayerShouldThrow() {
     return new Trigger(
         () ->
             PoseUtils.getPerpendicularError(
-                    RobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d())
+                    SimulatedRobotState.getGlobalPose(),
+                    FieldUtils.getClosestHPSTag().pose().toPose2d())
                 < 0.5);
   }
 
@@ -99,14 +99,6 @@ public class RobotState extends MagicVirtualSubsystem {
     return autoAlignmentTrackers.stream()
         .reduce((a, b) -> a.getDistanceMeters() < b.getDistanceMeters() ? a : b)
         .get();
-  }
-
-  public static boolean hasAlgae() {
-    return hasAlgae;
-  }
-
-  public static void setHasAlgae(boolean input) {
-    hasAlgae = input;
   }
 
   @Override
@@ -131,7 +123,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
       String calcLogRoot = logRoot + "HPS/";
       Logger.recordOutput(calcLogRoot + "Closest Tag", FieldUtils.getClosestHPSTag());
-      Logger.recordOutput(calcLogRoot + "Distance", RobotState.hpsTracker.getDistanceMeters());
+      Logger.recordOutput(
+          calcLogRoot + "Distance", SimulatedRobotState.hpsTracker.getDistanceMeters());
       Logger.recordOutput(
           calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
       Logger.recordOutput(
@@ -153,6 +146,10 @@ public class RobotState extends MagicVirtualSubsystem {
       Logger.recordOutput(
           calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
     }
+  }
+
+  public Pose2d getLatestFieldToRobot() {
+    return getGlobalPose();
   }
 
   @Override

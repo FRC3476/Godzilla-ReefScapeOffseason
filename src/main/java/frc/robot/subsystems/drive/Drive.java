@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -106,17 +107,25 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  // Acceleration limiting
+  private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
+  private double lastTimeSeconds = 0.0;
+
+  private Superstructure superstructure;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      Superstructure superstructure) {
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
+    this.superstructure = superstructure;
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -156,6 +165,9 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // Initialize time tracking for acceleration limiting
+    lastTimeSeconds = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
   }
 
   @Override
@@ -217,14 +229,70 @@ public class Drive extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   }
 
+  private ChassisSpeeds applyAccelerationLimits(ChassisSpeeds targetSpeeds) {
+    double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
+    if (dt <= 0) {
+      return targetSpeeds;
+    }
+
+    // Calculate desired accelerations
+    double desiredVxAccel =
+        (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
+    double desiredVyAccel =
+        (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
+    double desiredOmegaAccel =
+        (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
+
+    // Calculate dynamic acceleration limits based on subsystem positions
+    double dynamicTranslationalAccel = calculateDynamicTranslationalAccelLimit();
+    double dynamicRotationalAccel = calculateDynamicRotationalAccelLimit();
+
+    // Clamp accelerations using dynamic limits
+    double clampedVxAccel =
+        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVxAccel));
+    double clampedVyAccel =
+        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVyAccel));
+    double clampedOmegaAccel =
+        Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
+
+    // Calculate limited speeds
+    double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
+    double limitedVy = previousSpeeds.vyMetersPerSecond + clampedVyAccel * dt;
+    double limitedOmega = previousSpeeds.omegaRadiansPerSecond + clampedOmegaAccel * dt;
+
+    ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
+    previousSpeeds = limitedSpeeds;
+
+    // Log the acceleration limits for debugging (actual calculation done in Superstructure)
+    Logger.recordOutput("Drive/DynamicTranslationalAccelLimit", dynamicTranslationalAccel);
+    Logger.recordOutput("Drive/DynamicRotationalAccelLimit", dynamicRotationalAccel);
+
+    return limitedSpeeds;
+  }
+
+  private double calculateDynamicTranslationalAccelLimit() {
+    // Delegate to Superstructure
+    return superstructure.calculateDynamicTranslationalAccelLimit();
+  }
+
+  private double calculateDynamicRotationalAccelLimit() {
+    return superstructure.calculateDynamicRotationalAccelLimit();
+  }
+
   /**
    * Runs the drive at the desired velocity.
    *
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    // Apply acceleration limits
+    ChassisSpeeds limitedSpeeds = applyAccelerationLimits(speeds);
+
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(limitedSpeeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
@@ -321,6 +389,15 @@ public class Drive extends SubsystemBase {
     return output;
   }
 
+  /** Returns the current draw of each module in amperes. */
+  public double[] getSlipCharacterizationCurrents() {
+    double[] currents = new double[4];
+    for (int i = 0; i < 4; i++) {
+      currents[i] = modules[i].getCurrentAmps();
+    }
+    return currents;
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
@@ -354,6 +431,20 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
+  }
+
+  /** Sets the maximum translational acceleration in m/s². */
+  public void setMaxTranslationalAcceleration(double accel) {
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
+    Logger.recordOutput("Drive/RequestedTranslationalAccel", accel);
+  }
+
+  /** Sets the maximum rotational acceleration in rad/s². */
+  public void setMaxRotationalAcceleration(double accel) {
+    // Note: Acceleration limits are now constants in Constants.java and cannot be changed at
+    // runtime
+    Logger.recordOutput("Drive/RequestedRotationalAccel", accel);
   }
 
   /** Returns an array of module translations. */

@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
@@ -48,14 +49,14 @@ public class ElevatorIOReal implements ElevatorIO {
   private final BaseStatusSignal[] signals;
 
   public ElevatorIOReal() {
-    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID);
-    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID);
-    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID);
+    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID, Constants.misc_canivore);
+    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID, Constants.misc_canivore);
+    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID, Constants.misc_canivore);
 
     PhoenixUtil.tryUntilOk(
         5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
-    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, false));
+    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
 
     rightPosition = rightTalon.getPosition();
     rightAppliedVolts = rightTalon.getMotorVoltage();
