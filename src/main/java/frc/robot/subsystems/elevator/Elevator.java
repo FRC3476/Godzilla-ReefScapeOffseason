@@ -73,8 +73,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isInTolerance() {
     return MathUtil.isNear(
-        setpoint, inputs.data.rightPosition(),
-  ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+        setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {
@@ -124,8 +123,7 @@ public class Elevator extends SubsystemBase {
   private boolean isHomingComplete() {
     // Check if homing is complete using the same logic as checkForJam for bottom detection
     if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(),
-  ElevatorConstants.STALLED_TOLERANCE_INCHES)
+        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
             || !isZeroed)) {
 
       io.setElevatorZero();
@@ -143,7 +141,7 @@ public class Elevator extends SubsystemBase {
   public Command dejamElevator() {
     return Commands.runOnce(
         () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
-  this);
+        this);
   }
 
   /** Command to home the elevator by running it slowly downward until it zeros. */
