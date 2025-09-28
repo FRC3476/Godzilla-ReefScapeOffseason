@@ -223,7 +223,15 @@ public class ElevatorIOReal implements ElevatorIO {
   }
 
   @Override
-  public void updateElevatorPIDFF(double kP, double kI, double kD, double kG, double kS) {
+  public void updateElevatorPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {
     var rightConfig = new TalonFXConfiguration();
     rightTalon.getConfigurator().refresh(rightConfig);
     rightConfig.Slot0.kP = kP;
@@ -231,6 +239,9 @@ public class ElevatorIOReal implements ElevatorIO {
     rightConfig.Slot0.kD = kD;
     rightConfig.Slot0.kG = kG;
     rightConfig.Slot0.kS = kS;
+    rightConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
+    rightConfig.MotionMagic.MotionMagicAcceleration = accel;
+    rightConfig.MotionMagic.MotionMagicJerk = jerk;
     PhoenixUtil.tryUntilOk(5, () -> rightTalon.getConfigurator().apply(rightConfig, 0.050));
   }
 }
