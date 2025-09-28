@@ -185,7 +185,7 @@ public final class Constants {
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
 
     // Stall detection
-    public static final double ROLLER_STALLED_CURRENT_A = 60;
+    public static final double ROLLER_STALLED_CURRENT_A = 1000;
     public static final double ROLLER_STALLED_RPS = 0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
@@ -281,7 +281,7 @@ public final class Constants {
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1 / (1.8427325868896291219526481028964);
 
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
@@ -421,7 +421,7 @@ public final class Constants {
     public static final double PIVOT_STM = 4;
     public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
     // ========End Effector Constant Positions========
@@ -513,7 +513,7 @@ public final class Constants {
 
     public static final double CLIMB_DEPLOY_POSITION = 0.0;
     public static final double CLIMB_CLIMB_POSITION = 0.0;
-    public static final double STALL_AMPS = 0.0;
+    public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
 
     public static final double PIVOT_kP = 0;
@@ -552,7 +552,7 @@ public final class Constants {
     public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_CURRENT = 1000.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;

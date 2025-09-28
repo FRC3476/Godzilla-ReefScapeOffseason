@@ -483,7 +483,7 @@ public class RobotContainer {
 
   private void configureArbitraryTriggers() {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
-    // elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
   /**
