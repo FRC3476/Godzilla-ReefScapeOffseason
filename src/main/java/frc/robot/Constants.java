@@ -160,15 +160,16 @@ public final class Constants {
     public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
-    public static final double pivotKG = 0.0; // Gravity feedforward
-    public static final double pivotKP = 0.0; // Proportional gain
-    public static final double pivotKI = 0.0; // Integral gain
-    public static final double pivotKD = 0.0; // Derivative gain
+    public static final double Tuneable_pivotKP = 50; // Proportional gain
+    public static final double Tuneable_pivotKI = 0.0; // Integral gain
+    public static final double Tuneable_pivotKD = 0.0; // Derivative gain
+    public static final double Tuneable_pivotKG = 0.425; // Gravity feedforward
+    public static final double Tuneable_pivotKS = 0.125; // Gravity feedforward
 
     // Motion constraints
-    public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
-    public static final double pivotMAX_VELOCITY = 0.0; // rad/s
-    public static final double pivotJERK = 0.0; // rad/s^3
+    public static final double Tuneable_pivot_ACCEL = 1000; // rad/s^2
+    public static final double Tuneable_pivot_VELOCITY = 50; // rad/s
+    public static final double Tuneable_pivotJERK = 1000; // rad/s^3
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
@@ -193,16 +194,16 @@ public final class Constants {
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(pivotKP)
-                    .withKI(pivotKI)
-                    .withKD(pivotKD)
-                    .withKG(pivotKG)
+                    .withKP(Tuneable_pivotKP)
+                    .withKI(Tuneable_pivotKI)
+                    .withKD(Tuneable_pivotKD)
+                    .withKG(Tuneable_pivotKG)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(pivotMAX_VELOCITY)
-                    .withMotionMagicAcceleration(pivotMAX_ACCEL)
-                    .withMotionMagicJerk(pivotJERK))
+                    .withMotionMagicCruiseVelocity(Tuneable_pivot_VELOCITY)
+                    .withMotionMagicAcceleration(Tuneable_pivot_ACCEL)
+                    .withMotionMagicJerk(Tuneable_pivotJERK))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)

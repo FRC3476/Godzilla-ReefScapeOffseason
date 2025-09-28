@@ -26,17 +26,22 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
 
   // Tunable numbers for manual testing
-  private static final LoggedTunableNumber pivotKP = new LoggedTunableNumber("Intake/PivotKP", 0.0);
-  private static final LoggedTunableNumber pivotKI = new LoggedTunableNumber("Intake/PivotKI", 0.0);
-  private static final LoggedTunableNumber pivotKD = new LoggedTunableNumber("Intake/PivotKD", 0.0);
-  private static final LoggedTunableNumber pivotKG = new LoggedTunableNumber("Intake/PivotKG", 0.0);
-  private static final LoggedTunableNumber pivotKS = new LoggedTunableNumber("Intake/PivotKS", 0.0);
+  private static final LoggedTunableNumber pivotKP =
+      new LoggedTunableNumber("Intake/PivotKP", IntakeConstants.Tuneable_pivotKP);
+  private static final LoggedTunableNumber pivotKI =
+      new LoggedTunableNumber("Intake/PivotKI", IntakeConstants.Tuneable_pivotKI);
+  private static final LoggedTunableNumber pivotKD =
+      new LoggedTunableNumber("Intake/PivotKD", IntakeConstants.Tuneable_pivotKD);
+  private static final LoggedTunableNumber pivotKG =
+      new LoggedTunableNumber("Intake/PivotKG", IntakeConstants.Tuneable_pivotKG);
+  private static final LoggedTunableNumber pivotKS =
+      new LoggedTunableNumber("Intake/PivotKS", IntakeConstants.Tuneable_pivotKS);
   private static final LoggedTunableNumber pivotVelo =
-      new LoggedTunableNumber("Intake/PivotVelo", 0.0);
+      new LoggedTunableNumber("Intake/PivotVelo", IntakeConstants.Tuneable_pivot_ACCEL);
   private static final LoggedTunableNumber pivotAccel =
-      new LoggedTunableNumber("Intake/PivotAccel", 0.0);
+      new LoggedTunableNumber("Intake/PivotAccel", IntakeConstants.Tuneable_pivot_VELOCITY);
   private static final LoggedTunableNumber pivotJerk =
-      new LoggedTunableNumber("Intake/PivotJerk", 0.0);
+      new LoggedTunableNumber("Intake/PivotJerk", IntakeConstants.Tuneable_pivotJERK);
 
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
