@@ -44,6 +44,7 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Temperature> pivotTemperature;
   private final StatusSignal<AngularVelocity> pivotVelocityRPS;
   private final StatusSignal<Angle> pivotPositionRad;
+  private final StatusSignal<Double> pivotPositionSetpointRad;
 
   // Roller motor status signals
   private final StatusSignal<Voltage> rollerVoltage;
@@ -104,6 +105,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotTemperature = pivotMotor.getDeviceTemp();
     pivotVelocityRPS = pivotMotor.getVelocity();
     pivotPositionRad = pivotMotor.getPosition();
+    pivotPositionSetpointRad = pivotMotor.getClosedLoopReference();
 
     rollerVoltage = rollerMotor.getMotorVoltage();
     rollerSupplyCurrent = rollerMotor.getSupplyCurrent();
@@ -133,6 +135,7 @@ public class IntakeIOReal implements IntakeIO {
           pivotTemperature,
           pivotVelocityRPS,
           pivotPositionRad,
+          pivotPositionSetpointRad,
           rollerVoltage,
           rollerSupplyCurrent,
           rollerStatorCurrent,
@@ -159,6 +162,7 @@ public class IntakeIOReal implements IntakeIO {
         pivotTemperature,
         pivotVelocityRPS,
         pivotPositionRad,
+        pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
         rollerStatorCurrent,
@@ -191,6 +195,7 @@ public class IntakeIOReal implements IntakeIO {
         pivotTemperature,
         pivotVelocityRPS,
         pivotPositionRad,
+        pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
         rollerStatorCurrent,
@@ -228,7 +233,8 @@ public class IntakeIOReal implements IntakeIO {
             pivotStatorCurrent.getValueAsDouble(),
             pivotTemperature.getValueAsDouble(),
             pivotVelocityRPS.getValueAsDouble(),
-            pivotPositionRad.getValueAsDouble());
+            pivotPositionRad.getValueAsDouble(),
+            pivotPositionSetpointRad.getValueAsDouble());
 
     inputs.rollerData =
         new RollerData(

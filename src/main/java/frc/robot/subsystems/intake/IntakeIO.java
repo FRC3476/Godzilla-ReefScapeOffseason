@@ -7,7 +7,7 @@ public interface IntakeIO {
   class IntakeIOInputs {
     // based on:
     // https://github.com/Mechanical-Advantage/RobotCode2025Public/blob/main/src/main/java/org/littletonrobotics/frc2025/subsystems/intake/SlamIO.java
-    public PivotData pivotData = new PivotData(false, 0, 0, 0, 0, 0, 0);
+    public PivotData pivotData = new PivotData(false, 0, 0, 0, 0, 0, 0, 0);
     public RollerData rollerData = new RollerData(false, 0, 0, 0, 0, 0);
     public Lvl1BlockerData blockerData = new Lvl1BlockerData(false, 0, 0, 0, 0, 0, 0);
     public CanCoderData canCoderData = new CanCoderData(false, 0, 0);
@@ -22,7 +22,8 @@ public interface IntakeIO {
       double statorCurrent,
       double temperature,
       double velocityRPS,
-      double positionRad) {}
+      double positionRad,
+      double positionSetpoint) {}
 
   /** roller-related telemetry. */
   record RollerData(
