@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -16,21 +17,21 @@ public class EndEffector extends SubsystemBase {
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber pivotKP =
-      new LoggedTunableNumber("EndEffector/PivotKP", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotKP", EndEffectorConstants.Tunable_PIVOT_kP);
   private static final LoggedTunableNumber pivotKI =
-      new LoggedTunableNumber("EndEffector/PivotKI", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotKI", EndEffectorConstants.Tunable_PIVOT_kI);
   private static final LoggedTunableNumber pivotKD =
-      new LoggedTunableNumber("EndEffector/PivotKD", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotKD", EndEffectorConstants.Tunable_PIVOT_kD);
   private static final LoggedTunableNumber pivotKG =
-      new LoggedTunableNumber("EndEffector/PivotKG", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotKG", EndEffectorConstants.Tunable_PIVOT_kG);
   private static final LoggedTunableNumber pivotKS =
-      new LoggedTunableNumber("EndEffector/PivotKS", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotKS", EndEffectorConstants.Tunable_PIVOT_kS);
   private static final LoggedTunableNumber pivotVelo =
-      new LoggedTunableNumber("EndEffector/PivotVelo", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotVelo", EndEffectorConstants.Tunable_PIVOT_Velo);
   private static final LoggedTunableNumber pivotAccel =
-      new LoggedTunableNumber("EndEffector/PivotAccel", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotAccel", EndEffectorConstants.Tunable_PIVOT_Accel);
   private static final LoggedTunableNumber pivotJerk =
-      new LoggedTunableNumber("EndEffector/PivotJerk", 0.0);
+      new LoggedTunableNumber("EndEffector/PivotJerk", EndEffectorConstants.Tunable_PIVOT_Jerk);
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;

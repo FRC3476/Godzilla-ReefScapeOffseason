@@ -109,7 +109,7 @@ public final class Constants {
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
-        Units.degreesToRadians(-26.9162484); // Intake down angle
+        Units.degreesToRadians(-40); // Intake down angle
     public static final double PIVOT_UP_POSITION =
         Units.degreesToRadians(104.5837512); // Intake up angle
     public static final double PIVOT_SCORING_POSITION =
@@ -266,14 +266,15 @@ public final class Constants {
     public static final int elevatorLeftID = 41;
     public static final int elevatorExtraID = 42;
 
-    public static final double ELEVATOR_kP = 0;
-    public static final double ELEVATOR_kI = 0;
-    public static final double ELEVATOR_kD = 0;
-    public static final double ELEVATOR_kG = 0;
+    public static final double Tunable_ELEVATOR_kP = 2;
+    public static final double Tunable_ELEVATOR_kI = 0;
+    public static final double Tunable_ELEVATOR_kD = 0.1;
+    public static final double Tunable_ELEVATOR_kG = 0.04;
+    public static final double Tunable_ELEVATOR_kS = 0.2;
 
-    public static final double ELEVATOR_Velo = 10000;
-    public static final double ELEVATOR_Accel = 10;
-    public static final double ELEVATOR_Jerk = 10000;
+    public static final double Tunable_ELEVATOR_Velo = 300;
+    public static final double Tunable_ELEVATOR_Accel = 3000;
+    public static final double Tunable_ELEVATOR_Jerk = 10000;
 
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
@@ -291,10 +292,10 @@ public final class Constants {
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(ELEVATOR_kP)
-                    .withKI(ELEVATOR_kI)
-                    .withKD(ELEVATOR_kD)
-                    .withKG(ELEVATOR_kG)
+                    .withKP(Tunable_ELEVATOR_kP)
+                    .withKI(Tunable_ELEVATOR_kI)
+                    .withKD(Tunable_ELEVATOR_kD)
+                    .withKG(Tunable_ELEVATOR_kG)
                     .withGravityType(GravityTypeValue.Elevator_Static))
             .withFeedback(
                 new FeedbackConfigs()
@@ -302,9 +303,9 @@ public final class Constants {
                     .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
-                    .withMotionMagicAcceleration(ELEVATOR_Accel)
-                    .withMotionMagicJerk(ELEVATOR_Jerk))
+                    .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
+                    .withMotionMagicAcceleration(Tunable_ELEVATOR_Accel)
+                    .withMotionMagicJerk(Tunable_ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
@@ -395,14 +396,15 @@ public final class Constants {
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
     public static final int PIVOT_CANCODER_ID = 54;
 
-    public static final double PIVOT_kP = 0;
-    public static final double PIVOT_kI = 0;
-    public static final double PIVOT_kD = 0;
-    public static final double PIVOT_kG = 0;
+    public static final double Tunable_PIVOT_kP = 35;
+    public static final double Tunable_PIVOT_kI = 0;
+    public static final double Tunable_PIVOT_kD = 0.5;
+    public static final double Tunable_PIVOT_kG = 0.615;
+    public static final double Tunable_PIVOT_kS = 0.135;
 
-    public static final double PIVOT_Velo = 1000;
-    public static final double PIVOT_Accel = 10;
-    public static final double PIVOT_Jerk = 1000;
+    public static final double Tunable_PIVOT_Velo = 1000;
+    public static final double Tunable_PIVOT_Accel = 12;
+    public static final double Tunable_PIVOT_Jerk = 1000;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
@@ -453,16 +455,45 @@ public final class Constants {
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(PIVOT_kP)
-                    .withKI(PIVOT_kI)
-                    .withKD(PIVOT_kD)
-                    .withKG(PIVOT_kG)
+                    .withKP(Tunable_PIVOT_kP)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(PIVOT_Velo)
-                    .withMotionMagicAcceleration(PIVOT_Accel)
-                    .withMotionMagicJerk(PIVOT_Jerk))
+                    .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
+                    .withMotionMagicAcceleration(Tunable_PIVOT_Accel)
+                    .withMotionMagicJerk(Tunable_PIVOT_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration PIVOT_TALON_MOVING_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(Tunable_PIVOT_kP)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
+                    .withMotionMagicAcceleration(Tunable_PIVOT_Accel)
+                    .withMotionMagicJerk(Tunable_PIVOT_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)

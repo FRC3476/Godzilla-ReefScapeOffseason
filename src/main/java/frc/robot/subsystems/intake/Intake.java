@@ -83,12 +83,12 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {
-    return Math.abs(inputs.pivotData.positionRad() - setpoint)
+    return Math.abs(inputs.pivotData.positionRotation() - setpoint)
         < IntakeConstants.PIVOT_TOLERANCE_RAD;
   }
 
   public double getCurrentPivotPosition() {
-    return inputs.pivotData.positionRad();
+    return inputs.pivotData.positionRotation();
   }
 
   public boolean isCoralInIntake() {

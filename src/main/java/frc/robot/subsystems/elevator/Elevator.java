@@ -23,21 +23,21 @@ public class Elevator extends SubsystemBase {
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber elevatorKP =
-      new LoggedTunableNumber("Elevator/ElevatorKP", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorKP", ElevatorConstants.Tunable_ELEVATOR_kP);
   private static final LoggedTunableNumber elevatorKI =
-      new LoggedTunableNumber("Elevator/ElevatorKI", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorKI", ElevatorConstants.Tunable_ELEVATOR_kI);
   private static final LoggedTunableNumber elevatorKD =
-      new LoggedTunableNumber("Elevator/ElevatorKD", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorKD", ElevatorConstants.Tunable_ELEVATOR_kD);
   private static final LoggedTunableNumber elevatorKG =
-      new LoggedTunableNumber("Elevator/ElevatorKG", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorKG", ElevatorConstants.Tunable_ELEVATOR_kG);
   private static final LoggedTunableNumber elevatorKS =
-      new LoggedTunableNumber("Elevator/ElevatorKS", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorKS", ElevatorConstants.Tunable_ELEVATOR_kS);
   private static final LoggedTunableNumber elevatorVelo =
-      new LoggedTunableNumber("Elevator/ElevatorVelo", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorVelo", ElevatorConstants.Tunable_ELEVATOR_Velo);
   private static final LoggedTunableNumber elevatorAccel =
-      new LoggedTunableNumber("Elevator/ElevatorAccel", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorAccel", ElevatorConstants.Tunable_ELEVATOR_Accel);
   private static final LoggedTunableNumber elevatorJerk =
-      new LoggedTunableNumber("Elevator/ElevatorJerk", 0.0);
+      new LoggedTunableNumber("Elevator/ElevatorJerk", ElevatorConstants.Tunable_ELEVATOR_Jerk);
 
   private double setpoint;
   private boolean isZeroed = false;

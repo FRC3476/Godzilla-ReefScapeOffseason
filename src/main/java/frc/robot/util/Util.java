@@ -136,4 +136,27 @@ public class Util {
     }
     return input;
   }
+
+  // public static void betterCTREencoderZero(CANcoder canCoder) {
+  //   PhoenixUtil.tryUntilOk(
+  //       5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
+
+  //   canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+
+  //   Util.sleep(2000);
+  //   Logger.recordOutput(
+  //       "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+
+  //   double intakeUpAbsoluteRotations =
+  //       Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION) * IntakeConstants.PIVOT_STM;
+  //   double magnetOffset =
+  //       intakeUpAbsoluteRotations - canCoder.getAbsolutePosition().getValueAsDouble();
+  //   magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+  //   canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+  //   Util.sleep(2000);
+  //   Logger.recordOutput(
+  //       "Intake/absolutePostionAfterOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+  //   setPositionFromAbsolute();
+  // }
 }

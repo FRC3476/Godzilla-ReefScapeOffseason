@@ -22,7 +22,7 @@ public interface IntakeIO {
       double statorCurrent,
       double temperature,
       double velocityRPS,
-      double positionRad,
+      double positionRotation,
       double positionSetpoint) {}
 
   /** roller-related telemetry. */

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -20,6 +21,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
+import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
@@ -49,8 +51,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
 
     pivotCancoder = new CANcoder(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.misc_canivore);
-    PhoenixUtil.tryUntilOk(
-        5, () -> pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
+    // PhoenixUtil.tryUntilOk(
+    //     5, () ->
+    // pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
 
     pivotPosition = pivotTalonFX.getPosition();
     pivotAppliedVolts = pivotTalonFX.getMotorVoltage();
@@ -154,15 +157,38 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotZero() {
+    // Configure CANCoder
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
+
     pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
-    System.out.println(pivotCancoder.getAbsolutePosition().getValueAsDouble());
-    Util.sleep(500);
-    pivotCancoder
-        .getConfigurator()
-        .apply(
-            new MagnetSensorConfigs()
-                .withMagnetOffset(pivotCancoder.getAbsolutePosition().getValue().times(-1)));
-    System.out.println(pivotCancoder.getAbsolutePosition().getValueAsDouble());
-    pivotCancoder.setPosition(0);
+
+    Util.sleep(2000);
+    Logger.recordOutput(
+        "EndEffector/Pivot/absolutePostionBeforeOffset",
+        pivotCancoder.getAbsolutePosition().getValueAsDouble());
+
+    double pivotDownAbsoluteRotations =
+        Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
+            * EndEffectorConstants.PIVOT_STM;
+    double magnetOffset =
+        pivotDownAbsoluteRotations - pivotCancoder.getAbsolutePosition().getValueAsDouble();
+    magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+    pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+    Util.sleep(2000);
+    Logger.recordOutput(
+        "EndEffector/Pivot/absolutePostionAfterOffset",
+        pivotCancoder.getAbsolutePosition().getValueAsDouble());
+    setPositionFromAbsolute();
+  }
+
+  private void setPositionFromAbsolute() {
+    // Need to do this because the canCoder wraps from its 0 position.
+    pivotCancoder.setPosition(
+        pivotCancoder.getAbsolutePosition().getValueAsDouble()
+            + Math.round(
+                Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
+                    * EndEffectorConstants.PIVOT_STM));
   }
 }

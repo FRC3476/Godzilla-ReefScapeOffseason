@@ -43,7 +43,7 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Current> pivotStatorCurrent;
   private final StatusSignal<Temperature> pivotTemperature;
   private final StatusSignal<AngularVelocity> pivotVelocityRPS;
-  private final StatusSignal<Angle> pivotPositionRad;
+  private final StatusSignal<Angle> pivotPositionRot;
   private final StatusSignal<Double> pivotPositionSetpointRad;
 
   // Roller motor status signals
@@ -104,7 +104,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotStatorCurrent = pivotMotor.getStatorCurrent();
     pivotTemperature = pivotMotor.getDeviceTemp();
     pivotVelocityRPS = pivotMotor.getVelocity();
-    pivotPositionRad = pivotMotor.getPosition();
+    pivotPositionRot = pivotMotor.getPosition();
     pivotPositionSetpointRad = pivotMotor.getClosedLoopReference();
 
     rollerVoltage = rollerMotor.getMotorVoltage();
@@ -134,7 +134,7 @@ public class IntakeIOReal implements IntakeIO {
           pivotStatorCurrent,
           pivotTemperature,
           pivotVelocityRPS,
-          pivotPositionRad,
+          pivotPositionRot,
           pivotPositionSetpointRad,
           rollerVoltage,
           rollerSupplyCurrent,
@@ -161,7 +161,7 @@ public class IntakeIOReal implements IntakeIO {
         pivotStatorCurrent,
         pivotTemperature,
         pivotVelocityRPS,
-        pivotPositionRad,
+        pivotPositionRot,
         pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
@@ -194,7 +194,7 @@ public class IntakeIOReal implements IntakeIO {
         pivotStatorCurrent,
         pivotTemperature,
         pivotVelocityRPS,
-        pivotPositionRad,
+        pivotPositionRot,
         pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
@@ -227,13 +227,13 @@ public class IntakeIOReal implements IntakeIO {
                 pivotStatorCurrent,
                 pivotTemperature,
                 pivotVelocityRPS,
-                pivotPositionRad),
+                pivotPositionRot),
             pivotVoltage.getValueAsDouble(),
             pivotSupplyCurrent.getValueAsDouble(),
             pivotStatorCurrent.getValueAsDouble(),
             pivotTemperature.getValueAsDouble(),
             pivotVelocityRPS.getValueAsDouble(),
-            pivotPositionRad.getValueAsDouble(),
+            pivotPositionRot.getValueAsDouble(),
             pivotPositionSetpointRad.getValueAsDouble());
 
     inputs.rollerData =
