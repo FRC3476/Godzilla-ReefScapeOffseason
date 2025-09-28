@@ -9,18 +9,10 @@ import org.littletonrobotics.junction.Logger;
 public class Feeder extends SubsystemBase {
   private final FeederIO io;
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
-  private static Feeder feederSubsystem;
 
   public Feeder(FeederIO io) {
     this.io = io;
     System.out.println("====================Feeder Subsystem Online====================");
-  }
-
-  public static Feeder getInstance() {
-    if (feederSubsystem == null) {
-      feederSubsystem = new Feeder(new FeederIOReal());
-    }
-    return feederSubsystem;
   }
 
   @Override
@@ -28,6 +20,8 @@ public class Feeder extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
     Logger.recordOutput("Feeder/JamDetected", checkForJam());
+
+    CoralStateTracker.updateFeeder(isCoralInFeeder());
 
     // Update CoralStateTracker with feeder sensor data
     boolean feederSensorTriggered =
@@ -41,10 +35,6 @@ public class Feeder extends SubsystemBase {
 
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
-  }
-
-  public void setRollerVoltageReversed(double voltage) {
-    io.setRollerVoltageReversed(voltage);
   }
 
   public boolean checkForJam() {

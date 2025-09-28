@@ -10,6 +10,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.Constants.ClimbConstants;
+import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
 public class ClimberIOReal implements ClimberIO {
@@ -30,6 +33,9 @@ public class ClimberIOReal implements ClimberIO {
 
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID, Constants.drive_canivore);
+
+    PhoenixUtil.tryUntilOk(
+        5, () -> talon.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
 
     position = talon.getPosition();
     velocity = talon.getVelocity();
@@ -61,5 +67,11 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void runVolts(double volts) {
     talon.setControl(voltsRequest.withOutput(volts));
+  }
+
+  @Override
+  public boolean checkClimbMotorStalled() {
+    return MotorStallDetection.isMotorStalled(
+        talon, ClimbConstants.STALL_AMPS, ClimbConstants.STALL_VELOCITY);
   }
 }

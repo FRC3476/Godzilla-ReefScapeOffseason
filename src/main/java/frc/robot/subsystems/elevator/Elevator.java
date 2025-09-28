@@ -16,11 +16,28 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
-  private static Elevator elevatorSubsystem;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private static final LoggedTunableNumber elevatorVolts =
-      new LoggedTunableNumber("Elevator/TestVolts", 2.0);
+      new LoggedTunableNumber("Elevator/TestVolts", 1.0);
+
+  // Tunable numbers for manual testing
+  private static final LoggedTunableNumber elevatorKP =
+      new LoggedTunableNumber("Elevator/ElevatorKP", ElevatorConstants.Tunable_ELEVATOR_kP);
+  private static final LoggedTunableNumber elevatorKI =
+      new LoggedTunableNumber("Elevator/ElevatorKI", ElevatorConstants.Tunable_ELEVATOR_kI);
+  private static final LoggedTunableNumber elevatorKD =
+      new LoggedTunableNumber("Elevator/ElevatorKD", ElevatorConstants.Tunable_ELEVATOR_kD);
+  private static final LoggedTunableNumber elevatorKG =
+      new LoggedTunableNumber("Elevator/ElevatorKG", ElevatorConstants.Tunable_ELEVATOR_kG);
+  private static final LoggedTunableNumber elevatorKS =
+      new LoggedTunableNumber("Elevator/ElevatorKS", ElevatorConstants.Tunable_ELEVATOR_kS);
+  private static final LoggedTunableNumber elevatorVelo =
+      new LoggedTunableNumber("Elevator/ElevatorVelo", ElevatorConstants.Tunable_ELEVATOR_Velo);
+  private static final LoggedTunableNumber elevatorAccel =
+      new LoggedTunableNumber("Elevator/ElevatorAccel", ElevatorConstants.Tunable_ELEVATOR_Accel);
+  private static final LoggedTunableNumber elevatorJerk =
+      new LoggedTunableNumber("Elevator/ElevatorJerk", ElevatorConstants.Tunable_ELEVATOR_Jerk);
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -36,9 +53,28 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
 
     Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
-    Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
+    // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
-    Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
+    // Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
+
+    if (elevatorKP.hasChanged(hashCode())
+        || elevatorKI.hasChanged(hashCode())
+        || elevatorKD.hasChanged(hashCode())
+        || elevatorKG.hasChanged(hashCode())
+        || elevatorKS.hasChanged(hashCode())
+        || elevatorVelo.hasChanged(hashCode())
+        || elevatorAccel.hasChanged(hashCode())
+        || elevatorJerk.hasChanged(hashCode())) {
+      io.updateElevatorPIDFF(
+          elevatorKP.get(),
+          elevatorKI.get(),
+          elevatorKD.get(),
+          elevatorKG.get(),
+          elevatorKS.get(),
+          elevatorVelo.get(),
+          elevatorAccel.get(),
+          elevatorJerk.get());
+    }
   }
 
   public void setTargetPosition(double position) {
@@ -61,7 +97,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
-    return Commands.run(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+    return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+  }
+
+  public Command manualSetPosition(DoubleSupplier inchSupplier) {
+    return Commands.runOnce(
+        () -> this.io.setElevatorTargetPosition(inchSupplier.getAsDouble()), this);
   }
 
   public Command elevatorSTOP() {
@@ -69,11 +110,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command elevatorUP() {
-    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
   }
 
   public Command elevatorDWN() {
-    return Commands.run(() -> this.io.setElevatorVoltage(elevatorVolts.getAsDouble()), this);
+    return Commands.run(() -> this.io.setElevatorVoltage(-elevatorVolts.getAsDouble()), this);
   }
 
   public double getCurrentPosition() {
@@ -108,9 +149,15 @@ public class Elevator extends SubsystemBase {
     return false;
   }
 
+  public Command manualSetElevatorZero() {
+    isZeroed = true;
+    return Commands.runOnce(() -> io.setElevatorZero(), this);
+  }
+
   public Command dejamElevator() {
     return Commands.runOnce(
-        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
+        this);
   }
 
   /** Command to home the elevator by running it slowly downward until it zeros. */

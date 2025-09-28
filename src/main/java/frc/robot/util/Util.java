@@ -119,4 +119,44 @@ public class Util {
       return val;
     };
   }
+
+  public static void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException ignored) {
+    }
+  }
+
+  public static double rangeModulo(double input, double high, double low) {
+    double range = high - low;
+    if (input < low) {
+      return input + (Math.ceil((low - input) / range)) * range;
+    } else if (input > high) {
+      return input - (Math.ceil((input - high) / range)) * range;
+    }
+    return input;
+  }
+
+  // public static void betterCTREencoderZero(CANcoder canCoder) {
+  //   PhoenixUtil.tryUntilOk(
+  //       5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
+
+  //   canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+
+  //   Util.sleep(2000);
+  //   Logger.recordOutput(
+  //       "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+
+  //   double intakeUpAbsoluteRotations =
+  //       Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION) * IntakeConstants.PIVOT_STM;
+  //   double magnetOffset =
+  //       intakeUpAbsoluteRotations - canCoder.getAbsolutePosition().getValueAsDouble();
+  //   magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+  //   canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+  //   Util.sleep(2000);
+  //   Logger.recordOutput(
+  //       "Intake/absolutePostionAfterOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+  //   setPositionFromAbsolute();
+  // }
 }
