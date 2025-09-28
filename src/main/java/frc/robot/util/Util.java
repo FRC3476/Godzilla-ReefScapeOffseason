@@ -119,4 +119,21 @@ public class Util {
       return val;
     };
   }
+
+  public static void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException ignored) {
+    }
+  }
+
+  public static double rangeModulo(double input, double high, double low) {
+    double range = high - low;
+    if (input < low) {
+      return input + (Math.ceil((low - input) / range)) * range;
+    } else if (input > high) {
+      return input - (Math.ceil((input - high) / range)) * range;
+    }
+    return input;
+  }
 }

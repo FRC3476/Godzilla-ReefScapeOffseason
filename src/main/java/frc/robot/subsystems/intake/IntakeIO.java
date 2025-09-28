@@ -76,5 +76,4 @@ public interface IntakeIO {
   }
 
   default void setPivotZero() {}
-  ;
 }

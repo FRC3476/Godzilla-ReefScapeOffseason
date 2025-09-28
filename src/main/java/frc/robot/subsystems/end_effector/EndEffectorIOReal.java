@@ -2,6 +2,7 @@ package frc.robot.subsystems.end_effector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -15,8 +16,10 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.Util;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
@@ -87,6 +90,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTempCelsius,
         pivotSetpoint,
         pivotControlMode);
+
+    // Need to do this because the canCoder wraps from its 0 position.
+    pivotCancoder.setPosition(
+        pivotCancoder.getPosition().getValueAsDouble()
+            + Math.round(IntakeConstants.PIVOT_INTAKE_POSITION / 2 / Math.PI));
   }
 
   @Override
@@ -146,7 +154,15 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotZero() {
+    pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+    System.out.println(pivotCancoder.getAbsolutePosition().getValueAsDouble());
+    Util.sleep(500);
+    pivotCancoder
+        .getConfigurator()
+        .apply(
+            new MagnetSensorConfigs()
+                .withMagnetOffset(pivotCancoder.getAbsolutePosition().getValue().times(-1)));
+    System.out.println(pivotCancoder.getAbsolutePosition().getValueAsDouble());
     pivotCancoder.setPosition(0);
-    // pivotTalonFX.setPosition(0.0);
   }
 }

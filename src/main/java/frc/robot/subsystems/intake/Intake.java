@@ -233,8 +233,9 @@ public class Intake extends SubsystemBase {
         () -> this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION), this);
   }
 
-  public Command setPivotToZero() {
-    return Commands.runOnce(() -> this.io.setPivotPosition(0.0), this);
+  public Command zeroPivotAtPivotUp() {
+    System.out.println("BUTTON PRESSED");
+    return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
 
   public Command rejectCoral() {

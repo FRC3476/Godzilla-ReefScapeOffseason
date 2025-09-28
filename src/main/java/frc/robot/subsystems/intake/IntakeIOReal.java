@@ -3,11 +3,13 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -18,6 +20,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.Util;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeIOReal implements IntakeIO {
   protected TalonFX pivotMotor;
@@ -87,10 +91,6 @@ public class IntakeIOReal implements IntakeIO {
     PhoenixUtil.tryUntilOk(
         5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
 
-    // Configure CANCoder
-    PhoenixUtil.tryUntilOk(
-        5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
-
     // Configure CANRange
     var canRangeConfig = new CANrangeConfiguration();
     canRangeConfig.ProximityParams.ProximityThreshold = 0.05; // 5cm detection threshold
@@ -102,8 +102,8 @@ public class IntakeIOReal implements IntakeIO {
     pivotSupplyCurrent = pivotMotor.getSupplyCurrent();
     pivotStatorCurrent = pivotMotor.getStatorCurrent();
     pivotTemperature = pivotMotor.getDeviceTemp();
-    pivotVelocityRPS = pivotMotor.getRotorVelocity();
-    pivotPositionRad = pivotMotor.getRotorPosition();
+    pivotVelocityRPS = pivotMotor.getVelocity();
+    pivotPositionRad = pivotMotor.getPosition();
 
     rollerVoltage = rollerMotor.getMotorVoltage();
     rollerSupplyCurrent = rollerMotor.getSupplyCurrent();
@@ -115,8 +115,8 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerSupplyCurrent = lvl1blockerMotor.getSupplyCurrent();
     lvl1blockerStatorCurrent = lvl1blockerMotor.getStatorCurrent();
     lvl1blockerTemperature = lvl1blockerMotor.getDeviceTemp();
-    lvl1blockerVelocityRPS = lvl1blockerMotor.getRotorVelocity();
-    lvl1blockerPositionRad = lvl1blockerMotor.getRotorPosition();
+    lvl1blockerVelocityRPS = lvl1blockerMotor.getVelocity();
+    lvl1blockerPositionRad = lvl1blockerMotor.getPosition();
 
     canCoderPositionRad = canCoder.getAbsolutePosition();
     canCoderVelocityRPS = canCoder.getVelocity();
@@ -207,6 +207,8 @@ public class IntakeIOReal implements IntakeIO {
         canRangeTripped,
         canRangeSignalStrength,
         canRangeDistance);
+
+    setPositionFromAbsolute();
   }
 
   public void updateInputs(IntakeIOInputs inputs) {
@@ -328,6 +330,35 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void setPivotZero() {
-    canCoder.setPosition(0);
+    // Configure CANCoder
+    PhoenixUtil.tryUntilOk(
+        5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
+
+    canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+
+    Util.sleep(2000);
+    Logger.recordOutput(
+        "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+
+    double intakeUpAbsoluteRotations =
+        Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION) * IntakeConstants.PIVOT_STM;
+    double magnetOffset =
+        intakeUpAbsoluteRotations - canCoder.getAbsolutePosition().getValueAsDouble();
+    magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+    canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+    Util.sleep(2000);
+    Logger.recordOutput(
+        "Intake/absolutePostionAfterOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+    setPositionFromAbsolute();
+  }
+
+  private void setPositionFromAbsolute() {
+    // Need to do this because the canCoder wraps from its 0 position.
+    canCoder.setPosition(
+        canCoder.getAbsolutePosition().getValueAsDouble()
+            + Math.round(
+                Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION)
+                    * IntakeConstants.PIVOT_STM));
   }
 }

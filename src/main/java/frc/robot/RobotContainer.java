@@ -277,7 +277,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(intake.setPivotUp());
     intakeDownPosTrigger.onTrue(intake.movePivotDown());
     intakeScoringPosTrigger.onTrue(intake.setPivotScoring());
-    intakeZeroPosTrigger.onTrue(intake.setPivotToZero());
+    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp());
   }
 
   private void BuildEndEffectorTab() {
