@@ -8,7 +8,7 @@ public interface ElevatorIO {
     public ElevatorIOData data =
         new ElevatorIOData(
             false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0);
+            0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   record ElevatorIOData(
@@ -20,16 +20,19 @@ public interface ElevatorIO {
       double rightTorqueCurrentAmps,
       double rightSupplyCurrentAmps,
       double rightTempCelsius,
+      double rightSetPosition,
       double leftPosition,
       double leftAppliedVolts,
       double leftTorqueCurrentAmps,
       double leftSupplyCurrentAmps,
       double leftTempCelsius,
+      double leftSetPosition,
       double extraPosition,
       double extraAppliedVolts,
       double extraTorqueCurrentAmps,
       double extraSupplyCurrentAmps,
-      double extraTempCelsius) {}
+      double extraTempCelsius,
+      double extraSetPosition) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 

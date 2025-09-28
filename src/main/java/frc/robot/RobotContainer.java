@@ -378,13 +378,14 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
 
     elevatorL2Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L2_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(
+            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH));
     elevatorL3Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
     elevatorL4Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
     elevatorDownPosTrigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
     elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero());
   }
 
@@ -459,7 +460,7 @@ public class RobotContainer {
 
   private void configureArbitraryTriggers() {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
-    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    // elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
   /**
@@ -471,10 +472,10 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command defaultElevatorCommand() {
-    return elevator.moveToTargetPosition(
-        () -> superstructure.getCurrentState().getElevatorHeight());
-  }
+  //   public Command defaultElevatorCommand() {
+  //     return elevator.moveToTargetPosition(
+  //         () -> superstructure.getCurrentState().getElevatorHeight());
+  //   }
 
   public Command defaultEndEffectorCommand() {
     return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
