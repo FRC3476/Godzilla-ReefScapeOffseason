@@ -408,13 +408,21 @@ public class RobotContainer {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
+    NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (While Held)");
+    NetworkTableEntry climberClimbEntry = climberTable.getEntry("Climber Climb (While Pressed)");
 
     climberOutEntry.setBoolean(false);
+    climberDeployEntry.setBoolean(false);
+    climberClimbEntry.setBoolean(false);
 
     Trigger climberOutTrigger = new Trigger(() -> climberOutEntry.getBoolean(false));
+    Trigger climberDeployTrigger = new Trigger(() -> climberDeployEntry.getBoolean(false));
+    Trigger climberClimbTrigger = new Trigger(() -> climberClimbEntry.getBoolean(false));
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
+    climberDeployTrigger.onTrue(climber.climbDeploy());
+    climberClimbTrigger.onTrue(climber.climbClimb());
   }
 
   /**
