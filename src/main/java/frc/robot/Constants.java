@@ -136,8 +136,10 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO =
-        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 61.71;
+    public static final double PIVOT_RTS = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_STM = 1.0;
+
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
 
@@ -184,7 +186,7 @@ public final class Constants {
 
     // Stall detection
     public static final double ROLLER_STALLED_CURRENT_A = 60;
-    public static final double ROLLER_STALLED_RPS = 10000;
+    public static final double ROLLER_STALLED_RPS = 0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
@@ -205,10 +207,23 @@ public final class Constants {
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_MAX_SUPPLY_CURRENT_LIMIT));
+
+    public static final CANcoderConfiguration CANCODER_CONFIG =
+        new CANcoderConfiguration()
+            .withMagnetSensor(
+                new MagnetSensorConfigs()
+                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                    .withAbsoluteSensorDiscontinuityPoint(0.5));
 
     public static final TalonFXConfiguration L1Bar_TALON_CONFIG =
         new TalonFXConfiguration()

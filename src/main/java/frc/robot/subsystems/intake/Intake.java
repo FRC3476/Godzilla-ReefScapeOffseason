@@ -207,6 +207,20 @@ public class Intake extends SubsystemBase {
         () -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
 
+  public Command setPivotUp() {
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION), this);
+  }
+
+  public Command setPivotScoring() {
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION), this);
+  }
+
+  public Command setPivotToZero() {
+    return Commands.runOnce(() -> this.io.setPivotPosition(0.0), this);
+  }
+
   public Command rejectCoral() {
     return Commands.run(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
   }

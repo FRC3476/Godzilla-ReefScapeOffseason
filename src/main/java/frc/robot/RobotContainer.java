@@ -199,6 +199,14 @@ public class RobotContainer {
     NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
+    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Pivot Up (When Pressed)");
+    NetworkTableEntry intakeDownPosEntry =
+        intakeTable.getEntry("Pivot Intake Position (When Pressed)");
+    NetworkTableEntry intakeScoringPosEntry =
+        intakeTable.getEntry("Pivot Scoring Position (When Pressed)");
+    NetworkTableEntry intakeZeroPosEntry =
+        intakeTable.getEntry("Pivot Zero Position (When Pressed)");
+
     NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("L1 Bar Up (While Held)");
     NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("L1 Bar Down (While Held)");
 
@@ -212,6 +220,11 @@ public class RobotContainer {
     intakeUpEntry.setBoolean(false);
     intakeDownEntry.setBoolean(false);
 
+    intakeUpPosEntry.setBoolean(false);
+    intakeDownPosEntry.setBoolean(false);
+    intakeScoringPosEntry.setBoolean(false);
+    intakeZeroPosEntry.setBoolean(false);
+
     l1BarUpEntry.setBoolean(false);
     l1BarDownEntry.setBoolean(false);
 
@@ -224,6 +237,11 @@ public class RobotContainer {
 
     Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
     Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
+
+    Trigger intakeUpPosTrigger = new Trigger(() -> intakeUpPosEntry.getBoolean(false));
+    Trigger intakeDownPosTrigger = new Trigger(() -> intakeDownPosEntry.getBoolean(false));
+    Trigger intakeScoringPosTrigger = new Trigger(() -> intakeScoringPosEntry.getBoolean(false));
+    Trigger intakeZeroPosTrigger = new Trigger(() -> intakeZeroPosEntry.getBoolean(false));
 
     Trigger l1BarUpTrigger = new Trigger(() -> l1BarUpEntry.getBoolean(false));
     Trigger l1BarDownTrigger = new Trigger(() -> l1BarDownEntry.getBoolean(false));
@@ -255,6 +273,11 @@ public class RobotContainer {
 
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
+
+    intakeUpPosTrigger.onTrue(intake.setPivotUp());
+    intakeDownPosTrigger.onTrue(intake.movePivotDown());
+    intakeScoringPosTrigger.onTrue(intake.setPivotScoring());
+    intakeZeroPosTrigger.onTrue(intake.setPivotToZero());
   }
 
   private void BuildEndEffectorTab() {

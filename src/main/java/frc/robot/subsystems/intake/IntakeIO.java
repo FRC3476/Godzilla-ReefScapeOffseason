@@ -66,4 +66,7 @@ public interface IntakeIO {
   default boolean checkRollerStalled() {
     return false;
   }
+
+  default void setPivotZero() {}
+  ;
 }
