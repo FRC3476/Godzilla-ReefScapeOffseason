@@ -136,8 +136,10 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO =
-        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 61.71;
+    public static final double PIVOT_RTS = 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_STM = 1.0;
+
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
 
@@ -183,8 +185,8 @@ public final class Constants {
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
 
     // Stall detection
-    public static final double ROLLER_STALLED_CURRENT_A = 60;
-    public static final double ROLLER_STALLED_RPS = 10000;
+    public static final double ROLLER_STALLED_CURRENT_A = 1000;
+    public static final double ROLLER_STALLED_RPS = 0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
@@ -205,10 +207,23 @@ public final class Constants {
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_MAX_SUPPLY_CURRENT_LIMIT));
+
+    public static final CANcoderConfiguration CANCODER_CONFIG =
+        new CANcoderConfiguration()
+            .withMagnetSensor(
+                new MagnetSensorConfigs()
+                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                    .withAbsoluteSensorDiscontinuityPoint(0.5));
 
     public static final TalonFXConfiguration L1Bar_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -256,17 +271,17 @@ public final class Constants {
     public static final double ELEVATOR_kD = 0;
     public static final double ELEVATOR_kG = 0;
 
-    public static final double ELEVATOR_Velo = 0;
-    public static final double ELEVATOR_Accel = 0;
-    public static final double ELEVATOR_Jerk = 0;
+    public static final double ELEVATOR_Velo = 10000;
+    public static final double ELEVATOR_Accel = 10;
+    public static final double ELEVATOR_Jerk = 10000;
 
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-        1 / (1.8427325868896291219526481028964 / 2 / Math.PI);
+        1 / (1.8427325868896291219526481028964);
 
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
@@ -406,7 +421,7 @@ public final class Constants {
     public static final double PIVOT_STM = 4;
     public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
     // ========End Effector Constant Positions========
@@ -498,7 +513,7 @@ public final class Constants {
 
     public static final double CLIMB_DEPLOY_POSITION = 0.0;
     public static final double CLIMB_CLIMB_POSITION = 0.0;
-    public static final double STALL_AMPS = 0.0;
+    public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
 
     public static final double PIVOT_kP = 0;
@@ -537,7 +552,7 @@ public final class Constants {
     public static final double ROLLER_kA = 0;
 
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_CURRENT = 1000.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
@@ -661,19 +676,19 @@ public final class Constants {
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
     public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L3_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = 53.4375;
     // Away from reef 53.4375
     public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
@@ -683,33 +698,33 @@ public final class Constants {
     public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
     public static double L1_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L3_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = 53.4375;
     // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(53.9126895);
 
-    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(53.9126895);
 
-    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = 53.4375;
     public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(53.9126895);
 

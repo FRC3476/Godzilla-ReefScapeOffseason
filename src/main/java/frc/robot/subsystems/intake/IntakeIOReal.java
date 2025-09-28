@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
@@ -89,8 +88,8 @@ public class IntakeIOReal implements IntakeIO {
         5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
 
     // Configure CANCoder
-    var canCoderConfig = new CANcoderConfiguration();
-    PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(canCoderConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
 
     // Configure CANRange
     var canRangeConfig = new CANrangeConfiguration();
@@ -290,7 +289,7 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void setPivotPosition(double positionRad) {
-    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad));
+    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad / 2 / Math.PI));
   }
 
   @Override
@@ -299,7 +298,15 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
-  public void updatePivotPIDFF(double kP, double kI, double kD, double kG, double kS) {
+  public void updatePivotPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {
     var pivotConfig = new TalonFXConfiguration();
     pivotMotor.getConfigurator().refresh(pivotConfig);
     pivotConfig.Slot0.kP = kP;
@@ -307,6 +314,9 @@ public class IntakeIOReal implements IntakeIO {
     pivotConfig.Slot0.kD = kD;
     pivotConfig.Slot0.kG = kG;
     pivotConfig.Slot0.kS = kS;
+    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
+    pivotConfig.MotionMagic.MotionMagicAcceleration = accel;
+    pivotConfig.MotionMagic.MotionMagicJerk = jerk;
     PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig, 0.050));
   }
 
@@ -314,5 +324,10 @@ public class IntakeIOReal implements IntakeIO {
   public boolean checkRollerStalled() {
     return MotorStallDetection.isMotorStalled(
         rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT_A, IntakeConstants.ROLLER_STALLED_RPS);
+  }
+
+  @Override
+  public void setPivotZero() {
+    canCoder.setPosition(0);
   }
 }

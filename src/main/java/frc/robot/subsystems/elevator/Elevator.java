@@ -32,6 +32,12 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/ElevatorKG", 0.0);
   private static final LoggedTunableNumber elevatorKS =
       new LoggedTunableNumber("Elevator/ElevatorKS", 0.0);
+  private static final LoggedTunableNumber elevatorVelo =
+      new LoggedTunableNumber("Elevator/ElevatorVelo", 0.0);
+  private static final LoggedTunableNumber elevatorAccel =
+      new LoggedTunableNumber("Elevator/ElevatorAccel", 0.0);
+  private static final LoggedTunableNumber elevatorJerk =
+      new LoggedTunableNumber("Elevator/ElevatorJerk", 0.0);
 
   private double setpoint;
   private boolean isZeroed = false;
@@ -47,17 +53,27 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
 
     Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
-    Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
+    // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
-    Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
+    // Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
 
     if (elevatorKP.hasChanged(hashCode())
         || elevatorKI.hasChanged(hashCode())
         || elevatorKD.hasChanged(hashCode())
         || elevatorKG.hasChanged(hashCode())
-        || elevatorKS.hasChanged(hashCode())) {
+        || elevatorKS.hasChanged(hashCode())
+        || elevatorVelo.hasChanged(hashCode())
+        || elevatorAccel.hasChanged(hashCode())
+        || elevatorJerk.hasChanged(hashCode())) {
       io.updateElevatorPIDFF(
-          elevatorKP.get(), elevatorKI.get(), elevatorKD.get(), elevatorKG.get(), elevatorKS.get());
+          elevatorKP.get(),
+          elevatorKI.get(),
+          elevatorKD.get(),
+          elevatorKG.get(),
+          elevatorKS.get(),
+          elevatorVelo.get(),
+          elevatorAccel.get(),
+          elevatorJerk.get());
     }
   }
 
@@ -81,7 +97,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
-    return Commands.run(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+    return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+  }
+
+  public Command manualSetPosition(DoubleSupplier inchSupplier) {
+    return Commands.runOnce(
+        () -> this.io.setElevatorTargetPosition(inchSupplier.getAsDouble()), this);
   }
 
   public Command elevatorSTOP() {
@@ -135,7 +156,8 @@ public class Elevator extends SubsystemBase {
 
   public Command dejamElevator() {
     return Commands.runOnce(
-        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES));
+        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
+        this);
   }
 
   /** Command to home the elevator by running it slowly downward until it zeros. */

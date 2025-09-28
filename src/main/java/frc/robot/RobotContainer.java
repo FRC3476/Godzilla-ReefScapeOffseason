@@ -199,6 +199,14 @@ public class RobotContainer {
     NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
+    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Pivot Up (When Pressed)");
+    NetworkTableEntry intakeDownPosEntry =
+        intakeTable.getEntry("Pivot Intake Position (When Pressed)");
+    NetworkTableEntry intakeScoringPosEntry =
+        intakeTable.getEntry("Pivot Scoring Position (When Pressed)");
+    NetworkTableEntry intakeZeroPosEntry =
+        intakeTable.getEntry("Pivot Zero Position (When Pressed)");
+
     NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("L1 Bar Up (While Held)");
     NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("L1 Bar Down (While Held)");
 
@@ -212,6 +220,11 @@ public class RobotContainer {
     intakeUpEntry.setBoolean(false);
     intakeDownEntry.setBoolean(false);
 
+    intakeUpPosEntry.setBoolean(false);
+    intakeDownPosEntry.setBoolean(false);
+    intakeScoringPosEntry.setBoolean(false);
+    intakeZeroPosEntry.setBoolean(false);
+
     l1BarUpEntry.setBoolean(false);
     l1BarDownEntry.setBoolean(false);
 
@@ -224,6 +237,11 @@ public class RobotContainer {
 
     Trigger intakeUpTrigger = new Trigger(() -> intakeUpEntry.getBoolean(false));
     Trigger intakeDownTrigger = new Trigger(() -> intakeDownEntry.getBoolean(false));
+
+    Trigger intakeUpPosTrigger = new Trigger(() -> intakeUpPosEntry.getBoolean(false));
+    Trigger intakeDownPosTrigger = new Trigger(() -> intakeDownPosEntry.getBoolean(false));
+    Trigger intakeScoringPosTrigger = new Trigger(() -> intakeScoringPosEntry.getBoolean(false));
+    Trigger intakeZeroPosTrigger = new Trigger(() -> intakeZeroPosEntry.getBoolean(false));
 
     Trigger l1BarUpTrigger = new Trigger(() -> l1BarUpEntry.getBoolean(false));
     Trigger l1BarDownTrigger = new Trigger(() -> l1BarDownEntry.getBoolean(false));
@@ -255,6 +273,11 @@ public class RobotContainer {
 
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
+
+    intakeUpPosTrigger.onTrue(intake.setPivotUp());
+    intakeDownPosTrigger.onTrue(intake.movePivotDown());
+    intakeScoringPosTrigger.onTrue(intake.setPivotScoring());
+    intakeZeroPosTrigger.onTrue(intake.setPivotToZero());
   }
 
   private void BuildEndEffectorTab() {
@@ -378,13 +401,14 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
 
     elevatorL2Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L2_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(
+            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH));
     elevatorL3Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
     elevatorL4Trigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
     elevatorDownPosTrigger.onTrue(
-        elevator.moveToTargetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
     elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero());
   }
 
@@ -479,10 +503,10 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command defaultElevatorCommand() {
-    return elevator.moveToTargetPosition(
-        () -> superstructure.getCurrentState().getElevatorHeight());
-  }
+  //   public Command defaultElevatorCommand() {
+  //     return elevator.moveToTargetPosition(
+  //         () -> superstructure.getCurrentState().getElevatorHeight());
+  //   }
 
   public Command defaultEndEffectorCommand() {
     return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());

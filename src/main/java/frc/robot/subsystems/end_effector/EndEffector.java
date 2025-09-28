@@ -25,6 +25,12 @@ public class EndEffector extends SubsystemBase {
       new LoggedTunableNumber("EndEffector/PivotKG", 0.0);
   private static final LoggedTunableNumber pivotKS =
       new LoggedTunableNumber("EndEffector/PivotKS", 0.0);
+  private static final LoggedTunableNumber pivotVelo =
+      new LoggedTunableNumber("EndEffector/PivotVelo", 0.0);
+  private static final LoggedTunableNumber pivotAccel =
+      new LoggedTunableNumber("EndEffector/PivotAccel", 0.0);
+  private static final LoggedTunableNumber pivotJerk =
+      new LoggedTunableNumber("EndEffector/PivotJerk", 0.0);
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
@@ -41,9 +47,19 @@ public class EndEffector extends SubsystemBase {
         || pivotKI.hasChanged(hashCode())
         || pivotKD.hasChanged(hashCode())
         || pivotKG.hasChanged(hashCode())
-        || pivotKS.hasChanged(hashCode())) {
+        || pivotKS.hasChanged(hashCode())
+        || pivotVelo.hasChanged(hashCode())
+        || pivotAccel.hasChanged(hashCode())
+        || pivotJerk.hasChanged(hashCode())) {
       io.updatePivotPIDFF(
-          pivotKP.get(), pivotKI.get(), pivotKD.get(), pivotKG.get(), pivotKS.get());
+          pivotKP.get(),
+          pivotKI.get(),
+          pivotKD.get(),
+          pivotKG.get(),
+          pivotKS.get(),
+          pivotVelo.get(),
+          pivotAccel.get(),
+          pivotJerk.get());
     }
   }
 
