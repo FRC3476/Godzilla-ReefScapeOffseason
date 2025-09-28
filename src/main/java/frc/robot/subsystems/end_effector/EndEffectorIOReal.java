@@ -1,17 +1,14 @@
 package frc.robot.subsystems.end_effector;
 
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotation;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -24,6 +21,7 @@ import frc.robot.util.PhoenixUtil;
 public class EndEffectorIOReal implements EndEffectorIO {
 
   private TalonFX pivotTalonFX;
+  private CANcoder pivotCancoder;
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
@@ -46,6 +44,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
     PhoenixUtil.tryUntilOk(
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
+
+    pivotCancoder = new CANcoder(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.misc_canivore);
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
+
     pivotPosition = pivotTalonFX.getPosition();
     pivotAppliedVolts = pivotTalonFX.getMotorVoltage();
     pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
@@ -99,7 +102,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
                 pivotTempCelsius,
                 pivotSetpoint,
                 pivotControlMode),
-            Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
+            pivotPosition.getValueAsDouble(),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),
             pivotSupplyCurrentAmps.getValueAsDouble(),
@@ -115,7 +118,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotPosition(double position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Radians)));
+    pivotTalonFX.setControl(pivot_m_request.withPosition(position / 2 / Math.PI));
   }
 
   @Override
@@ -132,6 +135,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotZero() {
-    pivotTalonFX.setPosition(0.0);
+    pivotCancoder.setPosition(0);
+    // pivotTalonFX.setPosition(0.0);
   }
 }

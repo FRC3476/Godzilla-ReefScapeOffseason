@@ -130,7 +130,7 @@ public class Elevator extends SubsystemBase {
 
   public Command manualSetElevatorZero() {
     isZeroed = true;
-    return Commands.runOnce(() -> io.setElevatorZero());
+    return Commands.runOnce(() -> io.setElevatorZero(), this);
   }
 
   public Command dejamElevator() {

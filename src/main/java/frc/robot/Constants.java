@@ -14,9 +14,11 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -261,6 +263,8 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+    public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
+        1 / (1.8427325868896291219526481028964 / 2 / Math.PI);
 
     public static final double STALLED_CURRENT = 0.0;
     public static final double STALLED_RPS = 0.0;
@@ -277,6 +281,10 @@ public final class Constants {
                     .withKD(ELEVATOR_kD)
                     .withKG(ELEVATOR_kG)
                     .withGravityType(GravityTypeValue.Elevator_Static))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
@@ -394,7 +402,9 @@ public final class Constants {
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
 
-    public static final double PIVOT_GEAR_RATIO = 1.0 / 40;
+    public static final double PIVOT_RTS = 10;
+    public static final double PIVOT_STM = 4;
+    public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
     public static final double ROLLER_STALLED_CURRENT = 0.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
@@ -411,13 +421,14 @@ public final class Constants {
     public static final double ALGAE_REMOVAL_ANGLE_RAD = Units.degreesToRadians(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_RAD = Units.degreesToRadians(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_RAD = Units.degreesToRadians(119.8473749);
+    public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
 
     // Hardstop angles
     public static final double UPPER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(119.8473749);
     public static final double LOWER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_RADIAN = Units.degreesToRadians(119.8473749);
-    public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-92.16);
     public static final double MAX_SAFE_ANGLE_RADIAN =
         Units.degreesToRadians(35); // old value 53.9126895
     public static final double MIN_SAFE_ANGLE_RADIAN =
@@ -441,12 +452,23 @@ public final class Constants {
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
-            .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(PIVOT_GEAR_RATIO)
-                    .with)
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
+        new CANcoderConfiguration()
+            .withMagnetSensor(
+                new MagnetSensorConfigs()
+                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                    .withAbsoluteSensorDiscontinuityPoint(0.5));
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
