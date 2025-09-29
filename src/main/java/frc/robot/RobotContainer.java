@@ -16,13 +16,12 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -576,19 +575,50 @@ public class RobotContainer {
   }
 
   private void RegisterDefaultCommands() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
     elevator.setDefaultCommand(defaultElevatorCommand());
     endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
   private void BuildDriveTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
+    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
-    testTab.add("Drivetrain Test", new DrivetrainTest(drive)).withPosition(0, 4).withSize(3, 1);
+    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
+    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Characterize Slip Current");
+    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Characterize Wheel Radius");
+    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
+    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
+    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
 
-    testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
+    driveFeedforwardEntry.setBoolean(false);
+    driveSlipCurrentEntry.setBoolean(false);
+    driveWheelRadiusEntry.setBoolean(false);
+    driveStopXEntry.setBoolean(false);
+    driveForwardEntry.setBoolean(false);
+    driveClockwiseEntry.setBoolean(false);
 
-    testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
+    Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
+    Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
+    Trigger driveWheelRadiusTrigger = new Trigger(() -> driveWheelRadiusEntry.getBoolean(false));
+    Trigger driveStopXTrigger = new Trigger(() -> driveStopXEntry.getBoolean(false));
+    Trigger driveForwardTrigger = new Trigger(() -> driveForwardEntry.getBoolean(false));
+    Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
+
+    driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
+    driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
+    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX));
+    driveForwardTrigger.whileTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
+    driveClockwiseTrigger.whileTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
   }
 
   private void BuildClimberTab() {
@@ -619,13 +649,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
 
     // Lock to 0° when A button is held
     controller

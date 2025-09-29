@@ -78,9 +78,14 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
+          // Square linear values for more precise control
+          double xJoy = xSupplier.getAsDouble();
+          double yJoy = ySupplier.getAsDouble();
+          xJoy = Math.copySign(xJoy * xJoy, xJoy);
+          yJoy = Math.copySign(yJoy * yJoy, yJoy);
+
           // Get linear velocity
-          Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xJoy, yJoy);
 
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);

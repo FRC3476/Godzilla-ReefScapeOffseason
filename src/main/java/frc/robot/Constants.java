@@ -76,7 +76,7 @@ public final class Constants {
 
     // Slip Current Characterization Constants (Wall Test)
     public static final double SLIP_START_DELAY = 0.0; // Secs
-    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_RAMP_RATE = -0.5; // Volts/Sec
     public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
     public static final double SLIP_VELOCITY_THRESHOLD =
         3476.0; // Velocity derivative indicating wheels started spinning
