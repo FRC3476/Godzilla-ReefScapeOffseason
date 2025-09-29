@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
 
-  private IntakeState currentState = IntakeState.IDLE;
+  private IntakeState currentState = IntakeState.STOW;
 
   public Intake(IntakeIO io, Feeder feeder) {
     this.io = io;
@@ -58,6 +58,7 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/JamDetected", checkForJam());
+    Logger.recordOutput("Intake/CurrentState", currentState);
 
     CoralStateTracker.updateIntake(isCoralInIntake());
 
@@ -142,6 +143,8 @@ public class Intake extends SubsystemBase {
     return Commands.run(
         () -> {
           switch (this.currentState) {
+            case NONE:
+              break;
             case STOW:
               break;
             case INTAKE_L1:
@@ -169,6 +172,8 @@ public class Intake extends SubsystemBase {
 
           // Execute motor commands based on current state
           switch (this.currentState) {
+            case NONE:
+              break;
             case STOW:
               this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION);
               this.io.setRollerVoltage(0);

@@ -124,6 +124,7 @@ public final class Constants {
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
 
     public enum IntakeState {
+      NONE,
       STOW,
       INTAKE_L1,
       INTAKE,
