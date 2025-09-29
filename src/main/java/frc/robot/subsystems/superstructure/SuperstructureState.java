@@ -22,6 +22,9 @@ public enum SuperstructureState {
   INTAKE_CORAL_L1(
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN),
+  INTAKE_ALGAE_GROUND(
+      Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
   FEED(
       Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIAN),
@@ -112,26 +115,28 @@ public enum SuperstructureState {
     }
   }
 
+  
+
   public Set<SuperstructureState> getAllowedStates() {
 
     Set<SuperstructureState> allowedStates = EnumSet.allOf(SuperstructureState.class);
 
     switch (this) {
       case STOW:
-        return allowedStates;
+        return ;
       case STOW_CORAL:
-        return allowedStates;
+        return allowedStates.removeAll(EnumSet.of());
       case STOW_ALGAE:
-        return allowedStates;
+        return allowedStates.removeAll(EnumSet.of());
       case INTAKE_CORAL:
-        return allowedStates;
+        return allowedStates.removeAll(EnumSet.of());
       case INTAKE_CORAL_L1:
-        return allowedStates;
+        return allowedStates.removeAll(EnumSet.of());
       case FEED:
-        return allowedStates;
+        return allowedStates.removeAll(EnumSet.of());
       case L1_PIVOT:
-        return allowedStates;
-      case L2_AIM:
+        return allowedStates.removeAll(EnumSet.of());
+      case L2_AIM: //allowed anywhere
         return allowedStates;
       case L3_AIM:
         return allowedStates;
@@ -161,4 +166,40 @@ public enum SuperstructureState {
         return allowedStates;
     }
   }
+
+  public Set<SuperstructureState> getL1States() {
+    return EnumSet.of(L1_PIVOT, L1_SCORE);
+  }
+
+  public Set<SuperstructureState> getL2States() {
+    return EnumSet.of(L2_AIM, L2_SCORE, L2_FADEAWAY);
+  }
+
+  public Set<SuperstructureState> getL3States() {
+    return EnumSet.of(L3_AIM, L3_SCORE, L3_FADEAWAY);
+  }
+
+  public Set<SuperstructureState> getL4States() {
+    return EnumSet.of(L4_AIM, L4_SCORE, L4_FADEAWAY);
+  }
+
+  public Set<SuperstructureState> getAlgaeScoreStates() {
+    return EnumSet.of(BARGE_AIM_BACKWARD, BARGE_AIM_CENTER, BARGE_AIM_FORWARD);
+  }
+
+  public Set<SuperstructureState> getStowStates() {
+    return EnumSet.of(STOW_CORAL, STOW_ALGAE, STOW);
+  }
+
+  public Set<SuperstructureState> getCoralIntakeStates() {
+    return EnumSet.of(INTAKE_CORAL, INTAKE_CORAL_L1);
+  }
+
+  public Set<SuperstructureState> getAlgaeIntakeStates(){
+    return EnumSet.of(INTAKE_ALGAE_GROUND, ALGAE_HIGH_INTAKE, ALGAE_LOW_INTAKE);
+  }
+
+  
+
+  
 }

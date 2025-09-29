@@ -789,6 +789,10 @@ public final class Constants {
                 + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN)
             / 2;
     public static double BARGE_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
+
+    public static double ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH = 0.0;
+    public static double ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-38.3080987);
+
   }
 
   public record PIDgains(

@@ -4,7 +4,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntSupplier;
@@ -136,6 +139,14 @@ public class Util {
     }
     return input;
   }
+
+  // @SuppressWarnings("unchecked")
+  // public static <T> Set<T> mergeSets(Set<T>... sets){
+  //   List<Set<T>> setList = List.of(sets);
+
+
+
+  // }
 
   // public static void betterCTREencoderZero(CANcoder canCoder) {
   //   PhoenixUtil.tryUntilOk(
