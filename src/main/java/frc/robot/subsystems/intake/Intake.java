@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber pivotManualTestVolts =
       new LoggedTunableNumber("Intake/PivotManualTestVolts", 1.0);
 
-  private IntakeState currentState = IntakeState.STOW;
+  private IntakeState currentState = IntakeState.NONE;
 
   public Intake(IntakeIO io, Feeder feeder) {
     this.io = io;
