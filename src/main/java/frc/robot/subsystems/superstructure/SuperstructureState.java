@@ -7,6 +7,9 @@ import java.util.Set;
 // This stores what subsystem values are in each state
 
 public enum SuperstructureState {
+  NONE(
+      Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
@@ -95,6 +98,8 @@ public enum SuperstructureState {
 
   public boolean isCoralState() {
     switch (this) {
+      case NONE:
+        return false;
       case STOW_CORAL,
           INTAKE_CORAL,
           INTAKE_CORAL_L1,
@@ -117,6 +122,8 @@ public enum SuperstructureState {
     Set<SuperstructureState> allowedStates = EnumSet.allOf(SuperstructureState.class);
 
     switch (this) {
+      case NONE:
+        return allowedStates;
       case STOW:
         return allowedStates;
       case STOW_CORAL:
