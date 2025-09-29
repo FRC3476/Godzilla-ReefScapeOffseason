@@ -429,7 +429,7 @@ public final class Constants {
 
     // ========End Effector Constant Positions========
     // Pivot positions in radians
-    public static final double IDLE_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
+    public static final double IDLE_ANGLE_RAD = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-52.0336836);
     public static final double ALGAE_IDLE_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
     public static final double PROCESSOR_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
@@ -443,7 +443,7 @@ public final class Constants {
 
     // Hardstop angles
     public static final double UPPER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(119.8473749);
-    public static final double LOWER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
+    public static final double LOWER_HARDSTOP_ANGLE_RAD = EndEffectorConstants.MIN_ANGLE_RADIAN;
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_RADIAN = Units.degreesToRadians(119.8473749);
     public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-92.16);
@@ -676,12 +676,12 @@ public final class Constants {
 
   public static class SuperstructureConstants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double STOW_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double STOW_ENDEFFECTOR_ROTATION_RADIAN = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double STOW_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double STOW_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0.0;
@@ -691,21 +691,22 @@ public final class Constants {
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double INTAKE_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN =
         Units.degreesToRadians(-26.9162484);
 
     public static double FEED_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double FEED_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double FEED_ENDEFFECTOR_ROTATION_RADIAN = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double FEED_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN =
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811;
@@ -727,7 +728,8 @@ public final class Constants {
     public static double L4_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN =
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
     public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811;
@@ -781,7 +783,7 @@ public final class Constants {
     public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(43.8547133);
     public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(119.8473749);
+        EndEffectorConstants.MAX_ANGLE_RADIAN;
     public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN =
         (BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN
                 + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN)
