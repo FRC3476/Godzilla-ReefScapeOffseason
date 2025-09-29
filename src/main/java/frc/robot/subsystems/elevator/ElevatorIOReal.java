@@ -150,8 +150,8 @@ public class ElevatorIOReal implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
 
-    inputs.data =
-        new ElevatorIOData(
+    inputs.rightMotorData =
+        new MotorData(
             BaseStatusSignal.isAllGood(
                 rightPosition,
                 rightAppliedVolts,
@@ -159,6 +159,15 @@ public class ElevatorIOReal implements ElevatorIO {
                 rightSupplyCurrentAmps,
                 rightTempCelsius,
                 rightSetPosition),
+            rightPosition.getValueAsDouble(),
+            rightAppliedVolts.getValueAsDouble(),
+            rightTorqueCurrentAmps.getValueAsDouble(),
+            rightSupplyCurrentAmps.getValueAsDouble(),
+            rightTempCelsius.getValueAsDouble(),
+            rightSetPosition.getValueAsDouble());
+
+    inputs.leftMotorData =
+        new MotorData(
             BaseStatusSignal.isAllGood(
                 leftPosition,
                 leftAppliedVolts,
@@ -166,6 +175,15 @@ public class ElevatorIOReal implements ElevatorIO {
                 leftSupplyCurrentAmps,
                 leftTempCelsius,
                 leftSetPosition),
+            leftPosition.getValueAsDouble(),
+            leftAppliedVolts.getValueAsDouble(),
+            leftTorqueCurrentAmps.getValueAsDouble(),
+            leftSupplyCurrentAmps.getValueAsDouble(),
+            leftTempCelsius.getValueAsDouble(),
+            leftSetPosition.getValueAsDouble());
+
+    inputs.extraMotorData =
+        new MotorData(
             BaseStatusSignal.isAllGood(
                 extraPosition,
                 extraAppliedVolts,
@@ -173,18 +191,6 @@ public class ElevatorIOReal implements ElevatorIO {
                 extraSupplyCurrentAmps,
                 extraTempCelsius,
                 extraSetPosition),
-            rightPosition.getValueAsDouble(),
-            rightAppliedVolts.getValueAsDouble(),
-            rightTorqueCurrentAmps.getValueAsDouble(),
-            rightSupplyCurrentAmps.getValueAsDouble(),
-            rightTempCelsius.getValueAsDouble(),
-            rightSetPosition.getValueAsDouble(),
-            leftPosition.getValueAsDouble(),
-            leftAppliedVolts.getValueAsDouble(),
-            leftTorqueCurrentAmps.getValueAsDouble(),
-            leftSupplyCurrentAmps.getValueAsDouble(),
-            leftTempCelsius.getValueAsDouble(),
-            leftSetPosition.getValueAsDouble(),
             extraPosition.getValueAsDouble(),
             extraAppliedVolts.getValueAsDouble(),
             extraTorqueCurrentAmps.getValueAsDouble(),

@@ -5,34 +5,21 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ElevatorIO {
   @AutoLog
   class ElevatorIOInputs {
-    public ElevatorIOData data =
-        new ElevatorIOData(
-            false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0, 0.0);
+    /** LEADER - Right motor telemetry. */
+    public MotorData rightMotorData = new MotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public MotorData leftMotorData = new MotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public MotorData extraMotorData = new MotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
-  record ElevatorIOData(
-      boolean rightMotorConnected,
-      boolean leftMotorConnected,
-      boolean extraMotorConnected,
-      double rightPosition,
-      double rightAppliedVolts,
-      double rightTorqueCurrentAmps,
-      double rightSupplyCurrentAmps,
-      double rightTempCelsius,
-      double rightSetPosition,
-      double leftPosition,
-      double leftAppliedVolts,
-      double leftTorqueCurrentAmps,
-      double leftSupplyCurrentAmps,
-      double leftTempCelsius,
-      double leftSetPosition,
-      double extraPosition,
-      double extraAppliedVolts,
-      double extraTorqueCurrentAmps,
-      double extraSupplyCurrentAmps,
-      double extraTempCelsius,
-      double extraSetPosition) {}
+  /** Motor telemetry data. */
+  record MotorData(
+      boolean isMotorConnected,
+      double position,
+      double appliedVolts,
+      double torqueCurrentAmps,
+      double supplyCurrentAmps,
+      double tempCelsius,
+      double setPosition) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 
