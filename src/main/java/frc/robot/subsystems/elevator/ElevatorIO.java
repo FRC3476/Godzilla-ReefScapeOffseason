@@ -3,13 +3,12 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
-
   @AutoLog
   class ElevatorIOInputs {
     public ElevatorIOData data =
         new ElevatorIOData(
             false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0);
+            0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   record ElevatorIOData(
@@ -21,16 +20,19 @@ public interface ElevatorIO {
       double rightTorqueCurrentAmps,
       double rightSupplyCurrentAmps,
       double rightTempCelsius,
+      double rightSetPosition,
       double leftPosition,
       double leftAppliedVolts,
       double leftTorqueCurrentAmps,
       double leftSupplyCurrentAmps,
       double leftTempCelsius,
+      double leftSetPosition,
       double extraPosition,
       double extraAppliedVolts,
       double extraTorqueCurrentAmps,
       double extraSupplyCurrentAmps,
-      double extraTempCelsius) {}
+      double extraTempCelsius,
+      double extraSetPosition) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 
@@ -39,4 +41,18 @@ public interface ElevatorIO {
   default void setElevatorTargetPosition(double position) {}
 
   default void setElevatorZero() {}
+
+  default boolean checkMotorsStalled() {
+    return false;
+  }
+
+  default void updateElevatorPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {}
 }

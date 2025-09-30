@@ -6,30 +6,36 @@ public interface EndEffectorIO {
 
   @AutoLog
   class EndEffectorIOInputs {
-    public EndEffectorIOData data =
-        new EndEffectorIOData(
-            false, false, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, false);
+    public EE_PivotData pivotData = new EE_PivotData(false, 0, 0, 0, 0, 0, 0, "hi");
   }
 
-  record EndEffectorIOData(
+  record EE_PivotData(
       boolean pivotMotorConnected,
-      boolean rollerMotorConnected,
-      boolean canRangeConnected,
       double pivotPosition,
       double pivotAppliedVolts,
       double pivotTorqueCurrentAmps,
       double pivotSupplyCurrentAmps,
       double pivotTempCelsius,
-      double rollerPosition,
-      double rollerAppliedVolts,
-      double rollerTorqueCurrentAmps,
-      double rollerSupplyCurrentAmps,
-      double rollerTempCelsius,
-      Boolean rangeIsTripped) {}
+      double pivotSetpoint,
+      String pivotControlMode) {}
 
   default void updateInputs(EndEffectorIOInputs inputs) {}
 
-  default void setRollerVoltage(double voltage) {}
+  default void setPivotVoltage(double voltage) {}
 
   default void setPivotTargetPosition(double position) {}
+
+  default void setPivotPosition(double position) {}
+
+  default void updatePivotPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {}
+
+  default void setPivotZero() {}
 }

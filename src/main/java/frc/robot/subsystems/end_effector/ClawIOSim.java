@@ -1,5 +1,3 @@
 package frc.robot.subsystems.end_effector;
 
-public class EndEffectorIOSim{
-    
-}
+public class ClawIOSim implements ClawIO {}
