@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.Controls;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Alert {
+public class StreamDeckAlert {
   private static SendableAlerts mSendableAlerts = null;
 
   private AlertType mType;
@@ -16,24 +16,24 @@ public class Alert {
   private long mLastEnabledTimestamp;
   private boolean mLogResolution;
 
-  public static Alert info(String message) {
-    return new Alert(AlertType.INFO, message);
+  public static StreamDeckAlert info(String message) {
+    return new StreamDeckAlert(AlertType.INFO, message);
   }
 
-  public static Alert warning(String message) {
-    return new Alert(AlertType.WARNING, message);
+  public static StreamDeckAlert warning(String message) {
+    return new StreamDeckAlert(AlertType.WARNING, message);
   }
 
-  public static Alert error(String message) {
-    return new Alert(AlertType.ERROR, message);
+  public static StreamDeckAlert error(String message) {
+    return new StreamDeckAlert(AlertType.ERROR, message);
   }
 
-  Alert(AlertType type, String message) {
+  StreamDeckAlert(AlertType type, String message) {
     mType = type;
     mMessage = message;
     mLogResolution = type != AlertType.INFO;
 
-    synchronized (Alert.class) {
+    synchronized (StreamDeckAlert.class) {
       if (mSendableAlerts == null) {
         mSendableAlerts = new SendableAlerts();
         SmartDashboard.putData("Alerts", mSendableAlerts);
@@ -43,7 +43,7 @@ public class Alert {
     mSendableAlerts.add(this);
   }
 
-  public Alert withResolutionLogging(boolean shouldLogResolution) {
+  public StreamDeckAlert withResolutionLogging(boolean shouldLogResolution) {
     mLogResolution = shouldLogResolution;
     return this;
   }
@@ -99,13 +99,13 @@ public class Alert {
   }
 
   private static class SendableAlerts implements Sendable {
-    private final List<Alert> mAlerts = new ArrayList<>();
+    private final List<StreamDeckAlert> mAlerts = new ArrayList<>();
     private String[] mInfoMessages = new String[] {};
     private String[] mWarningMessages = new String[] {};
     private String[] mErrorMessages = new String[] {};
     private boolean mCacheValid = true;
 
-    private void add(Alert alert) {
+    private void add(StreamDeckAlert alert) {
       mAlerts.add(alert);
     }
 
