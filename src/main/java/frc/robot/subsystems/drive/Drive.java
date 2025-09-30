@@ -49,7 +49,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.superstructure.Superstructure;
+// import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -96,7 +96,7 @@ public class Drive extends SubsystemBase {
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Rotation2d rawGyroRotation = new Rotation2d();
+  private Rotation2d rawGyroRotation = Rotation2d.kZero;
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
@@ -105,27 +105,28 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition()
       };
   private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
   // Acceleration limiting
-  private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
-  private double lastTimeSeconds = 0.0;
+  // private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
+  // private double lastTimeSeconds = 0.0;
 
-  private Superstructure superstructure;
+  // private Superstructure superstructure;
 
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO,
-      Superstructure superstructure) {
+      ModuleIO brModuleIO
+      // ,Superstructure superstructure
+      ) {
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
-    this.superstructure = superstructure;
+    // this.superstructure = superstructure;
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -167,7 +168,7 @@ public class Drive extends SubsystemBase {
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
 
     // Initialize time tracking for acceleration limiting
-    lastTimeSeconds = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+    // lastTimeSeconds = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
   }
 
   @Override
@@ -230,57 +231,60 @@ public class Drive extends SubsystemBase {
   }
 
   private ChassisSpeeds applyAccelerationLimits(ChassisSpeeds targetSpeeds) {
-    double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-    double dt = currentTime - lastTimeSeconds;
-    lastTimeSeconds = currentTime;
+    return targetSpeeds;
+    // double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+    // double dt = currentTime - lastTimeSeconds;
+    // lastTimeSeconds = currentTime;
 
-    if (dt <= 0) {
-      return targetSpeeds;
-    }
+    // if (dt <= 0) {
+    //   return targetSpeeds;
+    // }
 
-    // Calculate desired accelerations
-    double desiredVxAccel =
-        (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
-    double desiredVyAccel =
-        (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
-    double desiredOmegaAccel =
-        (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
+    // // Calculate desired accelerations
+    // double desiredVxAccel =
+    //     (targetSpeeds.vxMetersPerSecond - previousSpeeds.vxMetersPerSecond) / dt;
+    // double desiredVyAccel =
+    //     (targetSpeeds.vyMetersPerSecond - previousSpeeds.vyMetersPerSecond) / dt;
+    // double desiredOmegaAccel =
+    //     (targetSpeeds.omegaRadiansPerSecond - previousSpeeds.omegaRadiansPerSecond) / dt;
 
-    // Calculate dynamic acceleration limits based on subsystem positions
-    double dynamicTranslationalAccel = calculateDynamicTranslationalAccelLimit();
-    double dynamicRotationalAccel = calculateDynamicRotationalAccelLimit();
+    // // Calculate dynamic acceleration limits based on subsystem positions
+    // double dynamicTranslationalAccel = calculateDynamicTranslationalAccelLimit();
+    // double dynamicRotationalAccel = calculateDynamicRotationalAccelLimit();
 
-    // Clamp accelerations using dynamic limits
-    double clampedVxAccel =
-        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVxAccel));
-    double clampedVyAccel =
-        Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel, desiredVyAccel));
-    double clampedOmegaAccel =
-        Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
+    // // Clamp accelerations using dynamic limits
+    // double clampedVxAccel =
+    //     Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel,
+    // desiredVxAccel));
+    // double clampedVyAccel =
+    //     Math.max(-dynamicTranslationalAccel, Math.min(dynamicTranslationalAccel,
+    // desiredVyAccel));
+    // double clampedOmegaAccel =
+    //     Math.max(-dynamicRotationalAccel, Math.min(dynamicRotationalAccel, desiredOmegaAccel));
 
-    // Calculate limited speeds
-    double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
-    double limitedVy = previousSpeeds.vyMetersPerSecond + clampedVyAccel * dt;
-    double limitedOmega = previousSpeeds.omegaRadiansPerSecond + clampedOmegaAccel * dt;
+    // // Calculate limited speeds
+    // double limitedVx = previousSpeeds.vxMetersPerSecond + clampedVxAccel * dt;
+    // double limitedVy = previousSpeeds.vyMetersPerSecond + clampedVyAccel * dt;
+    // double limitedOmega = previousSpeeds.omegaRadiansPerSecond + clampedOmegaAccel * dt;
 
-    ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
-    previousSpeeds = limitedSpeeds;
+    // ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
+    // previousSpeeds = limitedSpeeds;
 
-    // Log the acceleration limits for debugging (actual calculation done in Superstructure)
-    Logger.recordOutput("Drive/DynamicTranslationalAccelLimit", dynamicTranslationalAccel);
-    Logger.recordOutput("Drive/DynamicRotationalAccelLimit", dynamicRotationalAccel);
+    // // Log the acceleration limits for debugging (actual calculation done in Superstructure)
+    // Logger.recordOutput("Drive/DynamicTranslationalAccelLimit", dynamicTranslationalAccel);
+    // Logger.recordOutput("Drive/DynamicRotationalAccelLimit", dynamicRotationalAccel);
 
-    return limitedSpeeds;
+    // return limitedSpeeds;
   }
 
-  private double calculateDynamicTranslationalAccelLimit() {
-    // Delegate to Superstructure
-    return superstructure.calculateDynamicTranslationalAccelLimit();
-  }
+  // private double calculateDynamicTranslationalAccelLimit() {
+  //   // Delegate to Superstructure
+  //   return superstructure.calculateDynamicTranslationalAccelLimit();
+  // }
 
-  private double calculateDynamicRotationalAccelLimit() {
-    return superstructure.calculateDynamicRotationalAccelLimit();
-  }
+  // private double calculateDynamicRotationalAccelLimit() {
+  //   return superstructure.calculateDynamicRotationalAccelLimit();
+  // }
 
   /**
    * Runs the drive at the desired velocity.

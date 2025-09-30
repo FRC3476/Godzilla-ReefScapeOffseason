@@ -60,8 +60,13 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.util.Controls.StreamDeck;
+import frc.robot.util.Controls.StreamDeckButton;
+import frc.robot.util.Controls.StreamDeckButtonConfig;
+import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -83,6 +88,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final StreamDeck streamdeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -105,8 +111,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                superstructure);
+                new ModuleIOTalonFX(TunerConstants.BackRight)
+                // ,superstructure
+                );
         break;
 
       case SIM:
@@ -124,8 +131,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight),
-                superstructure);
+                new ModuleIOSim(TunerConstants.BackRight)
+                // ,superstructure
+                );
         break;
 
       default:
@@ -143,8 +151,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {},
-                superstructure);
+                new ModuleIO() {}
+                // ,superstructure
+                );
         break;
     }
 
@@ -172,14 +181,11 @@ public class RobotContainer {
 
     autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
-    BuildIntakeTab();
-    BuildEndEffectorTab();
-    BuildElevatorTab();
-    BuildSuperstructureTab();
-    BuildClimberTab();
-    BuildDriveTab();
-
+    // Configure default commands for subsystems
     RegisterDefaultCommands();
+
+    // Build elastic tabs for testing
+    buildElasticTabs();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -188,7 +194,34 @@ public class RobotContainer {
     configureArbitraryTriggers();
   }
 
-  private void BuildIntakeTab() {
+  private void configureButtonBindings() {
+    configureXboxBindings();
+    configureStreamDeckBindings();
+  }
+
+  private void RegisterDefaultCommands() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
+    elevator.setDefaultCommand(defaultElevatorCommand());
+    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    intake.setDefaultCommand(intake.intakeDefault());
+  }
+
+  private void buildElasticTabs() {
+    buildIntakeTab();
+    buildEndEffectorTab();
+    buildElevatorTab();
+    buildSuperstructureTab();
+    buildClimberTab();
+    buildDriveTab();
+  }
+
+  private void buildIntakeTab() {
     // Get the NetworkTable for the Intake tab
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
@@ -280,7 +313,7 @@ public class RobotContainer {
     intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
   }
 
-  private void BuildEndEffectorTab() {
+  private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
@@ -358,7 +391,7 @@ public class RobotContainer {
     pivotManualZeroTrigger.onTrue(endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
   }
 
-  private void BuildElevatorTab() {
+  private void buildElevatorTab() {
     // Get the NetworkTable for the Elevator tab
     NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
 
@@ -412,7 +445,7 @@ public class RobotContainer {
     elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
-  private void BuildSuperstructureTab() {
+  private void buildSuperstructureTab() {
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 
@@ -574,20 +607,7 @@ public class RobotContainer {
     targetStateEntry.setString("Unknown");
   }
 
-  private void RegisterDefaultCommands() {
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
-    intake.setDefaultCommand(intake.intakeDefault());
-  }
-
-  private void BuildDriveTab() {
+  private void buildDriveTab() {
     NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
     NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
@@ -614,14 +634,14 @@ public class RobotContainer {
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX).andThen(() -> driveStopXEntry.setBoolean(false)));
+    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
   }
 
-  private void BuildClimberTab() {
+  private void buildClimberTab() {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
@@ -648,7 +668,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
     controller
@@ -658,7 +678,7 @@ public class RobotContainer {
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
-                () -> new Rotation2d()));
+                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -670,9 +690,127 @@ public class RobotContainer {
             Commands.runOnce(
                     () ->
                         drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  private void configureStreamDeckBindings() {
+    StreamDeckButtonConfig inactiveConfig =
+        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig activeConfig =
+        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+
+    StreamDeckButton swerveXButton =
+        new StreamDeckButton(3, 7, "Swerve X")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withInactiveText("X")
+            .withActiveText("Swerve X");
+    StreamDeckButton intakeInButton =
+        new StreamDeckButton(1, 0, "Intake In")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT In");
+    StreamDeckButton intakeOutButton =
+        new StreamDeckButton(1, 1, "Intake Out")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Out");
+    StreamDeckButton intakeUpButton =
+        new StreamDeckButton(0, 0, "Intake Up")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Up");
+    StreamDeckButton intakeDownButton =
+        new StreamDeckButton(0, 1, "Intake Down")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Down");
+    StreamDeckButton intakeL1UpButton =
+        new StreamDeckButton(3, 0, "Intake L1Up")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT L1Up");
+    StreamDeckButton intakeL1DownButton =
+        new StreamDeckButton(3, 1, "Intake L1Down")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT L1Down");
+    StreamDeckButton feederInButton =
+        new StreamDeckButton(2, 0, "Feeder In ")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("FEED In");
+    StreamDeckButton feederOutButton =
+        new StreamDeckButton(2, 1, "Feeder Out")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("FEED Out ");
+    StreamDeckButton intakePosUpButton =
+        new StreamDeckButton(0, 3, "Intake PosUp")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosUp");
+    StreamDeckButton intakePosDownButton =
+        new StreamDeckButton(0, 4, "Intake PosDown")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosDown");
+    StreamDeckButton intakePosScoreButton =
+        new StreamDeckButton(0, 5, "Intake PosScore")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosScore");
+    StreamDeckButton intakeZeroButton =
+        new StreamDeckButton(1, 3, "Intake Zero")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Zero");
+    // StreamDeckButton intakeStateButton =
+    //     new StreamDeckButton(0, 0, "Intake State")
+    //         .withInactiveConfig(inactiveConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("INT State");
+
+    streamdeck.configureButtons(
+        Set.of(
+            swerveXButton,
+            intakeInButton,
+            intakeOutButton,
+            intakeUpButton,
+            intakeDownButton,
+            intakeL1UpButton,
+            intakeL1DownButton,
+            feederInButton,
+            feederOutButton,
+            intakePosUpButton,
+            intakePosDownButton,
+            intakePosScoreButton,
+            intakeZeroButton));
+
+    streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
+    streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
+    streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
+    streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
+    streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
+    streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
+    streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
+    streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
+    streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
+    streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
+    streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
+    streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
+    streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
+    streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
+    streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
+    streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
+    streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
+    streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
+    streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
+    streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
   }
 
   private void configureArbitraryTriggers() {
@@ -690,11 +828,19 @@ public class RobotContainer {
   }
 
   public Command defaultElevatorCommand() {
-    return elevator.moveToTargetPosition(
-        () -> superstructure.getCurrentState().getElevatorHeight());
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return elevator.moveToTargetPosition(
+          () -> superstructure.getCurrentState().getElevatorHeight());
+    }
   }
 
   public Command defaultEndEffectorCommand() {
-    return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+    }
   }
 }
