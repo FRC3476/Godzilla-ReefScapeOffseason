@@ -14,8 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,10 +22,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -83,7 +80,7 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  //   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -180,7 +177,7 @@ public class RobotContainer {
     BuildClimberTab();
     BuildDriveTab();
 
-    RegisterDefaultCommands();
+    // RegisterDefaultCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -575,11 +572,11 @@ public class RobotContainer {
     targetStateEntry.setString("Unknown");
   }
 
-  private void RegisterDefaultCommands() {
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
-    intake.setDefaultCommand(intake.intakeDefault());
-  }
+  //   private void RegisterDefaultCommands() {
+  //     elevator.setDefaultCommand(defaultElevatorCommand());
+  //     endEffector.setDefaultCommand(defaultEndEffectorCommand());
+  //     intake.setDefaultCommand(intake.intakeDefault());
+  //   }
 
   private void BuildDriveTab() {
     ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
@@ -620,36 +617,36 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(
+    //         drive,
+    //         () -> -controller.getLeftY(),
+    //         () -> -controller.getLeftX(),
+    //         () -> -controller.getRightX()));
 
-    // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.driveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> new Rotation2d()));
+    // // Lock to 0° when A button is held
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.driveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> new Rotation2d()));
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+    // // Reset gyro to 0° when B button is pressed
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+    //                 drive)
+    //             .ignoringDisable(true));
   }
 
   private void configureArbitraryTriggers() {
@@ -666,12 +663,15 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command defaultElevatorCommand() {
-    return elevator.moveToTargetPosition(
-        () -> superstructure.getCurrentState().getElevatorHeight());
+  public Command moveElevatorCommand(double height_inch) {
+    return elevator.moveToTargetPosition(() -> height_inch);
   }
 
-  public Command defaultEndEffectorCommand() {
-    return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+  public Command moveEndEffectorCommand(double radians) {
+    return endEffector.rotatePivot(() -> radians);
+  }
+
+  public Command setIntakeStateCommand(IntakeState state) {
+    return intake.setIntakeState(state);
   }
 }

@@ -4,8 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,16 +139,16 @@ public class Util {
     return input;
   }
 
-  public static <T> Set<T> mergeSets(@SuppressWarnings("unchecked") Set<T>... sets){
+  public static <T> Set<T> mergeSets(@SuppressWarnings("unchecked") Set<T>... sets) {
     Set<T> set = new HashSet<>();
-    for (Set<T> s : sets){
+    for (Set<T> s : sets) {
       set.addAll(s);
     }
     return set;
   }
 
-  public static <T> Set<T> removeSets(Set<T> set, @SuppressWarnings("unchecked") Set<T>... sets){
-    for (Set<T> s : sets){
+  public static <T> Set<T> removeSets(Set<T> set, @SuppressWarnings("unchecked") Set<T>... sets) {
+    for (Set<T> s : sets) {
       set.removeAll(s);
     }
     return set;

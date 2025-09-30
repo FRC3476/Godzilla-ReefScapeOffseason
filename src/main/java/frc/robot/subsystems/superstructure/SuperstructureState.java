@@ -1,17 +1,22 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.RobotContainer;
+import frc.robot.util.Util;
 import java.util.EnumSet;
 import java.util.Set;
-
-import frc.robot.Constants;
-import frc.robot.util.Util;
+import java.util.function.Function;
 
 // This stores what subsystem values are in each state
 
 public enum SuperstructureState {
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN,
+      container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.STOW))),
   STOW_CORAL(
       Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN),
@@ -20,10 +25,13 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIAN),
   INTAKE_CORAL(
       Constants.SuperstructureConstants.INTAKE_CORAL_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN,
+      container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE))),
   INTAKE_CORAL_L1(
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN,
+      container ->
+          new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE_L1))),
   INTAKE_ALGAE_GROUND(
       Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
@@ -85,9 +93,25 @@ public enum SuperstructureState {
   private final double elevatorHeight;
   private final double endEffectorRotation;
 
+  private final Function<RobotContainer, Command> commandSupplier;
+
   SuperstructureState(double elevatorHeight, double endEffectorRotation) {
     this.elevatorHeight = elevatorHeight;
     this.endEffectorRotation = endEffectorRotation;
+    this.commandSupplier =
+        container ->
+            new ParallelCommandGroup(
+                container.moveElevatorCommand(elevatorHeight),
+                container.moveEndEffectorCommand(endEffectorRotation));
+  }
+
+  SuperstructureState(
+      double elevatorHeight,
+      double endEffectorRotation,
+      Function<RobotContainer, Command> command) {
+    this.elevatorHeight = elevatorHeight;
+    this.endEffectorRotation = endEffectorRotation;
+    this.commandSupplier = command;
   }
 
   public double getElevatorHeight() {
@@ -117,68 +141,59 @@ public enum SuperstructureState {
     }
   }
 
-  
-
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedStates() {
 
     switch (this) {
       case STOW:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case STOW_CORAL:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case STOW_ALGAE:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case INTAKE_CORAL:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case INTAKE_CORAL_L1:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case FEED:
-        return Util.mergeSets(getL2States(), getL1States(), getCoralIntakeStates(), 
-                              EnumSet.of(INTAKE_ALGAE_GROUND)
-                              );
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case L1_PIVOT:
         return EnumSet.allOf(SuperstructureState.class);
-      case L2_AIM: //allowed anywhere
+      case L2_AIM: // allowed anywhere
         return EnumSet.allOf(SuperstructureState.class);
       case L3_AIM:
-        return 
+        return EnumSet.allOf(SuperstructureState.class);
       case L4_AIM:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case L1_SCORE:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case L2_SCORE:
         return EnumSet.allOf(SuperstructureState.class);
       case L3_SCORE:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case L4_SCORE:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case ALGAE_HIGH_INTAKE:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case ALGAE_LOW_INTAKE:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-                              EnumSet.of(STOW, STOW_CORAL)
-                              );
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class), EnumSet.of(STOW, STOW_CORAL));
       case PROCESSOR_AIM:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case BARGE_AIM_CENTER:
-        return  ;
+        return EnumSet.allOf(SuperstructureState.class);
       case BARGE_AIM_FORWARD:
         return EnumSet.of(BARGE_AIM_CENTER);
       case BARGE_AIM_BACKWARD:
         return EnumSet.of(BARGE_AIM_CENTER);
       default:
-        return EnumSet.allOf(SuperstructureState.class);;
+        return EnumSet.allOf(SuperstructureState.class);
     }
   }
 
@@ -210,11 +225,7 @@ public enum SuperstructureState {
     return EnumSet.of(INTAKE_CORAL, INTAKE_CORAL_L1);
   }
 
-  public Set<SuperstructureState> getAlgaeIntakeStates(){
+  public Set<SuperstructureState> getAlgaeIntakeStates() {
     return EnumSet.of(INTAKE_ALGAE_GROUND, ALGAE_HIGH_INTAKE, ALGAE_LOW_INTAKE);
   }
-
-  
-
-  
 }

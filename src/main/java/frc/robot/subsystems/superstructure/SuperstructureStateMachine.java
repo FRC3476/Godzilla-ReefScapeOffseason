@@ -326,7 +326,6 @@ public class SuperstructureStateMachine {
     SuperstructureState toState = transition.getToState();
     SuperstructureState fromState = transition.getFromState();
     return toState.isCoralState() && RobotState.hasAlgae();
-    return 
   }
 
   /** Gets a precomputed path between two states. */
