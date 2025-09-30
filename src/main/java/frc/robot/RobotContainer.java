@@ -176,24 +176,34 @@ public class RobotContainer {
 
     autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
-    BuildIntakeTab();
-    BuildEndEffectorTab();
-    BuildElevatorTab();
-    BuildSuperstructureTab();
-    BuildClimberTab();
-    BuildDriveTab();
-
+    // Configure default commands for subsystems
     RegisterDefaultCommands();
 
+    // Build elastic tabs for testing
+    buildElasticTabs();
+
     // Configure the button bindings
-    configureDriverBindings();
     configureButtonBindings();
 
     // Configure arbitrary triggers
     configureArbitraryTriggers();
   }
 
-  private void BuildIntakeTab() {
+  private void configureButtonBindings() {
+    configureXboxBindings();
+    configureStreamDeckBindings();
+  }
+
+  private void buildElasticTabs() {
+    buildIntakeTab();
+    buildEndEffectorTab();
+    buildElevatorTab();
+    buildSuperstructureTab();
+    buildClimberTab();
+    buildDriveTab();
+  }
+
+  private void buildIntakeTab() {
     // Get the NetworkTable for the Intake tab
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
@@ -285,7 +295,7 @@ public class RobotContainer {
     intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp());
   }
 
-  private void BuildEndEffectorTab() {
+  private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
@@ -363,7 +373,7 @@ public class RobotContainer {
     pivotManualZeroTrigger.onTrue(endEffector.setPivotZero());
   }
 
-  private void BuildElevatorTab() {
+  private void buildElevatorTab() {
     // Get the NetworkTable for the Elevator tab
     NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
 
@@ -417,7 +427,7 @@ public class RobotContainer {
     elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero());
   }
 
-  private void BuildSuperstructureTab() {
+  private void buildSuperstructureTab() {
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 
@@ -592,7 +602,7 @@ public class RobotContainer {
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
-  private void BuildDriveTab() {
+  private void buildDriveTab() {
     NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
     NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
@@ -619,14 +629,14 @@ public class RobotContainer {
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX));
+    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
   }
 
-  private void BuildClimberTab() {
+  private void buildClimberTab() {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
@@ -647,18 +657,13 @@ public class RobotContainer {
     climberClimbTrigger.onTrue(climber.climbClimb());
   }
 
-  private void configureDriverBindings() {
-    configureButtonBindings();
-    configureStreamDeckBindings();
-  }
-
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
     controller
