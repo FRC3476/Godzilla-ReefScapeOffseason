@@ -667,11 +667,19 @@ public class RobotContainer {
   }
 
   public Command defaultElevatorCommand() {
-    return elevator.moveToTargetPosition(
-        () -> superstructure.getCurrentState().getElevatorHeight());
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return elevator.moveToTargetPosition(
+          () -> superstructure.getCurrentState().getElevatorHeight());
+    }
   }
 
   public Command defaultEndEffectorCommand() {
-    return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+    }
   }
 }

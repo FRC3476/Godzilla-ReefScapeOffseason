@@ -120,6 +120,7 @@ public enum SuperstructureState {
   public Set<SuperstructureState> getAllowedStates() {
 
     Set<SuperstructureState> allowedStates = EnumSet.allOf(SuperstructureState.class);
+    allowedStates.remove(SuperstructureState.NONE);
 
     switch (this) {
       case NONE:
