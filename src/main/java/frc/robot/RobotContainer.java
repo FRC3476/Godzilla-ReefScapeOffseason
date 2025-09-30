@@ -60,6 +60,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.Controls.StreamDeck;
@@ -695,8 +696,10 @@ public class RobotContainer {
   }
 
   private void configureStreamDeckBindings() {
-    StreamDeckButtonConfig inactiveConfig = new StreamDeckButtonConfig("#000000", "#FFFFFF", "");
-    StreamDeckButtonConfig activeConfig = new StreamDeckButtonConfig("#FFFFFF", "#000000", "");
+    StreamDeckButtonConfig inactiveConfig =
+        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig activeConfig =
+        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
 
     StreamDeckButton swerveXButton =
         new StreamDeckButton(3, 7, "Swerve X")

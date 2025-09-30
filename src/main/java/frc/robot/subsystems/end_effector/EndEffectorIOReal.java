@@ -16,7 +16,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
@@ -96,9 +95,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         );
 
     // Need to do this because the canCoder wraps from its 0 position.
-    pivotCancoder.setPosition(
-        pivotCancoder.getPosition().getValueAsDouble()
-            + Math.round(IntakeConstants.PIVOT_INTAKE_POSITION / 2 / Math.PI));
+    setPositionFromAbsolute();
   }
 
   @Override
