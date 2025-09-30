@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -27,7 +28,16 @@ public class StreamDeck extends SubsystemBase {
     buttonMap.values().forEach(button -> button.activePub.set(button.selected.getAsBoolean()));
   }
 
-  public StreamDeck configureButton(Consumer<ButtonConfiguration> config) {
+  public void configureButtons(Set<StreamDeckButton> buttons) {
+    configureButton(
+        config -> {
+          for (StreamDeckButton button : buttons) {
+            config.addDefault(button);
+          }
+        });
+  }
+
+  private StreamDeck configureButton(Consumer<ButtonConfiguration> config) {
     var configuration = new ButtonConfiguration();
     config.accept(configuration);
 

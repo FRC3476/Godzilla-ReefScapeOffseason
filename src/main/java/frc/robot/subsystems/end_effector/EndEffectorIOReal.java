@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.ControlModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -43,14 +42,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Current> pivotSupplyCurrentAmps;
   StatusSignal<Temperature> pivotTempCelsius;
   StatusSignal<Double> pivotSetpoint;
-  StatusSignal<ControlModeValue> pivotControlMode;
+  //   StatusSignal<ControlModeValue> pivotControlMode;
 
   public EndEffectorIOReal() {
-    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
+    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
 
-    pivotCancoder = new CANcoder(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.misc_canivore);
+    pivotCancoder = new CANcoder(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.MISC_CANIVORE);
     // PhoenixUtil.tryUntilOk(
     //     5, () ->
     // pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
@@ -61,7 +60,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
     pivotSetpoint = pivotTalonFX.getClosedLoopReference();
-    pivotControlMode = pivotTalonFX.getControlMode();
+    // pivotControlMode = pivotTalonFX.getControlMode();
 
     signals =
         new BaseStatusSignal[] {
@@ -70,8 +69,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
           pivotTorqueCurrentAmps,
           pivotSupplyCurrentAmps,
           pivotTempCelsius,
-          pivotSetpoint,
-          pivotControlMode
+          pivotSetpoint
+          //   ,pivotControlMode
         };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -81,8 +80,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        pivotSetpoint,
-        pivotControlMode);
+        pivotSetpoint
+        // ,pivotControlMode
+        );
     ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX);
     PhoenixUtil.registerSignals(
         true,
@@ -91,8 +91,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        pivotSetpoint,
-        pivotControlMode);
+        pivotSetpoint
+        // ,pivotControlMode
+        );
 
     // Need to do this because the canCoder wraps from its 0 position.
     pivotCancoder.setPosition(
@@ -111,15 +112,17 @@ public class EndEffectorIOReal implements EndEffectorIO {
                 pivotTorqueCurrentAmps,
                 pivotSupplyCurrentAmps,
                 pivotTempCelsius,
-                pivotSetpoint,
-                pivotControlMode),
+                pivotSetpoint
+                // ,pivotControlMode
+                ),
             pivotPosition.getValueAsDouble(),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),
             pivotSupplyCurrentAmps.getValueAsDouble(),
             pivotTempCelsius.getValueAsDouble(),
-            pivotSetpoint.getValueAsDouble(),
-            pivotControlMode.getValue().toString());
+            pivotSetpoint.getValueAsDouble()
+            // ,pivotControlMode.getValue().toString()
+            );
   }
 
   @Override
@@ -163,7 +166,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
 
-    Util.sleep(2000);
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
     Logger.recordOutput(
         "EndEffector/Pivot/absolutePostionBeforeOffset",
         pivotCancoder.getAbsolutePosition().getValueAsDouble());
@@ -176,7 +179,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
 
     pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
-    Util.sleep(2000);
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
     Logger.recordOutput(
         "EndEffector/Pivot/absolutePostionAfterOffset",
         pivotCancoder.getAbsolutePosition().getValueAsDouble());

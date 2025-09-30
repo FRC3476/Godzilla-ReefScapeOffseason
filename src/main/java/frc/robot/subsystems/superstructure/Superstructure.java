@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
 
-  private static Superstructure superstructureSubsystem;
+  // private static Superstructure superstructureSubsystem;
   private EndEffector endEffector;
   private Elevator elevator;
   private SuperstructureStateMachine stateMachine;

@@ -52,9 +52,9 @@ public class ElevatorIOReal implements ElevatorIO {
   private final BaseStatusSignal[] signals;
 
   public ElevatorIOReal() {
-    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID, Constants.misc_canivore);
-    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID, Constants.misc_canivore);
-    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID, Constants.misc_canivore);
+    rightTalon = new TalonFX(ElevatorConstants.elevatorRightID, Constants.MISC_CANIVORE);
+    leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID, Constants.MISC_CANIVORE);
+    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID, Constants.MISC_CANIVORE);
 
     PhoenixUtil.tryUntilOk(
         5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
