@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -43,6 +44,7 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
   public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final long PIVOT_ZERO_SLEEP_MS = 200;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -55,8 +57,10 @@ public final class Constants {
     REPLAY
   }
 
-  public static String drive_canivore = "DRIVE";
-  public static String misc_canivore = "MISC";
+  public static String DRIVE_CANIVORE_NAME = "DRIVE";
+  public static String MISC_CANIVORE_NAME = "MISC";
+  public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
+  public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {

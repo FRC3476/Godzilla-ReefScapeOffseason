@@ -45,9 +45,9 @@ public class FeederIOReal implements FeederIO {
 
   public FeederIOReal() {
     // Initialize hardware
-    rightRoller = new TalonFX(FeederConstants.RIGHT_ID, Constants.misc_canivore);
-    leftRoller = new TalonFX(FeederConstants.LEFT_ID, Constants.misc_canivore);
-    canRange = new CANrange(FeederConstants.CANRANGE_ID, Constants.misc_canivore);
+    rightRoller = new TalonFX(FeederConstants.RIGHT_ID, Constants.MISC_CANIVORE);
+    leftRoller = new TalonFX(FeederConstants.LEFT_ID, Constants.MISC_CANIVORE);
+    canRange = new CANrange(FeederConstants.CANRANGE_ID, Constants.MISC_CANIVORE);
 
     // Apply configs
     PhoenixUtil.tryUntilOk(

@@ -35,11 +35,11 @@ public class ClawIOReal implements ClawIO {
   StatusSignal<Boolean> secondRangeIsTripped;
 
   public ClawIOReal() {
-    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.misc_canivore);
+    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.MISC_CANIVORE);
     firstCoralCANRange =
-        new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.misc_canivore);
+        new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
     secondCoralCANRange =
-        new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.misc_canivore);
+        new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
         5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
 
