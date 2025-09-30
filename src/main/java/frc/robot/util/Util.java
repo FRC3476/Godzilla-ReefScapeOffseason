@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -140,13 +141,20 @@ public class Util {
     return input;
   }
 
-  // @SuppressWarnings("unchecked")
-  // public static <T> Set<T> mergeSets(Set<T>... sets){
-  //   List<Set<T>> setList = List.of(sets);
+  public static <T> Set<T> mergeSets(@SuppressWarnings("unchecked") Set<T>... sets){
+    Set<T> set = new HashSet<>();
+    for (Set<T> s : sets){
+      set.addAll(s);
+    }
+    return set;
+  }
 
-
-
-  // }
+  public static <T> Set<T> removeSets(Set<T> set, @SuppressWarnings("unchecked") Set<T>... sets){
+    for (Set<T> s : sets){
+      set.removeAll(s);
+    }
+    return set;
+  }
 
   // public static void betterCTREencoderZero(CANcoder canCoder) {
   //   PhoenixUtil.tryUntilOk(
