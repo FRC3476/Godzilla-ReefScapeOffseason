@@ -168,32 +168,39 @@ public enum SuperstructureState {
       case L2_AIM: // allowed anywhere
         return EnumSet.allOf(SuperstructureState.class);
       case L3_AIM:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class),
+            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
       case L4_AIM:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getL1States(), getCoralIntakeStates());
       case L1_SCORE:
         return EnumSet.allOf(SuperstructureState.class);
-      case L2_SCORE:
+      case L2_SCORE: //allowed anywhere
         return EnumSet.allOf(SuperstructureState.class);
       case L3_SCORE:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
       case L4_SCORE:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getL1States(), getCoralIntakeStates());
       case ALGAE_HIGH_INTAKE:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getL1States(), getCoralIntakeStates());
       case ALGAE_LOW_INTAKE:
-        return Util.removeSets(
-            EnumSet.allOf(SuperstructureState.class), EnumSet.of(STOW, STOW_CORAL));
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
       case PROCESSOR_AIM:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getAlgaeBargeStates());
       case BARGE_AIM_CENTER:
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+            getCoralIntakeStates());
       case BARGE_AIM_FORWARD:
         return EnumSet.of(BARGE_AIM_CENTER);
       case BARGE_AIM_BACKWARD:
         return EnumSet.of(BARGE_AIM_CENTER);
       default:
-        return EnumSet.allOf(SuperstructureState.class);
+        return EnumSet.of(STOW);
     }
   }
 
