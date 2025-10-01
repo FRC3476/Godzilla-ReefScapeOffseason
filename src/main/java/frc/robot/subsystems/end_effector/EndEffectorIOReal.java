@@ -74,22 +74,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
           //   ,pivotControlMode
         };
 
-    signals =
-        new BaseStatusSignal[] {
-          pivotPosition,
-          pivotAppliedVolts,
-          pivotTorqueCurrentAmps,
-          pivotSupplyCurrentAmps,
-          pivotTempCelsius,
-          rollerVelocityRPS,
-          rollerAppliedVolts,
-          rollerTorqueCurrentAmps,
-          rollerSupplyCurrentAmps,
-          rollerTempCelsius,
-          firstRangeIsTripped,
-          secondRangeIsTripped
-        };
-
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         pivotPosition,
