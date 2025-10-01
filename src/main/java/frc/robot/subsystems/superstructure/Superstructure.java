@@ -6,12 +6,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
-import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
 
-  private static Superstructure superstructureSubsystem;
+  // private static Superstructure superstructureSubsystem;
   private EndEffector endEffector;
   private Elevator elevator;
   private SuperstructureStateMachine stateMachine;
@@ -26,13 +25,17 @@ public class Superstructure extends SubsystemBase {
   @Override
   public void periodic() {
     stateMachine.continueTransition();
+    Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
+    Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
+    Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
+    Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
   }
 
-  private Command setStateCommand(SuperstructureState state, String name) {
+  public Command setStateCommand(SuperstructureState state, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name);
   }
 
-  private Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
+  public Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
         .withName(name);
   }
@@ -45,21 +48,18 @@ public class Superstructure extends SubsystemBase {
 
     // Get subsystem positions
     double elevatorHeight = elevator.getCurrentPosition(); // inches
-    double intakePivotPosition = Intake.getInstance().getCurrentPivotPosition(); // radians
     double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
 
     //  E- elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
     double dynamicLimit =
         Constants.DriveConstants.MAX_TRANSLATIONAL_ACCEL
             - elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
-            - intakePivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_C
             - (endEffectorPivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_A
                     + elevatorHeight)
                 * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_D;
 
     // Log individual components for debugging
     Logger.recordOutput("Superstructure/ElevatorHeight", elevatorHeight);
-    Logger.recordOutput("Superstructure/IntakePivotPosition", intakePivotPosition);
     Logger.recordOutput("Superstructure/EndEffectorPivotPosition", endEffectorPivotPosition);
     Logger.recordOutput("Superstructure/DynamicTranslationalLimit", dynamicLimit);
 
@@ -69,14 +69,12 @@ public class Superstructure extends SubsystemBase {
   public double calculateDynamicRotationalAccelLimit() {
     // Get subsystem positions
     double elevatorHeight = elevator.getCurrentPosition(); // inches
-    double intakePivotPosition = Intake.getInstance().getCurrentPivotPosition(); // radians
     double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
 
     //  E  - elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
     double dynamicLimit =
         Constants.DriveConstants.MAX_ROTATIONAL_ACCEL
             - elevatorHeight * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_B
-            - intakePivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_C
             - (endEffectorPivotPosition * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_A
                     + elevatorHeight)
                 * Constants.DriveConstants.DYNAMIC_ACCEL_WEIGHT_D;

@@ -2,15 +2,14 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -21,6 +20,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.Util;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeIOReal implements IntakeIO {
   protected TalonFX pivotMotor;
@@ -42,7 +43,8 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Current> pivotStatorCurrent;
   private final StatusSignal<Temperature> pivotTemperature;
   private final StatusSignal<AngularVelocity> pivotVelocityRPS;
-  private final StatusSignal<Angle> pivotPositionRad;
+  private final StatusSignal<Angle> pivotPositionRot;
+  private final StatusSignal<Double> pivotPositionSetpointRad;
 
   // Roller motor status signals
   private final StatusSignal<Voltage> rollerVoltage;
@@ -72,62 +74,23 @@ public class IntakeIOReal implements IntakeIO {
 
   public IntakeIOReal() {
     // Initialize hardware
-    pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.misc_canivore);
-    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.misc_canivore);
-    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.misc_canivore);
-    canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.misc_canivore);
-    canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.misc_canivore);
+    pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.MISC_CANIVORE);
+    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.MISC_CANIVORE);
+    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.MISC_CANIVORE);
+    canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.MISC_CANIVORE);
+    canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.MISC_CANIVORE);
 
     // Configure pivot motor
-    var pivotConfig = new TalonFXConfiguration();
-    pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    pivotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.PIVOT_MAX_SUPPLY_CURRENT_LIMIT;
-    pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    pivotConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.PIVOT_MAX_STATOR_CURRENT_LIMIT;
-    pivotConfig.Slot0.kP = IntakeConstants.pivotKP;
-    pivotConfig.Slot0.kI = IntakeConstants.pivotKI;
-    pivotConfig.Slot0.kD = IntakeConstants.pivotKD;
-    pivotConfig.Slot0.kG = IntakeConstants.pivotKG;
-    pivotConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.pivotMAX_ACCEL;
-    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.pivotMAX_VELOCITY;
-    pivotConfig.MotionMagic.MotionMagicJerk = IntakeConstants.pivotJERK;
-    PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotMotor.getConfigurator().apply(IntakeConstants.PIVOT_TALON_CONFIG));
 
     // Configure roller motor
-    var rollerConfig = new TalonFXConfiguration();
-    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
-    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_MAX_STATOR_CURRENT_LIMIT;
-    PhoenixUtil.tryUntilOk(5, () -> rollerMotor.getConfigurator().apply(rollerConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rollerMotor.getConfigurator().apply(IntakeConstants.ROLLER_TALON_CONFIG));
 
     // Configure lvl1blocker motor
-    var lvl1blockerConfig = new TalonFXConfiguration();
-    lvl1blockerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    lvl1blockerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.SupplyCurrentLimit =
-        IntakeConstants.L1_MAX_SUPPLY_CURRENT_LIMIT;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    lvl1blockerConfig.CurrentLimits.StatorCurrentLimit =
-        IntakeConstants.L1_MAX_STATOR_CURRENT_LIMIT;
-    lvl1blockerConfig.Slot0.kP = IntakeConstants.lvl1blockerKP;
-    lvl1blockerConfig.Slot0.kI = IntakeConstants.lvl1blockerKI;
-    lvl1blockerConfig.Slot0.kD = IntakeConstants.lvl1blockerKD;
-    lvl1blockerConfig.Slot0.kG = IntakeConstants.lvl1blockerKG;
-    lvl1blockerConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.lvl1blockerMAX_ACCEL;
-    lvl1blockerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        IntakeConstants.lvl1blockerMAX_VELOCITY;
-    lvl1blockerConfig.MotionMagic.MotionMagicJerk = IntakeConstants.lvl1blockerJERK;
-    PhoenixUtil.tryUntilOk(5, () -> lvl1blockerMotor.getConfigurator().apply(lvl1blockerConfig));
-
-    // Configure CANCoder
-    var canCoderConfig = new CANcoderConfiguration();
-    PhoenixUtil.tryUntilOk(5, () -> canCoder.getConfigurator().apply(canCoderConfig));
+    PhoenixUtil.tryUntilOk(
+        5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
 
     // Configure CANRange
     var canRangeConfig = new CANrangeConfiguration();
@@ -140,8 +103,9 @@ public class IntakeIOReal implements IntakeIO {
     pivotSupplyCurrent = pivotMotor.getSupplyCurrent();
     pivotStatorCurrent = pivotMotor.getStatorCurrent();
     pivotTemperature = pivotMotor.getDeviceTemp();
-    pivotVelocityRPS = pivotMotor.getRotorVelocity();
-    pivotPositionRad = pivotMotor.getRotorPosition();
+    pivotVelocityRPS = pivotMotor.getVelocity();
+    pivotPositionRot = pivotMotor.getPosition();
+    pivotPositionSetpointRad = pivotMotor.getClosedLoopReference();
 
     rollerVoltage = rollerMotor.getMotorVoltage();
     rollerSupplyCurrent = rollerMotor.getSupplyCurrent();
@@ -153,8 +117,8 @@ public class IntakeIOReal implements IntakeIO {
     lvl1blockerSupplyCurrent = lvl1blockerMotor.getSupplyCurrent();
     lvl1blockerStatorCurrent = lvl1blockerMotor.getStatorCurrent();
     lvl1blockerTemperature = lvl1blockerMotor.getDeviceTemp();
-    lvl1blockerVelocityRPS = lvl1blockerMotor.getRotorVelocity();
-    lvl1blockerPositionRad = lvl1blockerMotor.getRotorPosition();
+    lvl1blockerVelocityRPS = lvl1blockerMotor.getVelocity();
+    lvl1blockerPositionRad = lvl1blockerMotor.getPosition();
 
     canCoderPositionRad = canCoder.getAbsolutePosition();
     canCoderVelocityRPS = canCoder.getVelocity();
@@ -170,7 +134,8 @@ public class IntakeIOReal implements IntakeIO {
           pivotStatorCurrent,
           pivotTemperature,
           pivotVelocityRPS,
-          pivotPositionRad,
+          pivotPositionRot,
+          pivotPositionSetpointRad,
           rollerVoltage,
           rollerSupplyCurrent,
           rollerStatorCurrent,
@@ -196,7 +161,8 @@ public class IntakeIOReal implements IntakeIO {
         pivotStatorCurrent,
         pivotTemperature,
         pivotVelocityRPS,
-        pivotPositionRad,
+        pivotPositionRot,
+        pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
         rollerStatorCurrent,
@@ -228,7 +194,8 @@ public class IntakeIOReal implements IntakeIO {
         pivotStatorCurrent,
         pivotTemperature,
         pivotVelocityRPS,
-        pivotPositionRad,
+        pivotPositionRot,
+        pivotPositionSetpointRad,
         rollerVoltage,
         rollerSupplyCurrent,
         rollerStatorCurrent,
@@ -245,6 +212,8 @@ public class IntakeIOReal implements IntakeIO {
         canRangeTripped,
         canRangeSignalStrength,
         canRangeDistance);
+
+    setPositionFromAbsolute();
   }
 
   public void updateInputs(IntakeIOInputs inputs) {
@@ -258,13 +227,14 @@ public class IntakeIOReal implements IntakeIO {
                 pivotStatorCurrent,
                 pivotTemperature,
                 pivotVelocityRPS,
-                pivotPositionRad),
+                pivotPositionRot),
             pivotVoltage.getValueAsDouble(),
             pivotSupplyCurrent.getValueAsDouble(),
             pivotStatorCurrent.getValueAsDouble(),
             pivotTemperature.getValueAsDouble(),
             pivotVelocityRPS.getValueAsDouble(),
-            pivotPositionRad.getValueAsDouble());
+            pivotPositionRot.getValueAsDouble(),
+            pivotPositionSetpointRad.getValueAsDouble());
 
     inputs.rollerData =
         new RollerData(
@@ -327,7 +297,7 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void setPivotPosition(double positionRad) {
-    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad));
+    pivotMotor.setControl(pivotPositionRequest.withPosition(positionRad / 2 / Math.PI));
   }
 
   @Override
@@ -336,16 +306,65 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
-  public void updatePivotKG(double kG) {
+  public void updatePivotPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {
     var pivotConfig = new TalonFXConfiguration();
     pivotMotor.getConfigurator().refresh(pivotConfig);
+    pivotConfig.Slot0.kP = kP;
+    pivotConfig.Slot0.kI = kI;
+    pivotConfig.Slot0.kD = kD;
     pivotConfig.Slot0.kG = kG;
+    pivotConfig.Slot0.kS = kS;
+    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
+    pivotConfig.MotionMagic.MotionMagicAcceleration = accel;
+    pivotConfig.MotionMagic.MotionMagicJerk = jerk;
     PhoenixUtil.tryUntilOk(5, () -> pivotMotor.getConfigurator().apply(pivotConfig, 0.050));
   }
 
   @Override
   public boolean checkRollerStalled() {
     return MotorStallDetection.isMotorStalled(
-        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT, IntakeConstants.ROLLER_STALLED_RPS);
+        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT_A, IntakeConstants.ROLLER_STALLED_RPS);
+  }
+
+  @Override
+  public void setPivotZero() {
+    // Configure CANCoder
+    PhoenixUtil.tryUntilOk(
+        5, () -> canCoder.getConfigurator().apply(IntakeConstants.CANCODER_CONFIG));
+
+    canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
+    Logger.recordOutput(
+        "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+
+    double intakeUpAbsoluteRotations =
+        Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION) * IntakeConstants.PIVOT_STM;
+    double magnetOffset =
+        intakeUpAbsoluteRotations - canCoder.getAbsolutePosition().getValueAsDouble();
+    magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+    canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
+    Logger.recordOutput(
+        "Intake/absolutePostionAfterOffset", canCoder.getAbsolutePosition().getValueAsDouble());
+    setPositionFromAbsolute();
+  }
+
+  private void setPositionFromAbsolute() {
+    // Need to do this because the canCoder wraps from its 0 position.
+    canCoder.setPosition(
+        canCoder.getAbsolutePosition().getValueAsDouble()
+            + Math.round(
+                Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION)
+                    * IntakeConstants.PIVOT_STM));
   }
 }

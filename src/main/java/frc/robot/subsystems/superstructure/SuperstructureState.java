@@ -7,6 +7,9 @@ import java.util.Set;
 // This stores what subsystem values are in each state
 
 public enum SuperstructureState {
+  NONE(
+      Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN),
@@ -49,6 +52,15 @@ public enum SuperstructureState {
   L4_SCORE(
       Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+  L2_FADEAWAY(
+      Constants.SuperstructureConstants.L2_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+  L3_FADEAWAY(
+      Constants.SuperstructureConstants.L3_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+  L4_FADEAWAY(
+      Constants.SuperstructureConstants.L4_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
   ALGAE_HIGH_INTAKE(
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
@@ -86,6 +98,8 @@ public enum SuperstructureState {
 
   public boolean isCoralState() {
     switch (this) {
+      case NONE:
+        return false;
       case STOW_CORAL,
           INTAKE_CORAL,
           INTAKE_CORAL_L1,
@@ -106,8 +120,11 @@ public enum SuperstructureState {
   public Set<SuperstructureState> getAllowedStates() {
 
     Set<SuperstructureState> allowedStates = EnumSet.allOf(SuperstructureState.class);
+    allowedStates.remove(SuperstructureState.NONE);
 
     switch (this) {
+      case NONE:
+        return allowedStates;
       case STOW:
         return allowedStates;
       case STOW_CORAL:

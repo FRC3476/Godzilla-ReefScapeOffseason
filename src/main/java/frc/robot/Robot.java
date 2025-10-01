@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LoopTimingLogger;
 import frc.robot.util.MagicVirtualSubsystem;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -62,7 +66,43 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter());
+        String LOG_DIRECTORY = "/home/lvuser/logs";
+        long MIN_FREE_SPACE = 1000000000;
+        var directory = new File(LOG_DIRECTORY);
+        if (!directory.exists()) {
+          directory.mkdir();
+        }
+
+        // ensure that there is enough space on the roboRIO to log data
+        if (directory.getFreeSpace() < MIN_FREE_SPACE) {
+          var files = directory.listFiles();
+          if (files != null) {
+            // Sorting the files by name will ensure that the oldest files are deleted first
+            files = Arrays.stream(files).sorted().toArray(File[]::new);
+
+            long bytesToDelete = MIN_FREE_SPACE - directory.getFreeSpace();
+
+            for (File file : files) {
+              if (file.getName().endsWith(".wpilog")) {
+                try {
+                  bytesToDelete -= Files.size(file.toPath());
+                } catch (IOException e) {
+                  System.out.println("Failed to get size of file " + file.getName());
+                  continue;
+                }
+                if (file.delete()) {
+                  System.out.println("Deleted " + file.getName() + " to free up space");
+                } else {
+                  System.out.println("Failed to delete " + file.getName());
+                }
+                if (bytesToDelete <= 0) {
+                  break;
+                }
+              }
+            }
+          }
+        }
+        Logger.addDataReceiver(new WPILOGWriter(LOG_DIRECTORY));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -147,7 +187,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     LoopTimingLogger.startTiming("DisabledPeriodic");
-
     LoopTimingLogger.endTiming("DisabledPeriodic");
   }
 

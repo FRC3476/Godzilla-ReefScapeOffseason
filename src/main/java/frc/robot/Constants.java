@@ -13,10 +13,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,6 +44,7 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
   public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final long PIVOT_ZERO_SLEEP_MS = 200;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -53,8 +57,10 @@ public final class Constants {
     REPLAY
   }
 
-  public static String drive_canivore = "DRIVE";
-  public static String misc_canivore = "MISC";
+  public static String DRIVE_CANIVORE_NAME = "DRIVE";
+  public static String MISC_CANIVORE_NAME = "MISC";
+  public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
+  public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
@@ -74,7 +80,7 @@ public final class Constants {
 
     // Slip Current Characterization Constants (Wall Test)
     public static final double SLIP_START_DELAY = 0.0; // Secs
-    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_RAMP_RATE = -0.5; // Volts/Sec
     public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
     public static final double SLIP_VELOCITY_THRESHOLD =
         3476.0; // Velocity derivative indicating wheels started spinning
@@ -107,7 +113,7 @@ public final class Constants {
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
-        Units.degreesToRadians(-26.9162484); // Intake down angle
+        Units.degreesToRadians(-40); // Intake down angle
     public static final double PIVOT_UP_POSITION =
         Units.degreesToRadians(104.5837512); // Intake up angle
     public static final double PIVOT_SCORING_POSITION =
@@ -122,6 +128,7 @@ public final class Constants {
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
 
     public enum IntakeState {
+      NONE,
       STOW,
       INTAKE_L1,
       INTAKE,
@@ -134,8 +141,10 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO =
-        1.0 / 61.71; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_GEAR_RATIO = 1.0 / 61.71;
+    public static final double PIVOT_RTS = 16; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_STM = 54 / 12;
+
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
 
@@ -156,15 +165,16 @@ public final class Constants {
     public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
-    public static final double pivotKG = 0.0; // Gravity feedforward
-    public static final double pivotKP = 0.0; // Proportional gain
-    public static final double pivotKI = 0.0; // Integral gain
-    public static final double pivotKD = 0.0; // Derivative gain
+    public static final double Tuneable_pivotKP = 50; // Proportional gain
+    public static final double Tuneable_pivotKI = 0.0; // Integral gain
+    public static final double Tuneable_pivotKD = 0.0; // Derivative gain
+    public static final double Tuneable_pivotKG = 0.425; // Gravity feedforward
+    public static final double Tuneable_pivotKS = 0.125; // Gravity feedforward
 
     // Motion constraints
-    public static final double pivotMAX_ACCEL = 0.0; // rad/s^2
-    public static final double pivotMAX_VELOCITY = 0.0; // rad/s
-    public static final double pivotJERK = 0.0; // rad/s^3
+    public static final double Tuneable_pivot_ACCEL = 1000; // rad/s^2
+    public static final double Tuneable_pivot_VELOCITY = 50; // rad/s
+    public static final double Tuneable_pivotJERK = 1000; // rad/s^3
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
@@ -181,9 +191,79 @@ public final class Constants {
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
 
     // Stall detection
-    public static final double ROLLER_STALLED_CURRENT = 0.0;
-    public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double ROLLER_STALLED_CURRENT_A = 1000;
+    public static final double ROLLER_STALLED_RPS = 0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
+
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(Tuneable_pivotKP)
+                    .withKI(Tuneable_pivotKI)
+                    .withKD(Tuneable_pivotKD)
+                    .withKG(Tuneable_pivotKG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(Tuneable_pivot_VELOCITY)
+                    .withMotionMagicAcceleration(Tuneable_pivot_ACCEL)
+                    .withMotionMagicJerk(Tuneable_pivotJERK))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_MAX_SUPPLY_CURRENT_LIMIT));
+
+    public static final CANcoderConfiguration CANCODER_CONFIG =
+        new CANcoderConfiguration()
+            .withMagnetSensor(
+                new MagnetSensorConfigs()
+                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                    .withAbsoluteSensorDiscontinuityPoint(0.5));
+
+    public static final TalonFXConfiguration L1Bar_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(lvl1blockerKP)
+                    .withKI(lvl1blockerKI)
+                    .withKD(lvl1blockerKD)
+                    .withKG(lvl1blockerKG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(lvl1blockerMAX_VELOCITY)
+                    .withMotionMagicAcceleration(lvl1blockerMAX_ACCEL)
+                    .withMotionMagicJerk(lvl1blockerJERK))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(L1_MAX_SUPPLY_CURRENT_LIMIT));
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_MAX_SUPPLY_CURRENT_LIMIT));
   }
 
   // ====================Elevator (4_)====================
@@ -192,20 +272,23 @@ public final class Constants {
     public static final int elevatorLeftID = 41;
     public static final int elevatorExtraID = 42;
 
-    public static final double ELEVATOR_kP = 0;
-    public static final double ELEVATOR_kI = 0;
-    public static final double ELEVATOR_kD = 0;
-    public static final double ELEVATOR_kG = 0;
+    public static final double Tunable_ELEVATOR_kP = 2;
+    public static final double Tunable_ELEVATOR_kI = 0;
+    public static final double Tunable_ELEVATOR_kD = 0.1;
+    public static final double Tunable_ELEVATOR_kG = 0.04;
+    public static final double Tunable_ELEVATOR_kS = 0.2;
 
-    public static final double ELEVATOR_Velo = 0;
-    public static final double ELEVATOR_Accel = 0;
-    public static final double ELEVATOR_Jerk = 0;
+    public static final double Tunable_ELEVATOR_Velo = 300;
+    public static final double Tunable_ELEVATOR_Accel = 3000;
+    public static final double Tunable_ELEVATOR_Jerk = 10000;
 
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+    public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
+        1 / (1.8427325868896291219526481028964);
 
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
@@ -215,16 +298,20 @@ public final class Constants {
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(ELEVATOR_kP)
-                    .withKI(ELEVATOR_kI)
-                    .withKD(ELEVATOR_kD)
-                    .withKG(ELEVATOR_kG)
+                    .withKP(Tunable_ELEVATOR_kP)
+                    .withKI(Tunable_ELEVATOR_kI)
+                    .withKD(Tunable_ELEVATOR_kD)
+                    .withKG(Tunable_ELEVATOR_kG)
                     .withGravityType(GravityTypeValue.Elevator_Static))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(ELEVATOR_Velo)
-                    .withMotionMagicAcceleration(ELEVATOR_Accel)
-                    .withMotionMagicJerk(ELEVATOR_Jerk))
+                    .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
+                    .withMotionMagicAcceleration(Tunable_ELEVATOR_Accel)
+                    .withMotionMagicJerk(Tunable_ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
@@ -313,17 +400,19 @@ public final class Constants {
     public static final int rollerID = 51;
     public static final int FIRST_CORAL_CANRANGE_ID = 52;
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
+    public static final int PIVOT_CANCODER_ID = 54;
 
-    public static final double PIVOT_kP = 0;
-    public static final double PIVOT_kI = 0;
-    public static final double PIVOT_kD = 0;
-    public static final double PIVOT_kG = 0;
+    public static final double Tunable_PIVOT_kP = 35;
+    public static final double Tunable_PIVOT_kI = 0;
+    public static final double Tunable_PIVOT_kD = 0.5;
+    public static final double Tunable_PIVOT_kG = 0.615;
+    public static final double Tunable_PIVOT_kS = 0.135;
 
-    public static final double PIVOT_Velo = 0;
-    public static final double PIVOT_Accel = 0;
-    public static final double PIVOT_Jerk = 0;
+    public static final double Tunable_PIVOT_Velo = 1000;
+    public static final double Tunable_PIVOT_Accel = 12;
+    public static final double Tunable_PIVOT_Jerk = 1000;
 
-    public static final double PIVOT_CURRENT_LIMIT_AMPS = 0;
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
@@ -331,19 +420,21 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
 
-    public static final double PIVOT_GEAR_RATIO = 1.0 / 40;
+    public static final double PIVOT_RTS = 10;
+    public static final double PIVOT_STM = 4;
+    public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
     // ========End Effector Constant Positions========
     // Pivot positions in radians
-    public static final double IDLE_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
+    public static final double IDLE_ANGLE_RAD = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-52.0336836);
     public static final double ALGAE_IDLE_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
     public static final double PROCESSOR_ANGLE_RAD = Units.degreesToRadians(-38.3080987);
@@ -353,43 +444,83 @@ public final class Constants {
     public static final double ALGAE_REMOVAL_ANGLE_RAD = Units.degreesToRadians(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_RAD = Units.degreesToRadians(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_RAD = Units.degreesToRadians(119.8473749);
+    public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
 
     // Hardstop angles
     public static final double UPPER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(119.8473749);
-    public static final double LOWER_HARDSTOP_ANGLE_RAD = Units.degreesToRadians(-95.1526249);
-
-    // Safe angle range (for elevator up/down movement)
-    public static final double SAFE_ANGLE_UPPER_RAD = Units.degreesToRadians(53.9126895);
-    public static final double SAFE_ANGLE_LOWER_RAD = Units.degreesToRadians(-61.1115004);
-
+    public static final double LOWER_HARDSTOP_ANGLE_RAD = EndEffectorConstants.MIN_ANGLE_RADIAN;
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_RADIAN = Units.degreesToRadians(119.8473749);
-    public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-95.1526249);
-    public static final double MAX_SAFE_ANGLE_RADIAN = Units.degreesToRadians(53.9126895);
-    public static final double MIN_SAFE_ANGLE_RADIAN = Units.degreesToRadians(-61.1115004);
+    public static final double MIN_ANGLE_RADIAN = Units.degreesToRadians(-92.16);
+    public static final double MAX_SAFE_ANGLE_RADIAN =
+        Units.degreesToRadians(35); // old value 53.9126895
+    public static final double MIN_SAFE_ANGLE_RADIAN =
+        Units.degreesToRadians(-21); // old value -61.1115004
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(PIVOT_kP)
-                    .withKI(PIVOT_kI)
-                    .withKD(PIVOT_kD)
-                    .withKG(PIVOT_kG)
+                    .withKP(Tunable_PIVOT_kP)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(PIVOT_Velo)
-                    .withMotionMagicAcceleration(PIVOT_Accel)
-                    .withMotionMagicJerk(PIVOT_Jerk))
+                    .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
+                    .withMotionMagicAcceleration(Tunable_PIVOT_Accel)
+                    .withMotionMagicJerk(Tunable_PIVOT_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final TalonFXConfiguration PIVOT_TALON_MOVING_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(Tunable_PIVOT_kP)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
+                    .withMotionMagicAcceleration(Tunable_PIVOT_Accel)
+                    .withMotionMagicJerk(Tunable_PIVOT_Jerk))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withRotorToSensorRatio(PIVOT_RTS)
+                    .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
+                    .withSensorToMechanismRatio(PIVOT_STM)
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
+        new CANcoderConfiguration()
+            .withMagnetSensor(
+                new MagnetSensorConfigs()
+                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                    .withAbsoluteSensorDiscontinuityPoint(0.5));
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -416,13 +547,33 @@ public final class Constants {
     public static final double reduction = (23.11 / 1);
 
     public static final int ID = 60;
-    public static final double GearRatio = 0.0;
-    public static final double motorIDS = 0.0;
-    public static final double maxcurrentLimit = 0.0;
-    public static final double kG = 0.0;
-    public static final double kP = 0.0;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
+
+    public static final double CLIMB_DEPLOY_POSITION = 0.0;
+    public static final double CLIMB_CLIMB_POSITION = 0.0;
+    public static final double STALL_AMPS = 1000.0;
+    public static final double STALL_VELOCITY = 0.0;
+
+    public static final double PIVOT_kP = 0;
+    public static final double PIVOT_kI = 0;
+    public static final double PIVOT_kD = 0;
+    public static final double PIVOT_kG = 0;
+
+    public static final double PIVOT_Velo = 0;
+    public static final double PIVOT_Accel = 0;
+    public static final double PIVOT_Jerk = 0;
+
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
+
+    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Feeder (2_)====================
@@ -437,8 +588,8 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 0;
-    public static final double STALLED_CURRENT = 0.0;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double STALLED_CURRENT = 1000.0;
     public static final double STALLED_RPS = 0.0;
     public static final double DEJAM_DURATION_SECONDS = 0.05;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
@@ -454,7 +605,7 @@ public final class Constants {
                     .withKA(ROLLER_kA))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -530,12 +681,12 @@ public final class Constants {
 
   public static class SuperstructureConstants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double STOW_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double STOW_ENDEFFECTOR_ROTATION_RADIAN = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double STOW_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double STOW_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0.0;
@@ -545,62 +696,76 @@ public final class Constants {
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double INTAKE_CORAL_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(-95.1526249);
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double INTAKE_CORAL_L1_INTAKE_ROTATION_RADIAN =
         Units.degreesToRadians(-26.9162484);
 
     public static double FEED_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double FEED_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double FEED_ENDEFFECTOR_ROTATION_RADIAN = EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double FEED_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN =
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L3_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = 53.4375;
     // Away from reef 53.4375
     public static double L4_AIM_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0.0;
-    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-95.1526249);
+    public static double L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN =
+        EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(14.41811);
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(30.029785);
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L3_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = Units.degreesToRadians(53.4375);
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = 53.4375;
     // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
+
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
+
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
+
+    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = 53.4375;
+    public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
+        Units.degreesToRadians(53.9126895);
 
     public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 45.325558;
     public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN =
@@ -623,7 +788,7 @@ public final class Constants {
     public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(43.8547133);
     public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN =
-        Units.degreesToRadians(119.8473749);
+        EndEffectorConstants.MAX_ANGLE_RADIAN;
     public static double BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN =
         (BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN
                 + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN)

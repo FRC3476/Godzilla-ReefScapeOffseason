@@ -18,11 +18,9 @@ import org.littletonrobotics.junction.Logger;
 public class EndEffectorIOSim extends EndEffectorIOReal {
 
   protected DCMotorSim pivotSim;
-  protected DCMotorSim rollerSim;
   protected Notifier simNotifier;
 
   private final TalonFXSimState pivotSimState;
-  private final TalonFXSimState rollerSimState;
 
   protected double lastUpdateTimestamp = 0.0;
 
@@ -37,17 +35,10 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
             LinearSystemId.createDCMotorSystem(
                 DCMotor.getKrakenX60(1), 0.01, 1.0 / EndEffectorConstants.PIVOT_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
-    rollerSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1), 0.01, 1.0 / EndEffectorConstants.CORAL_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
 
     pivotTalonFX.getSimState().Orientation = ChassisReference.Clockwise_Positive;
-    rollerTalonFX.getSimState().Orientation = ChassisReference.Clockwise_Positive;
 
     pivotSimState = pivotTalonFX.getSimState();
-    rollerSimState = rollerTalonFX.getSimState();
 
     simNotifier =
         new Notifier(
@@ -59,34 +50,21 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
 
   private void updateSimState() {
     pivotSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    rollerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     double pivotVoltage = pivotSimState.getMotorVoltage();
-    double rollerVoltage = rollerSimState.getMotorVoltage();
 
     pivotSim.setInputVoltage(pivotVoltage);
-    rollerSim.setInputVoltage(rollerVoltage);
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(rollerSim.getCurrentDrawAmps()));
 
     double timestamp = Timer.getFPGATimestamp();
     double dt = timestamp - lastUpdateTimestamp;
     lastUpdateTimestamp = timestamp;
 
     pivotSim.update(dt);
-    rollerSim.update(dt);
 
     updatePivotSimStates();
-    updateRollerSimStates();
-
-    firstCoralCANRange.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
-    secondCoralCANRange.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    firstCoralCANRange.getSimState().setDistance(0.1);
-    secondCoralCANRange.getSimState().setDistance(0.1);
 
     logSimulationData();
   }
@@ -108,20 +86,6 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
         "EndEffector/Sim/SimPivotVelocityRadS", pivotSim.getAngularVelocityRadPerSec());
   }
 
-  private void updateRollerSimStates() {
-    double simPositionRads = rollerSim.getAngularPositionRad();
-    Logger.recordOutput("EndEffector/Sim/SimRollerPositionRadians", simPositionRads);
-    double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / EndEffectorConstants.CORAL_GEAR_RATIO;
-    rollerSimState.setRawRotorPosition(rotorPosition);
-    Logger.recordOutput("EndEffector/Sim/setRollerRawRotorPosition", rotorPosition);
-    double rotorVel =
-        Units.radiansToRotations(rollerSim.getAngularVelocityRadPerSec())
-            / EndEffectorConstants.CORAL_GEAR_RATIO;
-    rollerSimState.setRotorVelocity(rotorVel);
-    Logger.recordOutput(
-        "EndEffector/Sim/SimRollerVelocityRadS", rollerSim.getAngularVelocityRadPerSec());
-  }
 
   private void logSimulationData() {
     // Log pivot simulation data
@@ -129,15 +93,10 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
     Logger.recordOutput("Intake/Sim/Pivot/VelocityRPS", pivotSim.getAngularVelocityRadPerSec());
     Logger.recordOutput("Intake/Sim/Pivot/CurrentAmps", pivotSim.getCurrentDrawAmps());
     Logger.recordOutput("Intake/Sim/Pivot/AppliedVoltage", pivotSimState.getMotorVoltage());
-
-    // Log roller simulation data
-    Logger.recordOutput("Intake/Sim/Roller/PositionRad", rollerSim.getAngularPositionRad());
-    Logger.recordOutput("Intake/Sim/Roller/VelocityRPS", rollerSim.getAngularVelocityRadPerSec());
-    Logger.recordOutput("Intake/Sim/Roller/CurrentAmps", rollerSim.getCurrentDrawAmps());
-    Logger.recordOutput("Intake/Sim/Roller/AppliedVoltage", rollerSimState.getMotorVoltage());
   }
 
   public void close() {
     simNotifier.close();
   }
+
 }

@@ -1,43 +1,38 @@
 package frc.robot.subsystems.end_effector;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Rotation;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
-import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.Util;
+import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
   protected TalonFX pivotTalonFX;
-  protected TalonFX rollerTalonFX;
-  protected CANrange firstCoralCANRange;
-  protected CANrange secondCoralCANRange;
+  protected CANcoder pivotCancoder;
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
-  private VoltageOut roller_m_request =
+  private VoltageOut pivotVoltageRequest =
       new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
-      
-  private VoltageOut pivotVoltageRequest =
-  new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private final BaseStatusSignal[] signals;
 
   // =====Logged Values=====
   StatusSignal<Angle> pivotPosition;
@@ -45,45 +40,39 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Current> pivotTorqueCurrentAmps;
   StatusSignal<Current> pivotSupplyCurrentAmps;
   StatusSignal<Temperature> pivotTempCelsius;
-
-  StatusSignal<AngularVelocity> rollerVelocityRPS;
-  StatusSignal<Voltage> rollerAppliedVolts;
-  StatusSignal<Current> rollerTorqueCurrentAmps;
-  StatusSignal<Current> rollerSupplyCurrentAmps;
-  StatusSignal<Temperature> rollerTempCelsius;
-
-  StatusSignal<Boolean> firstRangeIsTripped;
-  StatusSignal<Boolean> secondRangeIsTripped;
+  StatusSignal<Double> pivotSetpoint;
+  //   StatusSignal<ControlModeValue> pivotControlMode;
 
   private final BaseStatusSignal[] signals;
 
   public EndEffectorIOReal() {
-    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.misc_canivore);
-    rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.misc_canivore);
-    firstCoralCANRange =
-        new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.misc_canivore);
-    secondCoralCANRange =
-        new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.misc_canivore);
-
+    pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
         5, () -> pivotTalonFX.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));
-    PhoenixUtil.tryUntilOk(
-        5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
+
+    pivotCancoder = new CANcoder(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.MISC_CANIVORE);
+    // PhoenixUtil.tryUntilOk(
+    //     5, () ->
+    // pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
 
     pivotPosition = pivotTalonFX.getPosition();
     pivotAppliedVolts = pivotTalonFX.getMotorVoltage();
     pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
+    pivotSetpoint = pivotTalonFX.getClosedLoopReference();
+    // pivotControlMode = pivotTalonFX.getControlMode();
 
-    rollerVelocityRPS = rollerTalonFX.getRotorVelocity();
-    rollerAppliedVolts = rollerTalonFX.getMotorVoltage();
-    rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
-    rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
-    rollerTempCelsius = rollerTalonFX.getDeviceTemp();
-
-    firstRangeIsTripped = firstCoralCANRange.getIsDetected();
-    secondRangeIsTripped = secondCoralCANRange.getIsDetected();
+    signals =
+        new BaseStatusSignal[] {
+          pivotPosition,
+          pivotAppliedVolts,
+          pivotTorqueCurrentAmps,
+          pivotSupplyCurrentAmps,
+          pivotTempCelsius,
+          pivotSetpoint
+          //   ,pivotControlMode
+        };
 
     signals =
         new BaseStatusSignal[] {
@@ -108,15 +97,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        rollerVelocityRPS,
-        rollerAppliedVolts,
-        rollerTorqueCurrentAmps,
-        rollerSupplyCurrentAmps,
-        rollerTempCelsius,
-        firstRangeIsTripped,
-        secondRangeIsTripped);
-    ParentDevice.optimizeBusUtilizationForAll(
-        pivotTalonFX, rollerTalonFX, firstCoralCANRange, secondCoralCANRange);
+        pivotSetpoint
+        // ,pivotControlMode
+        );
+    ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX);
     PhoenixUtil.registerSignals(
         true,
         pivotPosition,
@@ -124,13 +108,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotTorqueCurrentAmps,
         pivotSupplyCurrentAmps,
         pivotTempCelsius,
-        rollerVelocityRPS,
-        rollerAppliedVolts,
-        rollerTorqueCurrentAmps,
-        rollerSupplyCurrentAmps,
-        rollerTempCelsius,
-        firstRangeIsTripped,
-        secondRangeIsTripped);
+        pivotSetpoint
+        // ,pivotControlMode
+        );
+
+    // Need to do this because the canCoder wraps from its 0 position.
+    setPositionFromAbsolute();
   }
 
   @Override
@@ -144,36 +127,18 @@ public class EndEffectorIOReal implements EndEffectorIO {
                 pivotAppliedVolts,
                 pivotTorqueCurrentAmps,
                 pivotSupplyCurrentAmps,
-                pivotTempCelsius),
-            Units.rotationsToRadians(pivotPosition.getValueAsDouble()),
+                pivotTempCelsius,
+                pivotSetpoint
+                // ,pivotControlMode
+                ),
+            pivotPosition.getValueAsDouble(),
             pivotAppliedVolts.getValueAsDouble(),
             pivotTorqueCurrentAmps.getValueAsDouble(),
             pivotSupplyCurrentAmps.getValueAsDouble(),
-            pivotTempCelsius.getValueAsDouble());
-    inputs.rollerData =
-        new EE_RollerData(
-            BaseStatusSignal.isAllGood(
-                rollerVelocityRPS,
-                rollerAppliedVolts,
-                rollerTorqueCurrentAmps,
-                rollerSupplyCurrentAmps,
-                rollerTempCelsius),
-            rollerVelocityRPS.getValueAsDouble(),
-            rollerAppliedVolts.getValueAsDouble(),
-            rollerTorqueCurrentAmps.getValueAsDouble(),
-            rollerSupplyCurrentAmps.getValueAsDouble(),
-            rollerTempCelsius.getValueAsDouble());
-    inputs.firstCANRangeData =
-        new EE_CANRangeData(
-            BaseStatusSignal.isAllGood(firstRangeIsTripped), firstRangeIsTripped.getValue());
-    inputs.secondCANRangeData =
-        new EE_CANRangeData(
-            BaseStatusSignal.isAllGood(secondRangeIsTripped), secondRangeIsTripped.getValue());
-  }
-
-  @Override
-  public void setRollerVoltage(double voltage) {
-    rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+            pivotTempCelsius.getValueAsDouble(),
+            pivotSetpoint.getValueAsDouble()
+            // ,pivotControlMode.getValue().toString()
+            );
   }
 
   @Override
@@ -183,14 +148,66 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   @Override
   public void setPivotPosition(double position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(Rotation.convertFrom(position, Degree)));
+    pivotTalonFX.setControl(pivot_m_request.withPosition(position / 2 / Math.PI));
   }
 
   @Override
-  public boolean checkRollerStalled() {
-    return MotorStallDetection.isMotorStalled(
-        rollerTalonFX,
-        EndEffectorConstants.ROLLER_STALLED_CURRENT,
-        EndEffectorConstants.ROLLER_STALLED_RPS);
+  public void updatePivotPIDFF(
+      double kP,
+      double kI,
+      double kD,
+      double kG,
+      double kS,
+      double velo,
+      double accel,
+      double jerk) {
+    var pivotConfig = new TalonFXConfiguration();
+    pivotTalonFX.getConfigurator().refresh(pivotConfig);
+    pivotConfig.Slot0.kP = kP;
+    pivotConfig.Slot0.kI = kI;
+    pivotConfig.Slot0.kD = kD;
+    pivotConfig.Slot0.kG = kG;
+    pivotConfig.Slot0.kS = kS;
+    pivotConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
+    pivotConfig.MotionMagic.MotionMagicAcceleration = accel;
+    pivotConfig.MotionMagic.MotionMagicJerk = jerk;
+    PhoenixUtil.tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.050));
+  }
+
+  @Override
+  public void setPivotZero() {
+    // Configure CANCoder
+    PhoenixUtil.tryUntilOk(
+        5, () -> pivotCancoder.getConfigurator().apply(EndEffectorConstants.PIVOT_CANCODER_CONFIG));
+
+    pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
+
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
+    Logger.recordOutput(
+        "EndEffector/Pivot/absolutePostionBeforeOffset",
+        pivotCancoder.getAbsolutePosition().getValueAsDouble());
+
+    double pivotDownAbsoluteRotations =
+        Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
+            * EndEffectorConstants.PIVOT_STM;
+    double magnetOffset =
+        pivotDownAbsoluteRotations - pivotCancoder.getAbsolutePosition().getValueAsDouble();
+    magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
+
+    pivotCancoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
+    Logger.recordOutput(
+        "EndEffector/Pivot/absolutePostionAfterOffset",
+        pivotCancoder.getAbsolutePosition().getValueAsDouble());
+    setPositionFromAbsolute();
+  }
+
+  private void setPositionFromAbsolute() {
+    // Need to do this because the canCoder wraps from its 0 position.
+    pivotCancoder.setPosition(
+        pivotCancoder.getAbsolutePosition().getValueAsDouble()
+            + Math.round(
+                Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
+                    * EndEffectorConstants.PIVOT_STM));
   }
 }
