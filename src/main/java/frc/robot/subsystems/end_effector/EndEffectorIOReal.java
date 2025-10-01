@@ -23,8 +23,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
-  private TalonFX pivotTalonFX;
-  private CANcoder pivotCancoder;
+  protected TalonFX pivotTalonFX;
+  protected CANcoder pivotCancoder;
 
   private MotionMagicVoltage pivot_m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
@@ -101,6 +101,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+
     inputs.pivotData =
         new EE_PivotData(
             BaseStatusSignal.isAllGood(
