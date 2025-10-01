@@ -90,7 +90,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isInTolerance() {
     return MathUtil.isNear(
-        setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+        setpoint, inputs.rightMotorData.position(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {
@@ -119,7 +119,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getCurrentPosition() {
-    return inputs.data.rightPosition();
+    return inputs.rightMotorData.position();
   }
 
   private boolean checkForJam() {
