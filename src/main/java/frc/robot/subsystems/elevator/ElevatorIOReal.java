@@ -126,7 +126,7 @@ public class ElevatorIOReal implements ElevatorIO {
         extraSetPosition);
     ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon, extraTalon);
     PhoenixUtil.registerSignals(
-        false,
+        true,
         rightPosition,
         rightAppliedVolts,
         rightTorqueCurrentAmps,

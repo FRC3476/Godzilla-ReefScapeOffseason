@@ -5,8 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FeederIO {
   @AutoLog
   class FeederIOInputs {
-    public F_RollerData rightRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
-    public F_RollerData leftRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
+    public F_RollerData rightRollerData = new F_RollerData(false, 0, 0, 0, 0, 0, false);
+    public F_RollerData leftRollerData = new F_RollerData(false, 0, 0, 0, 0, 0, false);
     public F_CanRangeData canRangeData = new F_CanRangeData(false, false, 0, 0);
   }
 
@@ -17,7 +17,8 @@ public interface FeederIO {
       double supplyCurrent,
       double statorCurrent,
       double temperature,
-      double velocityRPS) {}
+      double velocityRPS,
+      boolean isMotorStalled) {}
 
   record F_CanRangeData(
       boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
@@ -30,5 +31,9 @@ public interface FeederIO {
 
   default boolean checkMotorsStalled() {
     return false;
+  }
+
+  default double whichMotorStalled() {
+    return 0;
   }
 }

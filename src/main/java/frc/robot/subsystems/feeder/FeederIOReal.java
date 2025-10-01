@@ -1,5 +1,7 @@
 package frc.robot.subsystems.feeder;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -43,6 +45,8 @@ public class FeederIOReal implements FeederIO {
   private final StatusSignal<Double> canRangeSignalStrength;
   private final StatusSignal<Distance> canRangeDistance;
 
+  private final BaseStatusSignal[] signals;
+
   public FeederIOReal() {
     // Initialize hardware
     rightRoller = new TalonFX(FeederConstants.RIGHT_ID, Constants.MISC_CANIVORE);
@@ -75,6 +79,23 @@ public class FeederIOReal implements FeederIO {
     canRangeSignalStrength = canRange.getSignalStrength();
     canRangeDistance = canRange.getDistance();
 
+    signals =
+        new BaseStatusSignal[] {
+          rightRollerVoltage,
+          rightRollerSupplyCurrent,
+          rightRollerStatorCurrent,
+          rightRollerTemperature,
+          rightRollerVelocityRPS,
+          leftRollerVoltage,
+          leftRollerSupplyCurrent,
+          leftRollerStatorCurrent,
+          leftRollerTemperature,
+          leftRollerVelocityRPS,
+          canRangeTripped,
+          canRangeSignalStrength,
+          canRangeDistance
+        };
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         rightRollerVoltage,
@@ -96,7 +117,7 @@ public class FeederIOReal implements FeederIO {
     canRange.optimizeBusUtilization();
 
     PhoenixUtil.registerSignals(
-        false,
+        true,
         rightRollerVoltage,
         rightRollerSupplyCurrent,
         rightRollerStatorCurrent,
@@ -113,6 +134,7 @@ public class FeederIOReal implements FeederIO {
   }
 
   public void updateInputs(FeederIOInputs inputs) {
+    BaseStatusSignal.refreshAll(signals);
     inputs.rightRollerData =
         new F_RollerData(
             BaseStatusSignal.isAllGood(
@@ -125,7 +147,9 @@ public class FeederIOReal implements FeederIO {
             rightRollerSupplyCurrent.getValueAsDouble(),
             rightRollerStatorCurrent.getValueAsDouble(),
             rightRollerTemperature.getValueAsDouble(),
-            rightRollerVelocityRPS.getValueAsDouble());
+            rightRollerVelocityRPS.getValue().in(RotationsPerSecond),
+            MotorStallDetection.isMotorStalled(
+                rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS));
 
     inputs.leftRollerData =
         new F_RollerData(
@@ -139,7 +163,9 @@ public class FeederIOReal implements FeederIO {
             leftRollerSupplyCurrent.getValueAsDouble(),
             leftRollerStatorCurrent.getValueAsDouble(),
             leftRollerTemperature.getValueAsDouble(),
-            leftRollerVelocityRPS.getValueAsDouble());
+            leftRollerVelocityRPS.getValue().in(RotationsPerSecond),
+            MotorStallDetection.isMotorStalled(
+                leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS));
 
     inputs.canRangeData =
         new F_CanRangeData(
@@ -173,5 +199,23 @@ public class FeederIOReal implements FeederIO {
             rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
         || MotorStallDetection.isMotorStalled(
             leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS);
+  }
+
+  public double whichMotorStalled() {
+
+    if (MotorStallDetection.isMotorStalled(
+            rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
+        && leftRoller.getVelocity().getValueAsDouble()
+            > rightRoller.getVelocity().getValueAsDouble()) {
+      return -1;
+    }
+    if (MotorStallDetection.isMotorStalled(
+            leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
+        && leftRoller.getVelocity().getValueAsDouble()
+            < rightRoller.getVelocity().getValueAsDouble()) {
+      return 1;
+    }
+
+    return 0;
   }
 }

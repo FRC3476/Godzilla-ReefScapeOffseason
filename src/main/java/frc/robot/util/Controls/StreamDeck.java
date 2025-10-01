@@ -5,7 +5,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.util.Controls.StreamDeckAlert;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,8 @@ public class StreamDeck extends SubsystemBase {
 
   public Trigger button(StreamDeckButton button) {
     if (!buttonMap.containsKey(button)) {
-      StreamDeckAlert.warning("Stream Deck button trigger added for invalid button " + button.getIndex())
+      StreamDeckAlert.warning(
+              "Stream Deck button trigger added for invalid button " + button.getIndex())
           .enable();
       return new Trigger(() -> false);
     }

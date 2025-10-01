@@ -280,9 +280,12 @@ public class Intake extends SubsystemBase {
 
   public Command dejamFeeder() {
     return Commands.sequence(
-        Commands.runOnce(() -> feeder.setRollerVoltage(-feederVolts.getAsDouble())),
+        Commands.runOnce(
+            () ->
+                feeder.setRollerVoltageReversed(
+                    feederVolts.getAsDouble() * feeder.whichMotorStalled())),
         Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
-        Commands.runOnce(() -> feeder.setRollerVoltage(0.0)));
+        Commands.runOnce(() -> feeder.setRollerVoltage(feederVolts.getAsDouble())));
   }
 
   public Command l1BarFWD() {
@@ -308,4 +311,6 @@ public class Intake extends SubsystemBase {
   public Command feederSTOP() {
     return Commands.runOnce(() -> feeder.setRollerVoltage(0));
   }
+
+  //Make
 }

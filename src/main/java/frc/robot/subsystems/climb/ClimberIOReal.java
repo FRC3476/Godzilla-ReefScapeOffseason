@@ -47,7 +47,7 @@ public class ClimberIOReal implements ClimberIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, position, velocity, appliedVolts, supplyCurrentAmps, torqueCurrentAmps, temp);
     PhoenixUtil.registerSignals(
-        false, position, velocity, appliedVolts, supplyCurrentAmps, torqueCurrentAmps, temp);
+        true, position, velocity, appliedVolts, supplyCurrentAmps, torqueCurrentAmps, temp);
     talon.optimizeBusUtilization();
   }
 

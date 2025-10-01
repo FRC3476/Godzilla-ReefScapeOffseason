@@ -37,10 +37,18 @@ public class Feeder extends SubsystemBase {
     io.setRollerVoltage(voltage);
   }
 
+  public void setRollerVoltageReversed(double voltage) {
+    io.setRollerVoltageReversed(voltage);
+  }
+
   public boolean checkForJam() {
     return io.checkMotorsStalled() && isCoralInFeeder();
   }
 
   public Trigger dejamTrigger =
       new Trigger(() -> checkForJam()).debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS);
+
+  public double whichMotorStalled() {
+    return io.whichMotorStalled();
+  }
 }
