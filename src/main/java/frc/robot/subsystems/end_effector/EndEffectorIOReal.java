@@ -43,8 +43,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Double> pivotSetpoint;
   //   StatusSignal<ControlModeValue> pivotControlMode;
 
-  private final BaseStatusSignal[] signals;
-
   public EndEffectorIOReal() {
     pivotTalonFX = new TalonFX(EndEffectorConstants.pivotID, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
