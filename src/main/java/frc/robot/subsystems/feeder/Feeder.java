@@ -1,5 +1,6 @@
 package frc.robot.subsystems.feeder;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FeederConstants;
@@ -20,6 +21,7 @@ public class Feeder extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
     Logger.recordOutput("Feeder/JamDetected", checkForJam());
+    Logger.recordOutput("Feeder/CoralInFeeder", isCoralInFeeder());
 
     CoralStateTracker.updateFeeder(isCoralInFeeder());
 
@@ -46,7 +48,8 @@ public class Feeder extends SubsystemBase {
   }
 
   public Trigger dejamTrigger =
-      new Trigger(() -> checkForJam()).debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS);
+      new Trigger(() -> checkForJam())
+          .debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS, DebounceType.kBoth);
 
   public double whichMotorStalled() {
     return io.whichMotorStalled();

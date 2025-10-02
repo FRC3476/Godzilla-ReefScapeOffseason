@@ -301,7 +301,7 @@ public class RobotContainer {
     l1BarDownTrigger.whileTrue(intake.l1BarRVS());
     l1BarDownTrigger.onFalse(intake.l1BarSTOP());
 
-    feederInTrigger.whileTrue(intake.feederFWD());
+    feederInTrigger.onTrue(intake.feederFWD());
     feederInTrigger.onFalse(intake.feederSTOP());
 
     feederOutTrigger.whileTrue(intake.feederRVS());

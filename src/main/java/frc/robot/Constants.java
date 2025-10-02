@@ -594,7 +594,7 @@ public final class Constants {
     public static final double DEJAM_DURATION_SECONDS = 0.5;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
 
-    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+    public static final TalonFXConfiguration RIGHT_ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
@@ -606,6 +606,23 @@ public final class Constants {
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+    public static final TalonFXConfiguration LEFT_ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()

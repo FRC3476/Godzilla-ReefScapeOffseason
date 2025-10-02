@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -280,12 +281,17 @@ public class Intake extends SubsystemBase {
 
   public Command dejamFeeder() {
     return Commands.sequence(
-        Commands.runOnce(
-            () ->
-                feeder.setRollerVoltageReversed(
-                    feederVolts.getAsDouble() * feeder.whichMotorStalled())),
-        Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
-        Commands.runOnce(() -> feeder.setRollerVoltage(feederVolts.getAsDouble())));
+            Commands.runOnce(() -> Logger.recordOutput("Intake/RunningFeederDejam", true)),
+            intakeSTOP(),
+            Commands.runOnce(
+                () ->
+                    feeder.setRollerVoltageReversed(
+                        feederVolts.getAsDouble() * feeder.whichMotorStalled()),
+                feeder),
+            Commands.waitSeconds(FeederConstants.DEJAM_DURATION_SECONDS),
+            Commands.runOnce(() -> Logger.recordOutput("Intake/RunningFeederDejam", false)),
+            Commands.runOnce(() -> feeder.setRollerVoltage(feederVolts.getAsDouble())))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
   public Command l1BarFWD() {
@@ -311,6 +317,4 @@ public class Intake extends SubsystemBase {
   public Command feederSTOP() {
     return Commands.runOnce(() -> feeder.setRollerVoltage(0));
   }
-
-  //Make
 }

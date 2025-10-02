@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -55,12 +54,14 @@ public class FeederIOReal implements FeederIO {
 
     // Apply configs
     PhoenixUtil.tryUntilOk(
-        5, () -> rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG));
+        5, () -> rightRoller.getConfigurator().apply(FeederConstants.RIGHT_ROLLER_TALON_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> leftRoller.getConfigurator().apply(FeederConstants.LEFT_ROLLER_TALON_CONFIG));
     PhoenixUtil.tryUntilOk(
         5, () -> canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG));
 
     // Set up left roller to follow right roller
-    leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
+    // leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
 
     // Initialize status signals
     rightRollerVoltage = rightRoller.getMotorVoltage();
@@ -177,20 +178,14 @@ public class FeederIOReal implements FeederIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
-    if (directionReversed) {
-      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
-      directionReversed = false;
-    }
     rightRoller.setControl(new VoltageOut(voltage));
+    leftRoller.setControl(new VoltageOut(voltage));
   }
 
   @Override
   public void setRollerVoltageReversed(double voltage) {
-    if (!directionReversed) {
-      leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, false));
-      directionReversed = true;
-    }
     rightRoller.setControl(new VoltageOut(voltage));
+    leftRoller.setControl(new VoltageOut(-voltage));
   }
 
   @Override
