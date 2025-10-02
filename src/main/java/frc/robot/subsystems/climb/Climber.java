@@ -37,7 +37,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbVoltOut() {
-    return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
+    return Commands.runOnce(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
   public Command climbDeploy() {
@@ -56,11 +56,11 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbOut() {
-    return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
+    return Commands.runOnce(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
   public Command climbSTOP() {
-    return Commands.run(() -> this.io.runVolts(0.0), this);
+    return Commands.runOnce(() -> this.io.runVolts(0.0), this);
   }
 
   public Command climbRun() {

@@ -58,14 +58,14 @@ public class Claw extends SubsystemBase {
   }
 
   public Command rollerFWD() {
-    return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
   }
 
   public Command rollerRVS() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
   }
 
   public Command rollerSTOP() {
-    return Commands.run(() -> this.io.setRollerVoltage(0), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
   }
 }

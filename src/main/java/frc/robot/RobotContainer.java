@@ -66,7 +66,6 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-import frc.robot.Constants.IntakeConstants.IntakeState;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -247,16 +246,6 @@ public class RobotContainer {
     NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
     NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
 
-    // Intake State buttons
-    NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
-    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("L1 (When Pressed)");
-    NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
-    NetworkTableEntry intakeStateRejectCoralEntry = intakeTable.getEntry("Reject Coral (When Pressed)");
-    NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Idle (When Pressed)");
-    NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Hand Off (When Pressed)");
-    NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Scoring (When Pressed)");
-    NetworkTableEntry intakeStateScoringPrepEntry = intakeTable.getEntry("Scoring Prep (When Pressed)");
-
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
     intakeReverseEntry.setBoolean(false);
@@ -275,16 +264,6 @@ public class RobotContainer {
     feederForwardEntry.setBoolean(false);
     feederReverseEntry.setBoolean(false);
 
-    // Initialize intake state entries
-    intakeStateStowEntry.setBoolean(false);
-    intakeStateIntakeL1Entry.setBoolean(false);
-    intakeStateIntakeEntry.setBoolean(false);
-    intakeStateRejectCoralEntry.setBoolean(false);
-    intakeStateIdleEntry.setBoolean(false);
-    intakeStateHandOffEntry.setBoolean(false);
-    intakeStateScoringEntry.setBoolean(false);
-    intakeStateScoringPrepEntry.setBoolean(false);
-
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
     Trigger intakeReverseTrigger = new Trigger(() -> intakeReverseEntry.getBoolean(false));
@@ -302,16 +281,6 @@ public class RobotContainer {
 
     Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.getBoolean(false));
     Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.getBoolean(false));
-
-    // Create triggers for intake state buttons
-    Trigger intakeStateStowTrigger = new Trigger(() -> intakeStateStowEntry.getBoolean(false));
-    Trigger intakeStateIntakeL1Trigger = new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
-    Trigger intakeStateIntakeTrigger = new Trigger(() -> intakeStateIntakeEntry.getBoolean(false));
-    Trigger intakeStateRejectCoralTrigger = new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
-    Trigger intakeStateIdleTrigger = new Trigger(() -> intakeStateIdleEntry.getBoolean(false));
-    Trigger intakeStateHandOffTrigger = new Trigger(() -> intakeStateHandOffEntry.getBoolean(false));
-    Trigger intakeStateScoringTrigger = new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
-    Trigger intakeStateScoringPrepTrigger = new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -338,36 +307,14 @@ public class RobotContainer {
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
 
-    intakeUpPosTrigger.onTrue(intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
-    intakeDownPosTrigger.onTrue(intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
-    intakeScoringPosTrigger.onTrue(intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
-    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
-
-    // Configure intake state button triggers
-    intakeStateStowTrigger.onTrue(
-        intake.setIntakeState(IntakeState.STOW)
-            .andThen(() -> intakeStateStowEntry.setBoolean(false)));
-    intakeStateIntakeL1Trigger.onTrue(
-        intake.setIntakeState(IntakeState.INTAKE_L1)
-            .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
-    intakeStateIntakeTrigger.onTrue(
-        intake.setIntakeState(IntakeState.INTAKE)
-            .andThen(() -> intakeStateIntakeEntry.setBoolean(false)));
-    intakeStateRejectCoralTrigger.onTrue(
-        intake.setIntakeState(IntakeState.REJECT_CORAL)
-            .andThen(() -> intakeStateRejectCoralEntry.setBoolean(false)));
-    intakeStateIdleTrigger.onTrue(
-        intake.setIntakeState(IntakeState.IDLE)
-            .andThen(() -> intakeStateIdleEntry.setBoolean(false)));
-    intakeStateHandOffTrigger.onTrue(
-        intake.setIntakeState(IntakeState.HAND_OFF)
-            .andThen(() -> intakeStateHandOffEntry.setBoolean(false)));
-    intakeStateScoringTrigger.onTrue(
-        intake.setIntakeState(IntakeState.SCORING)
-            .andThen(() -> intakeStateScoringEntry.setBoolean(false)));
-    intakeStateScoringPrepTrigger.onTrue(
-        intake.setIntakeState(IntakeState.SCORING_PREP)
-            .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
+    intakeUpPosTrigger.onTrue(
+        intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
+    intakeDownPosTrigger.onTrue(
+        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+    intakeScoringPosTrigger.onTrue(
+        intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
+    intakeZeroPosTrigger.onTrue(
+        intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
   }
 
   private void buildEndEffectorTab() {
@@ -432,20 +379,31 @@ public class RobotContainer {
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
 
     pivotUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN).andThen(() -> pivotUpPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN)
+            .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeUpEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+            .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN)
+            .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN).andThen(() -> pivotDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN)
+            .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
-        endEffector.rotatePivot(
-            () ->
-                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
-                    / 2).andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
-    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(
+                () ->
+                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
+                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                        / 2)
+            .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
+    pivotManualZeroTrigger.onTrue(
+        endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
   }
 
   private void buildElevatorTab() {
@@ -491,15 +449,24 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
 
     elevatorL2Trigger.onTrue(
-        elevator.manualSetPosition(
-            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH).andThen(() -> elevatorL2Entry.setBoolean(false)));
+        elevator
+            .manualSetPositionUnclamped(
+                () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
+            .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()).andThen(() -> elevatorL3Entry.setBoolean(false)));
+        elevator
+            .manualSetPositionUnclamped(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()).andThen(() -> elevatorL4Entry.setBoolean(false)));
+        elevator
+            .manualSetPositionUnclamped(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()).andThen(() -> elevatorDownPosEntry.setBoolean(false)));
-    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
+        elevator
+            .manualSetPositionUnclamped(() -> SuperstructureState.STOW.getElevatorHeight())
+            .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
+    elevatorManualZeroTrigger.onTrue(
+        elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
   private void buildSuperstructureTab() {
@@ -691,7 +658,8 @@ public class RobotContainer {
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
+    driveStopXTrigger.onTrue(
+        Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
@@ -715,8 +683,10 @@ public class RobotContainer {
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
-    climberDeployTrigger.onTrue(climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
-    climberClimbTrigger.onTrue(climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+    climberDeployTrigger.onTrue(
+        climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
+    climberClimbTrigger.onTrue(
+        climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
   }
 
   /**
@@ -897,7 +867,8 @@ public class RobotContainer {
     if (superstructure.getCurrentState() == SuperstructureState.NONE) {
       return Commands.none();
     } else {
-      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+      return endEffector.rotatePivot(
+          () -> superstructure.getCurrentState().getEndEffectorRotation());
     }
   }
 }

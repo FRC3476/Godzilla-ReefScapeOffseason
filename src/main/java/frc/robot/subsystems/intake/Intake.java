@@ -124,7 +124,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command rejectCoralCommand() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
   }
 
   public Command intakeFWD() {
@@ -264,11 +264,11 @@ public class Intake extends SubsystemBase {
 
   // Manual test functions for intake pivot
   public Command pivotManualTestForward() {
-    return Commands.run(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setPivotVoltage(pivotManualTestVolts.get()), this);
   }
 
   public Command pivotManualTestReverse() {
-    return Commands.run(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setPivotVoltage(-pivotManualTestVolts.get()), this);
   }
 
   public Command pivotStop() {

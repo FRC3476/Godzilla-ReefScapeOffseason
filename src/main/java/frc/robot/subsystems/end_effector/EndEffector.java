@@ -74,11 +74,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command pivotUP() {
-    return Commands.run(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
   }
 
   public Command pivotDOWN() {
-    return Commands.run(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
   }
 
   public Command pivotSTOP() {

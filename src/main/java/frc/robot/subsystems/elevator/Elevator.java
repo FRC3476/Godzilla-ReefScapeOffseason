@@ -101,7 +101,7 @@ public class Elevator extends SubsystemBase {
     return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
   }
 
-  public Command manualSetPosition(DoubleSupplier inchSupplier) {
+  public Command manualSetPositionUnclamped(DoubleSupplier inchSupplier) {
     return Commands.runOnce(
         () -> this.io.setElevatorTargetPosition(inchSupplier.getAsDouble()), this);
   }
