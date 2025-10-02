@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
-import org.littletonrobotics.junction.Logger;
 
 public class Claw extends SubsystemBase {
 
@@ -18,12 +17,9 @@ public class Claw extends SubsystemBase {
   }
 
   private static final LoggedTunableNumber rollerVolts =
-      new LoggedTunableNumber("Claw/RollerVolts", 1.0);
+      new LoggedTunableNumber("EndEffector/RollerVolts", 1.0);
 
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Claw", inputs);
-
     boolean firstSensorTriggered =
         inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
     boolean secondSensorTriggered =

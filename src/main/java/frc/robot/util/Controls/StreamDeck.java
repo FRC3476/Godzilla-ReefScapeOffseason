@@ -1,11 +1,11 @@
 package frc.robot.util.Controls;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.Controls.StreamDeckAlert;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,52 +21,18 @@ public class StreamDeck extends SubsystemBase {
   private final Map<StreamDeckButton, ButtonRecord> buttonMap = new HashMap<>();
 
   private static record ButtonRecord(
-      LoggedNetworkBoolean pressed,
-      LoggedNetworkBoolean pressedPrev,
-      LoggedNetworkBoolean toggled,
-      BooleanSupplier selected,
-      BooleanPublisher activePub,
-      ButtonType type) {}
+      LoggedNetworkBoolean pressed, BooleanSupplier selected, BooleanPublisher activePub) {}
 
   @Override
   public void periodic() {
-    buttonMap
-        .values()
-        .forEach(
-            button -> {
-              if (button.type == ButtonType.TOGGLE
-                  && button.pressed.get()
-                  && !button.pressedPrev.get()) {
-                button.toggled.set(!button.toggled.get());
-              }
-              button.activePub.set(button.selected.getAsBoolean());
-              button.pressedPrev.set(button.pressed.get());
-            });
+    buttonMap.values().forEach(button -> button.activePub.set(button.selected.getAsBoolean()));
   }
 
-  public void configureDefaultButtons(Set<StreamDeckButton> buttons) {
+  public void configureButtons(Set<StreamDeckButton> buttons) {
     configureButton(
         config -> {
           for (StreamDeckButton button : buttons) {
             config.addDefault(button);
-          }
-        });
-  }
-
-  public void configureToggleButtons(Set<StreamDeckButton> buttons) {
-    configureButton(
-        config -> {
-          for (StreamDeckButton button : buttons) {
-            config.addToggle(button);
-          }
-        });
-  }
-
-  public void configureCustomButtons(Map<StreamDeckButton, BooleanSupplier> buttonMap) {
-    configureButton(
-        config -> {
-          for (Map.Entry<StreamDeckButton, BooleanSupplier> entry : buttonMap.entrySet()) {
-            config.add(entry.getKey(), entry.getValue());
           }
         });
   }
@@ -79,9 +45,7 @@ public class StreamDeck extends SubsystemBase {
     var deckTable = nt.getTable("StreamDeck");
     List<String> networkTableKeys = StreamDeckButton.getNetworkTableKeys();
     configuration.buttonConfigurations.forEach(
-        (button, pair) -> {
-          Optional<BooleanSupplier> selected = pair.getFirst();
-          ButtonType type = pair.getSecond();
+        (button, selected) -> {
           var table = deckTable.getSubTable("Button/" + button.getIndex());
           List<String> dataToPublish = button.getDataToPublish();
           IntStream.range(0, Math.min(networkTableKeys.size(), dataToPublish.size()))
@@ -93,21 +57,12 @@ public class StreamDeck extends SubsystemBase {
                           .set(dataToPublish.get(i)));
 
           var loggedBoolean = new LoggedNetworkBoolean(dataToPublish.get(0), false);
-          var loggedBooleanPrev = new LoggedNetworkBoolean(dataToPublish.get(0) + "Prev", false);
-          var loggedBooleanToggled =
-              new LoggedNetworkBoolean(dataToPublish.get(0) + "Toggled", false);
           buttonMap.put(
               button,
               new ButtonRecord(
                   loggedBoolean,
-                  loggedBooleanPrev,
-                  loggedBooleanToggled,
-                  selected.orElse(
-                      type == ButtonType.TOGGLE
-                          ? () -> loggedBooleanToggled.get()
-                          : loggedBoolean::get),
-                  table.getBooleanTopic("Selected").publish(),
-                  type));
+                  selected.orElse(loggedBoolean::get),
+                  table.getBooleanTopic("Selected").publish()));
         });
 
     deckTable.getIntegerTopic("LastModified").publish().set(Logger.getTimestamp());
@@ -117,8 +72,7 @@ public class StreamDeck extends SubsystemBase {
 
   public Trigger button(StreamDeckButton button) {
     if (!buttonMap.containsKey(button)) {
-      StreamDeckAlert.warning(
-              "Stream Deck button trigger added for invalid button " + button.getIndex())
+      StreamDeckAlert.warning("Stream Deck button trigger added for invalid button " + button.getIndex())
           .enable();
       return new Trigger(() -> false);
     }
@@ -126,34 +80,23 @@ public class StreamDeck extends SubsystemBase {
     return new Trigger(buttonMap.get(button).pressed::get);
   }
 
-  // public ButtonGroup buttonGroup() {
-  //   return new ButtonGroup();
-  // }
-
-  public enum ButtonType {
-    PRESS,
-    TOGGLE,
-    CUSTOM
+  public ButtonGroup buttonGroup() {
+    return new ButtonGroup();
   }
 
   public class ButtonConfiguration {
-    private final Map<StreamDeckButton, Pair<Optional<BooleanSupplier>, ButtonType>>
-        buttonConfigurations = new HashMap<>();
+    private final Map<StreamDeckButton, Optional<BooleanSupplier>> buttonConfigurations =
+        new HashMap<>();
 
     private ButtonConfiguration() {}
 
     public ButtonConfiguration addDefault(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.PRESS));
-      return this;
-    }
-
-    public ButtonConfiguration addToggle(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.TOGGLE));
+      buttonConfigurations.put(button, Optional.empty());
       return this;
     }
 
     public ButtonConfiguration add(StreamDeckButton button, BooleanSupplier selected) {
-      buttonConfigurations.put(button, Pair.of(Optional.of(selected), ButtonType.CUSTOM));
+      buttonConfigurations.put(button, Optional.of(selected));
       return this;
     }
   }

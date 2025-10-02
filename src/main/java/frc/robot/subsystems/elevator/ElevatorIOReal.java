@@ -150,53 +150,53 @@ public class ElevatorIOReal implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
 
-    inputs.rightMotorData =
-        new ElevatorIO.RightMotorData(
-            BaseStatusSignal.isAllGood(
-                rightPosition,
-                rightAppliedVolts,
-                rightTorqueCurrentAmps,
-                rightSupplyCurrentAmps,
-                rightTempCelsius,
-                rightSetPosition),
-            rightPosition.getValueAsDouble(),
-            rightAppliedVolts.getValueAsDouble(),
-            rightTorqueCurrentAmps.getValueAsDouble(),
-            rightSupplyCurrentAmps.getValueAsDouble(),
-            rightTempCelsius.getValueAsDouble(),
-            rightSetPosition.getValueAsDouble());
+  inputs.rightMotorData =
+    new ElevatorIO.RightMotorData(
+      BaseStatusSignal.isAllGood(
+        rightPosition,
+        rightAppliedVolts,
+        rightTorqueCurrentAmps,
+        rightSupplyCurrentAmps,
+        rightTempCelsius,
+        rightSetPosition),
+      rightPosition.getValueAsDouble(),
+      rightAppliedVolts.getValueAsDouble(),
+      rightTorqueCurrentAmps.getValueAsDouble(),
+      rightSupplyCurrentAmps.getValueAsDouble(),
+      rightTempCelsius.getValueAsDouble(),
+      rightSetPosition.getValueAsDouble());
 
-    inputs.leftMotorData =
-        new ElevatorIO.LeftMotorData(
-            BaseStatusSignal.isAllGood(
-                leftPosition,
-                leftAppliedVolts,
-                leftTorqueCurrentAmps,
-                leftSupplyCurrentAmps,
-                leftTempCelsius,
-                leftSetPosition),
-            leftPosition.getValueAsDouble(),
-            leftAppliedVolts.getValueAsDouble(),
-            leftTorqueCurrentAmps.getValueAsDouble(),
-            leftSupplyCurrentAmps.getValueAsDouble(),
-            leftTempCelsius.getValueAsDouble(),
-            leftSetPosition.getValueAsDouble());
+  inputs.leftMotorData =
+    new ElevatorIO.LeftMotorData(
+      BaseStatusSignal.isAllGood(
+        leftPosition,
+        leftAppliedVolts,
+        leftTorqueCurrentAmps,
+        leftSupplyCurrentAmps,
+        leftTempCelsius,
+        leftSetPosition),
+      leftPosition.getValueAsDouble(),
+      leftAppliedVolts.getValueAsDouble(),
+      leftTorqueCurrentAmps.getValueAsDouble(),
+      leftSupplyCurrentAmps.getValueAsDouble(),
+      leftTempCelsius.getValueAsDouble(),
+      leftSetPosition.getValueAsDouble());
 
-    inputs.extraMotorData =
-        new ElevatorIO.ExtraMotorData(
-            BaseStatusSignal.isAllGood(
-                extraPosition,
-                extraAppliedVolts,
-                extraTorqueCurrentAmps,
-                extraSupplyCurrentAmps,
-                extraTempCelsius,
-                extraSetPosition),
-            extraPosition.getValueAsDouble(),
-            extraAppliedVolts.getValueAsDouble(),
-            extraTorqueCurrentAmps.getValueAsDouble(),
-            extraSupplyCurrentAmps.getValueAsDouble(),
-            extraTempCelsius.getValueAsDouble(),
-            extraSetPosition.getValueAsDouble());
+  inputs.extraMotorData =
+    new ElevatorIO.ExtraMotorData(
+      BaseStatusSignal.isAllGood(
+        extraPosition,
+        extraAppliedVolts,
+        extraTorqueCurrentAmps,
+        extraSupplyCurrentAmps,
+        extraTempCelsius,
+        extraSetPosition),
+      extraPosition.getValueAsDouble(),
+      extraAppliedVolts.getValueAsDouble(),
+      extraTorqueCurrentAmps.getValueAsDouble(),
+      extraSupplyCurrentAmps.getValueAsDouble(),
+      extraTempCelsius.getValueAsDouble(),
+      extraSetPosition.getValueAsDouble());
   }
 
   @Override
