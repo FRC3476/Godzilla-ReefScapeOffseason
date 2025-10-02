@@ -228,20 +228,24 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(() -> this.currentState = state, this);
   }
 
-  public Command setPivotDown() {
-    return this.run(() -> io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION));
+  public Command movePivotDown() {
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
 
   public Command setPivotUp() {
-    return this.run(() -> io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION));
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(IntakeConstants.PIVOT_UP_POSITION), this);
   }
 
   public Command setPivotScoring() {
-    return this.run(() -> io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION));
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION), this);
   }
 
   public Command zeroPivotAtPivotUp() {
-    return this.runOnce(() -> io.setPivotZero());
+    System.out.println("BUTTON PRESSED");
+    return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
 
   public Command rejectCoral() {
@@ -282,23 +286,15 @@ public class Intake extends SubsystemBase {
   }
 
   public Command l1BarFWD() {
-    return Commands.runOnce(() -> io.setLvl1BlockerVoltage(l1Volts.get()));
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(l1Volts.get()));
   }
 
   public Command l1BarRVS() {
-    return Commands.runOnce(() -> io.setLvl1BlockerVoltage(-l1Volts.get()));
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(-l1Volts.get()));
   }
 
   public Command l1BarSTOP() {
-    return Commands.runOnce(() -> io.setLvl1BlockerVoltage(0));
-  }
-
-  public Command engageCoralL1Stall() {
-    return Commands.run(() -> io.setLvl1BlockerVoltage(-l1Volts.get()));
-  }
-
-  public Command disengageCoralL1Stall() {
-    return Commands.run(() -> io.setLvl1BlockerVoltage(l1Volts.get()));
+    return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
   }
 
   public Command feederFWD() {

@@ -21,8 +21,6 @@ public interface ClawIO {
 
   record EE_CANRangeData(boolean canRangeConnected, boolean rangeIsTripped) {}
 
-  default void updateInputs(ClawIOInputs inputs) {}
-
   default void setRollerVoltage(double voltage) {}
 
   default void setRollerVelocity(double velocity) {}

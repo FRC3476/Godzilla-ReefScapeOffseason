@@ -16,7 +16,7 @@ public class IntakeTest extends SequentialCommandGroup {
         new WaitCommand(2.0),
         intake.intakeSTOP(),
         new WaitCommand(0.5),
-        intake.setPivotDown(),
+        intake.movePivotDown(),
         new WaitCommand(1.0),
         intake.engageCoralL1(),
         new WaitCommand(1.0),

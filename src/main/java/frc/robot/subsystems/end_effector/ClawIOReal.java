@@ -74,7 +74,6 @@ public class ClawIOReal implements ClawIO {
         secondRangeIsTripped);
   }
 
-  @Override
   public void updateInputs(ClawIOInputs inputs) {
     inputs.rollerData =
         new EE_RollerData(
