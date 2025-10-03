@@ -81,7 +81,7 @@ public class EndEffector extends SubsystemBase {
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
   }
 
-  public Command setPivotPosition(DoubleSupplier rotationSupplier) {
+  public Command rotatePivot(DoubleSupplier rotationSupplier) {
     setpointRotation = rotationSupplier.getAsDouble();
     return Commands.runOnce(() -> this.io.setPivotPosition(rotationSupplier.getAsDouble()), this);
   }

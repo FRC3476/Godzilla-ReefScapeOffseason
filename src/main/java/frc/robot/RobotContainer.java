@@ -14,6 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -208,8 +210,8 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    // elevator.setDefaultCommand(defaultElevatorCommand());
+    // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
@@ -308,10 +310,14 @@ public class RobotContainer {
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
 
-    intakeUpPosTrigger.onTrue(intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
-    intakeDownPosTrigger.onTrue(intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
-    intakeScoringPosTrigger.onTrue(intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
-    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
+    intakeUpPosTrigger.onTrue(
+        intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
+    intakeDownPosTrigger.onTrue(
+        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+    intakeScoringPosTrigger.onTrue(
+        intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
+    intakeZeroPosTrigger.onTrue(
+        intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
   }
 
   private void buildEndEffectorTab() {
@@ -376,20 +382,31 @@ public class RobotContainer {
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
 
     pivotUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN).andThen(() -> pivotUpPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS)
+            .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeUpEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
+            .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS)
+            .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN).andThen(() -> pivotDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS)
+            .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
-        endEffector.setPivotPosition(
-            () ->
-                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
-                    / 2).andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
-    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(
+                () ->
+                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
+                        / 2)
+            .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
+    pivotManualZeroTrigger.onTrue(
+        endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
   }
 
   private void buildElevatorTab() {
@@ -435,15 +452,24 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
 
     elevatorL2Trigger.onTrue(
-        elevator.manualSetPosition(
-            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH).andThen(() -> elevatorL2Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(
+                () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
+            .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()).andThen(() -> elevatorL3Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()).andThen(() -> elevatorL4Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()).andThen(() -> elevatorDownPosEntry.setBoolean(false)));
-    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight())
+            .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
+    elevatorManualZeroTrigger.onTrue(
+        elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
   private void buildSuperstructureTab() {
@@ -635,7 +661,8 @@ public class RobotContainer {
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
+    driveStopXTrigger.onTrue(
+        Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
@@ -659,8 +686,10 @@ public class RobotContainer {
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
-    climberDeployTrigger.onTrue(climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
-    climberClimbTrigger.onTrue(climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+    climberDeployTrigger.onTrue(
+        climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
+    climberClimbTrigger.onTrue(
+        climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
   }
 
   /**
@@ -836,27 +865,21 @@ public class RobotContainer {
   public Command moveElevatorCommand(double height_inch) {
     return Commands.sequence(
         elevator.setTargetPosition(() -> height_inch), elevator.waitUntilTargetPosition());
-  public Command defaultElevatorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return elevator.moveToTargetPosition(
-          () -> superstructure.getCurrentState().getElevatorHeight());
-    }
   }
-
+  //   public Command defaultElevatorCommand() {
+  //       return elevator.setTargetPosition(
+  //           () -> superstructure.getCurrentState().getElevatorHeight());
+  //     }
   public Command moveEndEffectorCommand(double radians) {
     return Commands.sequence(
-        endEffector.setPivotPosition(() -> radians), endEffector.waitUntilTargetPosition());
+        endEffector.rotatePivot(() -> radians), endEffector.waitUntilTargetPosition());
   }
 
   public Command setIntakeStateCommand(IntakeState state) {
     return intake.setIntakeState(state);
-  public Command defaultEndEffectorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
-    }
   }
+  //   public Command defaultEndEffectorCommand() {
+  //       return endEffector.rotatePivot(() ->
+  // superstructure.getCurrentState().getEndEffectorRotation());
+  //   }
 }

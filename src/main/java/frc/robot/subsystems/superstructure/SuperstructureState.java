@@ -132,8 +132,6 @@ public enum SuperstructureState {
 
   public boolean isCoralState() {
     switch (this) {
-      case NONE:
-        return false;
       case STOW_CORAL,
           INTAKE_CORAL,
           INTAKE_CORAL_L1,
