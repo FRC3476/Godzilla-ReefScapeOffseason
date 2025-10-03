@@ -14,6 +14,7 @@ public class EndEffector extends SubsystemBase {
 
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
+
   private static final LoggedTunableNumber pivotTestVolts =
       new LoggedTunableNumber("EndEffector/PivotTestVolts", 1.0);
 
@@ -90,11 +91,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command pivotUP() {
-    return Commands.runOnce(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(pivotTestVolts.get()), this);
   }
 
   public Command pivotDOWN() {
-    return Commands.runOnce(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
+    return Commands.run(() -> this.io.setPivotVoltage(-pivotTestVolts.get()), this);
   }
 
   public Command pivotSTOP() {

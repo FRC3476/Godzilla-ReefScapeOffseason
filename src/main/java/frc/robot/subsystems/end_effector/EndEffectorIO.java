@@ -6,7 +6,7 @@ public interface EndEffectorIO {
 
   @AutoLog
   class EndEffectorIOInputs {
-    public EE_PivotData pivotData = new EE_PivotData(false, 0, 0, 0, 0, 0, 0, "hi");
+    public EE_PivotData pivotData = new EE_PivotData(false, 0, 0, 0, 0, 0, 0);
   }
 
   record EE_PivotData(
@@ -16,8 +16,9 @@ public interface EndEffectorIO {
       double pivotTorqueCurrentAmps,
       double pivotSupplyCurrentAmps,
       double pivotTempCelsius,
-      double pivotSetpoint,
-      String pivotControlMode) {}
+      double pivotSetpoint
+      // ,String pivotControlMode
+      ) {}
 
   default void updateInputs(EndEffectorIOInputs inputs) {}
 

@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -43,6 +44,7 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
   public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final long PIVOT_ZERO_SLEEP_MS = 200;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -55,8 +57,10 @@ public final class Constants {
     REPLAY
   }
 
-  public static String drive_canivore = "DRIVE";
-  public static String misc_canivore = "MISC";
+  public static String DRIVE_CANIVORE_NAME = "DRIVE";
+  public static String MISC_CANIVORE_NAME = "MISC";
+  public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
+  public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
@@ -76,7 +80,7 @@ public final class Constants {
 
     // Slip Current Characterization Constants (Wall Test)
     public static final double SLIP_START_DELAY = 0.0; // Secs
-    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
+    public static final double SLIP_RAMP_RATE = -0.5; // Volts/Sec
     public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
     public static final double SLIP_VELOCITY_THRESHOLD =
         3476.0; // Velocity derivative indicating wheels started spinning
@@ -124,6 +128,7 @@ public final class Constants {
     public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
 
     public enum IntakeState {
+      NONE,
       STOW,
       INTAKE_L1,
       INTAKE,

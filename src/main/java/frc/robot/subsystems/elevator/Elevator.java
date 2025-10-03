@@ -45,6 +45,7 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
+    io.setElevatorZero();
     System.out.println("====================Elevator Subsystem Online====================");
   }
 

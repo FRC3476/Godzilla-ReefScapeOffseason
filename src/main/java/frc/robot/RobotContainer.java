@@ -14,15 +14,15 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -59,8 +59,13 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.util.Controls.StreamDeck;
+import frc.robot.util.Controls.StreamDeckButton;
+import frc.robot.util.Controls.StreamDeckButtonConfig;
+import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -81,7 +86,8 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  //   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController controller = new CommandXboxController(0);
+  private final StreamDeck streamdeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -104,8 +110,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                superstructure);
+                new ModuleIOTalonFX(TunerConstants.BackRight)
+                // ,superstructure
+                );
         break;
 
       case SIM:
@@ -123,8 +130,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight),
-                superstructure);
+                new ModuleIOSim(TunerConstants.BackRight)
+                // ,superstructure
+                );
         break;
 
       default:
@@ -142,8 +150,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {},
-                superstructure);
+                new ModuleIO() {}
+                // ,superstructure
+                );
         break;
     }
 
@@ -171,14 +180,11 @@ public class RobotContainer {
 
     autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
-    BuildIntakeTab();
-    BuildEndEffectorTab();
-    BuildElevatorTab();
-    BuildSuperstructureTab();
-    BuildClimberTab();
-    BuildDriveTab();
+    // Configure default commands for subsystems
+    RegisterDefaultCommands();
 
-    // RegisterDefaultCommands();
+    // Build elastic tabs for testing
+    buildElasticTabs();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -189,7 +195,34 @@ public class RobotContainer {
     configureSuperstructureTrigger();
   }
 
-  private void BuildIntakeTab() {
+  private void configureButtonBindings() {
+    configureXboxBindings();
+    configureStreamDeckBindings();
+  }
+
+  private void RegisterDefaultCommands() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
+    elevator.setDefaultCommand(defaultElevatorCommand());
+    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    intake.setDefaultCommand(intake.intakeDefault());
+  }
+
+  private void buildElasticTabs() {
+    buildIntakeTab();
+    buildEndEffectorTab();
+    buildElevatorTab();
+    buildSuperstructureTab();
+    buildClimberTab();
+    buildDriveTab();
+  }
+
+  private void buildIntakeTab() {
     // Get the NetworkTable for the Intake tab
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
@@ -275,13 +308,13 @@ public class RobotContainer {
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
 
-    intakeUpPosTrigger.onTrue(intake.setPivotUp());
-    intakeDownPosTrigger.onTrue(intake.movePivotDown());
-    intakeScoringPosTrigger.onTrue(intake.setPivotScoring());
-    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp());
+    intakeUpPosTrigger.onTrue(intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
+    intakeDownPosTrigger.onTrue(intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+    intakeScoringPosTrigger.onTrue(intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
+    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
   }
 
-  private void BuildEndEffectorTab() {
+  private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
 
@@ -343,25 +376,23 @@ public class RobotContainer {
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
 
     pivotUpPosTrigger.onTrue(
-        endEffector.setPivotPosition(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS));
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN).andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
-        endEffector.setPivotPosition(
-            () -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS));
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
-        endEffector.setPivotPosition(
-            () -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS));
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
-        endEffector.setPivotPosition(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS));
+        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN).andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
         endEffector.setPivotPosition(
             () ->
-                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
-                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
-                    / 2));
-    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero());
+                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
+                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                    / 2).andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
+    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
   }
 
-  private void BuildElevatorTab() {
+  private void buildElevatorTab() {
     // Get the NetworkTable for the Elevator tab
     NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
 
@@ -405,17 +436,17 @@ public class RobotContainer {
 
     elevatorL2Trigger.onTrue(
         elevator.manualSetPosition(
-            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH));
+            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH).andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()).andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()));
+        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()).andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()));
-    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero());
+        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()).andThen(() -> elevatorDownPosEntry.setBoolean(false)));
+    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
-  private void BuildSuperstructureTab() {
+  private void buildSuperstructureTab() {
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 
@@ -577,23 +608,41 @@ public class RobotContainer {
     targetStateEntry.setString("Unknown");
   }
 
-  //   private void RegisterDefaultCommands() {
-  //     elevator.setDefaultCommand(defaultElevatorCommand());
-  //     endEffector.setDefaultCommand(defaultEndEffectorCommand());
-  //     intake.setDefaultCommand(intake.intakeDefault());
-  //   }
+  private void buildDriveTab() {
+    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
-  private void BuildDriveTab() {
-    ShuffleboardTab testTab = Shuffleboard.getTab("Drive");
+    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
+    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Characterize Slip Current");
+    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Characterize Wheel Radius");
+    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
+    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
+    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
 
-    testTab.add("Drivetrain Test", new DrivetrainTest(drive)).withPosition(0, 4).withSize(3, 1);
+    driveFeedforwardEntry.setBoolean(false);
+    driveSlipCurrentEntry.setBoolean(false);
+    driveWheelRadiusEntry.setBoolean(false);
+    driveStopXEntry.setBoolean(false);
+    driveForwardEntry.setBoolean(false);
+    driveClockwiseEntry.setBoolean(false);
 
-    testTab.add("Drive Stop", drive.run(drive::stop)).withPosition(3, 4).withSize(2, 1);
+    Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
+    Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
+    Trigger driveWheelRadiusTrigger = new Trigger(() -> driveWheelRadiusEntry.getBoolean(false));
+    Trigger driveStopXTrigger = new Trigger(() -> driveStopXEntry.getBoolean(false));
+    Trigger driveForwardTrigger = new Trigger(() -> driveForwardEntry.getBoolean(false));
+    Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
 
-    testTab.add("Drive X-Lock", drive.run(drive::stopWithX)).withPosition(5, 4).withSize(2, 1);
+    driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
+    driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
+    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
+    driveForwardTrigger.whileTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
+    driveClockwiseTrigger.whileTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
   }
 
-  private void BuildClimberTab() {
+  private void buildClimberTab() {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
@@ -610,8 +659,8 @@ public class RobotContainer {
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
-    climberDeployTrigger.onTrue(climber.climbDeploy());
-    climberClimbTrigger.onTrue(climber.climbClimb());
+    climberDeployTrigger.onTrue(climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
+    climberClimbTrigger.onTrue(climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
   }
 
   /**
@@ -620,38 +669,149 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    // drive.setDefaultCommand(
-    //     DriveCommands.joystickDrive(
-    //         drive,
-    //         () -> -controller.getLeftY(),
-    //         () -> -controller.getLeftX(),
-    //         () -> -controller.getRightX()));
+  private void configureXboxBindings() {
 
-    // // Lock to 0° when A button is held
-    // controller
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.driveAtAngle(
-    //             drive,
-    //             () -> -controller.getLeftY(),
-    //             () -> -controller.getLeftX(),
-    //             () -> new Rotation2d()));
+    // Lock to 0° when A button is held
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.driveAtAngle(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> Rotation2d.kZero));
 
-    // // Switch to X pattern when X button is pressed
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // Switch to X pattern when X button is pressed
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // // Reset gyro to 0° when B button is pressed
-    // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
+    // Reset gyro to 0° when B button is pressed
+    controller
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
+  }
+
+  private void configureStreamDeckBindings() {
+    StreamDeckButtonConfig inactiveConfig =
+        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig activeConfig =
+        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+
+    StreamDeckButton swerveXButton =
+        new StreamDeckButton(3, 7, "Swerve X")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withInactiveText("X")
+            .withActiveText("Swerve X");
+    StreamDeckButton intakeInButton =
+        new StreamDeckButton(1, 0, "Intake In")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT In");
+    StreamDeckButton intakeOutButton =
+        new StreamDeckButton(1, 1, "Intake Out")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Out");
+    StreamDeckButton intakeUpButton =
+        new StreamDeckButton(0, 0, "Intake Up")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Up");
+    StreamDeckButton intakeDownButton =
+        new StreamDeckButton(0, 1, "Intake Down")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Down");
+    StreamDeckButton intakeL1UpButton =
+        new StreamDeckButton(3, 0, "Intake L1Up")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT L1Up");
+    StreamDeckButton intakeL1DownButton =
+        new StreamDeckButton(3, 1, "Intake L1Down")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT L1Down");
+    StreamDeckButton feederInButton =
+        new StreamDeckButton(2, 0, "Feeder In ")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("FEED In");
+    StreamDeckButton feederOutButton =
+        new StreamDeckButton(2, 1, "Feeder Out")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("FEED Out ");
+    StreamDeckButton intakePosUpButton =
+        new StreamDeckButton(0, 3, "Intake PosUp")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosUp");
+    StreamDeckButton intakePosDownButton =
+        new StreamDeckButton(0, 4, "Intake PosDown")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosDown");
+    StreamDeckButton intakePosScoreButton =
+        new StreamDeckButton(0, 5, "Intake PosScore")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT PosScore");
+    StreamDeckButton intakeZeroButton =
+        new StreamDeckButton(1, 3, "Intake Zero")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Zero");
+    // StreamDeckButton intakeStateButton =
+    //     new StreamDeckButton(0, 0, "Intake State")
+    //         .withInactiveConfig(inactiveConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("INT State");
+
+    streamdeck.configureButtons(
+        Set.of(
+            swerveXButton,
+            intakeInButton,
+            intakeOutButton,
+            intakeUpButton,
+            intakeDownButton,
+            intakeL1UpButton,
+            intakeL1DownButton,
+            feederInButton,
+            feederOutButton,
+            intakePosUpButton,
+            intakePosDownButton,
+            intakePosScoreButton,
+            intakeZeroButton));
+
+    streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
+    streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
+    streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
+    streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
+    streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
+    streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
+    streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
+    streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
+    streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
+    streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
+    streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
+    streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
+    streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
+    streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
+    streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
+    streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
+    streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
+    streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
+    streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
+    streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
   }
 
   private void configureArbitraryTriggers() {
@@ -676,6 +836,13 @@ public class RobotContainer {
   public Command moveElevatorCommand(double height_inch) {
     return Commands.sequence(
         elevator.setTargetPosition(() -> height_inch), elevator.waitUntilTargetPosition());
+  public Command defaultElevatorCommand() {
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return elevator.moveToTargetPosition(
+          () -> superstructure.getCurrentState().getElevatorHeight());
+    }
   }
 
   public Command moveEndEffectorCommand(double radians) {
@@ -685,5 +852,11 @@ public class RobotContainer {
 
   public Command setIntakeStateCommand(IntakeState state) {
     return intake.setIntakeState(state);
+  public Command defaultEndEffectorCommand() {
+    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
+      return Commands.none();
+    } else {
+      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+    }
   }
 }

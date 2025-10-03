@@ -32,7 +32,7 @@ public class ClimberIOReal implements ClimberIO {
   private final VoltageOut voltsRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
   public ClimberIOReal() {
-    talon = new TalonFX(Constants.ClimbConstants.ID, Constants.drive_canivore);
+    talon = new TalonFX(Constants.ClimbConstants.ID, Constants.DRIVE_CANIVORE);
 
     PhoenixUtil.tryUntilOk(
         5, () -> talon.getConfigurator().apply(EndEffectorConstants.PIVOT_TALON_CONFIG));

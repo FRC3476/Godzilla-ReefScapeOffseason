@@ -73,11 +73,11 @@ public class IntakeIOReal implements IntakeIO {
 
   public IntakeIOReal() {
     // Initialize hardware
-    pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.misc_canivore);
-    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.misc_canivore);
-    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.misc_canivore);
-    canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.misc_canivore);
-    canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.misc_canivore);
+    pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.MISC_CANIVORE);
+    rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.MISC_CANIVORE);
+    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.MISC_CANIVORE);
+    canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.MISC_CANIVORE);
+    canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.MISC_CANIVORE);
 
     // Configure pivot motor
     PhoenixUtil.tryUntilOk(
@@ -341,7 +341,7 @@ public class IntakeIOReal implements IntakeIO {
 
     canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(0));
 
-    Util.sleep(2000);
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
     Logger.recordOutput(
         "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
 
@@ -352,7 +352,7 @@ public class IntakeIOReal implements IntakeIO {
     magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
 
     canCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(magnetOffset));
-    Util.sleep(2000);
+    Util.sleep(Constants.PIVOT_ZERO_SLEEP_MS);
     Logger.recordOutput(
         "Intake/absolutePostionAfterOffset", canCoder.getAbsolutePosition().getValueAsDouble());
     setPositionFromAbsolute();
