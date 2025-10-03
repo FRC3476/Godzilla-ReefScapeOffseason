@@ -14,8 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -24,7 +22,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -64,10 +61,8 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -88,8 +83,8 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-  private final StreamDeck streamdeck = new StreamDeck();
+  //   private final CommandXboxController controller = new CommandXboxController(0);
+  //   private final StreamDeck streamdeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -198,18 +193,18 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    configureXboxBindings();
-    configureStreamDeckBindings();
+    // configureXboxBindings();
+    // configureStreamDeckBindings();
   }
 
   private void RegisterDefaultCommands() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(
+    //         drive,
+    //         () -> -controller.getLeftY(),
+    //         () -> -controller.getLeftX(),
+    //         () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
@@ -701,28 +696,28 @@ public class RobotContainer {
   private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.driveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.driveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // // Reset gyro to 0° when B button is pressed
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
   }
 
   private void configureStreamDeckBindings() {
@@ -803,44 +798,44 @@ public class RobotContainer {
     //         .withActiveConfig(activeConfig)
     //         .withText("INT State");
 
-    streamdeck.configureButtons(
-        Set.of(
-            swerveXButton,
-            intakeInButton,
-            intakeOutButton,
-            intakeUpButton,
-            intakeDownButton,
-            intakeL1UpButton,
-            intakeL1DownButton,
-            feederInButton,
-            feederOutButton,
-            intakePosUpButton,
-            intakePosDownButton,
-            intakePosScoreButton,
-            intakeZeroButton));
+    // streamdeck.configureButtons(
+    //     Set.of(
+    //         swerveXButton,
+    //         intakeInButton,
+    //         intakeOutButton,
+    //         intakeUpButton,
+    //         intakeDownButton,
+    //         intakeL1UpButton,
+    //         intakeL1DownButton,
+    //         feederInButton,
+    //         feederOutButton,
+    //         intakePosUpButton,
+    //         intakePosDownButton,
+    //         intakePosScoreButton,
+    //         intakeZeroButton));
 
-    streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
-    streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
-    streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
-    streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
-    streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
-    streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
-    streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
-    streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
-    streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
-    streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
-    streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
-    streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
-    streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
-    streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
+    // streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
+    // streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
+    // streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
+    // streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
+    // streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
+    // streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
+    // streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
+    // streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
+    // streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
+    // streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
+    // streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
+    // streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
+    // streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
+    // streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
+    // streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
+    // streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
+    // streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
+    // streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
+    // streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
+    // streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
   }
 
   private void configureArbitraryTriggers() {
