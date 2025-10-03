@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /* **********
@@ -87,6 +88,7 @@ public class Elevator extends SubsystemBase {
     io.setElevatorTargetPosition(position);
   }
 
+  @AutoLogOutput(key = "Elevator/InTolerance")
   public boolean isInTolerance() {
     return MathUtil.isNear(
         setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
@@ -96,8 +98,12 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
-  public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
+  public Command setTargetPosition(DoubleSupplier positionSupplier) {
     return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+  }
+
+  public Command waitUntilTargetPosition() {
+    return Commands.waitUntil(() -> isInTolerance());
   }
 
   public Command manualSetPosition(DoubleSupplier inchSupplier) {

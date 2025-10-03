@@ -10,7 +10,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -169,8 +168,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotCancoder.getAbsolutePosition().getValueAsDouble());
 
     double pivotDownAbsoluteRotations =
-        Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
-            * EndEffectorConstants.PIVOT_STM;
+        EndEffectorConstants.MIN_ANGLE_ROTATIONS * EndEffectorConstants.PIVOT_STM;
     double magnetOffset =
         pivotDownAbsoluteRotations - pivotCancoder.getAbsolutePosition().getValueAsDouble();
     magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
@@ -188,7 +186,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotCancoder.setPosition(
         pivotCancoder.getAbsolutePosition().getValueAsDouble()
             + Math.round(
-                Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
-                    * EndEffectorConstants.PIVOT_STM));
+                EndEffectorConstants.MIN_ANGLE_ROTATIONS * EndEffectorConstants.PIVOT_STM));
   }
 }

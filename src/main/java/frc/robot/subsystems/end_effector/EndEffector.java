@@ -1,11 +1,13 @@
 package frc.robot.subsystems.end_effector;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
@@ -32,6 +34,8 @@ public class EndEffector extends SubsystemBase {
       new LoggedTunableNumber("EndEffector/PivotAccel", EndEffectorConstants.Tunable_PIVOT_Accel);
   private static final LoggedTunableNumber pivotJerk =
       new LoggedTunableNumber("EndEffector/PivotJerk", EndEffectorConstants.Tunable_PIVOT_Jerk);
+
+  private double setpointRotation;
 
   public EndEffector(EndEffectorIO io) {
     this.io = io;
@@ -68,8 +72,21 @@ public class EndEffector extends SubsystemBase {
     return inputs.pivotData.pivotPosition();
   }
 
-  public Command rotatePivot(DoubleSupplier radianSupplier) {
-    return Commands.runOnce(() -> this.io.setPivotPosition(radianSupplier.getAsDouble()), this);
+  @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
+  public boolean isPivotInTolerance() {
+    return MathUtil.isNear(
+        setpointRotation,
+        inputs.pivotData.pivotPosition(),
+        EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
+  }
+
+  public Command setPivotPosition(DoubleSupplier rotationSupplier) {
+    setpointRotation = rotationSupplier.getAsDouble();
+    return Commands.runOnce(() -> this.io.setPivotPosition(rotationSupplier.getAsDouble()), this);
+  }
+
+  public Command waitUntilTargetPosition() {
+    return Commands.waitUntil(() -> isPivotInTolerance());
   }
 
   public Command pivotUP() {

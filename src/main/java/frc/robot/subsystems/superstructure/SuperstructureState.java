@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -15,80 +16,80 @@ import java.util.function.Function;
 public enum SuperstructureState {
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_RADIAN,
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS,
       container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.STOW))),
   STOW_CORAL(
       Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS),
   STOW_ALGAE(
       Constants.SuperstructureConstants.STOW_ALGAE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS),
   INTAKE_CORAL(
       Constants.SuperstructureConstants.INTAKE_CORAL_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_RADIAN,
+      Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS,
       container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE))),
   INTAKE_CORAL_L1(
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_RADIAN,
+      Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_ROTATIONS,
       container ->
           new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE_L1))),
   INTAKE_ALGAE_GROUND(
       Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS),
   FEED(
       Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_ROTATIONS),
   L1_PIVOT(
       Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_AIM(
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   L3_AIM(
       Constants.SuperstructureConstants.L3_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   L4_AIM(
       Constants.SuperstructureConstants.L4_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   L1_SCORE(
       Constants.SuperstructureConstants.L1_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_SCORE(
       Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
   L3_SCORE(
       Constants.SuperstructureConstants.L3_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
   L4_SCORE(
       Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_FADEAWAY(
       Constants.SuperstructureConstants.L2_FADEAWAY_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
   L3_FADEAWAY(
       Constants.SuperstructureConstants.L3_FADEAWAY_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
   L4_FADEAWAY(
       Constants.SuperstructureConstants.L4_FADEAWAY_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.L4_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
   ALGAE_HIGH_INTAKE(
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS),
   ALGAE_LOW_INTAKE(
       Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS),
   PROCESSOR_AIM(
       Constants.SuperstructureConstants.PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.PROCESSOR_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   BARGE_AIM_CENTER(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.BARGE_AIM_CENTER_ENDEFFECTOR_ROTATION_ROTATIONS),
   BARGE_AIM_FORWARD(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_RADIAN),
+      Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS),
   BARGE_AIM_BACKWARD(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_RADIAN);
+      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS);
 
   private final double elevatorHeight;
   private final double endEffectorRotation;
@@ -99,7 +100,7 @@ public enum SuperstructureState {
     this.elevatorHeight = elevatorHeight;
     this.endEffectorRotation = endEffectorRotation;
     this.commandSupplier =
-        container ->
+        (container) ->
             new ParallelCommandGroup(
                 container.moveElevatorCommand(elevatorHeight),
                 container.moveEndEffectorCommand(endEffectorRotation));
@@ -122,6 +123,13 @@ public enum SuperstructureState {
     return this.endEffectorRotation;
   }
 
+  public Command getCommand(RobotContainer container) {
+    if (commandSupplier == null) {
+      return Commands.none();
+    }
+    return this.commandSupplier.apply(container);
+  }
+
   public boolean isCoralState() {
     switch (this) {
       case STOW_CORAL,
@@ -141,8 +149,9 @@ public enum SuperstructureState {
     }
   }
 
+  // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
-  public Set<SuperstructureState> getAllowedStates() {
+  public Set<SuperstructureState> getAllowedDestinationStates() {
 
     switch (this) {
       case STOW:
@@ -164,37 +173,59 @@ public enum SuperstructureState {
         return Util.mergeSets(
             getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
       case L1_PIVOT:
-        return EnumSet.allOf(SuperstructureState.class);
-      case L2_AIM: // allowed anywhere
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
+      case L2_AIM: // allowed anywhere besides barge
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), getAlgaeBargeStates());
       case L3_AIM:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class),
-            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
+            getAlgaeBargeStates(),
+            getStowStates());
       case L4_AIM:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getL1States(), getCoralIntakeStates());
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
+            getCoralIntakeStates(),
+            EnumSet.of(STOW));
       case L1_SCORE:
-        return EnumSet.allOf(SuperstructureState.class);
-      case L2_SCORE: //allowed anywhere
-        return EnumSet.allOf(SuperstructureState.class);
+        return Util.mergeSets(
+            getL2States(), getL1States(), getCoralIntakeStates(), EnumSet.of(INTAKE_ALGAE_GROUND));
+      case L2_SCORE: // allowed anywhere
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), getAlgaeBargeStates());
       case L3_SCORE:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
+            getAlgaeBargeStates(),
+            getStowStates());
       case L4_SCORE:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getL1States(), getCoralIntakeStates());
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
+            getCoralIntakeStates(),
+            getStowStates());
       case ALGAE_HIGH_INTAKE:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getL1States(), getCoralIntakeStates());
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
+            getStowStates());
       case ALGAE_LOW_INTAKE:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getL1States(), getCoralIntakeStates(), getAlgaeBargeStates());
-      case PROCESSOR_AIM:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
+        return Util.removeSets(
+            EnumSet.allOf(SuperstructureState.class),
+            getL1States(),
+            getCoralIntakeStates(),
             getAlgaeBargeStates());
+      case PROCESSOR_AIM:
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), getAlgaeBargeStates());
       case BARGE_AIM_CENTER:
-        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), 
-            getCoralIntakeStates());
+        return Util.removeSets(EnumSet.allOf(SuperstructureState.class), getCoralIntakeStates());
       case BARGE_AIM_FORWARD:
         return EnumSet.of(BARGE_AIM_CENTER);
       case BARGE_AIM_BACKWARD:

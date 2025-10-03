@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -95,7 +96,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOReal());
         claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
         drive =
             new Drive(
@@ -114,7 +115,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
         drive =
             new Drive(
@@ -133,7 +134,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         drive =
             new Drive(
@@ -184,6 +185,8 @@ public class RobotContainer {
 
     // Configure arbitrary triggers
     configureArbitraryTriggers();
+
+    configureSuperstructureTrigger();
   }
 
   private void BuildIntakeTab() {
@@ -340,18 +343,20 @@ public class RobotContainer {
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
 
     pivotUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN));
+        endEffector.setPivotPosition(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS));
     pivotSafeUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN));
+        endEffector.setPivotPosition(
+            () -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS));
     pivotSafeDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN));
+        endEffector.setPivotPosition(
+            () -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS));
     pivotDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN));
+        endEffector.setPivotPosition(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS));
     pivotMiddlePosTrigger.onTrue(
-        endEffector.rotatePivot(
+        endEffector.setPivotPosition(
             () ->
-                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
                     / 2));
     pivotManualZeroTrigger.onTrue(endEffector.setPivotZero());
   }
@@ -654,6 +659,11 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
+  private void configureSuperstructureTrigger() {
+    superstructure.setTriggers();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -664,11 +674,13 @@ public class RobotContainer {
   }
 
   public Command moveElevatorCommand(double height_inch) {
-    return elevator.moveToTargetPosition(() -> height_inch);
+    return Commands.sequence(
+        elevator.setTargetPosition(() -> height_inch), elevator.waitUntilTargetPosition());
   }
 
   public Command moveEndEffectorCommand(double radians) {
-    return endEffector.rotatePivot(() -> radians);
+    return Commands.sequence(
+        endEffector.setPivotPosition(() -> radians), endEffector.waitUntilTargetPosition());
   }
 
   public Command setIntakeStateCommand(IntakeState state) {
