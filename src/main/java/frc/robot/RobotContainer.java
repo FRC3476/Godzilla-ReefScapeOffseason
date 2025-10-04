@@ -14,6 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -62,12 +65,12 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
-import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -88,8 +91,8 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  //   private final CommandXboxController controller = new CommandXboxController(0);
-  //   private final StreamDeck streamdeck = new StreamDeck();
+  private final CommandXboxController controller = new CommandXboxController(0);
+  private final StreamDeck streamdeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -198,18 +201,18 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    // configureXboxBindings();
-    // configureStreamDeckBindings();
+    configureXboxBindings();
+    configureStreamDeckBindings();
   }
 
   private void RegisterDefaultCommands() {
     // Default command, normal field-relative drive
-    // drive.setDefaultCommand(
-    //     DriveCommands.joystickDrive(
-    //         drive,
-    //         () -> -controller.getLeftY(),
-    //         () -> -controller.getLeftX(),
-    //         () -> -controller.getRightX()));
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
@@ -350,7 +353,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(
         intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
     intakeDownPosTrigger.onTrue(
-        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
     intakeScoringPosTrigger.onTrue(
         intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
     intakeZeroPosTrigger.onTrue(
@@ -359,35 +362,35 @@ public class RobotContainer {
     // Configure intake state button triggers
     intakeStateStowTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.STOW)
+            .setIntakeStateCommand(IntakeState.STOW)
             .andThen(() -> intakeStateStowEntry.setBoolean(false)));
     intakeStateIntakeL1Trigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE_L1)
+            .setIntakeStateCommand(IntakeState.INTAKE_L1)
             .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
     intakeStateIntakeTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE)
+            .setIntakeStateCommand(IntakeState.INTAKE)
             .andThen(() -> intakeStateIntakeEntry.setBoolean(false)));
     intakeStateRejectCoralTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.REJECT_CORAL)
+            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
             .andThen(() -> intakeStateRejectCoralEntry.setBoolean(false)));
     intakeStateIdleTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.IDLE)
+            .setIntakeStateCommand(IntakeState.IDLE)
             .andThen(() -> intakeStateIdleEntry.setBoolean(false)));
     intakeStateHandOffTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.HAND_OFF)
+            .setIntakeStateCommand(IntakeState.HAND_OFF)
             .andThen(() -> intakeStateHandOffEntry.setBoolean(false)));
     intakeStateScoringTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING)
+            .setIntakeStateCommand(IntakeState.SCORING)
             .andThen(() -> intakeStateScoringEntry.setBoolean(false)));
     intakeStateScoringPrepTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING_PREP)
+            .setIntakeStateCommand(IntakeState.SCORING_PREP)
             .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
   }
 
@@ -772,28 +775,28 @@ public class RobotContainer {
   private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
-    // controller
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.driveAtAngle(
-    //             drive,
-    //             () -> -controller.getLeftY(),
-    //             () -> -controller.getLeftX(),
-    //             () -> Rotation2d.kZero));
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.driveAtAngle(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> Rotation2d.kZero));
 
     // // Switch to X pattern when X button is pressed
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // // Reset gyro to 0° when B button is pressed
-    // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-    //                 drive)
-    //             .ignoringDisable(true));
+    controller
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
   }
 
   private void configureStreamDeckBindings() {
