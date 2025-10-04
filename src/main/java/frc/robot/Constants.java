@@ -420,7 +420,7 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -432,7 +432,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
-    public static final double CLAW_HOLD_ALGAE_AMPS = 40.0;
+    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
 
     // ========End Effector Constant Positions========
     // Pivot positions in radians
@@ -540,7 +540,7 @@ public final class Constants {
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================

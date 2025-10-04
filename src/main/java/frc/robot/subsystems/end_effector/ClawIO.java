@@ -2,8 +2,6 @@ package frc.robot.subsystems.end_effector;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.wpilibj2.command.Command;
-
 public interface ClawIO {
 
   @AutoLog

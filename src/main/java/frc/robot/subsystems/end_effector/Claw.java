@@ -1,12 +1,10 @@
 package frc.robot.subsystems.end_effector;
 
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -33,7 +31,6 @@ public class Claw extends SubsystemBase {
 
     RobotState.setHasAlgae(hasAlgae());
   }
-
 
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
@@ -73,7 +70,8 @@ public class Claw extends SubsystemBase {
     return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
   }
 
-  public Command holdAlgae () {
-    return Commands.runOnce(() -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
+  public Command holdAlgae() {
+    return Commands.runOnce(
+        () -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
   }
 }
