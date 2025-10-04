@@ -27,6 +27,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -231,22 +232,26 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    /*if (vision.getCameraAInputs().pose3d != null) {
-      Matrix<N3, N1> cameraAStdDev =
-          new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraAInputs().standardDeviations);
-      poseEstimator.addVisionMeasurement(
-          vision.getCameraAInputs().pose3d.toPose2d(),
-          vision.getCameraAInputs().megatagPoseEstimate.timestampSeconds(),
-          cameraAStdDev);
+    if (Constants.currentMode != Constants.simMode) {
+      if (vision.getCameraAInputs().pose3d != null) {
+        Matrix<N3, N1> cameraAStdDev =
+            new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraAInputs().standardDeviations);
+        addVisionMeasurement(
+            vision.getCameraAInputs().pose3d.toPose2d(),
+            vision.getCameraAInputs().megatagPoseEstimate.timestampSeconds(),
+            cameraAStdDev);
+      }
+      if (vision.getCameraBInputs().pose3d != null) {
+        Matrix<N3, N1> cameraBStdDev =
+            new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraBInputs().standardDeviations);
+        addVisionMeasurement(
+            vision.getCameraBInputs().pose3d.toPose2d(),
+            vision.getCameraBInputs().megatagPoseEstimate.timestampSeconds(),
+            cameraBStdDev);
+      }
     }
-    if (vision.getCameraBInputs().pose3d != null) {
-      Matrix<N3, N1> cameraBStdDev =
-          new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraBInputs().standardDeviations);
-      poseEstimator.addVisionMeasurement(
-          vision.getCameraBInputs().pose3d.toPose2d(),
-          vision.getCameraBInputs().megatagPoseEstimate.timestampSeconds(),
-          cameraBStdDev);
-    }*/
+
+    frc.robot.RobotState.updateGlobalPose(getPose());
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
