@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -378,23 +377,23 @@ public class RobotContainer {
 
     pivotUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS)
             .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS)
             .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
         endEffector
-            .rotatePivot(
+            .rotatePivotCommand(
                 () ->
                     (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
                             + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
@@ -448,20 +447,20 @@ public class RobotContainer {
 
     elevatorL2Trigger.onTrue(
         elevator
-            .manualSetPosition(
+            .setTargetPositionCommand(
                 () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
             .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
             .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
             .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.STOW.getElevatorHeight())
             .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
     elevatorManualZeroTrigger.onTrue(
         elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
@@ -857,24 +856,15 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command moveElevatorCommand(double height_inch) {
-    return Commands.sequence(
-        elevator.setTargetPosition(() -> height_inch), elevator.waitUntilTargetPosition());
-  }
-  //   public Command defaultElevatorCommand() {
-  //       return elevator.setTargetPosition(
-  //           () -> superstructure.getCurrentState().getElevatorHeight());
-  //     }
-  public Command moveEndEffectorCommand(double radians) {
-    return Commands.sequence(
-        endEffector.rotatePivot(() -> radians), endEffector.waitUntilTargetPosition());
+  public Elevator getElevator() {
+    return elevator;
   }
 
-  public Command setIntakeStateCommand(IntakeState state) {
-    return intake.setIntakeState(state);
+  public EndEffector getEndEffector() {
+    return endEffector;
   }
-  //   public Command defaultEndEffectorCommand() {
-  //       return endEffector.rotatePivot(() ->
-  // superstructure.getCurrentState().getEndEffectorRotation());
-  //   }
+
+  public Intake getIntake() {
+    return intake;
+  }
 }

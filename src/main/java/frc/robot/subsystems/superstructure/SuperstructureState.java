@@ -17,7 +17,8 @@ public enum SuperstructureState {
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS,
-      container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.STOW))),
+      container ->
+          new ParallelCommandGroup(container.getIntake().setIntakeStateCommand(IntakeState.STOW))),
   STOW_CORAL(
       Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -27,12 +28,15 @@ public enum SuperstructureState {
   INTAKE_CORAL(
       Constants.SuperstructureConstants.INTAKE_CORAL_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.INTAKE_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS,
-      container -> new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE))),
+      container ->
+          new ParallelCommandGroup(
+              container.getIntake().setIntakeStateCommand(IntakeState.INTAKE))),
   INTAKE_CORAL_L1(
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_ROTATIONS,
       container ->
-          new ParallelCommandGroup(container.setIntakeStateCommand(IntakeState.INTAKE_L1))),
+          new ParallelCommandGroup(
+              container.getIntake().setIntakeStateCommand(IntakeState.INTAKE_L1))),
   INTAKE_ALGAE_GROUND(
       Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -102,8 +106,8 @@ public enum SuperstructureState {
     this.commandSupplier =
         (container) ->
             new ParallelCommandGroup(
-                container.moveElevatorCommand(elevatorHeight),
-                container.moveEndEffectorCommand(endEffectorRotation));
+                container.getElevator().moveElevatorCommand(() -> elevatorHeight),
+                container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation));
   }
 
   SuperstructureState(
@@ -153,19 +157,34 @@ public enum SuperstructureState {
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
     switch (this) {
-      case STOW, STOW_CORAL, STOW_ALGAE, INTAKE_CORAL, INTAKE_CORAL_L1, FEED, INTAKE_ALGAE_GROUND, L1_PIVOT, L1_SCORE: //low in states
+      case STOW,
+          STOW_CORAL,
+          STOW_ALGAE,
+          INTAKE_CORAL,
+          INTAKE_CORAL_L1,
+          FEED,
+          INTAKE_ALGAE_GROUND,
+          L1_PIVOT,
+          L1_SCORE: // low in states
         return Util.mergeSets(lowOutStates(), lowInStates());
-      case L2_AIM, L3_AIM, L2_SCORE, L3_SCORE, L2_FADEAWAY, L3_FADEAWAY, ALGAE_LOW_INTAKE, PROCESSOR_AIM: //low out states
+      case L2_AIM,
+          L3_AIM,
+          L2_SCORE,
+          L3_SCORE,
+          L2_FADEAWAY,
+          L3_FADEAWAY,
+          ALGAE_LOW_INTAKE,
+          PROCESSOR_AIM: // low out states
         return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-      case L4_AIM, L4_SCORE, L4_FADEAWAY, ALGAE_HIGH_INTAKE, BARGE_AIM_BACKWARD: //high out states
-        return Util.mergeSets(lowOutStates()
-        // highInStates()
-        );
+      case L4_AIM, L4_SCORE, L4_FADEAWAY, ALGAE_HIGH_INTAKE, BARGE_AIM_BACKWARD: // high out states
+        return Util.mergeSets(
+            lowOutStates()
+            // highInStates()
+            );
       case BARGE_AIM_CENTER, BARGE_AIM_FORWARD:
-        return Util.mergeSets(highOutStates(), highInStates()); //high in states
+        return Util.mergeSets(highOutStates(), highInStates()); // high in states
       default:
         return EnumSet.noneOf(SuperstructureState.class);
-
     }
   }
 
@@ -182,14 +201,8 @@ public enum SuperstructureState {
         INTAKE_ALGAE_GROUND);
   }
 
-  public Set<SuperstructureState> lowOutStates(){
-    return EnumSet.of(
-      PROCESSOR_AIM,
-      L2_FADEAWAY,
-      L2_SCORE,
-      L2_AIM,
-      ALGAE_LOW_INTAKE
-    );
+  public Set<SuperstructureState> lowOutStates() {
+    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_SCORE, L2_AIM, ALGAE_LOW_INTAKE);
   }
 
   public Set<SuperstructureState> highOutStates() {
@@ -201,8 +214,7 @@ public enum SuperstructureState {
         L4_FADEAWAY,
         L4_AIM,
         L4_SCORE,
-        BARGE_AIM_BACKWARD
-        );
+        BARGE_AIM_BACKWARD);
   }
 
   public Set<SuperstructureState> highInStates() {

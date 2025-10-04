@@ -15,6 +15,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import java.util.function.DoubleSupplier;
 
 public class ElevatorIOReal implements ElevatorIO {
 
@@ -196,6 +197,11 @@ public class ElevatorIOReal implements ElevatorIO {
   @Override
   public void setElevatorVoltage(double voltage) {
     rightTalon.setControl(m_VoltageOut.withOutput(voltage));
+  }
+
+  @Override
+  public void setElevatorTargetPosition(DoubleSupplier positionSupplier) {
+    rightTalon.setControl(m_request.withPosition(positionSupplier.getAsDouble()));
   }
 
   @Override

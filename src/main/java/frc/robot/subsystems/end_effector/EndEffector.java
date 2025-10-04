@@ -36,8 +36,6 @@ public class EndEffector extends SubsystemBase {
   private static final LoggedTunableNumber pivotJerk =
       new LoggedTunableNumber("EndEffector/PivotJerk", EndEffectorConstants.Tunable_PIVOT_Jerk);
 
-  private double setpointRotation;
-
   public EndEffector(EndEffectorIO io) {
     this.io = io;
     System.out.println("====================EndEffector Subsystem Online====================");
@@ -76,17 +74,29 @@ public class EndEffector extends SubsystemBase {
   @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
   public boolean isPivotInTolerance() {
     return MathUtil.isNear(
-        setpointRotation,
+        inputs.pivotData.pivotSetpoint(),
         inputs.pivotData.pivotPosition(),
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
   }
 
-  public Command rotatePivot(DoubleSupplier rotationSupplier) {
-    setpointRotation = rotationSupplier.getAsDouble();
-    return Commands.runOnce(() -> this.io.setPivotPosition(rotationSupplier.getAsDouble()), this);
+  public Command moveEndEffectorCommand(DoubleSupplier rotationsSupplier) {
+    return Commands.sequence(
+        this.rotatePivotCommand(rotationsSupplier), this.waitUntilTargetPositionCommand());
   }
 
-  public Command waitUntilTargetPosition() {
+  public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {
+    return Commands.runOnce(
+        () ->
+            this.io.setPivotPosition(
+                () ->
+                    MathUtil.clamp(
+                        rotationSupplier.getAsDouble(),
+                        EndEffectorConstants.MIN_ANGLE_ROTATIONS,
+                        EndEffectorConstants.MAX_ANGLE_ROTATIONS)),
+        this);
+  }
+
+  public Command waitUntilTargetPositionCommand() {
     return Commands.waitUntil(() -> isPivotInTolerance());
   }
 

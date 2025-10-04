@@ -18,6 +18,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
@@ -128,8 +129,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
-  public void setPivotPosition(double position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(position));
+  public void setPivotPosition(DoubleSupplier position) {
+    pivotTalonFX.setControl(pivot_m_request.withPosition(position.getAsDouble()));
   }
 
   @Override

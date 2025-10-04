@@ -79,14 +79,14 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  public void setTargetPosition(double position) {
+  public void setTargetPositionCommand(double position) {
     position =
         MathUtil.clamp(
             position,
             ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
             ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
     setpoint = position;
-    io.setElevatorTargetPosition(position);
+    this.io.setElevatorTargetPosition(position);
   }
 
   @AutoLogOutput(key = "Elevator/InTolerance")
@@ -99,17 +99,24 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
-  public Command setTargetPosition(DoubleSupplier positionSupplier) {
-    return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+  public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
+    return Commands.sequence(
+        this.setTargetPositionCommand(heightSupplier), this.waitUntilTargetPositionCommand());
   }
 
-  public Command waitUntilTargetPosition() {
-    return Commands.waitUntil(() -> isInTolerance());
-  }
-
-  public Command manualSetPosition(DoubleSupplier inchSupplier) {
+  public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
     return Commands.runOnce(
-        () -> this.io.setElevatorTargetPosition(inchSupplier.getAsDouble()), this);
+        () ->
+            this.io.setElevatorTargetPosition(
+                MathUtil.clamp(
+                    heightSupplier.getAsDouble(),
+                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
+        this);
+  }
+
+  public Command waitUntilTargetPositionCommand() {
+    return Commands.waitUntil(() -> isInTolerance());
   }
 
   public Command elevatorSTOP() {
@@ -136,7 +143,7 @@ public class Elevator extends SubsystemBase {
             >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
                 - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
       // false alarm, elevator is stalling at the top
-      setTargetPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
       return false;
     } else {
       return io.checkMotorsStalled();
@@ -163,7 +170,9 @@ public class Elevator extends SubsystemBase {
 
   public Command dejamElevator() {
     return Commands.runOnce(
-        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
+        () ->
+            setTargetPositionCommand(
+                getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
         this);
   }
 
