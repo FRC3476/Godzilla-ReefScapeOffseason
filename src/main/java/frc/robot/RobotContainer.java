@@ -73,7 +73,12 @@ import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -322,20 +327,10 @@ public class RobotContainer {
     Trigger intakeStateStowTrigger = new Trigger(() -> intakeStateStowEntry.getBoolean(false));
     Trigger intakeStateIntakeL1Trigger =
         new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
-    Trigger intakeStateIntakeL1Trigger =
-        new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
     Trigger intakeStateIntakeTrigger = new Trigger(() -> intakeStateIntakeEntry.getBoolean(false));
     Trigger intakeStateRejectCoralTrigger =
         new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
-    Trigger intakeStateRejectCoralTrigger =
-        new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
     Trigger intakeStateIdleTrigger = new Trigger(() -> intakeStateIdleEntry.getBoolean(false));
-    Trigger intakeStateHandOffTrigger =
-        new Trigger(() -> intakeStateHandOffEntry.getBoolean(false));
-    Trigger intakeStateScoringTrigger =
-        new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
-    Trigger intakeStateScoringPrepTrigger =
-        new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
     Trigger intakeStateHandOffTrigger =
         new Trigger(() -> intakeStateHandOffEntry.getBoolean(false));
     Trigger intakeStateScoringTrigger =
@@ -371,7 +366,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(
         intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
     intakeDownPosTrigger.onTrue(
-        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
     intakeScoringPosTrigger.onTrue(
         intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
     intakeZeroPosTrigger.onTrue(
