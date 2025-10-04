@@ -13,8 +13,8 @@ public interface ClimberIO {
       double positionRads,
       double velocityRadsPerSec,
       double appliedVoltage,
+      double supplyCurrentAmps,
       double torqueCurrentAmps,
-      double supplyVolts,
       double tempCelsius) {}
 
   default void runVolts(double volts) {}
