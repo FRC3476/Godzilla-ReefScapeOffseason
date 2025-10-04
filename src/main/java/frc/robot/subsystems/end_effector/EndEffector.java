@@ -1,17 +1,21 @@
 package frc.robot.subsystems.end_effector;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
 
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
+
+  private double pivotSetpoint;
 
   private static final LoggedTunableNumber pivotTestVolts =
       new LoggedTunableNumber("EndEffector/PivotTestVolts", 1.0);
@@ -69,8 +73,34 @@ public class EndEffector extends SubsystemBase {
     return inputs.pivotData.pivotPosition();
   }
 
-  public Command rotatePivot(DoubleSupplier radianSupplier) {
-    return Commands.runOnce(() -> this.io.setPivotPosition(radianSupplier.getAsDouble()), this);
+  @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
+  public boolean isPivotInTolerance() {
+    return MathUtil.isNear(
+        pivotSetpoint,
+        inputs.pivotData.pivotPosition(),
+        EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
+  }
+
+  public Command moveEndEffectorCommand(DoubleSupplier rotationsSupplier) {
+    return Commands.sequence(
+        this.rotatePivotCommand(rotationsSupplier), this.waitUntilTargetPositionCommand());
+  }
+
+  public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {
+    pivotSetpoint = rotationSupplier.getAsDouble();
+    return Commands.runOnce(
+        () ->
+            this.io.setPivotPosition(
+                () ->
+                    MathUtil.clamp(
+                        rotationSupplier.getAsDouble(),
+                        EndEffectorConstants.MIN_ANGLE_ROTATIONS,
+                        EndEffectorConstants.MAX_ANGLE_ROTATIONS)),
+        this);
+  }
+
+  public Command waitUntilTargetPositionCommand() {
+    return Commands.waitUntil(() -> isPivotInTolerance());
   }
 
   public Command pivotUP() {
