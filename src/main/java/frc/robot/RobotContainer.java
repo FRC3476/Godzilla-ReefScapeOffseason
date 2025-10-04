@@ -72,13 +72,9 @@ import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-import frc.robot.Constants.IntakeConstants.IntakeState;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**

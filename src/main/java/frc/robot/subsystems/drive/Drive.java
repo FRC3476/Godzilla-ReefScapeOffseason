@@ -27,7 +27,6 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -232,7 +231,7 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    if (vision.getCameraAInputs().pose3d != null) {
+    /*if (vision.getCameraAInputs().pose3d != null) {
       Matrix<N3, N1> cameraAStdDev =
           new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraAInputs().standardDeviations);
       poseEstimator.addVisionMeasurement(
@@ -247,7 +246,7 @@ public class Drive extends SubsystemBase {
           vision.getCameraBInputs().pose3d.toPose2d(),
           vision.getCameraBInputs().megatagPoseEstimate.timestampSeconds(),
           cameraBStdDev);
-    }
+    }*/
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);

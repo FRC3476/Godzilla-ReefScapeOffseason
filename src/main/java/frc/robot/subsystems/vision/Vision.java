@@ -18,6 +18,10 @@ public class Vision extends SubsystemBase {
 
   public Vision(VisionIO io) {
     this.io = io;
+  }
+  
+  @Override
+  public void periodic() {
     io.updateInputs(inputs);
     Logger.recordOutput("Vision/CameraA/SeesTarget", inputs.cameraA.seesTarget);
     Logger.recordOutput("Vision/CameraB/SeesTarget", inputs.cameraB.seesTarget);
