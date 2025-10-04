@@ -480,19 +480,19 @@ public class RobotContainer {
 
   private void buildElevatorTab() {
     // Get the NetworkTable for the Elevator tab
-    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
+    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elastic/Elevator");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
-    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elevator Down (While Held)");
+    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elastic/Elevator Up (While Held)");
+    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elastic/Elevator Down (While Held)");
 
-    NetworkTableEntry elevatorL2Entry = elevatorTable.getEntry("Elevator L2 (When Pressed)");
-    NetworkTableEntry elevatorL3Entry = elevatorTable.getEntry("Elevator L3 (When Pressed)");
-    NetworkTableEntry elevatorL4Entry = elevatorTable.getEntry("Elevator L4 (When Pressed)");
+    NetworkTableEntry elevatorL2Entry = elevatorTable.getEntry("Elastic/Elevator L2 (When Pressed)");
+    NetworkTableEntry elevatorL3Entry = elevatorTable.getEntry("Elastic/Elevator L3 (When Pressed)");
+    NetworkTableEntry elevatorL4Entry = elevatorTable.getEntry("Elastic/Elevator L4 (When Pressed)");
     NetworkTableEntry elevatorDownPosEntry =
-        elevatorTable.getEntry("Elevator Down Pos (When Pressed)");
+        elevatorTable.getEntry("Elastic/Elevator Down Pos (When Pressed)");
     NetworkTableEntry elevatorManualZeroEntry =
-        elevatorTable.getEntry("Zero the Elevator (When Pressed)");
+        elevatorTable.getEntry("Elastic/Zero the Elevator (When Pressed)");
 
     // Initialize entries with default values
     elevatorUpEntry.setBoolean(false);
