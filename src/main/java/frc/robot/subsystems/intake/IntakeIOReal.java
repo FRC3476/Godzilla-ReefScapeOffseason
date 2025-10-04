@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -347,7 +346,7 @@ public class IntakeIOReal implements IntakeIO {
         "Intake/absolutePostionBeforeOffset", canCoder.getAbsolutePosition().getValueAsDouble());
 
     double intakeUpAbsoluteRotations =
-        Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION) * IntakeConstants.PIVOT_STM;
+        IntakeConstants.PIVOT_UP_POSITION * IntakeConstants.PIVOT_STM;
     double magnetOffset =
         intakeUpAbsoluteRotations - canCoder.getAbsolutePosition().getValueAsDouble();
     magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
@@ -363,8 +362,6 @@ public class IntakeIOReal implements IntakeIO {
     // Need to do this because the canCoder wraps from its 0 position.
     canCoder.setPosition(
         canCoder.getAbsolutePosition().getValueAsDouble()
-            + Math.round(
-                Units.radiansToRotations(IntakeConstants.PIVOT_UP_POSITION)
-                    * IntakeConstants.PIVOT_STM));
+            + Math.round(IntakeConstants.PIVOT_UP_POSITION * IntakeConstants.PIVOT_STM));
   }
 }

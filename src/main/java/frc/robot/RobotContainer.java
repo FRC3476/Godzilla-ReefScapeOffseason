@@ -14,8 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -25,7 +23,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -65,7 +62,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import java.util.HashMap;
@@ -92,8 +88,8 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-  private final StreamDeck streamdeck = new StreamDeck();
+  //   private final CommandXboxController controller = new CommandXboxController(0);
+  //   private final StreamDeck streamdeck = new StreamDeck();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -108,7 +104,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOReal());
         claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
         drive =
             new Drive(
@@ -128,7 +124,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
         drive =
             new Drive(
@@ -148,7 +144,7 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         drive =
             new Drive(
@@ -197,23 +193,25 @@ public class RobotContainer {
 
     // Configure arbitrary triggers
     configureArbitraryTriggers();
+
+    configureSuperstructureTrigger();
   }
 
   private void configureButtonBindings() {
-    configureXboxBindings();
-    configureStreamDeckBindings();
+    // configureXboxBindings();
+    // configureStreamDeckBindings();
   }
 
   private void RegisterDefaultCommands() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    // drive.setDefaultCommand(
+    //     DriveCommands.joystickDrive(
+    //         drive,
+    //         () -> -controller.getLeftY(),
+    //         () -> -controller.getLeftX(),
+    //         () -> -controller.getRightX()));
+    // elevator.setDefaultCommand(defaultElevatorCommand());
+    // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
@@ -352,7 +350,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(
         intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
     intakeDownPosTrigger.onTrue(
-        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
     intakeScoringPosTrigger.onTrue(
         intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
     intakeZeroPosTrigger.onTrue(
@@ -456,26 +454,26 @@ public class RobotContainer {
 
     pivotUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS)
             .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS)
             .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
         endEffector
-            .rotatePivot(
+            .rotatePivotCommand(
                 () ->
-                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
                         / 2)
             .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
     pivotManualZeroTrigger.onTrue(
@@ -526,20 +524,20 @@ public class RobotContainer {
 
     elevatorL2Trigger.onTrue(
         elevator
-            .manualSetPosition(
+            .setTargetPositionCommand(
                 () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
             .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
             .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
             .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.STOW.getElevatorHeight())
             .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
     elevatorManualZeroTrigger.onTrue(
         elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
@@ -568,8 +566,8 @@ public class RobotContainer {
     NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
     NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
     NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("BARGE_AIM_CENTER");
-    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
     NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("BARGE_AIM_BACKWARD");
+    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
 
     // Initialize entries with default values
     stowEntry.setBoolean(false);
@@ -590,8 +588,8 @@ public class RobotContainer {
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
     bargeAimCenterEntry.setBoolean(false);
-    bargeAimForwardEntry.setBoolean(false);
     bargeAimBackwardEntry.setBoolean(false);
+    bargeAimForwardEntry.setBoolean(false);
 
     // Create triggers for each button
     Trigger stowTrigger = new Trigger(() -> stowEntry.getBoolean(false));
@@ -612,8 +610,8 @@ public class RobotContainer {
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
     Trigger bargeAimCenterTrigger = new Trigger(() -> bargeAimCenterEntry.getBoolean(false));
-    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
     Trigger bargeAimBackwardTrigger = new Trigger(() -> bargeAimBackwardEntry.getBoolean(false));
+    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
 
     // Wire triggers to superstructure state commands
     stowTrigger.onTrue(
@@ -688,14 +686,14 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_CENTER, "Set BARGE_AIM_CENTER")
             .andThen(() -> bargeAimCenterEntry.setBoolean(false)));
-    bargeAimForwardTrigger.onTrue(
-        superstructure
-            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
-            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
     bargeAimBackwardTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD")
             .andThen(() -> bargeAimBackwardEntry.setBoolean(false)));
+    bargeAimForwardTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
+            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
 
     // Add current state and target state monitoring
     NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Current State");
@@ -774,28 +772,28 @@ public class RobotContainer {
   private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.driveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.driveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // // Reset gyro to 0° when B button is pressed
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
   }
 
   private void configureStreamDeckBindings() {
@@ -1195,6 +1193,11 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
+  private void configureSuperstructureTrigger() {
+    superstructure.setTriggers();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -1204,21 +1207,15 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command defaultElevatorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return elevator.moveToTargetPosition(
-          () -> superstructure.getCurrentState().getElevatorHeight());
-    }
+  public Elevator getElevator() {
+    return elevator;
   }
 
-  public Command defaultEndEffectorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return endEffector.rotatePivot(
-          () -> superstructure.getCurrentState().getEndEffectorRotation());
-    }
+  public EndEffector getEndEffector() {
+    return endEffector;
+  }
+
+  public Intake getIntake() {
+    return intake;
   }
 }
