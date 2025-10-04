@@ -19,7 +19,7 @@ public class Vision extends SubsystemBase {
   public Vision(VisionIO io) {
     this.io = io;
   }
-  
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
