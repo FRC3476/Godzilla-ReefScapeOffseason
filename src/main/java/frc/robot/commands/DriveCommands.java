@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
@@ -168,7 +167,7 @@ public class DriveCommands {
 
   // drive using object detection for coral
 
-  public static Command driveToCoral(Drive drive, Vision vision, Intake intake) {
+  public static Command driveToCoral(Drive drive, Vision vision) {
     boolean isFlipped =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
@@ -188,6 +187,16 @@ public class DriveCommands {
                     + (isFlipped ? 180 : 0));
     return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
         .onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
+  }
+
+  // drive to specific pose
+
+  public static Command driveToPose(Drive drive, Pose2d targetPose) {
+    DoubleSupplier xSupplier = () -> drive.getPose().minus(targetPose).getX() * 2;
+    DoubleSupplier ySupplier = () -> drive.getPose().minus(targetPose).getY() * 2;
+    Supplier<Rotation2d> rotSupplier = () -> targetPose.getRotation();
+    return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier);
+    //    .onlyWhile(() -> xSupplier.getAsDouble() > 0.5 && ySupplier.getAsDouble() > 0.5);
   }
 
   /**

@@ -71,7 +71,6 @@ import frc.robot.util.Controls.StreamDeckButtonConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
-import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -738,8 +737,9 @@ public class RobotContainer {
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
-    driveClockwiseTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
+    // driveClockwiseTrigger.whileTrue(
+    //    Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
+    driveClockwiseTrigger.whileTrue(DriveCommands.driveToPose(drive, Pose2d.kZero));
   }
 
   private void buildClimberTab() {
