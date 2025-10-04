@@ -64,8 +64,8 @@ public class IntakeIOSim extends IntakeIOReal {
 
     // Set up TalonFX simulation states
     pivotMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
-    rollerMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
-    lvl1blockerMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
+    rollerMotor.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
+    lvl1blockerMotor.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
 
     pivotSimState = pivotMotor.getSimState();
     rollerSimState = rollerMotor.getSimState();
