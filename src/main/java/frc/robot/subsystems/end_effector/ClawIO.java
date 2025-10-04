@@ -2,6 +2,8 @@ package frc.robot.subsystems.end_effector;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.wpilibj2.command.Command;
+
 public interface ClawIO {
 
   @AutoLog
@@ -22,6 +24,8 @@ public interface ClawIO {
   record EE_CANRangeData(boolean canRangeConnected, boolean rangeIsTripped) {}
 
   default void setRollerVoltage(double voltage) {}
+
+  default void setTorqueCurrent(double amps) {}
 
   default void setRollerVelocity(double velocity) {}
 

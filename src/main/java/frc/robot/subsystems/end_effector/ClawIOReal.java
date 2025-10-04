@@ -2,6 +2,7 @@ package frc.robot.subsystems.end_effector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -22,8 +23,10 @@ public class ClawIOReal implements ClawIO {
   private CANrange firstCoralCANRange;
   private CANrange secondCoralCANRange;
 
+  private TorqueCurrentFOC roller_c_request =
+    new TorqueCurrentFOC(EndEffectorConstants.CLAW_HOLD_ALGAE);
   private VoltageOut roller_m_request =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+    new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
 
   StatusSignal<AngularVelocity> rollerVelocityRPS;
   StatusSignal<Voltage> rollerAppliedVolts;
@@ -95,6 +98,12 @@ public class ClawIOReal implements ClawIO {
         new EE_CANRangeData(
             BaseStatusSignal.isAllGood(secondRangeIsTripped), secondRangeIsTripped.getValue());
   }
+
+
+  public void setTorqueCurrent(double amps) {
+    rollerTalonFX.setControl(roller_c_request.withOutput(amps));
+}
+
 
   @Override
   public void setRollerVoltage(double voltage) {

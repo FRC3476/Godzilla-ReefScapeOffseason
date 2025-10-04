@@ -12,6 +12,8 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();

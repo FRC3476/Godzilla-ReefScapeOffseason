@@ -432,6 +432,8 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
+    public static final double CLAW_HOLD_ALGAE_AMPS = 40.0;
+
     // ========End Effector Constant Positions========
     // Pivot positions in radians
     public static final double IDLE_ANGLE_RAD = EndEffectorConstants.MIN_ANGLE_RADIAN;
