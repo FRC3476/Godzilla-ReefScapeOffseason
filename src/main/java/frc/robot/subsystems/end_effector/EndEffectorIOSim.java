@@ -33,7 +33,9 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
     pivotSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1), 0.01, 1.0 / EndEffectorConstants.PIVOT_GEAR_RATIO),
+                DCMotor.getKrakenX60(1), 
+                0.01, 
+                1.0 / EndEffectorConstants.PIVOT_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
 
     pivotTalonFX.getSimState().Orientation = ChassisReference.Clockwise_Positive;

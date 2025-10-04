@@ -153,62 +153,59 @@ public enum SuperstructureState {
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
     switch (this) {
-      case STOW:
-        return Util.mergeSets(outStates(), lowStates());
-      case STOW_CORAL:
-        return Util.mergeSets(outStates(), lowStates());
-      case STOW_ALGAE:
-        return Util.mergeSets(outStates(), lowStates());
-      case INTAKE_CORAL:
-        return Util.mergeSets(outStates(), lowStates());
-      case INTAKE_CORAL_L1:
-        return Util.mergeSets(outStates(), lowStates());
-      case FEED:
-        return Util.mergeSets(outStates(), lowStates());
-      case L1_PIVOT:
-        return Util.mergeSets(outStates(), lowStates());
-      case L2_AIM:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case L3_AIM:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case L4_AIM:
-        return Util.mergeSets(outStates(), topStates());
-      case L1_SCORE:
-        return Util.mergeSets(outStates(), lowStates());
-      case L2_SCORE:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case L3_SCORE:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case L4_SCORE:
-        return Util.mergeSets(outStates(), topStates());
-      case ALGAE_HIGH_INTAKE:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case ALGAE_LOW_INTAKE:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case PROCESSOR_AIM:
-        return Util.mergeSets(outStates(), lowStates(), topStates());
-      case BARGE_AIM_CENTER:
-        return Util.mergeSets(outStates(), topStates());
-      case BARGE_AIM_FORWARD:
-        return Util.mergeSets(outStates(), topStates());
-      case BARGE_AIM_BACKWARD:
-        return Util.mergeSets(outStates(), topStates());
+      case STOW, STOW_CORAL, STOW_ALGAE, INTAKE_CORAL, INTAKE_CORAL_L1, FEED, INTAKE_ALGAE_GROUND, L1_PIVOT, L1_SCORE: //low in states
+        return Util.mergeSets(lowOutStates(), lowInStates());
+      case L2_AIM, L3_AIM, L2_SCORE, L3_SCORE, L2_FADEAWAY, L3_FADEAWAY, ALGAE_LOW_INTAKE, PROCESSOR_AIM: //low out states
+        return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
+      case L4_AIM, L4_SCORE, L4_FADEAWAY, ALGAE_HIGH_INTAKE, BARGE_AIM_BACKWARD: //high out states
+        return Util.mergeSets(lowOutStates()
+        // highInStates()
+        );
+      case BARGE_AIM_CENTER, BARGE_AIM_FORWARD:
+        return Util.mergeSets(highOutStates(), highInStates()); //high in states
       default:
-        return EnumSet.of(STOW);
+        return EnumSet.noneOf(SuperstructureState.class);
+
     }
   }
 
-  public Set<SuperstructureState> lowStates() {
+  public Set<SuperstructureState> lowInStates() {
     return EnumSet.of(
-        STOW, STOW_ALGAE, STOW_CORAL, INTAKE_CORAL, INTAKE_CORAL_L1, FEED, L1_PIVOT, L1_SCORE);
+        STOW,
+        STOW_ALGAE,
+        STOW_CORAL,
+        INTAKE_CORAL,
+        INTAKE_CORAL_L1,
+        FEED,
+        L1_PIVOT,
+        L1_SCORE,
+        INTAKE_ALGAE_GROUND);
   }
 
-  public Set<SuperstructureState> outStates() {
+  public Set<SuperstructureState> lowOutStates(){
     return EnumSet.of(
-        L2_AIM, L3_AIM, L2_SCORE, L3_SCORE, ALGAE_HIGH_INTAKE, ALGAE_LOW_INTAKE, PROCESSOR_AIM);
+      PROCESSOR_AIM,
+      L2_FADEAWAY,
+      L2_SCORE,
+      L2_AIM,
+      ALGAE_LOW_INTAKE
+    );
   }
 
-  public Set<SuperstructureState> topStates() {
-    return EnumSet.of(L4_AIM, L4_SCORE, BARGE_AIM_CENTER, BARGE_AIM_FORWARD, BARGE_AIM_BACKWARD);
+  public Set<SuperstructureState> highOutStates() {
+    return EnumSet.of(
+        L3_AIM,
+        L3_SCORE,
+        ALGAE_HIGH_INTAKE,
+        L3_FADEAWAY,
+        L4_FADEAWAY,
+        L4_AIM,
+        L4_SCORE,
+        BARGE_AIM_BACKWARD
+        );
+  }
+
+  public Set<SuperstructureState> highInStates() {
+    return EnumSet.of(BARGE_AIM_CENTER, BARGE_AIM_FORWARD);
   }
 }
