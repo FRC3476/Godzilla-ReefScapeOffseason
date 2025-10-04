@@ -14,6 +14,7 @@ import java.util.function.Function;
 // This stores what subsystem values are in each state
 
 public enum SuperstructureState {
+  NONE(),
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS,
@@ -117,6 +118,12 @@ public enum SuperstructureState {
     this.elevatorHeight = elevatorHeight;
     this.endEffectorRotation = endEffectorRotation;
     this.commandSupplier = command;
+  }
+  
+  SuperstructureState(){
+    this.elevatorHeight = 0;
+    this.endEffectorRotation = 0;
+    this.commandSupplier = (container) -> Commands.none();
   }
 
   public double getElevatorHeight() {

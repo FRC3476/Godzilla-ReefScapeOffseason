@@ -438,7 +438,7 @@ public class SuperstructureStateMachine {
   /** Manages state-related operations and validation. */
   private static class StateManager {
     private SuperstructureState currentState;
-    private SuperstructureState targetState = SuperstructureState.STOW;
+    private SuperstructureState targetState = SuperstructureState.NONE;
     private SuperstructureState currentTargetState = targetState;
     private double currentTargetStateTime = 0;
 
