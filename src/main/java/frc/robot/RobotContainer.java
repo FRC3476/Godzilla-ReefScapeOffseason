@@ -222,8 +222,8 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    // elevator.setDefaultCommand(defaultElevatorCommand());
+    // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
@@ -371,35 +371,35 @@ public class RobotContainer {
     // Configure intake state button triggers
     intakeStateStowTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.STOW)
+            .setIntakeStateCommand(IntakeState.STOW)
             .andThen(() -> intakeStateStowEntry.setBoolean(false)));
     intakeStateIntakeL1Trigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE_L1)
+            .setIntakeStateCommand(IntakeState.INTAKE_L1)
             .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
     intakeStateIntakeTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE)
+            .setIntakeStateCommand(IntakeState.INTAKE)
             .andThen(() -> intakeStateIntakeEntry.setBoolean(false)));
     intakeStateRejectCoralTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.REJECT_CORAL)
+            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
             .andThen(() -> intakeStateRejectCoralEntry.setBoolean(false)));
     intakeStateIdleTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.IDLE)
+            .setIntakeStateCommand(IntakeState.IDLE)
             .andThen(() -> intakeStateIdleEntry.setBoolean(false)));
     intakeStateHandOffTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.HAND_OFF)
+            .setIntakeStateCommand(IntakeState.HAND_OFF)
             .andThen(() -> intakeStateHandOffEntry.setBoolean(false)));
     intakeStateScoringTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING)
+            .setIntakeStateCommand(IntakeState.SCORING)
             .andThen(() -> intakeStateScoringEntry.setBoolean(false)));
     intakeStateScoringPrepTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING_PREP)
+            .setIntakeStateCommand(IntakeState.SCORING_PREP)
             .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
   }
 
@@ -793,10 +793,10 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
+    // // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
+    // // Reset gyro to 0° when B button is pressed
     controller
         .b()
         .onTrue(

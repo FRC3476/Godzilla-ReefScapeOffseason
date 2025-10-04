@@ -224,7 +224,7 @@ public class Intake extends SubsystemBase {
         feeder);
   }
 
-  public Command setIntakeState(IntakeState state) {
+  public Command setIntakeStateCommand(IntakeState state) {
     return Commands.runOnce(() -> this.currentState = state, this);
   }
 
