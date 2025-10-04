@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
 import org.littletonrobotics.junction.Logger;
@@ -16,10 +15,10 @@ public class Superstructure extends SubsystemBase {
   private Elevator elevator;
   private SuperstructureStateMachine stateMachine;
 
-  public Superstructure(Elevator elevator, EndEffector endEffector, RobotContainer container) {
+  public Superstructure(Elevator elevator, EndEffector endEffector) {
     this.endEffector = endEffector;
     this.elevator = elevator;
-    this.stateMachine = new SuperstructureStateMachine(container);
+    this.stateMachine = new SuperstructureStateMachine();
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
   }
 
@@ -43,10 +42,6 @@ public class Superstructure extends SubsystemBase {
 
   public SuperstructureState getCurrentState() {
     return stateMachine.getCurrentState();
-  }
-
-  public SuperstructureState getCurrentTargetState() {
-    return stateMachine.getCurrentTargetState();
   }
 
   public double calculateDynamicTranslationalAccelLimit() {
