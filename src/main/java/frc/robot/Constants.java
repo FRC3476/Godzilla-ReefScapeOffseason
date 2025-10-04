@@ -571,9 +571,9 @@ public final class Constants {
     public static final double PIVOT_Accel = 0;
     public static final double PIVOT_Jerk = 0;
 
-    public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
-    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+    public static final TalonFXConfiguration CLIMB_TALON_CONFIG =
         new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
@@ -728,14 +728,14 @@ public final class Constants {
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
     public static double L1_PIVOT_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(65.7874127);
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811 + 2;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_AIM_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785;
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785 + 2.5;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
@@ -753,14 +753,14 @@ public final class Constants {
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
     public static double L1_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(65.7874127);
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811 + 2;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785;
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785 + 2.5;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-16.3769186);

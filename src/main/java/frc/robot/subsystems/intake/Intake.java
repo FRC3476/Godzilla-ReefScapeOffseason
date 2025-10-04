@@ -228,7 +228,7 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(() -> this.currentState = state, this);
   }
 
-  public Command movePivotDown() {
+  public Command setPivotDown() {
     return Commands.runOnce(
         () -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
@@ -295,6 +295,14 @@ public class Intake extends SubsystemBase {
 
   public Command l1BarSTOP() {
     return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
+  }
+
+  public Command engageCoralL1Stall() {
+    return Commands.run(() -> io.setLvl1BlockerVoltage(-l1Volts.get()));
+  }
+
+  public Command disengageCoralL1Stall() {
+    return Commands.run(() -> io.setLvl1BlockerVoltage(l1Volts.get()));
   }
 
   public Command feederFWD() {

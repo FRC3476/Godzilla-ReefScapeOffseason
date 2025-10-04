@@ -133,7 +133,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getCurrentPosition() {
-    return inputs.data.rightPosition();
+    return inputs.rightMotorData.position();
   }
 
   private boolean checkForJam() {
