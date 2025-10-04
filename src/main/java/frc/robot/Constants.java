@@ -562,9 +562,9 @@ public final class Constants {
     public static final double PIVOT_Accel = 0;
     public static final double PIVOT_Jerk = 0;
 
-    public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
-    public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
+    public static final TalonFXConfiguration CLIMB_TALON_CONFIG =
         new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
