@@ -86,7 +86,6 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
         "EndEffector/Sim/SimPivotVelocityRadS", pivotSim.getAngularVelocityRadPerSec());
   }
 
-
   private void logSimulationData() {
     // Log pivot simulation data
     Logger.recordOutput("Intake/Sim/Pivot/PositionRad", pivotSim.getAngularPositionRad());
@@ -98,5 +97,4 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
   public void close() {
     simNotifier.close();
   }
-
 }
