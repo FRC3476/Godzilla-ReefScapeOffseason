@@ -714,13 +714,13 @@ public final class Constants {
         EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_PIVOT_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811+2;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_AIM_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785;
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785+2.5;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
@@ -737,13 +737,13 @@ public final class Constants {
         EndEffectorConstants.MIN_ANGLE_RADIAN;
     public static double L1_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(65.7874127);
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811+2;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
     public static double L2_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785;
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785+2.5;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_RADIAN = Units.degreesToRadians(-16.3769186);
     // Away from reef 17.7998883deg
@@ -755,11 +755,11 @@ public final class Constants {
         Units.degreesToRadians(3.1972053); // Away from reef (no against)
     public static double L4_SCORE_INTAKE_ROTATION_RADIAN = Units.degreesToRadians(-26.9162484);
 
-    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811+2;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(53.9126895);
 
-    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811+2.5;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_RADIAN =
         Units.degreesToRadians(53.9126895);
 
