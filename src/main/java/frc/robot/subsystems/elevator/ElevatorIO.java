@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
@@ -48,8 +47,6 @@ public interface ElevatorIO {
   default void setElevatorVoltage(double voltage) {}
 
   default void setElevatorTargetPosition(double position) {}
-
-  default void setElevatorTargetPosition(DoubleSupplier supplier) {}
 
   default void setElevatorZero() {}
 
