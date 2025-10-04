@@ -23,10 +23,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -66,8 +68,9 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-import frc.robot.Constants.IntakeConstants.IntakeState;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -251,11 +254,13 @@ public class RobotContainer {
     NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
     NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("L1 (When Pressed)");
     NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
-    NetworkTableEntry intakeStateRejectCoralEntry = intakeTable.getEntry("Reject Coral (When Pressed)");
+    NetworkTableEntry intakeStateRejectCoralEntry =
+        intakeTable.getEntry("Reject Coral (When Pressed)");
     NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Idle (When Pressed)");
     NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Hand Off (When Pressed)");
     NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Scoring (When Pressed)");
-    NetworkTableEntry intakeStateScoringPrepEntry = intakeTable.getEntry("Scoring Prep (When Pressed)");
+    NetworkTableEntry intakeStateScoringPrepEntry =
+        intakeTable.getEntry("Scoring Prep (When Pressed)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
@@ -305,13 +310,18 @@ public class RobotContainer {
 
     // Create triggers for intake state buttons
     Trigger intakeStateStowTrigger = new Trigger(() -> intakeStateStowEntry.getBoolean(false));
-    Trigger intakeStateIntakeL1Trigger = new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
+    Trigger intakeStateIntakeL1Trigger =
+        new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
     Trigger intakeStateIntakeTrigger = new Trigger(() -> intakeStateIntakeEntry.getBoolean(false));
-    Trigger intakeStateRejectCoralTrigger = new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
+    Trigger intakeStateRejectCoralTrigger =
+        new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
     Trigger intakeStateIdleTrigger = new Trigger(() -> intakeStateIdleEntry.getBoolean(false));
-    Trigger intakeStateHandOffTrigger = new Trigger(() -> intakeStateHandOffEntry.getBoolean(false));
-    Trigger intakeStateScoringTrigger = new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
-    Trigger intakeStateScoringPrepTrigger = new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
+    Trigger intakeStateHandOffTrigger =
+        new Trigger(() -> intakeStateHandOffEntry.getBoolean(false));
+    Trigger intakeStateScoringTrigger =
+        new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
+    Trigger intakeStateScoringPrepTrigger =
+        new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -338,35 +348,47 @@ public class RobotContainer {
     feederOutTrigger.whileTrue(intake.feederRVS());
     feederOutTrigger.onFalse(intake.feederSTOP());
 
-    intakeUpPosTrigger.onTrue(intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
-    intakeDownPosTrigger.onTrue(intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
-    intakeScoringPosTrigger.onTrue(intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
-    intakeZeroPosTrigger.onTrue(intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
+    intakeUpPosTrigger.onTrue(
+        intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
+    intakeDownPosTrigger.onTrue(
+        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+    intakeScoringPosTrigger.onTrue(
+        intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
+    intakeZeroPosTrigger.onTrue(
+        intake.zeroPivotAtPivotUp().andThen(() -> intakeZeroPosEntry.setBoolean(false)));
 
     // Configure intake state button triggers
     intakeStateStowTrigger.onTrue(
-        intake.setIntakeState(IntakeState.STOW)
+        intake
+            .setIntakeState(IntakeState.STOW)
             .andThen(() -> intakeStateStowEntry.setBoolean(false)));
     intakeStateIntakeL1Trigger.onTrue(
-        intake.setIntakeState(IntakeState.INTAKE_L1)
+        intake
+            .setIntakeState(IntakeState.INTAKE_L1)
             .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
     intakeStateIntakeTrigger.onTrue(
-        intake.setIntakeState(IntakeState.INTAKE)
+        intake
+            .setIntakeState(IntakeState.INTAKE)
             .andThen(() -> intakeStateIntakeEntry.setBoolean(false)));
     intakeStateRejectCoralTrigger.onTrue(
-        intake.setIntakeState(IntakeState.REJECT_CORAL)
+        intake
+            .setIntakeState(IntakeState.REJECT_CORAL)
             .andThen(() -> intakeStateRejectCoralEntry.setBoolean(false)));
     intakeStateIdleTrigger.onTrue(
-        intake.setIntakeState(IntakeState.IDLE)
+        intake
+            .setIntakeState(IntakeState.IDLE)
             .andThen(() -> intakeStateIdleEntry.setBoolean(false)));
     intakeStateHandOffTrigger.onTrue(
-        intake.setIntakeState(IntakeState.HAND_OFF)
+        intake
+            .setIntakeState(IntakeState.HAND_OFF)
             .andThen(() -> intakeStateHandOffEntry.setBoolean(false)));
     intakeStateScoringTrigger.onTrue(
-        intake.setIntakeState(IntakeState.SCORING)
+        intake
+            .setIntakeState(IntakeState.SCORING)
             .andThen(() -> intakeStateScoringEntry.setBoolean(false)));
     intakeStateScoringPrepTrigger.onTrue(
-        intake.setIntakeState(IntakeState.SCORING_PREP)
+        intake
+            .setIntakeState(IntakeState.SCORING_PREP)
             .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
   }
 
@@ -432,20 +454,31 @@ public class RobotContainer {
     pivotDownTrigger.onFalse(endEffector.pivotSTOP());
 
     pivotUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN).andThen(() -> pivotUpPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN)
+            .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeUpEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+            .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN).andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN)
+            .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
-        endEffector.rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN).andThen(() -> pivotDownPosEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN)
+            .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
-        endEffector.rotatePivot(
-            () ->
-                (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                        + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
-                    / 2).andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
-    pivotManualZeroTrigger.onTrue(endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
+        endEffector
+            .rotatePivot(
+                () ->
+                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
+                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                        / 2)
+            .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
+    pivotManualZeroTrigger.onTrue(
+        endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
   }
 
   private void buildElevatorTab() {
@@ -491,15 +524,24 @@ public class RobotContainer {
     elevatorDownTrigger.onFalse(elevator.elevatorSTOP());
 
     elevatorL2Trigger.onTrue(
-        elevator.manualSetPosition(
-            () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH).andThen(() -> elevatorL2Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(
+                () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
+            .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight()).andThen(() -> elevatorL3Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight()).andThen(() -> elevatorL4Entry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
-        elevator.manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight()).andThen(() -> elevatorDownPosEntry.setBoolean(false)));
-    elevatorManualZeroTrigger.onTrue(elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
+        elevator
+            .manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight())
+            .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
+    elevatorManualZeroTrigger.onTrue(
+        elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
   private void buildSuperstructureTab() {
@@ -691,7 +733,8 @@ public class RobotContainer {
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
+    driveStopXTrigger.onTrue(
+        Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
@@ -715,8 +758,10 @@ public class RobotContainer {
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
-    climberDeployTrigger.onTrue(climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
-    climberClimbTrigger.onTrue(climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+    climberDeployTrigger.onTrue(
+        climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
+    climberClimbTrigger.onTrue(
+        climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
   }
 
   /**
@@ -819,55 +864,96 @@ public class RobotContainer {
             .withInactiveConfig(inactiveConfig)
             .withActiveConfig(activeConfig)
             .withText("INT PosScore");
+    StreamDeckButton intakeDefaultButton =
+        new StreamDeckButton(0, 6, "Intake Default")
+            .withInactiveConfig(inactiveConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Default");
     StreamDeckButton intakeZeroButton =
         new StreamDeckButton(1, 3, "Intake Zero")
             .withInactiveConfig(inactiveConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Zero");
-    // StreamDeckButton intakeStateButton =
-    //     new StreamDeckButton(0, 0, "Intake State")
-    //         .withInactiveConfig(inactiveConfig)
-    //         .withActiveConfig(activeConfig)
-    //         .withText("INT State");
 
-    streamdeck.configureButtons(
-        Set.of(
-            swerveXButton,
-            intakeInButton,
-            intakeOutButton,
-            intakeUpButton,
-            intakeDownButton,
-            intakeL1UpButton,
-            intakeL1DownButton,
-            feederInButton,
-            feederOutButton,
-            intakePosUpButton,
-            intakePosDownButton,
-            intakePosScoreButton,
-            intakeZeroButton));
+    Command swerveXButtonCommand =
+        Commands.runOnce(drive::stopWithX, drive).withName("swerveXButton");
+    Command intakeInButtonCommand = intake.intakeFWD().withName("intakeInButton");
+    Command intakeInButtonOffCommand = intake.intakeSTOP().withName("intakeInButtonOff");
+    Command intakeOutButtonCommand = intake.intakeRVS().withName("intakeOutButton");
+    Command intakeOutButtonOffCommand = intake.intakeSTOP().withName("intakeOutButtonOff");
+    Command intakeUpButtonCommand = intake.pivotManualTestForward().withName("intakeUpButton");
+    Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
+    Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
+    Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
+    Command intakeL1UpButtonCommand = intake.disengageCoralL1Stall().withName("intakeL1UpButton");
+    Command intakeL1DownButtonCommand = intake.engageCoralL1Stall().withName("intakeL1DownButton");
+    Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
+    Command feederInButtonOffCommand = intake.feederSTOP().withName("feederInButtonOff");
+    Command feederOutButtonCommand = intake.feederRVS().withName("feederOutButton");
+    Command feederOutButtonOffCommand = intake.feederSTOP().withName("feederOutButtonOff");
+    Command intakePosUpButtonCommand = intake.setPivotUp().withName("intakePosUpButton");
+    Command intakePosDownButtonCommand = intake.setPivotDown().withName("intakePosDownButton");
+    Command intakePosScoreButtonCommand = intake.setPivotScoring().withName("intakePosScoreButton");
+    Command intakeDefaultButtonCommand =
+        Commands.runOnce(() -> CommandScheduler.getInstance().cancel(intake.getCurrentCommand()))
+            .withName("intakeDefaultButton");
+    Command intakeZeroButtonCommand = intake.zeroPivotAtPivotUp().withName("intakeZeroButton");
 
-    streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // streamdeck.configureDefaultButtons(
+    //     Set.of(
+    //         swerveXButton,
+    //         intakeInButton,
+    //         intakeOutButton,
+    //         intakeUpButton,
+    //         intakeDownButton,
+    //         intakeL1UpButton,
+    //         intakeL1DownButton,
+    //         feederInButton,
+    //         feederOutButton,
+    //         intakeZeroButton));
 
-    streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
-    streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
-    streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
-    streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
-    streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
-    streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
-    streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
-    streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
-    streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
-    streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
-    streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
-    streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
-    streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
-    streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
+    // streamdeck.configureToggleButtons(
+    //     Set.of(intakePosUpButton, intakePosDownButton, intakePosScoreButton));
+
+    Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
+
+    customStreamDeckButtonMap.put(swerveXButton, swerveXButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeInButton, intakeInButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeOutButton, intakeOutButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakePosUpButton, intakePosUpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakePosDownButton, intakePosDownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakePosScoreButton, intakePosScoreButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeDefaultButton, intake.getDefaultCommand()::isScheduled);
+    customStreamDeckButtonMap.put(intakeZeroButton, intakeZeroButtonCommand::isScheduled);
+
+    streamdeck.configureCustomButtons(customStreamDeckButtonMap);
+
+    streamdeck.button(swerveXButton).onTrue(swerveXButtonCommand);
+    streamdeck.button(intakeInButton).whileTrue(intakeInButtonCommand);
+    streamdeck.button(intakeInButton).onFalse(intakeInButtonOffCommand);
+    streamdeck.button(intakeOutButton).whileTrue(intakeOutButtonCommand);
+    streamdeck.button(intakeOutButton).onFalse(intakeOutButtonOffCommand);
+    streamdeck.button(intakeUpButton).whileTrue(intakeUpButtonCommand);
+    streamdeck.button(intakeUpButton).onFalse(intakeUpButtonOffCommand);
+    streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
+    streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
+    streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
+    streamdeck.button(intakeL1DownButton).whileTrue(intakeL1DownButtonCommand);
+    streamdeck.button(feederInButton).whileTrue(feederInButtonCommand);
+    streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);
+    streamdeck.button(feederOutButton).whileTrue(feederOutButtonCommand);
+    streamdeck.button(feederOutButton).onFalse(feederOutButtonOffCommand);
+    streamdeck.button(intakePosUpButton).onTrue(intakePosUpButtonCommand);
+    streamdeck.button(intakePosDownButton).onTrue(intakePosDownButtonCommand);
+    streamdeck.button(intakePosScoreButton).onTrue(intakePosScoreButtonCommand);
+    streamdeck.button(intakeDefaultButton).onTrue(intakeDefaultButtonCommand);
+    streamdeck.button(intakeZeroButton).onTrue(intakeZeroButtonCommand);
   }
 
   private void configureArbitraryTriggers() {
@@ -897,7 +983,8 @@ public class RobotContainer {
     if (superstructure.getCurrentState() == SuperstructureState.NONE) {
       return Commands.none();
     } else {
-      return endEffector.rotatePivot(() -> superstructure.getCurrentState().getEndEffectorRotation());
+      return endEffector.rotatePivot(
+          () -> superstructure.getCurrentState().getEndEffectorRotation());
     }
   }
 }
