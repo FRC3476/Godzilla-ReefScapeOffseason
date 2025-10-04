@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.ElevatorEndEffectorTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -184,6 +185,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    // Add our new combined test
+    autoChooser.addOption(
+        "Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector));
     autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
     // Configure default commands for subsystems
@@ -507,7 +511,14 @@ public class RobotContainer {
     elevatorDownPosEntry.setBoolean(false);
     elevatorManualZeroEntry.setBoolean(false);
 
-    // Create triggers based on the NetworkTableEntry values
+    // Add our combined test
+    ShuffleboardTab testTab = Shuffleboard.getTab("Test");
+    testTab
+        .add("Elevator & EndEffector Test", new ElevatorEndEffectorTest(elevator, endEffector))
+        .withPosition(0, 6)
+        .withSize(3, 1);
+
+    // Create triggers based on the boolean entries
     Trigger elevatorUpTrigger = new Trigger(() -> elevatorUpEntry.getBoolean(false));
     Trigger elevatorDownTrigger = new Trigger(() -> elevatorDownEntry.getBoolean(false));
     Trigger elevatorL2Trigger = new Trigger(() -> elevatorL2Entry.getBoolean(false));
@@ -1195,6 +1206,7 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

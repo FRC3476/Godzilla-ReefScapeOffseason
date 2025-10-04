@@ -163,10 +163,11 @@ public class Elevator extends SubsystemBase {
         this);
   }
 
-  /** Command to home the elevator by running it slowly downward until it zeros. */
+  /**
+   * Command to home the elevator by running it slowly downward until it zeros.
+   */
   public Command homeElevator() {
-    return Commands.run(
-            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+    return Commands.run(() -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
         .until(() -> isHomingComplete())
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
@@ -174,5 +175,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public Trigger elevatorObjectTrigger =
-      new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
+     
+      new Trigger(() -> checkForJam()).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS).debounce(ElevatorConstants.DEJAM_DEBOUNCE_SECONDS);
 }

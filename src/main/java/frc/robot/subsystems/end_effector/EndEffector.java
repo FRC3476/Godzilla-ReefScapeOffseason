@@ -88,4 +88,18 @@ public class EndEffector extends SubsystemBase {
   public Command setPivotZero() {
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
+
+  public double getCurrentAngle() {
+    return inputs.pivotData.pivotPosition();
+  }
+
+  public boolean isInTolerance(double targetAngle, double toleranceRad) {
+    return Math.abs(getCurrentAngle() - targetAngle) <= toleranceRad;
+  }
+
+  public boolean isInSafeAngleRange() {
+    double currentAngle = getCurrentAngle();
+    return currentAngle >= frc.robot.Constants.EndEffectorConstants.SAFE_ANGLE_LOWER_RAD
+        && currentAngle <= frc.robot.Constants.EndEffectorConstants.SAFE_ANGLE_UPPER_RAD;
+  }
 }
