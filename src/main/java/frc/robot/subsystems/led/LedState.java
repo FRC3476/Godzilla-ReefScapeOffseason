@@ -11,6 +11,7 @@ public class LedState {
   public static final LedState kOrange = new LedState(255, 80, 0);
   public static final LedState kPurple = new LedState(255, 0, 255);
   public static final LedState kWhite = new LedState(255, 255, 255);
+  public static final LedState kGray = new LedState(128, 128, 128);
   public static final LedState kPink = new LedState(255, 0, 100);
   public static final LedState kCOTeal = new LedState(32, 146, 153);
   public static final LedState kCOOrange = new LedState(255, 122, 28);
