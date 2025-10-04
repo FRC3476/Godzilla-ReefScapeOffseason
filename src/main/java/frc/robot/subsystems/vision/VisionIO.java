@@ -25,7 +25,8 @@ public interface VisionIO {
     public CameraInputs cameraB = new CameraInputs();
   }
 
-  void readInputs(VisionIOInputs inputs);
+  default void updateInputs(VisionIOInputs inputs) {}
+  ;
 
   default boolean isCoralDetected() {
     return false;

@@ -27,6 +27,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.vision.Vision;
 // import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -57,6 +59,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+  private Vision vision;
+
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
@@ -118,9 +122,11 @@ public class Drive extends SubsystemBase {
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO
+      ModuleIO brModuleIO,
+      Vision vision
       // ,Superstructure superstructure
       ) {
+    this.vision = vision;
     this.gyroIO = gyroIO;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
@@ -224,6 +230,23 @@ public class Drive extends SubsystemBase {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+    }
+
+    if (vision.getCameraAInputs().pose3d != null) {
+      Matrix<N3, N1> cameraAStdDev =
+          new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraAInputs().standardDeviations);
+      poseEstimator.addVisionMeasurement(
+          vision.getCameraAInputs().pose3d.toPose2d(),
+          vision.getCameraAInputs().megatagPoseEstimate.timestampSeconds(),
+          cameraAStdDev);
+    }
+    if (vision.getCameraBInputs().pose3d != null) {
+      Matrix<N3, N1> cameraBStdDev =
+          new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraBInputs().standardDeviations);
+      poseEstimator.addVisionMeasurement(
+          vision.getCameraBInputs().pose3d.toPose2d(),
+          vision.getCameraBInputs().megatagPoseEstimate.timestampSeconds(),
+          cameraBStdDev);
     }
 
     // Update gyro alert
