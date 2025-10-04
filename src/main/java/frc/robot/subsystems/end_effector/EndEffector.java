@@ -15,6 +15,8 @@ public class EndEffector extends SubsystemBase {
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
 
+  private double pivotSetpoint;
+
   private static final LoggedTunableNumber pivotTestVolts =
       new LoggedTunableNumber("EndEffector/PivotTestVolts", 1.0);
 
@@ -74,7 +76,7 @@ public class EndEffector extends SubsystemBase {
   @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
   public boolean isPivotInTolerance() {
     return MathUtil.isNear(
-        inputs.pivotData.pivotSetpoint(),
+        pivotSetpoint,
         inputs.pivotData.pivotPosition(),
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
   }
@@ -85,6 +87,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {
+    pivotSetpoint = rotationSupplier.getAsDouble();
     return Commands.runOnce(
         () ->
             this.io.setPivotPosition(

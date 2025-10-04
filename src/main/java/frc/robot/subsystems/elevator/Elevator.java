@@ -54,7 +54,7 @@ public class Elevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
-    Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
+    Logger.recordOutput("Elevator/TargetPosition", setpoint);
     // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
     // Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
@@ -92,7 +92,7 @@ public class Elevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/InTolerance")
   public boolean isInTolerance() {
     return MathUtil.isNear(
-        setpoint, inputs.data.rightPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {
@@ -105,6 +105,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
+    setpoint = heightSupplier.getAsDouble();
     return Commands.runOnce(
         () ->
             this.io.setElevatorTargetPosition(

@@ -489,8 +489,8 @@ public class RobotContainer {
     NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
     NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
     NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("BARGE_AIM_CENTER");
-    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
     NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("BARGE_AIM_BACKWARD");
+    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
 
     // Initialize entries with default values
     stowEntry.setBoolean(false);
@@ -511,8 +511,8 @@ public class RobotContainer {
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
     bargeAimCenterEntry.setBoolean(false);
-    bargeAimForwardEntry.setBoolean(false);
     bargeAimBackwardEntry.setBoolean(false);
+    bargeAimForwardEntry.setBoolean(false);
 
     // Create triggers for each button
     Trigger stowTrigger = new Trigger(() -> stowEntry.getBoolean(false));
@@ -533,8 +533,8 @@ public class RobotContainer {
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
     Trigger bargeAimCenterTrigger = new Trigger(() -> bargeAimCenterEntry.getBoolean(false));
-    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
     Trigger bargeAimBackwardTrigger = new Trigger(() -> bargeAimBackwardEntry.getBoolean(false));
+    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
 
     // Wire triggers to superstructure state commands
     stowTrigger.onTrue(
@@ -609,14 +609,14 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_CENTER, "Set BARGE_AIM_CENTER")
             .andThen(() -> bargeAimCenterEntry.setBoolean(false)));
-    bargeAimForwardTrigger.onTrue(
-        superstructure
-            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
-            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
     bargeAimBackwardTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD")
             .andThen(() -> bargeAimBackwardEntry.setBoolean(false)));
+    bargeAimForwardTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
+            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
 
     // Add current state and target state monitoring
     NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Current State");
