@@ -14,14 +14,67 @@ import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
+import frc.robot.util.FieldConstants.Reef;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.littletonrobotics.junction.Logger;
 
 // Use import "import frc.robot.RobotState" instead of wpilib's RobotState
 
 public class RobotState extends MagicVirtualSubsystem {
+
+  public enum ReefSide{
+    A, B, C, D, E, F, NONE
+  }
+  public enum CoralBranch{
+    RIGHT, LEFT, NONE
+  }
+  public enum BranchLevel{
+    ONE, TWO, THREE, FOUR, NONE
+  }
+
+
+  private class ScorePosition{
+    private ReefSide reefSide;
+    private CoralBranch coralBranch;
+    private BranchLevel branchLevel;
+    public ScorePosition(){
+      this.reefSide = ReefSide.NONE;
+      this.coralBranch = CoralBranch.NONE;
+      this.branchLevel = BranchLevel.NONE;
+    }
+    public ReefSide getReefSide(){
+      return reefSide;
+    }
+    public CoralBranch getCoralBranch(){
+      return coralBranch;
+    }
+    public BranchLevel getBranchLevel(){
+      return branchLevel;
+    }
+    public void setReefSide(ReefSide reefSide){
+      this.reefSide = reefSide;
+    }
+    public void setCoralBranch(CoralBranch coralBranch){
+      this.coralBranch = coralBranch;
+    }
+    public void setBranchLevel(BranchLevel branchLevel){
+      this.branchLevel = branchLevel;
+    }
+  }
+
+  private static ScorePosition storedScorePosition;
+
+  public static ScorePosition getStoredScorePosition(){
+    return storedScorePosition;
+  }
+
+
+
   private static final String logRoot = "RobotState/";
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
@@ -154,6 +207,8 @@ public class RobotState extends MagicVirtualSubsystem {
           calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
     }
   }
+
+
 
   @Override
   public void simulationPeriodic() {}

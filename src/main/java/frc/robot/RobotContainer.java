@@ -94,6 +94,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final StreamDeck streamdeck = new StreamDeck();
+  
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -1139,6 +1140,7 @@ public class RobotContainer {
     streamdeck.button(intakePosScoreButton).onTrue(intakePosScoreButtonCommand);
     streamdeck.button(intakeDefaultButton).onTrue(intakeDefaultButtonCommand);
     streamdeck.button(intakeZeroButton).onTrue(intakeZeroButtonCommand);
+
 
     streamdeck
         .button(noneButton)
