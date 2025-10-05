@@ -285,6 +285,8 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1 / (1.8427325868896291219526481028964);
 
@@ -432,7 +434,8 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
-    public static final double PIVOT_TOLERANCE_ROTATIONS = (double) 5 / 360;
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(3);
+    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
 
     // ========End Effector Constant Positions========
     // Pivot positions in rotations
