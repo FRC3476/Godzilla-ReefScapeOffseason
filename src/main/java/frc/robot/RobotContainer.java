@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -234,6 +235,7 @@ public class RobotContainer {
     buildSuperstructureTab();
     buildClimberTab();
     buildDriveTab();
+    buildTestTab();
   }
 
   private void buildIntakeTab() {
@@ -410,6 +412,7 @@ public class RobotContainer {
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
+    NetworkTableEntry clawHoldEntry = endEffectorTable.getEntry("Roller Hold (When Pressed)");
     NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
 
@@ -426,6 +429,7 @@ public class RobotContainer {
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
+    clawHoldEntry.setBoolean(false);
     pivotUpEntry.setBoolean(false);
     pivotDownEntry.setBoolean(false);
 
@@ -440,6 +444,7 @@ public class RobotContainer {
     // Create triggers based on the NetworkTableEntry values
     Trigger clawForwardTrigger = new Trigger(() -> clawForwardEntry.getBoolean(false));
     Trigger clawReverseTrigger = new Trigger(() -> clawReverseEntry.getBoolean(false));
+    Trigger clawHoldTrigger = new Trigger(() -> clawHoldEntry.getBoolean(false));
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
 
@@ -457,6 +462,9 @@ public class RobotContainer {
 
     clawReverseTrigger.whileTrue(claw.rollerRVS());
     clawReverseTrigger.onFalse(claw.rollerSTOP());
+
+    clawHoldTrigger.onTrue(claw.holdAlgae());
+    clawHoldTrigger.onFalse(claw.holdAlgae());
 
     pivotUpTrigger.whileTrue(endEffector.pivotUP());
     pivotUpTrigger.onFalse(endEffector.pivotSTOP());
@@ -773,6 +781,18 @@ public class RobotContainer {
         climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
     climberClimbTrigger.onTrue(
         climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+  }
+
+  private void buildTestTab() {
+    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Test");
+
+    NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
+
+    cleaningEntry.setBoolean(false);
+
+    Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
+
+    cleaningTrigger.onTrue(new CleaningTest(intake,claw,feeder));
   }
 
   /**
