@@ -11,6 +11,7 @@ import frc.robot.Field.varc.HPSTagTracker;
 import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.led.LedState;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
@@ -112,6 +113,7 @@ public class RobotState extends MagicVirtualSubsystem {
   @Override
   public void periodic() {
     Logger.recordOutput("Robot Pose", getGlobalPose());
+    Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
 
     {
       reefTracker.update();

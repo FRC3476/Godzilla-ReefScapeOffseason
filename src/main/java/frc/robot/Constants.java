@@ -656,22 +656,22 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Camera A (left side)
-    public static final double kCameraAPitchDegrees = 20.0;
+    public static final double kCameraAPitchDegrees = 15.0;
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
-    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
-    public static final double kRobotToCameraAForward = Units.inchesToMeters(7.8757);
-    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.9269);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(0.0);
+    public static final double kRobotToCameraAForward = Units.inchesToMeters(-10.365637);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.422523);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
 
     // Camera B (right side)
-    public static final double kCameraBPitchDegrees = 20.0;
+    public static final double kCameraBPitchDegrees = 15.0;
     public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
-    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
-    public static final double kRobotToCameraBForward = Units.inchesToMeters(7.8757);
-    public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
+    public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
 
     // Validation Constants
     public static final int kExpectedStdDevArrayLength = 12;
