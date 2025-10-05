@@ -35,15 +35,20 @@ public class RobotState extends MagicVirtualSubsystem {
   public enum BranchLevel{
     ONE, TWO, THREE, FOUR, NONE
   }
+  public enum AlgaeLevel{
+    BARGE, L2, L1, PROCESSOR, NONE
+  }
 
   class ScorePosition{
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private BranchLevel branchLevel;
+    private AlgaeLevel algaeLevel;
     public ScorePosition(){
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.branchLevel = BranchLevel.NONE;
+      this.algaeLevel = AlgaeLevel.NONE;
     }
     public ReefSide getReefSide(){
       return reefSide;
@@ -54,6 +59,9 @@ public class RobotState extends MagicVirtualSubsystem {
     public BranchLevel getBranchLevel(){
       return branchLevel;
     }
+    public AlgaeLevel getAlgaeLevel(){
+      return algaeLevel;
+    }
     public void setReefSide(ReefSide reefSide){
       this.reefSide = reefSide;
     }
@@ -62,6 +70,9 @@ public class RobotState extends MagicVirtualSubsystem {
     }
     public void setBranchLevel(BranchLevel branchLevel){
       this.branchLevel = branchLevel;
+    }
+    public void setAlgaeLevel(AlgaeLevel algaeLevel){
+      this.algaeLevel = algaeLevel;
     }
   }
 
