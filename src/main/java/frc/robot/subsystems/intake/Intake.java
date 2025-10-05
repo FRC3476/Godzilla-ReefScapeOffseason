@@ -88,6 +88,10 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  public void setRollerVoltage(double voltage) {
+    io.setRollerVoltage(voltage);
+  }
+
   public boolean isPivotAtSetpoint(double setpoint) {
     return Math.abs(inputs.pivotData.positionRotation() - setpoint)
         < IntakeConstants.PIVOT_TOLERANCE_ROTATIONS;

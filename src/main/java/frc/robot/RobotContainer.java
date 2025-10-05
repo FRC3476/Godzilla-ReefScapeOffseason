@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -225,6 +226,7 @@ public class RobotContainer {
     buildSuperstructureTab();
     buildClimberTab();
     buildDriveTab();
+    buildTestTab();
   }
 
   private void buildIntakeTab() {
@@ -770,6 +772,18 @@ public class RobotContainer {
         climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
     climberClimbTrigger.onTrue(
         climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+  }
+
+  private void buildTestTab() {
+    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Test");
+
+    NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
+
+    cleaningEntry.setBoolean(false);
+
+    Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
+
+    cleaningTrigger.onTrue(new CleaningTest(intake,claw,feeder));
   }
 
   /**
