@@ -1,5 +1,11 @@
 package frc.robot;
 
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -11,17 +17,10 @@ import frc.robot.Field.varc.HPSTagTracker;
 import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.led.LedState;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
-import frc.robot.util.FieldConstants.Reef;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import org.littletonrobotics.junction.Logger;
 
 // Use import "import frc.robot.RobotState" instead of wpilib's RobotState
 
@@ -37,8 +36,7 @@ public class RobotState extends MagicVirtualSubsystem {
     ONE, TWO, THREE, FOUR, NONE
   }
 
-
-  private class ScorePosition{
+  class ScorePosition{
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private BranchLevel branchLevel;
@@ -71,6 +69,39 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static ScorePosition getStoredScorePosition(){
     return storedScorePosition;
+  }
+
+  public static SuperstructureState getSuperstructureStateAim(){
+    switch (getStoredScorePosition().getBranchLevel()) {
+      case ONE: 
+        return SuperstructureState.L1_PIVOT;
+      case TWO: 
+        return SuperstructureState.L2_AIM;
+      case THREE: 
+        return SuperstructureState.L3_AIM;
+      case FOUR: 
+        return SuperstructureState.L4_AIM;
+      case NONE: 
+        return SuperstructureState.NONE;
+      default:
+        return SuperstructureState.NONE;
+    }
+  }
+  public static SuperstructureState getSuperstructureStateScore(){
+    switch (getStoredScorePosition().getBranchLevel()) {
+      case ONE: 
+        return SuperstructureState.L1_SCORE;
+      case TWO: 
+        return SuperstructureState.L2_SCORE;
+      case THREE: 
+        return SuperstructureState.L3_SCORE;
+      case FOUR: 
+        return SuperstructureState.L4_SCORE;
+      case NONE: 
+        return SuperstructureState.NONE;
+      default:
+        return SuperstructureState.NONE;
+    }
   }
 
 

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.RobotState.BranchLevel;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
@@ -818,6 +819,23 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    controller
+        .y();
+        // .onTrue(
+        //     // DriveCommands.
+        // );
+
+    controller
+        .leftBumper()
+        .onTrue(
+            superstructure.setStateCommand(RobotState.getSuperstructureStateAim(), "Aim")
+        );
+    controller
+        .leftTrigger(0.5) //check
+        .onTrue(
+            superstructure.setStateCommand(RobotState.getSuperstructureStateScore(), "Score")
+        );
   }
 
   private void configureStreamDeckBindings() {
