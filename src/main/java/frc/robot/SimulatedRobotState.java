@@ -36,7 +36,7 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(SimulatedRobotState.hpsTracker, SimulatedRobotState.reefTracker);
 
-  private static LedState ledState = LedState.kCOOrange;
+  private static LedState ledState = LedState.kCOOrangePure;
 
   public static void offerVisionObservation(PoseObservation observation) {
     SimulatedRobotState.poseObservations.offer(observation);

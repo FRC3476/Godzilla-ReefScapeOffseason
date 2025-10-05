@@ -20,7 +20,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -63,6 +65,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.LedIO;
+import frc.robot.subsystems.led.LedIOReal;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
@@ -90,6 +95,7 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Climber climber;
   private final Feeder feeder;
+  private final Led led;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -110,6 +116,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
+        led = new Led(new LedIOReal());
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -130,6 +137,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
+        led = new Led(new LedIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -150,6 +158,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
+        led = new Led(new LedIO() {});
         drive =
             new Drive(
                 new GyroIO() {},
@@ -220,13 +229,14 @@ public class RobotContainer {
   }
 
   private void buildElasticTabs() {
-    buildIntakeTab();
-    buildEndEffectorTab();
-    buildElevatorTab();
-    buildSuperstructureTab();
-    buildClimberTab();
-    buildDriveTab();
-    buildTestTab();
+    // buildIntakeTab();
+    // buildEndEffectorTab();
+    // buildElevatorTab();
+    // buildSuperstructureTab();
+    // buildClimberTab();
+    // buildDriveTab();
+    // buildTestTab();
+    buildLedTab();
   }
 
   private void buildIntakeTab() {
@@ -716,6 +726,60 @@ public class RobotContainer {
     targetStateEntry.setString("Unknown");
   }
 
+  private void buildLedTab() {
+    // Get the NetworkTable for the Superstructure tab
+    NetworkTable ledTable = NetworkTableInstance.getDefault().getTable("Led");
+
+    // Create NetworkTableEntry instances for each SuperstructureState
+    NetworkTableEntry solidRedEntry = ledTable.getEntry("Solid Red");
+    NetworkTableEntry solidOrangeEntry = ledTable.getEntry("Solid Orange");
+    NetworkTableEntry solidTealEntry = ledTable.getEntry("Solid Teal");
+    NetworkTableEntry blinkRedEntry = ledTable.getEntry("Blink Red");
+    NetworkTableEntry fireEntry = ledTable.getEntry("Fire");
+    NetworkTableEntry rainbowEntry = ledTable.getEntry("Rainbow");
+
+    // Initialize entries with default values
+    solidRedEntry.setBoolean(false);
+    solidOrangeEntry.setBoolean(false);
+    solidTealEntry.setBoolean(false);
+    blinkRedEntry.setBoolean(false);
+    fireEntry.setBoolean(false);
+    rainbowEntry.setBoolean(false);
+
+    // Create triggers for each button
+    Trigger solidRedTrigger = new Trigger(() -> solidRedEntry.getBoolean(false));
+    Trigger solidOrangeTrigger = new Trigger(() -> solidOrangeEntry.getBoolean(false));
+    Trigger solidTealTrigger = new Trigger(() -> solidTealEntry.getBoolean(false));
+    Trigger blinkRedTrigger = new Trigger(() -> blinkRedEntry.getBoolean(false));
+    Trigger fireTrigger = new Trigger(() -> fireEntry.getBoolean(false));
+    Trigger rainbowTrigger = new Trigger(() -> rainbowEntry.getBoolean(false));
+    
+    // Wire triggers to superstructure state commands
+    solidRedTrigger.onTrue(
+        Commands.print("solidRed")
+            .andThen(led.commandSolidColor(LedState.kRed))
+            .andThen(() -> solidRedEntry.setBoolean(false))
+            .ignoringDisable(true));
+    solidOrangeTrigger.onTrue(
+        Commands.print("solidOrange")
+            .andThen(led.commandSolidColor(LedState.kCOOrangePure))
+            .andThen(() -> solidOrangeEntry.setBoolean(false))
+            .ignoringDisable(true));
+    solidTealTrigger.onTrue(
+        led.commandSolidColor(LedState.kCOTealPure)
+            .andThen(() -> solidTealEntry.setBoolean(false))
+            .ignoringDisable(true));
+    blinkRedTrigger.onTrue(
+        led.commandBlinkingState(LedState.kRed, LedState.kOff, 0.5)
+            .andThen(() -> blinkRedEntry.setBoolean(false))
+            .ignoringDisable(true));
+    fireTrigger.onTrue(
+        led.commandFire().andThen(() -> fireEntry.setBoolean(false)).ignoringDisable(true));
+    rainbowTrigger.onTrue(
+        led.commandRainbow().andThen(() -> rainbowEntry.setBoolean(false)).ignoringDisable(true));
+    
+  }
+
   private void buildDriveTab() {
     NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
@@ -783,7 +847,7 @@ public class RobotContainer {
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
 
-    cleaningTrigger.onTrue(new CleaningTest(intake,claw,feeder));
+    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
   /**
@@ -817,13 +881,23 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // Wire triggers to superstructure state commands
+    controller.povUp().onTrue(led.commandSolidColor(LedState.kOff));
+    controller.povDown().onTrue(led.commandSetTeal());
+    controller.povRight().onTrue(led.commandSetOrange());
+    controller
+        .povLeft()
+        .onTrue(led.commandBlinkingState(LedState.kRed, LedState.kOff, 0.5).ignoringDisable(true));
+    controller.leftStick().onTrue(led.commandFire());
+    controller.rightStick().onTrue(led.commandRainbow());
   }
 
   private void configureStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOOrangePure.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOTealPure.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig grayConfig =
         new StreamDeckButtonConfig(LedState.kGray.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig redConfig =
@@ -1215,6 +1289,13 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+
+    Trigger lowBatteryTrigger = new Trigger(() -> 
+        RobotController.getBatteryVoltage() <= Constants.LEDConstants.kLowBatteryThresholdVolts && DriverStation.isDisabled());
+    lowBatteryTrigger.whileTrue(led.commandBlinkingState(LedState.kLowBattery, LedState.kOff, 0.25));
+    Trigger goodBatteryTrigger = new Trigger(() -> 
+        RobotController.getBatteryVoltage() > Constants.LEDConstants.kLowBatteryThresholdVolts && DriverStation.isDisabled());
+    goodBatteryTrigger.onTrue(led.commandSolidColor(LedState.kGoodBattery));
   }
 
   private void configureSuperstructureTrigger() {

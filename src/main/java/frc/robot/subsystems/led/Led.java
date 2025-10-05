@@ -4,31 +4,44 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Led extends SubsystemBase {
   private final LedIO io;
-  private final RobotState state;
+  // private final RobotState state;
 
   public record PercentageSetpoint(double pct, LedState color) {}
 
-  public Led(final LedIO io, RobotState state) {
+  private static final LoggedTunableNumber orangeR =
+      new LoggedTunableNumber("LED/Orange R", LedState.kCOOrangeLed.red);
+  private static final LoggedTunableNumber orangeG =
+      new LoggedTunableNumber("LED/Orange G", LedState.kCOOrangeLed.green); // Placeholder value
+  private static final LoggedTunableNumber orangeB =
+      new LoggedTunableNumber("LED/Orange B", LedState.kCOOrangeLed.blue);
+  private static final LoggedTunableNumber tealR =
+      new LoggedTunableNumber("LED/Teal R", LedState.kCOTealLed.red);
+  private static final LoggedTunableNumber tealG =
+      new LoggedTunableNumber("LED/Teal G", LedState.kCOTealLed.green); // Placeholder value
+  private static final LoggedTunableNumber tealB =
+      new LoggedTunableNumber("LED/Teal B", LedState.kCOTealLed.blue);
+
+  public Led(final LedIO io) { // RobotState state
     this.io = io;
-    this.state = state;
+    // this.state = state;
   }
 
   @Override
   public void periodic() {
     super.periodic();
 
-    state.setLedState(getCurrentState());
+    RobotState.setLedState(getCurrentState());
     Logger.recordOutput(
         "LED/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
@@ -40,34 +53,40 @@ public class Led extends SubsystemBase {
 
   /* change runOnce to run in case we have to keep setting the LED color periodically? */
   public Command commandSolidColor(LedState state) {
-    return run(() -> setSolidColor(state)).ignoringDisable(true).withName("LED Solid Color");
+    return this.runOnce(() -> setSolidColor(state))
+        .ignoringDisable(true)
+        .withName("LED Solid Color");
   }
 
   public Command commandSolidColor(Supplier<LedState> state) {
-    return run(() -> setSolidColor(state.get())).ignoringDisable(true).withName("LED Solid Color");
+    return this.run(() -> setSolidColor(state.get()))
+        .ignoringDisable(true)
+        .withName("LED Solid Color");
   }
 
   public Command commandSolidPattern(LedState[] states) {
-    return run(() -> setSolidPattern(states)).ignoringDisable(true).withName("LED Solid Pattern");
+    return this.runOnce(() -> setSolidPattern(states))
+        .ignoringDisable(true)
+        .withName("LED Solid Pattern");
   }
 
   public Command commandPercentageFull(DoubleSupplier percentageFull, LedState state) {
-    return run(() -> setPercentageFull(percentageFull.getAsDouble(), state)).ignoringDisable(true);
+    return this.run(() -> setPercentageFull(percentageFull.getAsDouble(), state))
+        .ignoringDisable(true);
   }
 
   public Command commandPercentageFull(Supplier<PercentageSetpoint> percentageSupplier) {
-    return run(() ->
-            setPercentageFull(percentageSupplier.get().pct, percentageSupplier.get().color))
+    return this.run(
+            () -> setPercentageFull(percentageSupplier.get().pct, percentageSupplier.get().color))
         .ignoringDisable(true);
   }
 
   public Command commandBlinkingState(
       LedState stateOne, LedState stateTwo, double durationOne, double durationTwo) {
-    return new SequentialCommandGroup(
-            Commands.runOnce(() -> setSolidColor(stateOne)),
-            new WaitCommand(durationOne),
-            Commands.runOnce(() -> setSolidColor(stateTwo)),
-            new WaitCommand(durationTwo))
+    return this.runOnce(() -> setSolidColor(stateOne))
+        .andThen(new WaitCommand(durationOne))
+        .andThen(this.runOnce(() -> setSolidColor(stateTwo)))
+        .andThen(new WaitCommand(durationTwo))
         .repeatedly()
         .ignoringDisable(true)
         .withName("Blinking LED command");
@@ -109,6 +128,32 @@ public class Led extends SubsystemBase {
 
   public Command commandBlinkingState(LedState stateOne, LedState stateTwo, double duration) {
     return commandBlinkingState(stateOne, stateTwo, duration, duration).ignoringDisable(true);
+  }
+
+  public Command commandFire() {
+    return this.runOnce(() -> this.io.fire()).ignoringDisable(true).withName("LED Fire");
+  }
+
+  public Command commandRainbow() {
+    return this.runOnce(() -> this.io.rainbow()).ignoringDisable(true).withName("LED Rainbow");
+  }
+
+  public Command commandSetTeal() {
+    return this.runOnce(
+            () ->
+                setSolidColor(
+                    new LedState((int) tealR.get(), (int) tealG.get(), (int) tealB.get())))
+        .ignoringDisable(true)
+        .withName("Set LED Teal");
+  }
+
+  public Command commandSetOrange() {
+    return this.runOnce(
+            () ->
+                setSolidColor(
+                    new LedState((int) orangeR.get(), (int) orangeG.get(), (int) orangeB.get())))
+        .ignoringDisable(true)
+        .withName("Set LED Orange");
   }
 
   private void setSolidColor(LedState state) {

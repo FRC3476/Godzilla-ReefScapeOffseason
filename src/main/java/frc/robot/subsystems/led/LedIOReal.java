@@ -2,30 +2,28 @@ package frc.robot.subsystems.led;
 
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.configs.LEDConfigs;
+import com.ctre.phoenix6.controls.EmptyAnimation;
+import com.ctre.phoenix6.controls.FireAnimation;
+import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.StripTypeValue;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.util.PhoenixUtil;
 
-public class LedIOHardware implements LedIO {
+public class LedIOReal implements LedIO {
   private final CANdle candle;
-  private LedState currentState = LedState.kBlue;
+  private LedState currentState = LedState.kCOOrangePure;
   private LedState[] currentPixels =
       new LedState
           [Constants.LEDConstants.kCandleLEDCount + Constants.LEDConstants.kNonCandleLEDCount];
 
-  public LedIOHardware() {
-    if (Robot.isReal()) {
-      candle = new CANdle(Constants.LEDConstants.ID);
-      LEDConfigs ledConfigs =
-          new LEDConfigs().withBrightnessScalar(1.0).withStripType(StripTypeValue.RGB);
-      CANdleConfiguration candleConfiguration = new CANdleConfiguration().withLED(ledConfigs);
-      PhoenixUtil.tryUntilOk(5, () -> candle.getConfigurator().apply(candleConfiguration));
-    } else {
-      candle = null;
-    }
+  public LedIOReal() {
+    candle = new CANdle(Constants.LEDConstants.ID, Constants.MISC_CANIVORE);
+    LEDConfigs ledConfigs =
+        new LEDConfigs().withBrightnessScalar(.2).withStripType(StripTypeValue.RGB);
+    CANdleConfiguration candleConfiguration = new CANdleConfiguration().withLED(ledConfigs);
+    PhoenixUtil.tryUntilOk(5, () -> candle.getConfigurator().apply(candleConfiguration));
   }
 
   public LedState getCurrentState() {
@@ -36,11 +34,28 @@ public class LedIOHardware implements LedIO {
     return currentPixels;
   }
 
+  // @Override
+  // public void writePixels(LedState state) {
+  //   if (state == null) state = LedState.kOff;
+  //   currentState = state;
+  //   if (candle != null) candle.setControl(new SolidColor(0, 399).withColor(state.getRGBW()));
+  // }
+
   @Override
   public void writePixels(LedState state) {
-    if (state == null) state = LedState.kOff;
-    currentState = state;
-    if (candle != null) candle.setControl(new SolidColor(0, 399).withColor(state.getRGBW()));
+    candle.setControl(new EmptyAnimation(0));
+    candle.setControl(new SolidColor(0, 399).withColor(state.getRGBW()));
+  }
+
+  @Override
+  public void fire() {
+    if (candle != null)
+      candle.setControl(new FireAnimation(0, 399).withSparking(0.1).withCooling(0.7));
+  }
+
+  @Override
+  public void rainbow() {
+    if (candle != null) candle.setControl(new RainbowAnimation(0, 399));
   }
 
   @Override
