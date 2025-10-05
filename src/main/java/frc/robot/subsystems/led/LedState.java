@@ -194,6 +194,18 @@ public class LedState {
 
   @Override
   public String toString() {
-    return "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
+    String redString = Integer.toHexString(red);
+    if (redString.length() == 1) {
+      redString = "0" + redString;
+    }
+    String greenString = Integer.toHexString(green);
+    if (greenString.length() == 1) {
+      greenString = "0" + greenString;
+    }
+    String blueString = Integer.toHexString(blue);
+    if (blueString.length() == 1) {
+      blueString = "0" + blueString;
+    }
+    return "#" + redString + greenString + blueString;
   }
 }
