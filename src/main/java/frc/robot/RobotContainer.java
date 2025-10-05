@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.autonomous.AutoNamedCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
@@ -66,6 +67,7 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
@@ -90,6 +92,7 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Climber climber;
   private final Feeder feeder;
+  private final AutoNamedCommands namedCommands;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -119,6 +122,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight)
                 // ,superstructure
                 );
+        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw, null);
         break;
 
       case SIM:
@@ -139,6 +143,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight)
                 // ,superstructure
                 );
+        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw, null);
         break;
 
       default:
@@ -204,6 +209,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     configureXboxBindings();
     configureStreamDeckBindings();
+  }
+
+  public Command getAutonomousCommand(){
+    return autoChooser.get();
   }
 
   private void RegisterDefaultCommands() {
