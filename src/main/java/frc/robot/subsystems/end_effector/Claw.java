@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
@@ -62,14 +63,19 @@ public class Claw extends SubsystemBase {
   }
 
   public Command rollerFWD() {
-    return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
   }
 
   public Command rollerRVS() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
   }
 
   public Command rollerSTOP() {
-    return Commands.run(() -> this.io.setRollerVoltage(0), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
+  }
+
+  public Command holdAlgae() {
+    return Commands.runOnce(
+        () -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
   }
 }

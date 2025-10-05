@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
@@ -9,7 +10,6 @@ public interface ElevatorIO {
     public RightMotorData rightMotorData = new RightMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
     public LeftMotorData leftMotorData = new LeftMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    public ExtraMotorData extraMotorData = new ExtraMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   /** motor telemetry data. */
@@ -32,21 +32,13 @@ public interface ElevatorIO {
       double tempCelsius,
       double setPosition) {}
 
-  /** motor telemetry data. */
-  record ExtraMotorData(
-      boolean isMotorConnected,
-      double position,
-      double appliedVolts,
-      double torqueCurrentAmps,
-      double supplyCurrentAmps,
-      double tempCelsius,
-      double setPosition) {}
-
   default void updateInputs(ElevatorIOInputs inputs) {}
 
   default void setElevatorVoltage(double voltage) {}
 
   default void setElevatorTargetPosition(double position) {}
+
+  default void setElevatorTargetPosition(DoubleSupplier supplier) {}
 
   default void setElevatorZero() {}
 

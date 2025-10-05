@@ -25,6 +25,8 @@ public interface ClawIO {
 
   default void setRollerVoltage(double voltage) {}
 
+  default void setTorqueCurrent(double amps) {}
+
   default void setRollerVelocity(double velocity) {}
 
   default boolean checkRollerStalled() {
