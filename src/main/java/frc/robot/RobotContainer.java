@@ -783,7 +783,7 @@ public class RobotContainer {
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
 
-    cleaningTrigger.onTrue(new CleaningTest(intake,claw,feeder));
+    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
   /**
