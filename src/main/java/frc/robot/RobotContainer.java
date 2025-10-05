@@ -165,7 +165,10 @@ public class RobotContainer {
                 // ,superstructure
                 );
         break;
+
     }
+
+    namedCommands.registerNamedCommands();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
