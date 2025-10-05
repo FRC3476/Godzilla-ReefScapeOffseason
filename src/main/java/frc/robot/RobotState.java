@@ -32,23 +32,19 @@ public class RobotState extends MagicVirtualSubsystem {
   public enum CoralBranch{
     RIGHT, LEFT, NONE
   }
-  public enum BranchLevel{
-    ONE, TWO, THREE, FOUR, NONE
+  public enum ScoreLevel{
+    L1, L2, L3, L4, NONE, BARGE, L2_ALGAE, L1_ALGAE, PROCESSOR,
   }
-  public enum AlgaeLevel{
-    BARGE, L2, L1, PROCESSOR, NONE
-  }
+
 
   class ScorePosition{
     private ReefSide reefSide;
     private CoralBranch coralBranch;
-    private BranchLevel branchLevel;
-    private AlgaeLevel algaeLevel;
+    private ScoreLevel scoreLevel;
     public ScorePosition(){
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
-      this.branchLevel = BranchLevel.NONE;
-      this.algaeLevel = AlgaeLevel.NONE;
+      this.scoreLevel = ScoreLevel.NONE;
     }
     public ReefSide getReefSide(){
       return reefSide;
@@ -56,11 +52,8 @@ public class RobotState extends MagicVirtualSubsystem {
     public CoralBranch getCoralBranch(){
       return coralBranch;
     }
-    public BranchLevel getBranchLevel(){
-      return branchLevel;
-    }
-    public AlgaeLevel getAlgaeLevel(){
-      return algaeLevel;
+    public ScoreLevel getScoreLevel(){
+      return scoreLevel;
     }
     public void setReefSide(ReefSide reefSide){
       this.reefSide = reefSide;
@@ -68,11 +61,8 @@ public class RobotState extends MagicVirtualSubsystem {
     public void setCoralBranch(CoralBranch coralBranch){
       this.coralBranch = coralBranch;
     }
-    public void setBranchLevel(BranchLevel branchLevel){
-      this.branchLevel = branchLevel;
-    }
-    public void setAlgaeLevel(AlgaeLevel algaeLevel){
-      this.algaeLevel = algaeLevel;
+    public void setScoreLevel(ScoreLevel branchLevel){
+      this.scoreLevel = branchLevel;
     }
   }
 
@@ -83,31 +73,23 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public static SuperstructureState getSuperstructureStateAim(){
-    switch (getStoredScorePosition().getBranchLevel()) {
-      case ONE: 
+    switch (getStoredScorePosition().getScoreLevel()) {
+      case L1: 
         return SuperstructureState.L1_PIVOT;
-      case TWO: 
+      case L2: 
         return SuperstructureState.L2_AIM;
-      case THREE: 
+      case L3: 
         return SuperstructureState.L3_AIM;
-      case FOUR: 
+      case L4: 
         return SuperstructureState.L4_AIM;
-      case NONE: 
-        return SuperstructureState.NONE;
-      default:
-        return SuperstructureState.NONE;
-    }
-  }
-  public static SuperstructureState getSuperstructureStateScore(){
-    switch (getStoredScorePosition().getBranchLevel()) {
-      case ONE: 
-        return SuperstructureState.L1_SCORE;
-      case TWO: 
-        return SuperstructureState.L2_SCORE;
-      case THREE: 
-        return SuperstructureState.L3_SCORE;
-      case FOUR: 
-        return SuperstructureState.L4_SCORE;
+      case BARGE:
+        return SuperstructureState.BARGE_AIM_BACKWARD;
+      case L1_ALGAE:
+        return SuperstructureState.ALGAE_LOW_INTAKE;
+      case L2_ALGAE:
+        return SuperstructureState.ALGAE_HIGH_INTAKE;
+      case PROCESSOR: 
+        return SuperstructureState.PROCESSOR_AIM;
       case NONE: 
         return SuperstructureState.NONE;
       default:
