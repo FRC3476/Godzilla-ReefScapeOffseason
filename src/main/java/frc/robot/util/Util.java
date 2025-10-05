@@ -4,7 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntSupplier;
@@ -135,6 +137,21 @@ public class Util {
       return input - (Math.ceil((input - high) / range)) * range;
     }
     return input;
+  }
+
+  public static <T> Set<T> mergeSets(@SuppressWarnings("unchecked") Set<T>... sets) {
+    Set<T> set = new HashSet<>();
+    for (Set<T> s : sets) {
+      set.addAll(s);
+    }
+    return set;
+  }
+
+  public static <T> Set<T> removeSets(Set<T> set, @SuppressWarnings("unchecked") Set<T>... sets) {
+    for (Set<T> s : sets) {
+      set.removeAll(s);
+    }
+    return set;
   }
 
   // public static void betterCTREencoderZero(CANcoder canCoder) {

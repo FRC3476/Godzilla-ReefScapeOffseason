@@ -90,7 +90,7 @@ public class Intake extends SubsystemBase {
 
   public boolean isPivotAtSetpoint(double setpoint) {
     return Math.abs(inputs.pivotData.positionRotation() - setpoint)
-        < IntakeConstants.PIVOT_TOLERANCE_RAD;
+        < IntakeConstants.PIVOT_TOLERANCE_ROTATIONS;
   }
 
   public double getCurrentPivotPosition() {
@@ -207,7 +207,7 @@ public class Intake extends SubsystemBase {
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case SCORING_PREP:
-              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_RAD);
+              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_ROTATIONS);
               this.io.setRollerVoltage(0);
               this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
@@ -224,11 +224,11 @@ public class Intake extends SubsystemBase {
         feeder);
   }
 
-  public Command setIntakeState(IntakeState state) {
+  public Command setIntakeStateCommand(IntakeState state) {
     return Commands.runOnce(() -> this.currentState = state, this);
   }
 
-  public Command movePivotDown() {
+  public Command setPivotDown() {
     return Commands.runOnce(
         () -> this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION), this);
   }
@@ -295,6 +295,14 @@ public class Intake extends SubsystemBase {
 
   public Command l1BarSTOP() {
     return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
+  }
+
+  public Command engageCoralL1Stall() {
+    return Commands.run(() -> io.setLvl1BlockerVoltage(-l1Volts.get()));
+  }
+
+  public Command disengageCoralL1Stall() {
+    return Commands.run(() -> io.setLvl1BlockerVoltage(l1Volts.get()));
   }
 
   public Command feederFWD() {
