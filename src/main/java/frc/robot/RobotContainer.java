@@ -67,7 +67,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
@@ -122,7 +121,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight)
                 // ,superstructure
                 );
-        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw, null);
+        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw);
         break;
 
       case SIM:
@@ -143,7 +142,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight)
                 // ,superstructure
                 );
-        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw, null);
+        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw);
         break;
 
       default:
@@ -164,8 +163,8 @@ public class RobotContainer {
                 new ModuleIO() {}
                 // ,superstructure
                 );
+        namedCommands = new AutoNamedCommands(superstructure, intake, drive, claw);
         break;
-
     }
 
     namedCommands.registerNamedCommands();
@@ -214,7 +213,7 @@ public class RobotContainer {
     configureStreamDeckBindings();
   }
 
-  public Command getAutonomousCommand(){
+  public Command getAutonomousCommand() {
     return autoChooser.get();
   }
 
@@ -795,7 +794,7 @@ public class RobotContainer {
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
 
-    cleaningTrigger.onTrue(new CleaningTest(intake,claw,feeder));
+    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
   /**
