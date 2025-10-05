@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1st Coral"
+            "pathName": "Coral1Score"
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": []
+            "name": "L4_aim"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Search 2nd Coral"
+            "pathName": "Coral2Find"
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": []
+            "name": "drive_to_coral"
           }
         }
       ]
