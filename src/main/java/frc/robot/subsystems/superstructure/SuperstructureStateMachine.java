@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import java.io.BufferedReader;
 import java.io.File;
@@ -103,9 +105,17 @@ public class SuperstructureStateMachine {
   private List<SuperstructureTransition>[][] precomputedPaths;
   private boolean isTransitioning = false;
 
+  // Container thingy
+  private RobotContainer container;
+
   /** Constructs a new SuperstructureStateMachine. */
-  public SuperstructureStateMachine() {
+  public SuperstructureStateMachine(RobotContainer container) {
+    this.container = container;
     initializeStateMachine();
+    stateManager
+        .getCurrentTargetState()
+        .getCommand(container)
+        .schedule(); // sets the intial setpoints to stow
   }
 
   /**
@@ -242,7 +252,10 @@ public class SuperstructureStateMachine {
 
   /** Handles the initial state transition when current state is null. */
   private void handleInitialStateTransition(SuperstructureState targetState) {
-    Command command =
+
+    stateManager.setCurrentTargetState(targetState, registeredStates);
+
+    Command checkFinishedCommand =
         commandFactory.createStateTransitionCommand(
             () -> {
               stateManager.setCurrentState(targetState, registeredStates);
@@ -251,12 +264,16 @@ public class SuperstructureStateMachine {
                 continueTransition();
               }
             });
+    Command command =
+        Commands.sequence(
+            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
     command.schedule();
   }
 
   /** Executes the next transition in the path to the target state. */
   private void executeNextTransition(
       SuperstructureState currentState, SuperstructureState targetState) {
+
     List<SuperstructureTransition> path = getPrecomputedPath(currentState, targetState);
 
     if (path == null || path.isEmpty()) {
@@ -298,18 +315,22 @@ public class SuperstructureStateMachine {
 
     if (alternativePath != null && !alternativePath.isEmpty()) {
       return alternativePath.get(0);
+
     } else {
-      Logger.recordOutput(
-          "Superstructure/BlockedTransition",
-          "No alternative transition available from " + currentState);
+      Logger.recordOutput("Superstructure/BlockedTransition", true);
       return null;
     }
   }
 
   /** Executes a transition by scheduling the appropriate command. */
   private void executeTransition(SuperstructureTransition transition) {
+
+    Logger.recordOutput("Superstructure/Transition", transition.toString());
     isTransitioning = true;
-    Command command =
+
+    stateManager.setCurrentTargetState(transition.getToState(), registeredStates);
+
+    Command checkFinishedCommand =
         commandFactory.createStateTransitionCommand(
             () -> {
               stateManager.setCurrentState(transition.getToState(), registeredStates);
@@ -318,12 +339,16 @@ public class SuperstructureStateMachine {
                 continueTransition();
               }
             });
+    Command command =
+        Commands.sequence(
+            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
     command.schedule();
   }
 
   /** Checks if a transition is blocked by current conditions. */
   private boolean isTransitionBlocked(SuperstructureTransition transition) {
     SuperstructureState toState = transition.getToState();
+    SuperstructureState fromState = transition.getFromState();
     return toState.isCoralState() && RobotState.hasAlgae();
   }
 
@@ -371,7 +396,7 @@ public class SuperstructureStateMachine {
   /** Automatically generates transitions between all allowed states. */
   public void autoGenerateTransitions() {
     for (SuperstructureState from : SuperstructureState.values()) {
-      for (SuperstructureState to : from.getAllowedStates()) {
+      for (SuperstructureState to : from.getAllowedDestinationStates()) {
         double cost = getTransitionCost(from, to);
         addTransition(new SuperstructureTransition(from, to, cost, false));
       }
@@ -401,6 +426,11 @@ public class SuperstructureStateMachine {
         }
       }
     }
+    for (List<SuperstructureTransition>[] from : precomputedPaths) {
+      for (List<SuperstructureTransition> to : from) {
+        System.out.println(to);
+      }
+    }
   }
 
   // ==================== INNER CLASSES ====================
@@ -409,7 +439,7 @@ public class SuperstructureStateMachine {
   private static class StateManager {
     private SuperstructureState currentState;
     private SuperstructureState targetState = SuperstructureState.NONE;
-    private SuperstructureState currentTargetState;
+    private SuperstructureState currentTargetState = targetState;
     private double currentTargetStateTime = 0;
 
     public SuperstructureState getCurrentState() {
@@ -471,7 +501,7 @@ public class SuperstructureStateMachine {
         Set<SuperstructureState> registeredStates) {
 
       Map<SuperstructureState, List<SuperstructureTransition>> graph =
-          buildGraph(transitions, registeredStates, false, transition -> false);
+          buildGraph(transitions, registeredStates, true, transition -> false);
       return findPath(from, to, graph);
     }
 
