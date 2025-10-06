@@ -715,6 +715,8 @@ public class RobotContainer {
     NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
     NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
+    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -722,6 +724,8 @@ public class RobotContainer {
     driveStopXEntry.setBoolean(false);
     driveForwardEntry.setBoolean(false);
     driveClockwiseEntry.setBoolean(false);
+    driveToPoseEntry.setBoolean(false);
+    driveToOtherSideEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -729,6 +733,8 @@ public class RobotContainer {
     Trigger driveStopXTrigger = new Trigger(() -> driveStopXEntry.getBoolean(false));
     Trigger driveForwardTrigger = new Trigger(() -> driveForwardEntry.getBoolean(false));
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
+    Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
+    Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
@@ -736,10 +742,13 @@ public class RobotContainer {
     driveStopXTrigger.onTrue(
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
-    // driveClockwiseTrigger.whileTrue(
-    //    Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
-    driveClockwiseTrigger.whileTrue(DriveCommands.driveToPose(drive, Pose2d.kZero));
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
+    driveClockwiseTrigger.whileTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
+    driveToPoseTrigger.onTrue(
+        DriveCommands.driveToPose(drive, new Pose2d(3.13, 4, Rotation2d.kZero)));
+    driveToOtherSideTrigger.onTrue(
+        DriveCommands.driveToPose(drive, new Pose2d(5.84, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {
