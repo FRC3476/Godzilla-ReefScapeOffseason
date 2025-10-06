@@ -113,7 +113,7 @@ public final class Constants {
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
-        Units.degreesToRotations(-40); // Intake down angle
+        Units.degreesToRotations(-26.9162484); // Intake down angle
     public static final double PIVOT_UP_POSITION =
         Units.degreesToRotations(104.5837512); // Intake up angle
     public static final double PIVOT_SCORING_POSITION =
@@ -141,9 +141,10 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_RTS = (60.0 / 20.0) * (50.0 / 12.0); // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_RTS =
+        (60.0 / 20.0) * (50.0 / 12.0); // X44- (pivot slap down): (61.71 : 1)
     public static final double PIVOT_STM = 54.0 / 12.0;
-    public static final double PIVOT_GEAR_RATIO = 1/(PIVOT_RTS * PIVOT_STM);
+    public static final double PIVOT_GEAR_RATIO = 1 / (PIVOT_RTS * PIVOT_STM);
 
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)

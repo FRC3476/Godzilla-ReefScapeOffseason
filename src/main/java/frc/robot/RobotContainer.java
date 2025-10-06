@@ -1385,8 +1385,8 @@ public class RobotContainer {
     Command feederInButtonOffCommand = intake.feederSTOP().withName("feederInButtonOff");
     Command feederOutButtonCommand = intake.feederRVS().withName("feederOutButton");
     Command feederOutButtonOffCommand = intake.feederSTOP().withName("feederOutButtonOff");
-    Command intakePosUpButtonCommand = intake.setPivotUp().withName("intakePosUpButton");
-    Command intakePosDownButtonCommand = intake.setPivotDown().withName("intakePosDownButton");
+    // Command intakePosUpButtonCommand = intake.setPivotUp().withName("intakePosUpButton");
+    // Command intakePosDownButtonCommand = intake.setPivotDown().withName("intakePosDownButton");
     Command intakePosScoreButtonCommand = intake.setPivotScoring().withName("intakePosScoreButton");
     Command intakeDefaultButtonCommand =
         Commands.runOnce(() -> CommandScheduler.getInstance().cancel(intake.getCurrentCommand()))
@@ -1420,8 +1420,8 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(intakePosUpButton, intakePosUpButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(intakePosDownButton, intakePosDownButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakePosUpButton, intakePosUpButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakePosDownButton, intakePosDownButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakePosScoreButton, intakePosScoreButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeDefaultButton, intake.getDefaultCommand()::isScheduled);
     customStreamDeckButtonMap.put(intakeZeroButton, intakeZeroButtonCommand::isScheduled);
@@ -1495,8 +1495,8 @@ public class RobotContainer {
     streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);
     streamdeck.button(feederOutButton).whileTrue(feederOutButtonCommand);
     streamdeck.button(feederOutButton).onFalse(feederOutButtonOffCommand);
-    streamdeck.button(intakePosUpButton).onTrue(intakePosUpButtonCommand);
-    streamdeck.button(intakePosDownButton).onTrue(intakePosDownButtonCommand);
+    // streamdeck.button(intakePosUpButton).onTrue(intakePosUpButtonCommand);
+    // streamdeck.button(intakePosDownButton).onTrue(intakePosDownButtonCommand);
     streamdeck.button(intakePosScoreButton).onTrue(intakePosScoreButtonCommand);
     streamdeck.button(intakeDefaultButton).onTrue(intakeDefaultButtonCommand);
     streamdeck.button(intakeZeroButton).onTrue(intakeZeroButtonCommand);
