@@ -27,7 +27,7 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
-  private static Pose2d globalPose = new Pose2d();
+  private static Pose2d globalPose = Pose2d.kZero;
 
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
@@ -115,46 +115,46 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
 
-    {
-      reefTracker.update();
+    // {
+    //   reefTracker.update();
 
-      String calcLogRoot = logRoot + "Reef/";
-      Logger.recordOutput(calcLogRoot + "ClosestTag", FieldUtils.getClosestReef().tag);
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleDeg", reefTracker.getRotationTarget().getDegrees());
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleRad", reefTracker.getRotationTarget().getRadians());
-      Logger.recordOutput(calcLogRoot + "Left Pole", FieldUtils.getClosestReef().leftPole);
-      Logger.recordOutput(calcLogRoot + "Right Pole", FieldUtils.getClosestReef().rightPole);
-    }
+    //   String calcLogRoot = logRoot + "Reef/";
+    //   Logger.recordOutput(calcLogRoot + "ClosestTag", FieldUtils.getClosestReef().tag);
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleDeg", reefTracker.getRotationTarget().getDegrees());
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleRad", reefTracker.getRotationTarget().getRadians());
+    //   Logger.recordOutput(calcLogRoot + "Left Pole", FieldUtils.getClosestReef().leftPole);
+    //   Logger.recordOutput(calcLogRoot + "Right Pole", FieldUtils.getClosestReef().rightPole);
+    // }
 
-    {
-      hpsTracker.update();
+    // {
+    //   hpsTracker.update();
 
-      String calcLogRoot = logRoot + "HPS/";
-      Logger.recordOutput(calcLogRoot + "Closest Tag", FieldUtils.getClosestHPSTag());
-      Logger.recordOutput(calcLogRoot + "Distance", RobotState.hpsTracker.getDistanceMeters());
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleRad", hpsTracker.getRotationTarget().getRadians());
-    }
+    //   String calcLogRoot = logRoot + "HPS/";
+    //   Logger.recordOutput(calcLogRoot + "Closest Tag", FieldUtils.getClosestHPSTag());
+    //   Logger.recordOutput(calcLogRoot + "Distance", RobotState.hpsTracker.getDistanceMeters());
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleRad", hpsTracker.getRotationTarget().getRadians());
+    // }
 
-    {
-      bargeTracker.update();
+    // {
+    //   bargeTracker.update();
 
-      String calcLogRoot = logRoot + "Barge/";
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
-      Logger.recordOutput(
-          calcLogRoot + "TargetAngleRad", hpsTracker.getRotationTarget().getRadians());
-    }
+    //   String calcLogRoot = logRoot + "Barge/";
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleDeg", hpsTracker.getRotationTarget().getDegrees());
+    //   Logger.recordOutput(
+    //       calcLogRoot + "TargetAngleRad", hpsTracker.getRotationTarget().getRadians());
+    // }
 
-    {
-      String calcLogRoot = logRoot + "ClosestAlignment/";
-      Logger.recordOutput(
-          calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
-    }
+    // {
+    //   String calcLogRoot = logRoot + "ClosestAlignment/";
+    //   Logger.recordOutput(
+    //       calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
+    // }
   }
 
   @Override
