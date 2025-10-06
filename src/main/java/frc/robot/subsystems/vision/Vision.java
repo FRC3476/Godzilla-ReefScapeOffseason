@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.RobotTime;
+import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionIO io;
@@ -15,7 +17,10 @@ public class Vision extends SubsystemBase {
   }
 
   public Vision(VisionIO io) {
+    double timestamp = RobotTime.getTimestampSeconds();
     this.io = io;
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   // object detection methods

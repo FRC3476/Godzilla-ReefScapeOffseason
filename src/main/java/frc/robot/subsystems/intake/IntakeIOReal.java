@@ -185,33 +185,6 @@ public class IntakeIOReal implements IntakeIO {
     canCoder.optimizeBusUtilization();
     canRange.optimizeBusUtilization();
 
-    // Register signals for refresh
-    PhoenixUtil.registerSignals(
-        false,
-        pivotVoltage,
-        pivotSupplyCurrent,
-        pivotStatorCurrent,
-        pivotTemperature,
-        pivotVelocityRPS,
-        pivotPositionRot,
-        pivotPositionSetpointRad,
-        rollerVoltage,
-        rollerSupplyCurrent,
-        rollerStatorCurrent,
-        rollerTemperature,
-        rollerVelocityRPS,
-        lvl1blockerVoltage,
-        lvl1blockerSupplyCurrent,
-        lvl1blockerStatorCurrent,
-        lvl1blockerTemperature,
-        lvl1blockerVelocityRPS,
-        lvl1blockerPositionRad,
-        canCoderPositionRad,
-        canCoderVelocityRPS,
-        canRangeTripped,
-        canRangeSignalStrength,
-        canRangeDistance);
-
     setPositionFromAbsolute();
   }
 
@@ -330,7 +303,10 @@ public class IntakeIOReal implements IntakeIO {
   @Override
   public boolean checkRollerStalled() {
     return MotorStallDetection.isMotorStalled(
-        rollerMotor, IntakeConstants.ROLLER_STALLED_CURRENT_A, IntakeConstants.ROLLER_STALLED_RPS);
+        rollerStatorCurrent.getValueAsDouble(),
+        rollerVelocityRPS.getValueAsDouble(),
+        IntakeConstants.ROLLER_STALLED_CURRENT_A,
+        IntakeConstants.ROLLER_STALLED_RPS);
   }
 
   @Override

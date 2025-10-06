@@ -171,9 +171,9 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Slip Current Characterization (Wall Test)",
-        DriveCommands.slipCurrentCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Slip Current Characterization (Wall Test)",
+    //     DriveCommands.slipCurrentCharacterization(drive));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -191,7 +191,7 @@ public class RobotContainer {
     RegisterDefaultCommands();
 
     // Build elastic tabs for testing
-    buildElasticTabs();
+    // buildElasticTabs();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -218,7 +218,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
-    intake.setDefaultCommand(intake.intakeDefault());
+    // intake.setDefaultCommand(intake.intakeDefault());
   }
 
   private void buildElasticTabs() {
@@ -743,7 +743,7 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    // driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
     driveStopXTrigger.onTrue(
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
