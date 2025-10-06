@@ -402,6 +402,8 @@ public final class Constants {
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
     public static final int PIVOT_CANCODER_ID = 54;
 
+    public static final double ROLLER_MOI = 0.001;
+
     public static final double Tunable_PIVOT_kP = 35;
     public static final double Tunable_PIVOT_kI = 0;
     public static final double Tunable_PIVOT_kD = 0.5;

@@ -19,7 +19,7 @@ import frc.robot.util.PhoenixUtil;
 
 public class ClawIOReal implements ClawIO {
 
-  private TalonFX rollerTalonFX;
+  protected TalonFX rollerTalonFX;
   private CANrange firstCoralCANRange;
   private CANrange secondCoralCANRange;
 
