@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.Constants.FeederConstants;
-import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class FeederIOSim extends FeederIOReal {
@@ -82,13 +81,13 @@ public class FeederIOSim extends FeederIOReal {
     Logger.recordOutput("Feeder/Sim/SimRollerPositionRadians", simPositionRads);
     // Mutate rotor position
     double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / IntakeConstants.ROLLER_GEAR_RATIO;
+        Units.radiansToRotations(simPositionRads) / FeederConstants.ROLLER_GEAR_RATIO;
     rollerSimState.setRawRotorPosition(rotorPosition);
     Logger.recordOutput("Feeder/Sim/setRollerRawRotorPosition", rotorPosition);
     // Mutate rotor vel
     double rotorVel =
         Units.radiansToRotations(rollerSim.getAngularVelocityRadPerSec())
-            / IntakeConstants.ROLLER_GEAR_RATIO;
+            / FeederConstants.ROLLER_GEAR_RATIO;
     rollerSimState.setRotorVelocity(rotorVel);
     Logger.recordOutput("Feeder/Sim/SimulatorRollerVelocity", rotorVel);
   }
