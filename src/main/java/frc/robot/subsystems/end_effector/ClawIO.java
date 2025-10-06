@@ -15,7 +15,7 @@ public interface ClawIO {
       boolean rollerMotorConnected,
       double rollerVelocityRPS,
       double rollerAppliedVolts,
-      double rollerTorqueCurrentAmps,
+      double rollerStatorCurrent,
       double rollerSupplyCurrentAmps,
       double rollerTempCelsius) {}
 
