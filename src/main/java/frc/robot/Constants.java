@@ -285,8 +285,8 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-    public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-        1 / (1.8427325868896291219526481028964);
+    // public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
+    //     1 / (1.8427325868896291219526481028964);
 
     public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
@@ -306,7 +306,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
+                    .withSensorToMechanismRatio(ElevatorConstants.kGearing))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
@@ -381,7 +381,7 @@ public final class Constants {
     public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
 
     public static final double kElevatorDrumRadius = Units.inchesToMeters(1.128);
-    public static final double kGearing = (13.0 / 50.0);
+    public static final double kGearing = (1.0 / 5.0);
     public static final double kElevatorUnitToRotorRatio =
         kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
 
