@@ -191,7 +191,7 @@ public class RobotContainer {
     RegisterDefaultCommands();
 
     // Build elastic tabs for testing
-    // buildElasticTabs();
+    buildElasticTabs();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -218,7 +218,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
-    // intake.setDefaultCommand(intake.intakeDefault());
+    intake.setDefaultCommand(intake.intakeDefault());
   }
 
   private void buildElasticTabs() {
