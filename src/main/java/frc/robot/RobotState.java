@@ -55,7 +55,7 @@ public class RobotState extends MagicVirtualSubsystem {
     NONE
   }
 
-  class ScorePosition {
+  static class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel scoreLevel;
@@ -101,7 +101,7 @@ public class RobotState extends MagicVirtualSubsystem {
     }
   }
 
-  private static ScorePosition storedScorePosition;
+  private static ScorePosition storedScorePosition = new ScorePosition();
 
   public static ScorePosition getStoredScorePosition() {
     return storedScorePosition;
