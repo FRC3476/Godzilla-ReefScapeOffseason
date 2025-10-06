@@ -49,7 +49,7 @@ public class RobotState extends MagicVirtualSubsystem {
     BARGE,
   }
 
-  public enum AlgaeIntake{
+  public enum AlgaeIntake {
     L2_ALGAE,
     L1_ALGAE,
     NONE
@@ -80,7 +80,7 @@ public class RobotState extends MagicVirtualSubsystem {
       return scoreLevel;
     }
 
-    public AlgaeIntake getAlgaeIntake(){
+    public AlgaeIntake getAlgaeIntake() {
       return algaeIntake;
     }
 
@@ -96,7 +96,7 @@ public class RobotState extends MagicVirtualSubsystem {
       this.scoreLevel = branchLevel;
     }
 
-    public void setAlgaeIntake(AlgaeIntake algaeIntake){
+    public void setAlgaeIntake(AlgaeIntake algaeIntake) {
       this.algaeIntake = algaeIntake;
     }
   }
@@ -125,9 +125,10 @@ public class RobotState extends MagicVirtualSubsystem {
         return SuperstructureState.NONE;
     }
   }
-  public static SuperstructureState getSuperstructureAlgaeDescoreStates(){
+
+  public static SuperstructureState getSuperstructureAlgaeDescoreStates() {
     switch (getStoredScorePosition().getAlgaeIntake()) {
-    case L1_ALGAE:
+      case L1_ALGAE:
         return SuperstructureState.ALGAE_LOW_INTAKE;
       case L2_ALGAE:
         return SuperstructureState.ALGAE_HIGH_INTAKE;
@@ -137,7 +138,6 @@ public class RobotState extends MagicVirtualSubsystem {
         return SuperstructureState.NONE;
     }
   }
-
 
   private static final String logRoot = "RobotState/";
 
