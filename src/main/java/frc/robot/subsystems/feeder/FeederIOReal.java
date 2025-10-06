@@ -19,8 +19,8 @@ import frc.robot.util.PhoenixUtil;
 public class FeederIOReal implements FeederIO {
   private boolean directionReversed = false;
 
-  private final TalonFX rightRoller;
-  private final TalonFX leftRoller;
+  protected final TalonFX rightRoller;
+  protected final TalonFX leftRoller;
 
   private final CANrange canRange;
 

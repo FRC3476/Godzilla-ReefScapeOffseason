@@ -593,6 +593,9 @@ public final class Constants {
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
 
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
+
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
     public static final double ROLLER_kD = 0;
