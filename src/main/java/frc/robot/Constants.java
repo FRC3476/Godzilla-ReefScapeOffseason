@@ -554,7 +554,8 @@ public final class Constants {
   // ====================Climb (6_)====================
   public static class ClimbConstants {
 
-    public static final double reduction = (23.11 / 1);
+    public static final double reduction = (1 / 23.11);
+    public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
 

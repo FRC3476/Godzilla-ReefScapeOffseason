@@ -17,7 +17,7 @@ import frc.robot.util.PhoenixUtil;
 public class ClimberIOReal implements ClimberIO {
 
   // Hardware
-  private final TalonFX talon;
+  protected final TalonFX talon;
 
   // Status Signals
   private final StatusSignal<Angle> position;
