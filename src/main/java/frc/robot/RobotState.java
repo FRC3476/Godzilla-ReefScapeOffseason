@@ -1,11 +1,5 @@
 package frc.robot;
 
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,82 +15,128 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.littletonrobotics.junction.Logger;
 
 // Use import "import frc.robot.RobotState" instead of wpilib's RobotState
 
 public class RobotState extends MagicVirtualSubsystem {
 
-  public enum ReefSide{
-    A, B, C, D, E, F, NONE
-  }
-  public enum CoralBranch{
-    RIGHT, LEFT, NONE
-  }
-  public enum ScoreLevel{
-    L1, L2, L3, L4, NONE, BARGE, L2_ALGAE, L1_ALGAE, PROCESSOR,
+  public enum ReefSide {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    NONE
   }
 
+  public enum CoralBranch {
+    RIGHT,
+    LEFT,
+    NONE
+  }
 
-  class ScorePosition{
+  public enum ScoreLevel {
+    L1,
+    L2,
+    L3,
+    L4,
+    NONE,
+    BARGE,
+  }
+
+  public enum AlgaeIntake{
+    L2_ALGAE,
+    L1_ALGAE,
+    NONE
+  }
+
+  class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel scoreLevel;
-    public ScorePosition(){
+    private AlgaeIntake algaeIntake;
+
+    public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.scoreLevel = ScoreLevel.NONE;
+      this.algaeIntake = AlgaeIntake.NONE;
     }
-    public ReefSide getReefSide(){
+
+    public ReefSide getReefSide() {
       return reefSide;
     }
-    public CoralBranch getCoralBranch(){
+
+    public CoralBranch getCoralBranch() {
       return coralBranch;
     }
-    public ScoreLevel getScoreLevel(){
+
+    public ScoreLevel getScoreLevel() {
       return scoreLevel;
     }
-    public void setReefSide(ReefSide reefSide){
+
+    public AlgaeIntake getAlgaeIntake(){
+      return algaeIntake;
+    }
+
+    public void setReefSide(ReefSide reefSide) {
       this.reefSide = reefSide;
     }
-    public void setCoralBranch(CoralBranch coralBranch){
+
+    public void setCoralBranch(CoralBranch coralBranch) {
       this.coralBranch = coralBranch;
     }
-    public void setScoreLevel(ScoreLevel branchLevel){
+
+    public void setScoreLevel(ScoreLevel branchLevel) {
       this.scoreLevel = branchLevel;
+    }
+
+    public void setAlgaeIntake(AlgaeIntake algaeIntake){
+      this.algaeIntake = algaeIntake;
     }
   }
 
   private static ScorePosition storedScorePosition;
 
-  public static ScorePosition getStoredScorePosition(){
+  public static ScorePosition getStoredScorePosition() {
     return storedScorePosition;
   }
 
-  public static SuperstructureState getSuperstructureStateAim(){
+  public static SuperstructureState getSuperstructureScoreStates() {
     switch (getStoredScorePosition().getScoreLevel()) {
-      case L1: 
+      case L1:
         return SuperstructureState.L1_PIVOT;
-      case L2: 
+      case L2:
         return SuperstructureState.L2_AIM;
-      case L3: 
+      case L3:
         return SuperstructureState.L3_AIM;
-      case L4: 
+      case L4:
         return SuperstructureState.L4_AIM;
       case BARGE:
         return SuperstructureState.BARGE_AIM_BACKWARD;
-      case L1_ALGAE:
-        return SuperstructureState.ALGAE_LOW_INTAKE;
-      case L2_ALGAE:
-        return SuperstructureState.ALGAE_HIGH_INTAKE;
-      case PROCESSOR: 
-        return SuperstructureState.PROCESSOR_AIM;
-      case NONE: 
+      case NONE:
         return SuperstructureState.NONE;
       default:
         return SuperstructureState.NONE;
     }
   }
-
+  public static SuperstructureState getSuperstructureAlgaeDescoreStates(){
+    switch (getStoredScorePosition().getAlgaeIntake()) {
+    case L1_ALGAE:
+        return SuperstructureState.ALGAE_LOW_INTAKE;
+      case L2_ALGAE:
+        return SuperstructureState.ALGAE_HIGH_INTAKE;
+      case NONE:
+        return SuperstructureState.NONE;
+      default:
+        return SuperstructureState.NONE;
+    }
+  }
 
 
   private static final String logRoot = "RobotState/";
@@ -231,8 +271,6 @@ public class RobotState extends MagicVirtualSubsystem {
           calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
     }
   }
-
-
 
   @Override
   public void simulationPeriodic() {}

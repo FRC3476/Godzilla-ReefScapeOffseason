@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -823,12 +824,14 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    controller
-        .rightTrigger();
-        // .onTrue(
-            // DriveCommands.
-        // );
     
+    // controller
+    //     .rightTrigger();
+    //     // .onTrue(
+    //         // DriveCommands.
+    //     // );
+    
+    //Ground algae intake
     controller
         .rightBumper()
             .onTrue(
@@ -838,17 +841,58 @@ public class RobotContainer {
                 )
             );
 
-    
+    //Processor Aim thingy
     controller
         .leftBumper()
-        .onTrue(
-            superstructure.setStateCommand(RobotState.getSuperstructureStateAim(), "Aim")
-        );
+            .onTrue(
+                superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor")
+            );
+
+    //Superstructure Stow
     controller
-        .leftTrigger(0.5) //check
+        .povLeft()
         .onTrue(
-            claw.rollerFWD() //idk which why the claw goes
+            superstructure.setStateCommand(SuperstructureState.STOW, "Stow")
         );
+
+    //Intake Stow
+    controller
+        .povRight()
+        .onTrue(
+            intake.setIntakeStateCommand(IntakeState.STOW)
+        );
+    
+    //Intake ground coral
+    controller
+        .leftTrigger(0.5)
+        .onTrue(
+                intake.setIntakeStateCommand(IntakeState.INTAKE)
+        );
+    
+    //ALGAE DESCORE PREP
+    controller
+        .y()
+        .onTrue(
+            Commands.parallel(
+                superstructure.setStateCommand(RobotState.getSuperstructureAlgaeDescoreStates(), "Algae Descore Aim"),
+                claw.rollerRVS() //idk which way the claw goes
+            )
+        );
+    
+    //Score position Aim
+    controller
+        .x()
+        .onTrue(
+            superstructure.setStateCommand(RobotState.getSuperstructureScoreStates(), "Aim Scoring")
+        );
+
+    //Manual spit out game piece todo: auto coral scoring
+    controller
+        .rightTrigger(0.5) //check
+        .onTrue(
+            claw.rollerFWD() //idk which way the claw goes
+        );
+    
   }
 
   private void configureDriveStreamDeckBindings() {

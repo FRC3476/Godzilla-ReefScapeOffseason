@@ -127,13 +127,7 @@ public enum SuperstructureState {
 
   public boolean isCoralState() {
     switch (this) {
-      case STOW_CORAL,
-          INTAKE_CORAL,
-          INTAKE_CORAL_L1,
-          L1_PIVOT,
-          L2_AIM,
-          L3_AIM,
-          L4_AIM:
+      case STOW_CORAL, INTAKE_CORAL, INTAKE_CORAL_L1, L1_PIVOT, L2_AIM, L3_AIM, L4_AIM:
         return true;
       default:
         return false;
@@ -189,12 +183,7 @@ public enum SuperstructureState {
 
   public Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
-        L3_AIM,
-        ALGAE_HIGH_INTAKE,
-        L3_FADEAWAY,
-        L4_FADEAWAY,
-        L4_AIM,
-        BARGE_AIM_BACKWARD);
+        L3_AIM, ALGAE_HIGH_INTAKE, L3_FADEAWAY, L4_FADEAWAY, L4_AIM, BARGE_AIM_BACKWARD);
   }
 
   public Set<SuperstructureState> highInStates() {
