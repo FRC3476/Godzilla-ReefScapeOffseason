@@ -141,9 +141,9 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_RTS = 16; // X44- (pivot slap down): (61.71 : 1)
-    public static final double PIVOT_STM = 54 / 15;
-    public static final double PIVOT_GEAR_RATIO = 1.0 / (PIVOT_RTS*PIVOT_STM);
+    public static final double PIVOT_RTS = 16 * 12 / 10; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_STM = 54 / 12;
+    public static final double PIVOT_GEAR_RATIO = 1.0 / (PIVOT_RTS * PIVOT_STM);
 
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
@@ -298,7 +298,7 @@ public final class Constants {
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-       1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);
+        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);
 
     public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
@@ -326,7 +326,7 @@ public final class Constants {
                     .withMotionMagicJerk(Tunable_ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -393,7 +393,8 @@ public final class Constants {
     public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
 
     public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
-    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(MAX_HEIGHT_INCH); // Maximum elevator height
+    public static final double MAX_HEIGHT_METERS =
+        Units.inchesToMeters(MAX_HEIGHT_INCH); // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
