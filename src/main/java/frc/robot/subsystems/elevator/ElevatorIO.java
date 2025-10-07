@@ -10,7 +10,6 @@ public interface ElevatorIO {
     public RightMotorData rightMotorData = new RightMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
     public LeftMotorData leftMotorData = new LeftMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    public ExtraMotorData extraMotorData = new ExtraMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   /** motor telemetry data. */
@@ -18,30 +17,20 @@ public interface ElevatorIO {
       boolean isMotorConnected,
       double position,
       double appliedVolts,
-      double torqueCurrentAmps,
+      double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double setPosition) {}
+      double velocityRPS) {}
 
   /** motor telemetry data. */
   record LeftMotorData(
       boolean isMotorConnected,
       double position,
       double appliedVolts,
-      double torqueCurrentAmps,
+      double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double setPosition) {}
-
-  /** motor telemetry data. */
-  record ExtraMotorData(
-      boolean isMotorConnected,
-      double position,
-      double appliedVolts,
-      double torqueCurrentAmps,
-      double supplyCurrentAmps,
-      double tempCelsius,
-      double setPosition) {}
+      double velocityRPS) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 

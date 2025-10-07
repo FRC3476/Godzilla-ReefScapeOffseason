@@ -10,6 +10,7 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -55,17 +56,15 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
+
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/JamDetected", checkForJam());
     Logger.recordOutput("Intake/CurrentState", currentState);
 
     CoralStateTracker.updateIntake(isCoralInIntake());
-
-    // Update CoralStateTracker with intake sensor data
-    boolean intakeSensorTriggered =
-        inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
-    CoralStateTracker.updateIntake(intakeSensorTriggered);
 
     // Update PID/FF values if they have changed
     if (pivotKP.hasChanged(hashCode())
@@ -86,6 +85,13 @@ public class Intake extends SubsystemBase {
           pivotAccel.get(),
           pivotJerk.get());
     }
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+  }
+
+  public void setRollerVoltage(double voltage) {
+    io.setRollerVoltage(voltage);
   }
 
   public boolean isPivotAtSetpoint(double setpoint) {

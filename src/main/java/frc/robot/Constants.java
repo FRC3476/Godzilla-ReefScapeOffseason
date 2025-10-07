@@ -402,6 +402,8 @@ public final class Constants {
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
     public static final int PIVOT_CANCODER_ID = 54;
 
+    public static final double ROLLER_MOI = 0.001;
+
     public static final double Tunable_PIVOT_kP = 35;
     public static final double Tunable_PIVOT_kI = 0;
     public static final double Tunable_PIVOT_kD = 0.5;
@@ -420,7 +422,7 @@ public final class Constants {
     public static final double ROLLER_kS = 0;
     public static final double ROLLER_kA = 0;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -432,6 +434,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
+    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
     public static final double PIVOT_TOLERANCE_ROTATIONS = (double) 5 / 360;
 
     // ========End Effector Constant Positions========
@@ -547,13 +550,14 @@ public final class Constants {
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
 
-    public static final double reduction = (23.11 / 1);
+    public static final double reduction = (1 / 23.11);
+    public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
 
@@ -590,6 +594,9 @@ public final class Constants {
     public static final int RIGHT_ID = 20;
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
+
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;

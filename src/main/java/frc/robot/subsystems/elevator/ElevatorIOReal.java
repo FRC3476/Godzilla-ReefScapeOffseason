@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
@@ -21,7 +22,6 @@ public class ElevatorIOReal implements ElevatorIO {
 
   protected TalonFX rightTalon;
   protected TalonFX leftTalon;
-  protected TalonFX extraTalon;
 
   private MotionMagicVoltage m_request =
       new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
@@ -31,121 +31,75 @@ public class ElevatorIOReal implements ElevatorIO {
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;
   StatusSignal<Voltage> rightAppliedVolts;
-  StatusSignal<Current> rightTorqueCurrentAmps;
+  StatusSignal<Current> rightStatorCurrentAmps;
   StatusSignal<Current> rightSupplyCurrentAmps;
   StatusSignal<Temperature> rightTempCelsius;
   StatusSignal<Double> rightSetPosition;
+  StatusSignal<AngularVelocity> rightVelocityRPS;
 
   StatusSignal<Angle> leftPosition;
   StatusSignal<Voltage> leftAppliedVolts;
-  StatusSignal<Current> leftTorqueCurrentAmps;
+  StatusSignal<Current> leftStatorCurrentAmps;
   StatusSignal<Current> leftSupplyCurrentAmps;
   StatusSignal<Temperature> leftTempCelsius;
   StatusSignal<Double> leftSetPosition;
-
-  StatusSignal<Angle> extraPosition;
-  StatusSignal<Voltage> extraAppliedVolts;
-  StatusSignal<Current> extraTorqueCurrentAmps;
-  StatusSignal<Current> extraSupplyCurrentAmps;
-  StatusSignal<Temperature> extraTempCelsius;
-  StatusSignal<Double> extraSetPosition;
+  StatusSignal<AngularVelocity> leftVelocityRPS;
 
   private final BaseStatusSignal[] signals;
 
   public ElevatorIOReal() {
     rightTalon = new TalonFX(ElevatorConstants.elevatorRightID, Constants.MISC_CANIVORE);
     leftTalon = new TalonFX(ElevatorConstants.elevatorLeftID, Constants.MISC_CANIVORE);
-    extraTalon = new TalonFX(ElevatorConstants.elevatorExtraID, Constants.MISC_CANIVORE);
 
     PhoenixUtil.tryUntilOk(
         5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
-    extraTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
 
     rightPosition = rightTalon.getPosition();
     rightAppliedVolts = rightTalon.getMotorVoltage();
-    rightTorqueCurrentAmps = rightTalon.getTorqueCurrent();
+    rightStatorCurrentAmps = rightTalon.getTorqueCurrent();
     rightSupplyCurrentAmps = rightTalon.getSupplyCurrent();
     rightTempCelsius = rightTalon.getDeviceTemp();
-    rightSetPosition = rightTalon.getClosedLoopReference();
+    rightVelocityRPS = rightTalon.getVelocity();
 
     leftPosition = leftTalon.getPosition();
     leftAppliedVolts = leftTalon.getMotorVoltage();
-    leftTorqueCurrentAmps = leftTalon.getTorqueCurrent();
+    leftStatorCurrentAmps = leftTalon.getTorqueCurrent();
     leftSupplyCurrentAmps = leftTalon.getSupplyCurrent();
     leftTempCelsius = leftTalon.getDeviceTemp();
-    leftSetPosition = leftTalon.getClosedLoopReference();
-
-    extraPosition = extraTalon.getPosition();
-    extraAppliedVolts = extraTalon.getMotorVoltage();
-    extraTorqueCurrentAmps = extraTalon.getTorqueCurrent();
-    extraSupplyCurrentAmps = extraTalon.getSupplyCurrent();
-    extraTempCelsius = extraTalon.getDeviceTemp();
-    extraSetPosition = extraTalon.getClosedLoopReference();
+    leftVelocityRPS = leftTalon.getVelocity();
 
     signals =
         new BaseStatusSignal[] {
           rightPosition,
           rightAppliedVolts,
-          rightTorqueCurrentAmps,
+          rightStatorCurrentAmps,
           rightSupplyCurrentAmps,
           rightTempCelsius,
-          rightSetPosition,
+          rightVelocityRPS,
           leftPosition,
           leftAppliedVolts,
-          leftTorqueCurrentAmps,
+          leftStatorCurrentAmps,
           leftSupplyCurrentAmps,
           leftTempCelsius,
-          leftSetPosition,
-          extraPosition,
-          extraAppliedVolts,
-          extraTorqueCurrentAmps,
-          extraSupplyCurrentAmps,
-          extraTempCelsius,
-          extraSetPosition
+          leftVelocityRPS
         };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         rightPosition,
         rightAppliedVolts,
-        rightTorqueCurrentAmps,
+        rightStatorCurrentAmps,
         rightSupplyCurrentAmps,
         rightTempCelsius,
-        rightSetPosition,
+        rightVelocityRPS,
         leftPosition,
         leftAppliedVolts,
-        leftTorqueCurrentAmps,
+        leftStatorCurrentAmps,
         leftSupplyCurrentAmps,
         leftTempCelsius,
-        leftSetPosition,
-        extraPosition,
-        extraAppliedVolts,
-        extraTorqueCurrentAmps,
-        extraSupplyCurrentAmps,
-        extraTempCelsius,
-        extraSetPosition);
-    ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon, extraTalon);
-    PhoenixUtil.registerSignals(
-        false,
-        rightPosition,
-        rightAppliedVolts,
-        rightTorqueCurrentAmps,
-        rightSupplyCurrentAmps,
-        rightTempCelsius,
-        rightSetPosition,
-        leftPosition,
-        leftAppliedVolts,
-        leftTorqueCurrentAmps,
-        leftSupplyCurrentAmps,
-        leftTempCelsius,
-        leftSetPosition,
-        extraPosition,
-        extraAppliedVolts,
-        extraTorqueCurrentAmps,
-        extraSupplyCurrentAmps,
-        extraTempCelsius,
-        extraSetPosition);
+        leftVelocityRPS);
+    ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon);
   }
 
   public void updateInputs(ElevatorIOInputs inputs) {
@@ -156,48 +110,32 @@ public class ElevatorIOReal implements ElevatorIO {
             BaseStatusSignal.isAllGood(
                 rightPosition,
                 rightAppliedVolts,
-                rightTorqueCurrentAmps,
+                rightStatorCurrentAmps,
                 rightSupplyCurrentAmps,
                 rightTempCelsius,
-                rightSetPosition),
+                rightVelocityRPS),
             rightPosition.getValueAsDouble(),
             rightAppliedVolts.getValueAsDouble(),
-            rightTorqueCurrentAmps.getValueAsDouble(),
+            rightStatorCurrentAmps.getValueAsDouble(),
             rightSupplyCurrentAmps.getValueAsDouble(),
             rightTempCelsius.getValueAsDouble(),
-            rightSetPosition.getValueAsDouble());
+            rightVelocityRPS.getValueAsDouble());
 
     inputs.leftMotorData =
         new ElevatorIO.LeftMotorData(
             BaseStatusSignal.isAllGood(
                 leftPosition,
                 leftAppliedVolts,
-                leftTorqueCurrentAmps,
+                leftStatorCurrentAmps,
                 leftSupplyCurrentAmps,
                 leftTempCelsius,
-                leftSetPosition),
+                leftVelocityRPS),
             leftPosition.getValueAsDouble(),
             leftAppliedVolts.getValueAsDouble(),
-            leftTorqueCurrentAmps.getValueAsDouble(),
+            leftStatorCurrentAmps.getValueAsDouble(),
             leftSupplyCurrentAmps.getValueAsDouble(),
             leftTempCelsius.getValueAsDouble(),
-            leftSetPosition.getValueAsDouble());
-
-    inputs.extraMotorData =
-        new ElevatorIO.ExtraMotorData(
-            BaseStatusSignal.isAllGood(
-                extraPosition,
-                extraAppliedVolts,
-                extraTorqueCurrentAmps,
-                extraSupplyCurrentAmps,
-                extraTempCelsius,
-                extraSetPosition),
-            extraPosition.getValueAsDouble(),
-            extraAppliedVolts.getValueAsDouble(),
-            extraTorqueCurrentAmps.getValueAsDouble(),
-            extraSupplyCurrentAmps.getValueAsDouble(),
-            extraTempCelsius.getValueAsDouble(),
-            extraSetPosition.getValueAsDouble());
+            leftVelocityRPS.getValueAsDouble());
   }
 
   @Override
@@ -219,7 +157,6 @@ public class ElevatorIOReal implements ElevatorIO {
   public void setElevatorZero() {
     rightTalon.setPosition(0.0);
     leftTalon.setPosition(0.0);
-    extraTalon.setPosition(0.0);
   }
 
   public void stop() {
@@ -229,9 +166,15 @@ public class ElevatorIOReal implements ElevatorIO {
   @Override
   public boolean checkMotorsStalled() {
     return MotorStallDetection.isMotorStalled(
-            rightTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS)
+            rightStatorCurrentAmps.getValueAsDouble(),
+            rightVelocityRPS.getValueAsDouble(),
+            ElevatorConstants.STALLED_CURRENT,
+            ElevatorConstants.STALLED_RPS)
         || MotorStallDetection.isMotorStalled(
-            leftTalon, ElevatorConstants.STALLED_CURRENT, ElevatorConstants.STALLED_RPS);
+            leftStatorCurrentAmps.getValueAsDouble(),
+            leftVelocityRPS.getValueAsDouble(),
+            ElevatorConstants.STALLED_CURRENT,
+            ElevatorConstants.STALLED_RPS);
   }
 
   @Override
