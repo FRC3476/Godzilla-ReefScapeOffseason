@@ -766,7 +766,9 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    // driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    driveSlipCurrentTrigger.whileTrue(
+        Commands.print("running slip current test")
+            .andThen(DriveCommands.slipCurrentCharacterization(drive)));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
     driveStopXTrigger.onTrue(
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));

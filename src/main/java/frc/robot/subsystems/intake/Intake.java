@@ -250,7 +250,6 @@ public class Intake extends SubsystemBase {
   }
 
   public Command zeroPivotAtPivotUp() {
-    System.out.println("BUTTON PRESSED");
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
 

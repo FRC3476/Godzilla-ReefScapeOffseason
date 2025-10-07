@@ -82,7 +82,7 @@ public final class Constants {
 
     // Slip Current Characterization Constants (Wall Test)
     public static final double SLIP_START_DELAY = 0.0; // Secs
-    public static final double SLIP_RAMP_RATE = -0.5; // Volts/Sec
+    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
     public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
     public static final double SLIP_VELOCITY_THRESHOLD =
         3476.0; // Velocity derivative indicating wheels started spinning
@@ -669,7 +669,7 @@ public final class Constants {
     public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
-    public static final double kRobotToCameraASide = Units.inchesToMeters(10.365637);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
     public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
@@ -681,7 +681,7 @@ public final class Constants {
     public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
-    public static final double kRobotToCameraBSide = Units.inchesToMeters(-10.365637);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
     public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
     public static final Transform2d kRobotToCameraB =
         new Transform2d(

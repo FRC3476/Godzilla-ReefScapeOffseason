@@ -243,7 +243,8 @@ public class Drive extends SubsystemBase {
     }
 
     // this is wrong? This isn't how 254 does timestamp
-    robotState.addOdometryMeasurement((RobotTime.getTimestampSeconds()), getPose());
+    robotState.addOdometryMeasurement(
+        (RobotTime.getTimestampSeconds()), getPose()); // .rotateBy(Rotation2d.k180deg));
 
     frc.robot.RobotState.updateGlobalPose(getPose());
 
