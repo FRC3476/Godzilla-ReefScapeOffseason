@@ -24,9 +24,9 @@ public class ElevatorIOReal implements ElevatorIO {
   protected TalonFX leftTalon;
 
   private MotionMagicVoltage m_request =
-      new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new MotionMagicVoltage(0).withEnableFOC(true);
   private VoltageOut m_VoltageOut =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(0).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;
@@ -53,18 +53,19 @@ public class ElevatorIOReal implements ElevatorIO {
 
     PhoenixUtil.tryUntilOk(
         5, () -> rightTalon.getConfigurator().apply(ElevatorConstants.elevatorRightTalon));
+
     leftTalon.setControl(new Follower(ElevatorConstants.elevatorRightID, true));
 
     rightPosition = rightTalon.getPosition();
     rightAppliedVolts = rightTalon.getMotorVoltage();
-    rightStatorCurrentAmps = rightTalon.getTorqueCurrent();
+    rightStatorCurrentAmps = rightTalon.getStatorCurrent();
     rightSupplyCurrentAmps = rightTalon.getSupplyCurrent();
     rightTempCelsius = rightTalon.getDeviceTemp();
     rightVelocityRPS = rightTalon.getVelocity();
 
     leftPosition = leftTalon.getPosition();
     leftAppliedVolts = leftTalon.getMotorVoltage();
-    leftStatorCurrentAmps = leftTalon.getTorqueCurrent();
+    leftStatorCurrentAmps = leftTalon.getStatorCurrent();
     leftSupplyCurrentAmps = leftTalon.getSupplyCurrent();
     leftTempCelsius = leftTalon.getDeviceTemp();
     leftVelocityRPS = leftTalon.getVelocity();

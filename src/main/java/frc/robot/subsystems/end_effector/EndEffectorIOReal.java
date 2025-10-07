@@ -27,10 +27,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
   protected CANcoder pivotCancoder;
 
   private MotionMagicVoltage pivot_m_request =
-      new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new MotionMagicVoltage(0).withEnableFOC(true);
 
   private VoltageOut pivotVoltageRequest =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(0).withEnableFOC(true);
 
   private final BaseStatusSignal[] signals;
 

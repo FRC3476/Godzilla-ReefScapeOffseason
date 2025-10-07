@@ -66,6 +66,11 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
+import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
@@ -73,6 +78,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -91,6 +97,17 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Climber climber;
   private final Feeder feeder;
+  private final Vision vision;
+
+  private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
+      new Consumer<VisionFieldPoseEstimate>() {
+        @Override
+        public void accept(VisionFieldPoseEstimate estimate) {
+          drive.addVisionMeasurement(estimate);
+        }
+      };
+
+  private final RobotState robotState = new RobotState(visionEstimateConsumer);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -111,13 +128,15 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
+        vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
             new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight)
+                new ModuleIOTalonFX(TunerConstants.BackRight),
+                robotState
                 // ,superstructure
                 );
         break;
@@ -131,13 +150,15 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
+        vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight)
+                new ModuleIOSim(TunerConstants.BackRight),
+                robotState
                 // ,superstructure
                 );
         break;
@@ -151,13 +172,15 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
+        vision = new Vision(new VisionIO() {}, robotState);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {}
+                new ModuleIO() {},
+                robotState
                 // ,superstructure
                 );
         break;
@@ -727,6 +750,8 @@ public class RobotContainer {
     NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
     NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
+    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -734,6 +759,8 @@ public class RobotContainer {
     driveStopXEntry.setBoolean(false);
     driveForwardEntry.setBoolean(false);
     driveClockwiseEntry.setBoolean(false);
+    driveToPoseEntry.setBoolean(false);
+    driveToOtherSideEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -741,16 +768,24 @@ public class RobotContainer {
     Trigger driveStopXTrigger = new Trigger(() -> driveStopXEntry.getBoolean(false));
     Trigger driveForwardTrigger = new Trigger(() -> driveForwardEntry.getBoolean(false));
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
+    Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
+    Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    // driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    driveSlipCurrentTrigger.whileTrue(
+        Commands.print("running slip current test")
+            .andThen(DriveCommands.slipCurrentCharacterization(drive)));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
     driveStopXTrigger.onTrue(
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
+    driveToPoseTrigger.onTrue(
+        DriveCommands.driveToPose(drive, new Pose2d(3, 4, Rotation2d.kZero)));
+    driveToOtherSideTrigger.onTrue(
+        DriveCommands.driveToPose(drive, new Pose2d(6, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {

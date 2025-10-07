@@ -26,7 +26,7 @@ public class ClawIOReal implements ClawIO {
   private TorqueCurrentFOC roller_c_request =
       new TorqueCurrentFOC(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
   private VoltageOut roller_m_request =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(0).withEnableFOC(true);
 
   StatusSignal<AngularVelocity> rollerVelocityRPS;
   StatusSignal<Voltage> rollerAppliedVolts;
@@ -45,6 +45,10 @@ public class ClawIOReal implements ClawIO {
         new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
     secondCoralCANRange =
         new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
+    PhoenixUtil.tryUntilOk(
+        5, () -> firstCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> secondCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
     PhoenixUtil.tryUntilOk(
         5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
 
