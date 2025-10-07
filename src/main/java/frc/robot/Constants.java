@@ -142,7 +142,7 @@ public final class Constants {
 
     // Gear ratios
     public static final double PIVOT_RTS =
-        (60.0 / 20.0) * (50.0 / 12.0); // X44- (pivot slap down): (61.71 : 1)
+        (64.0 / 20.0) * (50.0 / 12.0); // X44- (pivot slap down): (61.71 : 1)
     public static final double PIVOT_STM = 54.0 / 12.0;
     public static final double PIVOT_GEAR_RATIO = 1 / (PIVOT_RTS * PIVOT_STM);
 
@@ -150,7 +150,7 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
 
     // MOI
-    public static final double PIVOT_MOI = 0.01;
+    public static final double PIVOT_MOI = 0.01;+
     public static final double L1_BAR_MOI = 0.01;
     public static final double ROLLER_MOI = 0.001;
 
