@@ -79,11 +79,28 @@ public class EndEffector extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
+  public boolean isPivotInTolerance(boolean isTransitionState) {
+    return MathUtil.isNear(
+        pivotSetpoint,
+        inputs.pivotData.pivotPosition(),
+        isTransitionState
+            ? EndEffectorConstants.PIVOT_LARGE_TOLERANCE_ROTATIONS
+            : EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
+  }
+
+  @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
   public boolean isPivotInTolerance() {
     return MathUtil.isNear(
         pivotSetpoint,
         inputs.pivotData.pivotPosition(),
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
+  }
+
+  public Command moveEndEffectorCommand(
+      DoubleSupplier rotationsSupplier, boolean isTransitionState) {
+    return Commands.sequence(
+        this.rotatePivotCommand(rotationsSupplier),
+        this.waitUntilTargetPositionCommand(isTransitionState));
   }
 
   public Command moveEndEffectorCommand(DoubleSupplier rotationsSupplier) {
@@ -102,6 +119,10 @@ public class EndEffector extends SubsystemBase {
                         EndEffectorConstants.MIN_ANGLE_ROTATIONS,
                         EndEffectorConstants.MAX_ANGLE_ROTATIONS)),
         this);
+  }
+
+  public Command waitUntilTargetPositionCommand(boolean isTransitionState) {
+    return Commands.waitUntil(() -> isPivotInTolerance(isTransitionState));
   }
 
   public Command waitUntilTargetPositionCommand() {

@@ -102,20 +102,6 @@ public enum SuperstructureState {
                 container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation));
   }
 
-  SuperstructureState(
-      double elevatorHeight,
-      double endEffectorRotation,
-      Function<RobotContainer, Command> commandFunction) {
-    this.elevatorHeight = elevatorHeight;
-    this.endEffectorRotation = endEffectorRotation;
-    this.commandSupplier =
-        (container) ->
-            new ParallelCommandGroup(
-                container.getElevator().moveElevatorCommand(() -> elevatorHeight),
-                container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation),
-                commandFunction.apply(container));
-  }
-
   SuperstructureState() {
     this.elevatorHeight = 0;
     this.endEffectorRotation = 0;
@@ -135,6 +121,15 @@ public enum SuperstructureState {
       return Commands.none();
     }
     return this.commandSupplier.apply(container);
+  }
+
+  public Command getAsTransitionCommand(RobotContainer container) {
+    if (commandSupplier == null) {
+      return Commands.none();
+    }
+    return new ParallelCommandGroup(
+        container.getElevator().moveElevatorCommand(() -> elevatorHeight, true),
+        container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation, true));
   }
 
   public boolean isCoralState() {

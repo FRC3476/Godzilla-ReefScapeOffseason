@@ -339,9 +339,12 @@ public class SuperstructureStateMachine {
                 continueTransition();
               }
             });
-    Command command =
-        Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+    Command moveCommand =
+        stateManager.getCurrentState().equals(stateManager.getTargetState())
+            ? stateManager.getCurrentTargetState().getCommand(container)
+            : stateManager.getCurrentTargetState().getAsTransitionCommand(container);
+
+    Command command = Commands.sequence(moveCommand, checkFinishedCommand);
     command.schedule();
   }
 
@@ -424,11 +427,6 @@ public class SuperstructureStateMachine {
           precomputedPaths[from.ordinal()][to.ordinal()] =
               pathfinder.computeTransitionPaths(from, to, transitions, registeredStates);
         }
-      }
-    }
-    for (List<SuperstructureTransition>[] from : precomputedPaths) {
-      for (List<SuperstructureTransition> to : from) {
-        System.out.println(to);
       }
     }
   }
