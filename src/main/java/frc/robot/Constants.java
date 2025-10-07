@@ -86,7 +86,6 @@ public final class Constants {
         3476.0; // Velocity derivative indicating wheels started spinning
     public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
 
-
     public static final double AUTO_ALIGN_AXIS_TOLERANCE = 0.013;
     public static final double AUTO_ALIGN_FEEDFORWARD = 0.15;
     public static final double AUTO_ALIGN_SPEED_MULTIPLIER = 0.2;
