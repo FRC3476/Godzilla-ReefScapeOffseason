@@ -46,6 +46,10 @@ public class ClawIOReal implements ClawIO {
     secondCoralCANRange =
         new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
+        5, () -> firstCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> secondCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
+    PhoenixUtil.tryUntilOk(
         5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
 
     rollerVelocityRPS = rollerTalonFX.getRotorVelocity();
