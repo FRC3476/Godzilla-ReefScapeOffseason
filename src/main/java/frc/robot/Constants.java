@@ -23,6 +23,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import java.util.Arrays;
@@ -666,9 +668,12 @@ public final class Constants {
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
     public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
-    public static final double kRobotToCameraAForward = Units.inchesToMeters(-10.365637);
-    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.422523);
+    public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(10.365637);
     public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
+    public static final Transform2d kRobotToCameraA =
+        new Transform2d(
+            new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
 
     // Camera B (right side)
     public static final double kCameraBPitchDegrees = 15.0;
@@ -676,11 +681,11 @@ public final class Constants {
     public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
-    public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(-10.365637);
     public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
-
-    // Validation Constants
-    public static final int kExpectedStdDevArrayLength = 12;
+    public static final Transform2d kRobotToCameraB =
+        new Transform2d(
+            new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
 
     // April Tags
 
@@ -693,6 +698,37 @@ public final class Constants {
                 .toList(),
             kAprilTagLayout.getFieldLength(),
             kAprilTagLayout.getFieldWidth());
+
+    // Vision processing constants
+    public static final double kDefaultAmbiguityThreshold = 0.19;
+    public static final double kDefaultYawDiffThreshold = 5.0;
+    public static final double kTagAreaThresholdForYawCheck = 2.0;
+    public static final double kTagMinAreaForSingleTagMegatag = 1.0;
+    public static final double kDefaultZThreshold = 0.2;
+    public static final double kDefaultNormThreshold = 1.0;
+    public static final double kMinAmbiguityToFlip = 0.08;
+
+    public static final double kCameraHorizontalFOVDegrees = 81.0;
+    public static final double kCameraVerticalFOVDegrees = 55.0;
+    public static final int kCameraImageWidth = 1280;
+    public static final int kCameraImageHeight = 800;
+    public static final double kScoringConfidenceThreshold = 0.7;
+    // NetworkTables constants
+    public static final String kBoundingBoxTableName = "BoundingBoxes";
+
+    // Large variance used to downweight unreliable vision measurements
+    public static final double kLargeVariance = 1e6;
+    // Standard deviation constants
+    public static final int kMegatag1XStdDevIndex = 0;
+    public static final int kMegatag1YStdDevIndex = 1;
+    public static final int kMegatag1YawStdDevIndex = 5;
+    // Standard deviation array indices for Megatag2
+    public static final int kMegatag2XStdDevIndex = 6;
+    public static final int kMegatag2YStdDevIndex = 7;
+    public static final int kMegatag2YawStdDevIndex = 11;
+    // Validation constants
+    public static final int kMinFiducialCount = 1;
+    public static final int kExpectedStdDevArrayLength = 12;
   }
 
   public static class SuperstructureConstants {

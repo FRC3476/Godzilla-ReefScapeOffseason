@@ -26,20 +26,16 @@ public interface VisionIO {
   }
 
   default void updateInputs(VisionIOInputs inputs) {}
-  ;
 
   default boolean isCoralDetected() {
     return false;
   }
-  ;
 
   default double getCoralTx() {
     return 0.0;
   }
-  ;
 
   default double getCoralTy() {
     return 0.0;
   }
-  ;
 }

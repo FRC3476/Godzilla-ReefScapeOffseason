@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -68,6 +67,7 @@ import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
 import frc.robot.subsystems.vision.VisionIOSimPhoton;
@@ -78,6 +78,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -98,6 +99,16 @@ public class RobotContainer {
   private final Feeder feeder;
   private final Vision vision;
 
+  private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
+      new Consumer<VisionFieldPoseEstimate>() {
+        @Override
+        public void accept(VisionFieldPoseEstimate estimate) {
+          drive.addVisionMeasurement(estimate);
+        }
+      };
+
+  private final RobotState robotState = new RobotState(visionEstimateConsumer);
+
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final StreamDeck streamdeck = new StreamDeck();
@@ -117,7 +128,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
-        vision = new Vision(new VisionIOHardwareLimelight());
+        vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -125,7 +136,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight),
-                vision
+                robotState
                 // ,superstructure
                 );
         break;
@@ -139,7 +150,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
-        vision = new Vision(new VisionIOSimPhoton());
+        vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
             new Drive(
                 new GyroIO() {},
@@ -147,7 +158,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight),
-                vision
+                robotState
                 // ,superstructure
                 );
         break;
@@ -161,7 +172,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
-        vision = new Vision(new VisionIO() {});
+        vision = new Vision(new VisionIO() {}, robotState);
         drive =
             new Drive(
                 new GyroIO() {},
@@ -169,7 +180,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                vision
+                robotState
                 // ,superstructure
                 );
         break;

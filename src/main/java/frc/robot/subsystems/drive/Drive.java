@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -27,7 +28,6 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,6 +40,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -49,17 +50,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.vision.Vision;
-// import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.RobotTime;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private Vision vision;
 
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
@@ -111,11 +112,14 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
+  private SwerveModuleState[] setpointStates = new SwerveModuleState[modules.length];
+
   // Acceleration limiting
   // private ChassisSpeeds previousSpeeds = new ChassisSpeeds();
   // private double lastTimeSeconds = 0.0;
 
   // private Superstructure superstructure;
+  RobotState robotState;
 
   public Drive(
       GyroIO gyroIO,
@@ -123,11 +127,11 @@ public class Drive extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
-      Vision vision
+      RobotState robotState
       // ,Superstructure superstructure
       ) {
-    this.vision = vision;
     this.gyroIO = gyroIO;
+    this.robotState = robotState;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -173,8 +177,13 @@ public class Drive extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
 
+    for (int i = 0; i < modules.length; ++i) {
+      setpointStates[i] = new SwerveModuleState();
+    }
+
     // Initialize time tracking for acceleration limiting
     // lastTimeSeconds = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+
   }
 
   @Override
@@ -182,6 +191,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
+
     for (var module : modules) {
       module.periodic();
     }
@@ -232,26 +242,49 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    if (Constants.currentMode != Constants.simMode) {
-      if (vision.getCameraAInputs().pose3d != null) {
-        Matrix<N3, N1> cameraAStdDev =
-            new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraAInputs().standardDeviations);
-        addVisionMeasurement(
-            vision.getCameraAInputs().pose3d.toPose2d(),
-            vision.getCameraAInputs().megatagPoseEstimate.timestampSeconds(),
-            cameraAStdDev);
-      }
-      if (vision.getCameraBInputs().pose3d != null) {
-        Matrix<N3, N1> cameraBStdDev =
-            new Matrix<N3, N1>(Nat.N3(), Nat.N1(), vision.getCameraBInputs().standardDeviations);
-        addVisionMeasurement(
-            vision.getCameraBInputs().pose3d.toPose2d(),
-            vision.getCameraBInputs().megatagPoseEstimate.timestampSeconds(),
-            cameraBStdDev);
-      }
-    }
+    // this is wrong? This isn't how 254 does timestamp
+    robotState.addOdometryMeasurement((RobotTime.getTimestampSeconds()), getPose());
 
     frc.robot.RobotState.updateGlobalPose(getPose());
+
+    var gyroRotation = getPose().getRotation();
+    var measuredRobotRelativeChassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+    var measuredFieldRelativeChassisSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(measuredRobotRelativeChassisSpeeds, gyroRotation);
+    var desiredRobotRelativeChassisSpeeds = kinematics.toChassisSpeeds(setpointStates);
+    var desiredFieldRelativeChassisSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(desiredRobotRelativeChassisSpeeds, gyroRotation);
+
+    double timestamp = RobotTime.getTimestampSeconds();
+    double rollRadsPerS = Units.degreesToRadians(gyroInputs.angularRollVelocity);
+    double pitchRadsPerS = Units.degreesToRadians(gyroInputs.angularPitchVelocity);
+    double yawRadsPerS = Units.degreesToRadians(gyroInputs.angularYawVelocity);
+    // Trust gyro rate more than odometry.
+    var fusedFieldRelativeChassisSpeeds =
+        new ChassisSpeeds(
+            measuredFieldRelativeChassisSpeeds.vxMetersPerSecond,
+            measuredFieldRelativeChassisSpeeds.vyMetersPerSecond,
+            yawRadsPerS);
+
+    double pitchRads = Units.degreesToRadians(gyroInputs.pitch);
+    double rollRads = Units.degreesToRadians(gyroInputs.roll);
+    double accelX = gyroInputs.accelerationX;
+    double accelY = gyroInputs.accelerationY;
+
+    robotState.addDriveMotionMeasurements(
+        timestamp,
+        rollRadsPerS,
+        pitchRadsPerS,
+        yawRadsPerS,
+        pitchRads,
+        rollRads,
+        accelX,
+        accelY,
+        desiredRobotRelativeChassisSpeeds,
+        desiredFieldRelativeChassisSpeeds,
+        measuredRobotRelativeChassisSpeeds,
+        measuredFieldRelativeChassisSpeeds,
+        fusedFieldRelativeChassisSpeeds);
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
@@ -324,7 +357,7 @@ public class Drive extends SubsystemBase {
 
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(limitedSpeeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+    setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
     // Log unoptimized setpoints and setpoint speeds
@@ -452,6 +485,20 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public void addVisionMeasurement(VisionFieldPoseEstimate visionFieldPoseEstimate) {
+    // io.addVisionMeasurement(visionFieldPoseEstimate);
+    if (visionFieldPoseEstimate.getVisionMeasurementStdDevs() == null) {
+      poseEstimator.addVisionMeasurement(
+          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()));
+    } else {
+      poseEstimator.addVisionMeasurement(
+          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()),
+          visionFieldPoseEstimate.getVisionMeasurementStdDevs());
+    }
   }
 
   /** Returns the maximum linear speed in meters per sec. */
