@@ -206,36 +206,24 @@ public class DriveCommands {
     DoubleSupplier xSupplier =
         () -> {
           double deltaX = transformSupplier.get().getX();
-          if (MathUtil.isNear(0.0, deltaX, 0.014)) {
+          if (MathUtil.isNear(0.0, deltaX, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
             return 0.0;
           }
-          return (deltaX * 0.2) + Math.copySign(0.15, deltaX);
+          return (deltaX * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER) + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaX);
         };
     DoubleSupplier ySupplier =
         () -> {
           double deltaY = transformSupplier.get().getY();
-          // Logger.recordOutput(
-          //     "Odometry/Norm", drive.getPose().minus(targetPose).getTranslation().getNorm());
-          // Logger.recordOutput(
-          //     "Odometry/Degree Difference",
-          //     rotSupplier.get().minus(drive.getRotation()).getDegrees());
-          // Logger.recordOutput(
-          //     "Odometry/Ending Condition",
-          //     drive.getPose().minus(targetPose).getTranslation().getNorm() > 0.02
-          //         || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees()) > 3));
-          // Logger.recordOutput("Odometry/DeltaY", deltaY);
-          // Logger.recordOutput("Odometry/Y Output", (deltaY * 0.2) + Math.copySign(0.15, deltaY));
-          if (MathUtil.isNear(0.0, deltaY, 0.014)) {
-            // Logger.recordOutput("Odometry/Y Output", 0.0);
+          if (MathUtil.isNear(0.0, deltaY, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
             return 0.0;
           }
-          return (deltaY * 0.2) + Math.copySign(0.15, deltaY);
+          return (deltaY * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER) + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaY);
         };
     return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
         .onlyWhile(
             () ->
-                drive.getPose().minus(targetPose).getTranslation().getNorm() > 0.02
-                    || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees()) > 2));
+                drive.getPose().minus(targetPose).getTranslation().getNorm() > DriveConstants.AUTO_ALIGN_NORM_TOLERANCE
+                    || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees()) > DriveConstants.AUTO_ALIGN_DEGREE_TOLERANCE));
   }
 
   // pathfind to pose with pathplanner
