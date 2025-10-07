@@ -782,8 +782,7 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    driveToPoseTrigger.onTrue(
-        DriveCommands.driveToPose(drive, new Pose2d(3, 4, Rotation2d.kZero)));
+    driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4, Rotation2d.kZero)));
     driveToOtherSideTrigger.onTrue(
         DriveCommands.driveToPose(drive, new Pose2d(6, 4, Rotation2d.k180deg)));
   }
@@ -1516,7 +1515,4 @@ public class RobotContainer {
   public Intake getIntake() {
     return intake;
   }
-
-  
-
 }

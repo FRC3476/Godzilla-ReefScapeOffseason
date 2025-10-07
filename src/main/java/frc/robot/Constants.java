@@ -123,11 +123,7 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
@@ -307,13 +303,8 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
-
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(15.75))
                     .withProximityHysteresis(0.01));
@@ -340,9 +331,12 @@ public final class Constants {
     public static final double DRUM_RADIUS_INCHES = 1.128; // Radius of drum/pulley
     public static final double DRUM_RADIUS_METERS =
         Units.inchesToMeters(DRUM_RADIUS_INCHES); // Radius of drum/pulley
-    public static final double kGearing = (1.0 / 5.0); //Motor to drum gearing
+    public static final double kGearing = (1.0 / 5.0); // Motor to drum gearing
     public static final double kElevatorUnitToRotorRatio =
-        kGearing * 2.0 * DRUM_RADIUS_METERS * Math.PI; //Ratio between elevator units (here, meters for sim bot) to motor rotations
+        kGearing
+            * 2.0
+            * DRUM_RADIUS_METERS
+            * Math.PI; // Ratio between elevator units (here, meters for sim bot) to motor rotations
 
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
@@ -350,7 +344,12 @@ public final class Constants {
     public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
 
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);  //Ratio between elevator units (here, inches for real bot) to motor rotations
+        1
+            / (kGearing
+                * 2.0
+                * DRUM_RADIUS_INCHES
+                * Math.PI); // Ratio between elevator units (here, inches for real bot) to motor
+    // rotations
 
     public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
@@ -401,11 +400,14 @@ public final class Constants {
 
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
-    public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH = ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 2;
+    public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 2;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785 + 2.5;
-    public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH = ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 2.5;
+    public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
+        ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 2.5;
     public static final double ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
-    public static final double ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH = ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
+    public static final double ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
+        ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
 
     // Algae scoring heights
     public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
@@ -414,8 +416,10 @@ public final class Constants {
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
 
-    public static final double MIN_HEIGHT_METERS = Units.inchesToMeters(ELEVATOR_ZERO_SETPOINT_INCH); // Minimum elevator height
-    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(ELEVATOR_MAX_SETPOINT_INCH); // Maximum elevator height
+    public static final double MIN_HEIGHT_METERS =
+        Units.inchesToMeters(ELEVATOR_ZERO_SETPOINT_INCH); // Minimum elevator height
+    public static final double MAX_HEIGHT_METERS =
+        Units.inchesToMeters(ELEVATOR_MAX_SETPOINT_INCH); // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
@@ -476,14 +480,13 @@ public final class Constants {
         Units.degreesToRotations(17.7998883);
     public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(3.1972053);
-    public static final double L4_AWAY_FROM_REEF_ANGLE_ROTATIONS =
-        L4_AGAINST_REEF_ANGLE_ROTATIONS;
+    public static final double L4_AWAY_FROM_REEF_ANGLE_ROTATIONS = L4_AGAINST_REEF_ANGLE_ROTATIONS;
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
-    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = EndEffectorConstants.MAX_ANGLE_ROTATIONS;
+    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS =
+        EndEffectorConstants.MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
-
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -532,14 +535,9 @@ public final class Constants {
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
-    
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
@@ -582,7 +580,7 @@ public final class Constants {
     public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
-   // ====================Vision Constants====================
+  // ====================Vision Constants====================
   public static class VisionConstants {
     public static final String DETECTION_LIMELIGHT = "limelight-center";
     public static final AprilTagFieldLayout fieldLayout =
@@ -663,19 +661,23 @@ public final class Constants {
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.ALGAE_IDLE_ANGLE_ROTATIONS;
 
-    public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
@@ -683,73 +685,88 @@ public final class Constants {
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;     
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
-    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 53.4375
     public static double L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
 
-    public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double L1_SCORE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double L1_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
-    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
 
-    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
-    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
-    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
+    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
-    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH;
+    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH;
     public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.ALGAE_REMOVAL_ANGLE_ROTATIONS;
 
-    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH;
+    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH;
     public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.ALGAE_REMOVAL_ANGLE_ROTATIONS;
 
-    public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.PROCESSOR_ANGLE_ROTATIONS;
 
-    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
+    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
     public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.BARGE_FORWARD_ANGLE_ROTATIONS;
     public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS =
@@ -759,9 +776,9 @@ public final class Constants {
                 + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS)
             / 2;
 
-    public static double ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.ALGAE_GROUND_ANGLE_ROTATIONS;
   }
-
 }
