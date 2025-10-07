@@ -15,7 +15,7 @@ public interface ClawIO {
       boolean rollerMotorConnected,
       double rollerVelocityRPS,
       double rollerAppliedVolts,
-      double rollerTorqueCurrentAmps,
+      double rollerStatorCurrent,
       double rollerSupplyCurrentAmps,
       double rollerTempCelsius) {}
 
@@ -24,6 +24,8 @@ public interface ClawIO {
   default void updateInputs(ClawIOInputs inputs) {}
 
   default void setRollerVoltage(double voltage) {}
+
+  default void setTorqueCurrent(double amps) {}
 
   default void setRollerVelocity(double velocity) {}
 

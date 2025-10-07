@@ -83,16 +83,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
         // ,pivotControlMode
         );
     ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX);
-    PhoenixUtil.registerSignals(
-        true,
-        pivotPosition,
-        pivotAppliedVolts,
-        pivotTorqueCurrentAmps,
-        pivotSupplyCurrentAmps,
-        pivotTempCelsius,
-        pivotSetpoint
-        // ,pivotControlMode
-        );
 
     // Need to do this because the canCoder wraps from its 0 position.
     setPositionFromAbsolute();

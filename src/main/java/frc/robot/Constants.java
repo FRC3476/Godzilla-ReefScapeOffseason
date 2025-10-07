@@ -23,6 +23,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import java.util.Arrays;
@@ -80,7 +82,7 @@ public final class Constants {
 
     // Slip Current Characterization Constants (Wall Test)
     public static final double SLIP_START_DELAY = 0.0; // Secs
-    public static final double SLIP_RAMP_RATE = -0.5; // Volts/Sec
+    public static final double SLIP_RAMP_RATE = 0.5; // Volts/Sec
     public static final double SLIP_MAX_VOLTAGE = 3476.0; // Volts
     public static final double SLIP_VELOCITY_THRESHOLD =
         3476.0; // Velocity derivative indicating wheels started spinning
@@ -165,9 +167,9 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_GEAR_RATIO = 1.0 / 61.71;
-    public static final double PIVOT_RTS = 16; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_RTS = 16 * 12 / 10; // X44- (pivot slap down): (61.71 : 1)
     public static final double PIVOT_STM = 54 / 12;
+    public static final double PIVOT_GEAR_RATIO = 1.0 / (PIVOT_RTS * PIVOT_STM);
 
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
@@ -288,6 +290,19 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_MAX_SUPPLY_CURRENT_LIMIT));
+
+    public static final CANrangeConfiguration CANRANGE_CONFIG =
+        new CANrangeConfiguration()
+            .withFovParams(
+                new FovParamsConfigs()
+                    .withFOVRangeX(6.75)
+                    .withFOVRangeY(6.75)
+            )
+            .withProximityParams(
+
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(Units.inchesToMeters(15.75))
+                    .withProximityHysteresis(0.01));
   }
 
   // ====================Elevator (4_)====================
@@ -308,9 +323,21 @@ public final class Constants {
 
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
+    public static final double DRUM_RADIUS_INCHES = 1.128;
+    public static final double kElevatorDrumRadius = Units.inchesToMeters(DRUM_RADIUS_INCHES);
+    public static final double kGearing = (1.0 / 5.0);
+    public static final double kElevatorUnitToRotorRatio =
+        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
+
+    public static final double GEAR_RATIO =
+        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
+    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_METERS =
+        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
+
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-        1 / (1.8427325868896291219526481028964);
+        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);
 
     public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
@@ -338,7 +365,7 @@ public final class Constants {
                     .withMotionMagicJerk(Tunable_ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
@@ -396,6 +423,8 @@ public final class Constants {
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
     public static final int PIVOT_CANCODER_ID = 54;
 
+    public static final double ROLLER_MOI = 0.001;
+
     public static final double Tunable_PIVOT_kP = 35;
     public static final double Tunable_PIVOT_kI = 0;
     public static final double Tunable_PIVOT_kD = 0.5;
@@ -408,7 +437,7 @@ public final class Constants {
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -420,6 +449,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
+    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
     public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
 
     // ========End Effector Constant Positions========
@@ -496,13 +526,27 @@ public final class Constants {
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+
+    
+    public static final CANrangeConfiguration CANRANGE_CONFIG =
+        new CANrangeConfiguration()
+            .withFovParams(
+                new FovParamsConfigs()
+                    .withFOVRangeX(6.75)
+                    .withFOVRangeY(6.75)
+            )
+            .withProximityParams(
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(Units.inchesToMeters(3))
+                    .withProximityHysteresis(0.01));
   }
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
 
-    public static final double reduction = (23.11 / 1);
+    public static final double reduction = (1 / 23.11);
+    public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
 
@@ -525,6 +569,62 @@ public final class Constants {
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
+  // ====================Feeder (2_)====================
+  public static class FeederConstants {
+    public static final int RIGHT_ID = 20;
+    public static final int LEFT_ID = 21;
+    public static final int CANRANGE_ID = 22;
+
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
+
+    public static final double ROLLER_kP = 0;
+    public static final double ROLLER_kI = 0;
+    public static final double ROLLER_kD = 0;
+    public static final double ROLLER_kS = 0;
+    public static final double ROLLER_kA = 0;
+
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double STALLED_CURRENT = 1000.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double DEJAM_DURATION_SECONDS = 0.05;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(ROLLER_kP)
+                    .withKI(ROLLER_kI)
+                    .withKD(ROLLER_kD)
+                    .withKS(ROLLER_kS)
+                    .withKA(ROLLER_kA))
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+
+    public static final CANrangeConfiguration CANRANGE_CONFIG =
+        new CANrangeConfiguration()
+            .withFovParams(
+                new FovParamsConfigs()
+                    .withFOVRangeX(6.75)
+                    .withFOVRangeY(6.75)
+            )
+            .withProximityParams(
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(Units.inchesToMeters(3))
+                    .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
+  }
+
   // ====================LED (8_)====================
   public static final class LEDConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
@@ -542,25 +642,28 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Camera A (left side)
-    public static final double kCameraAPitchDegrees = 20.0;
+    public static final double kCameraAPitchDegrees = 15.0;
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
-    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
-    public static final double kRobotToCameraAForward = Units.inchesToMeters(7.8757);
-    public static final double kRobotToCameraASide = Units.inchesToMeters(-11.9269);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(0.0);
+    public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
+    public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
+    public static final Transform2d kRobotToCameraA =
+        new Transform2d(
+            new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
 
     // Camera B (right side)
-    public static final double kCameraBPitchDegrees = 20.0;
+    public static final double kCameraBPitchDegrees = 15.0;
     public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
-    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.3787);
+    public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
-    public static final double kRobotToCameraBForward = Units.inchesToMeters(7.8757);
-    public static final double kRobotToCameraBSide = Units.inchesToMeters(11.9269);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(0.0);
-
-    // Validation Constants
-    public static final int kExpectedStdDevArrayLength = 12;
+    public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
+    public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
+    public static final Transform2d kRobotToCameraB =
+        new Transform2d(
+            new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
 
     // April Tags
 
@@ -573,6 +676,37 @@ public final class Constants {
                 .toList(),
             kAprilTagLayout.getFieldLength(),
             kAprilTagLayout.getFieldWidth());
+
+    // Vision processing constants
+    public static final double kDefaultAmbiguityThreshold = 0.19;
+    public static final double kDefaultYawDiffThreshold = 5.0;
+    public static final double kTagAreaThresholdForYawCheck = 2.0;
+    public static final double kTagMinAreaForSingleTagMegatag = 1.0;
+    public static final double kDefaultZThreshold = 0.2;
+    public static final double kDefaultNormThreshold = 1.0;
+    public static final double kMinAmbiguityToFlip = 0.08;
+
+    public static final double kCameraHorizontalFOVDegrees = 81.0;
+    public static final double kCameraVerticalFOVDegrees = 55.0;
+    public static final int kCameraImageWidth = 1280;
+    public static final int kCameraImageHeight = 800;
+    public static final double kScoringConfidenceThreshold = 0.7;
+    // NetworkTables constants
+    public static final String kBoundingBoxTableName = "BoundingBoxes";
+
+    // Large variance used to downweight unreliable vision measurements
+    public static final double kLargeVariance = 1e6;
+    // Standard deviation constants
+    public static final int kMegatag1XStdDevIndex = 0;
+    public static final int kMegatag1YStdDevIndex = 1;
+    public static final int kMegatag1YawStdDevIndex = 5;
+    // Standard deviation array indices for Megatag2
+    public static final int kMegatag2XStdDevIndex = 6;
+    public static final int kMegatag2YStdDevIndex = 7;
+    public static final int kMegatag2YawStdDevIndex = 11;
+    // Validation constants
+    public static final int kMinFiducialCount = 1;
+    public static final int kExpectedStdDevArrayLength = 12;
   }
 
   public static class SuperstructureConstants {

@@ -41,10 +41,10 @@ public interface IntakeIO {
       double statorCurrent,
       double temperature,
       double velocityRPS,
-      double positionRad) {}
+      double positionRotations) {}
 
   /** CANCoder telemetry. */
-  record CanCoderData(boolean isSensorConnected, double positionRad, double velocityRPS) {}
+  record CanCoderData(boolean isSensorConnected, double positionRotations, double velocityRPS) {}
 
   /** CANRange telemetry. */
   record CanRangeData(
@@ -58,9 +58,9 @@ public interface IntakeIO {
 
   default void setLvl1BlockerVoltage(double voltage) {}
 
-  default void setPivotPosition(double positionRad) {}
+  default void setPivotPosition(double positionRotations) {}
 
-  default void setLvl1BlockerPosition(double positionRad) {}
+  default void setLvl1BlockerPosition(double positionRotations) {}
 
   default void updatePivotPIDFF(
       double kP,

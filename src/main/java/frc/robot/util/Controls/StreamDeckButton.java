@@ -129,7 +129,7 @@ public class StreamDeckButton {
 
   public List<String> getDataToPublish() {
     List<String> dataToPublish = new ArrayList<>();
-    dataToPublish.add(key);
+    dataToPublish.add("StreamDeckButton/" + key);
     dataToPublish.add(active_background);
     dataToPublish.add(inactive_background);
     dataToPublish.add(active_foreground);
