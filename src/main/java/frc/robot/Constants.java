@@ -150,7 +150,7 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 1.0 / 5.56; // X44- Rollers: (5.56 : 1)
 
     // MOI
-    public static final double PIVOT_MOI = 0.01;+
+    public static final double PIVOT_MOI = 0.01;
     public static final double L1_BAR_MOI = 0.01;
     public static final double ROLLER_MOI = 0.001;
 
