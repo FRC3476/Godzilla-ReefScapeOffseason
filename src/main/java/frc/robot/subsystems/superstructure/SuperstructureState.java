@@ -128,8 +128,10 @@ public enum SuperstructureState {
       return Commands.none();
     }
     return new ParallelCommandGroup(
-        container.getElevator().moveElevatorCommand(() -> elevatorHeight, true),
-        container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation, true));
+        container.getElevator().moveElevatorCommand(() -> this.getElevatorHeight(), true),
+        container
+            .getEndEffector()
+            .moveEndEffectorCommand(() -> this.getEndEffectorRotation(), true));
   }
 
   public boolean isCoralState() {
