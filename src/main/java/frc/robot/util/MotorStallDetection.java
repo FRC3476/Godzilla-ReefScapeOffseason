@@ -1,11 +1,8 @@
 package frc.robot.util;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-
 public class MotorStallDetection {
   public static boolean isMotorStalled(
-      TalonFX motor, double currentLimitAmps, double velocityLimitRPS) {
-    return motor.getStatorCurrent().getValueAsDouble() > currentLimitAmps
-        && motor.getVelocity().getValueAsDouble() < velocityLimitRPS;
+      double motorCurrent, double motorVelocity, double currentLimitAmps, double velocityLimitRPS) {
+    return motorCurrent > currentLimitAmps && motorVelocity < velocityLimitRPS;
   }
 }

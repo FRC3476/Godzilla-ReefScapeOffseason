@@ -17,20 +17,20 @@ public interface ElevatorIO {
       boolean isMotorConnected,
       double position,
       double appliedVolts,
-      double torqueCurrentAmps,
+      double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double setPosition) {}
+      double velocityRPS) {}
 
   /** motor telemetry data. */
   record LeftMotorData(
       boolean isMotorConnected,
       double position,
       double appliedVolts,
-      double torqueCurrentAmps,
+      double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double setPosition) {}
+      double velocityRPS) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 

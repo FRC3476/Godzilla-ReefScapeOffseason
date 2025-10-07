@@ -7,6 +7,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
 public class Claw extends SubsystemBase {
@@ -22,6 +23,7 @@ public class Claw extends SubsystemBase {
       new LoggedTunableNumber("Claw/RollerVolts", 1.0);
 
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Claw", inputs);
 
@@ -34,6 +36,9 @@ public class Claw extends SubsystemBase {
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
 
     RobotState.setHasAlgae(hasAlgae());
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   public void setRollerVoltage(double voltage) {

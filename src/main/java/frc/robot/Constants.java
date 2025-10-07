@@ -392,7 +392,7 @@ public final class Constants {
     public static final double DRUM_RADIUS_METERS =
         ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
     public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
-    public static final double MAX_HEIGHT_METERS = 1.0; // Maximum elevator height
+    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(MAX_HEIGHT_INCH); // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
@@ -402,6 +402,8 @@ public final class Constants {
     public static final int FIRST_CORAL_CANRANGE_ID = 52;
     public static final int SECOND_CORAL_CANRANGE_ID = 53;
     public static final int PIVOT_CANCODER_ID = 54;
+
+    public static final double ROLLER_MOI = 0.001;
 
     public static final double Tunable_PIVOT_kP = 35;
     public static final double Tunable_PIVOT_kI = 0;
@@ -555,7 +557,8 @@ public final class Constants {
   // ====================Climb (6_)====================
   public static class ClimbConstants {
 
-    public static final double reduction = (23.11 / 1);
+    public static final double reduction = (1 / 23.11);
+    public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
 
@@ -592,6 +595,9 @@ public final class Constants {
     public static final int RIGHT_ID = 20;
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
+
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
 
     public static final double ROLLER_kP = 0;
     public static final double ROLLER_kI = 0;
