@@ -36,7 +36,6 @@ public class ElevatorIOReal implements ElevatorIO {
   StatusSignal<Temperature> rightTempCelsius;
   StatusSignal<Double> rightSetPosition;
   StatusSignal<AngularVelocity> rightVelocityRPS;
-  StatusSignal<Double> rightSetpoint;
 
   StatusSignal<Angle> leftPosition;
   StatusSignal<Voltage> leftAppliedVolts;
@@ -45,7 +44,6 @@ public class ElevatorIOReal implements ElevatorIO {
   StatusSignal<Temperature> leftTempCelsius;
   StatusSignal<Double> leftSetPosition;
   StatusSignal<AngularVelocity> leftVelocityRPS;
-  StatusSignal<Double> leftSetpoint;
 
   private final BaseStatusSignal[] signals;
 
@@ -63,7 +61,6 @@ public class ElevatorIOReal implements ElevatorIO {
     rightSupplyCurrentAmps = rightTalon.getSupplyCurrent();
     rightTempCelsius = rightTalon.getDeviceTemp();
     rightVelocityRPS = rightTalon.getVelocity();
-    rightSetpoint = rightTalon.getClosedLoopFeedForward();
 
     leftPosition = leftTalon.getPosition();
     leftAppliedVolts = leftTalon.getMotorVoltage();
@@ -71,7 +68,6 @@ public class ElevatorIOReal implements ElevatorIO {
     leftSupplyCurrentAmps = leftTalon.getSupplyCurrent();
     leftTempCelsius = leftTalon.getDeviceTemp();
     leftVelocityRPS = leftTalon.getVelocity();
-    leftSetpoint = leftTalon.getClosedLoopFeedForward();
 
     signals =
         new BaseStatusSignal[] {
@@ -81,14 +77,12 @@ public class ElevatorIOReal implements ElevatorIO {
           rightSupplyCurrentAmps,
           rightTempCelsius,
           rightVelocityRPS,
-          rightSetpoint,
           leftPosition,
           leftAppliedVolts,
           leftStatorCurrentAmps,
           leftSupplyCurrentAmps,
           leftTempCelsius,
-          leftVelocityRPS,
-          leftSetpoint
+          leftVelocityRPS
         };
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -99,14 +93,12 @@ public class ElevatorIOReal implements ElevatorIO {
         rightSupplyCurrentAmps,
         rightTempCelsius,
         rightVelocityRPS,
-        rightSetpoint,
         leftPosition,
         leftAppliedVolts,
         leftStatorCurrentAmps,
         leftSupplyCurrentAmps,
         leftTempCelsius,
-        leftVelocityRPS,
-        leftSetpoint);
+        leftVelocityRPS);
     ParentDevice.optimizeBusUtilizationForAll(rightTalon, leftTalon);
   }
 
@@ -127,8 +119,7 @@ public class ElevatorIOReal implements ElevatorIO {
             rightStatorCurrentAmps.getValueAsDouble(),
             rightSupplyCurrentAmps.getValueAsDouble(),
             rightTempCelsius.getValueAsDouble(),
-            rightVelocityRPS.getValueAsDouble(),
-            rightSetpoint.getValueAsDouble());
+            rightVelocityRPS.getValueAsDouble());
 
     inputs.leftMotorData =
         new ElevatorIO.LeftMotorData(
@@ -144,8 +135,7 @@ public class ElevatorIOReal implements ElevatorIO {
             leftStatorCurrentAmps.getValueAsDouble(),
             leftSupplyCurrentAmps.getValueAsDouble(),
             leftTempCelsius.getValueAsDouble(),
-            leftVelocityRPS.getValueAsDouble(),
-            leftSetpoint.getValueAsDouble());
+            leftVelocityRPS.getValueAsDouble());
   }
 
   @Override

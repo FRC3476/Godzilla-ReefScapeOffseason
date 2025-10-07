@@ -110,6 +110,7 @@ public class Elevator extends SubsystemBase {
             : ElevatorConstants.ELEVATOR_SETPOINT_LARGE_TOLERANCE_INCH);
   }
 
+  @AutoLogOutput(key = "Elevator/Setpoint")
   public double getTargetPosition() {
     return setpoint;
   }

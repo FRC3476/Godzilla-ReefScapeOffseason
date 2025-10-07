@@ -7,11 +7,9 @@ public interface ElevatorIO {
   @AutoLog
   class ElevatorIOInputs {
     /** LEADER - Right motor telemetry. */
-    public RightMotorData rightMotorData =
-        new RightMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public RightMotorData rightMotorData = new RightMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-    public LeftMotorData leftMotorData =
-        new LeftMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    public LeftMotorData leftMotorData = new LeftMotorData(false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   /** motor telemetry data. */
@@ -22,8 +20,7 @@ public interface ElevatorIO {
       double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double velocityRPS,
-      double setpoint) {}
+      double velocityRPS) {}
 
   /** motor telemetry data. */
   record LeftMotorData(
@@ -33,8 +30,7 @@ public interface ElevatorIO {
       double statorCurrentAmps,
       double supplyCurrentAmps,
       double tempCelsius,
-      double velocityRPS,
-      double setpoint) {}
+      double velocityRPS) {}
 
   default void updateInputs(ElevatorIOInputs inputs) {}
 
