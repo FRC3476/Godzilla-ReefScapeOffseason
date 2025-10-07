@@ -297,6 +297,8 @@ public final class Constants {
         ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
+    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);
 
@@ -436,8 +438,8 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
-    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
-    public static final double PIVOT_TOLERANCE_ROTATIONS = (double) 5 / 360;
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(3);
+    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
 
     // ========End Effector Constant Positions========
     // Pivot positions in rotations
