@@ -211,12 +211,12 @@ public class RobotContainer {
 
   private void RegisterDefaultCommands() {
     // Default command, normal field-relative drive
-    // drive.setDefaultCommand(
-    //     DriveCommands.joystickDrive(
-    //         drive,
-    //         () -> -controller.getLeftY(),
-    //         () -> -controller.getLeftX(),
-    //         () -> -controller.getRightX()));
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     intake.setDefaultCommand(intake.intakeDefault());
@@ -358,7 +358,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(
         intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
     intakeDownPosTrigger.onTrue(
-        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
     intakeScoringPosTrigger.onTrue(
         intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
     intakeZeroPosTrigger.onTrue(
