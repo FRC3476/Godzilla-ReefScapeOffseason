@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.DoubleSupplier;
@@ -23,10 +22,8 @@ public class ElevatorIOReal implements ElevatorIO {
   protected TalonFX rightTalon;
   protected TalonFX leftTalon;
 
-  private MotionMagicVoltage m_request =
-      new MotionMagicVoltage(0).withEnableFOC(true);
-  private VoltageOut m_VoltageOut =
-      new VoltageOut(0).withEnableFOC(true);
+  private MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  private VoltageOut m_VoltageOut = new VoltageOut(0).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;
