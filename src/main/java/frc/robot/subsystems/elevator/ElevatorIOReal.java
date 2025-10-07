@@ -24,9 +24,9 @@ public class ElevatorIOReal implements ElevatorIO {
   protected TalonFX extraTalon;
 
   private MotionMagicVoltage m_request =
-      new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new MotionMagicVoltage(0).withEnableFOC(true);
   private VoltageOut m_VoltageOut =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(0).withEnableFOC(true);
 
   // =====Logged Values=====
   StatusSignal<Angle> rightPosition;

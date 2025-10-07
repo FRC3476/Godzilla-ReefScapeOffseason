@@ -23,7 +23,7 @@ public class ClawIOReal implements ClawIO {
   private CANrange secondCoralCANRange;
 
   private VoltageOut roller_m_request =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+      new VoltageOut(0).withEnableFOC(true);
 
   StatusSignal<AngularVelocity> rollerVelocityRPS;
   StatusSignal<Voltage> rollerAppliedVolts;
