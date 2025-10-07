@@ -108,7 +108,7 @@ public final class Constants {
 
     // Setpoints
     public static final double PIVOT_TOLERANCE_ROTATIONS = 0.0;
-    public static final double PIVOT_L1_SETPOINT_ROTATIONS = Units.degreesToRotations(65.7874127);
+    public static final double PIVOT_L1_SETPOINT_ROTATIONS = IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_ROTATIONS;
     public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
 
     // Pivot Positions
@@ -377,8 +377,7 @@ public final class Constants {
     public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
 
     // Barge heights
-    public static final double ELEVATOR_BARGE_BACK_SETPOINT_INCH = 53.4375;
-    public static final double ELEVATOR_BARGE_FRONT_SETPOINT_INCH = 53.4375;
+    public static final double ELEVATOR_BARGE_SETPOINT_INCH = 53.4375;
 
     public static final double kElevatorDrumRadius = Units.inchesToMeters(1.128);
     public static final double kGearing = (13.0 / 50.0);
@@ -435,11 +434,19 @@ public final class Constants {
     public static final double PIVOT_TOLERANCE_ROTATIONS = (double) 5 / 360;
 
     // ========End Effector Constant Positions========
+    // Standardized angle constants with RADIAN suffix
+    public static final double MAX_ANGLE_ROTATIONS = Units.degreesToRotations(119.8473749);
+    public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
+    public static final double MAX_SAFE_ANGLE_ROTATIONS =
+        Units.degreesToRotations(35); // old value 53.9126895
+    public static final double MIN_SAFE_ANGLE_ROTATIONS =
+        Units.degreesToRotations(-21); // old value -61.1115004
+
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
     public static final double GROUND_ALGAE_ANGLE_ROTATIONS = Units.degreesToRotations(-52.0336836);
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
-    public static final double PROCESSOR_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
+    public static final double PROCESSOR_ANGLE_ROTATIONS = ALGAE_IDLE_ANGLE_ROTATIONS;
     public static final double L2_L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
@@ -449,22 +456,9 @@ public final class Constants {
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
-    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS =
-        Units.degreesToRotations(119.8473749);
+    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = EndEffectorConstants.MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
 
-    // Hardstop angles
-    public static final double UPPER_HARDSTOP_ANGLE_ROTATIONS =
-        Units.degreesToRotations(119.8473749);
-    public static final double LOWER_HARDSTOP_ANGLE_ROTATIONS =
-        EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    // Standardized angle constants with RADIAN suffix
-    public static final double MAX_ANGLE_ROTATIONS = Units.degreesToRotations(119.8473749);
-    public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
-    public static final double MAX_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(35); // old value 53.9126895
-    public static final double MIN_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(-21); // old value -61.1115004
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -692,118 +686,96 @@ public final class Constants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double STOW_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double STOW_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
     public static double STOW_CORAL_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
+        EndEffectorConstants.ALGAE_IDLE_ANGLE_ROTATIONS;
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-38.3080987);
-    public static double STOW_ALGAE_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
+        EndEffectorConstants.ALGAE_IDLE_ANGLE_ROTATIONS;
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double INTAKE_CORAL_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
     public static double INTAKE_CORAL_L1_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double INTAKE_CORAL_L1_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double INTAKE_CORAL_L1_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
     public static double FEED_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double FEED_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double L1_PIVOT_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(65.7874127);
 
-    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = 14.41811 + 2;
+    public static double L2_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH + 2;
     // Away from reef 7.078988deg
     public static double L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
     // Away from reef 17.7998883deg
-    public static double L2_AIM_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = 30.029785 + 2.5;
+    public static double L3_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH + 2.5;
     // Away from reef 23.003301deg
     public static double L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;     
     // Away from reef 17.7998883deg
-    public static double L3_AIM_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = 53.4375;
+    public static double L4_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
     // Away from reef 53.4375
     public static double L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(3.1972053); // Away from reef (no against)
-    public static double L4_AIM_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double L1_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double L1_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(65.7874127);
 
-    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = 14.41811 + 2;
+    public static double L2_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH + 2;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
     // Away from reef 17.7998883deg
-    public static double L2_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = 30.029785 + 2.5;
+    public static double L3_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH + 2.5;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS; 
     // Away from reef 17.7998883deg
-    public static double L3_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = 53.4375;
+    public static double L4_SCORE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
     // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(3.1972053); // Away from reef (no against)
-    public static double L4_SCORE_INTAKE_ROTATION_ROTATIONS = Units.degreesToRotations(-26.9162484);
 
-    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(53.9126895);
 
-    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = 14.41811;
+    public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(53.9126895);
 
-    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = 53.4375;
+    public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
     public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(53.9126895);
 
-    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = 45.325558;
+    public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH;
     public static double ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
-    public static double ALGAE_HIGH_INTAKE_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
-    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = 30.907161;
+    public static double ALGAE_LOW_INTAKE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH;
     public static double ALGAE_LOW_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
-    public static double ALGAE_LOW_INTAKE_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
     public static double PROCESSOR_AIM_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double PROCESSOR_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(-38.3080987);
-    public static double PROCESSOR_AIM_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
-    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = 53.4375;
+    public static double BARGE_AIM_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_BARGE_SETPOINT_INCH;
     public static double BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS =
         Units.degreesToRotations(43.8547133);
     public static double BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS =
@@ -812,8 +784,6 @@ public final class Constants {
         (BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS
                 + BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS)
             / 2;
-    public static double BARGE_AIM_INTAKE_ROTATION_ROTATIONS =
-        Units.degreesToRotations(-26.9162484);
 
     public static double ALGAE_GROUND_INTAKE_ELEVATOR_HEIGHT_INCH = 0.0;
     public static double ALGAE_GROUND_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS =
