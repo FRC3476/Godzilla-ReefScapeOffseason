@@ -850,7 +850,7 @@ public class RobotContainer {
     controller.povRight().onTrue(intake.setIntakeStateCommand(IntakeState.STOW));
 
     // Intake ground coral
-    controller.leftTrigger(0.5).onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE));
+    controller.leftTrigger(0.2).onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE));
 
     // ALGAE DESCORE PREP
     controller
@@ -871,7 +871,7 @@ public class RobotContainer {
 
     // Manual spit out game piece todo: auto coral scoring
     controller
-        .rightTrigger(0.5) // check
+        .rightTrigger(0.2) // check
         .onTrue(
             claw.rollerFWD() // idk which way the claw goes
             );
