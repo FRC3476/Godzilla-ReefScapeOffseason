@@ -95,6 +95,9 @@ public final class Constants {
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
 
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
+
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
     public static final double STALLED_CURRENT = 1000.0;
     public static final double STALLED_RPS = 0.0;
@@ -114,9 +117,14 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
+            .withFovParams(
+                new FovParamsConfigs()
+                    .withFOVRangeX(6.75)
+                    .withFOVRangeY(6.75)
+            )
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(0.05)
+                    .withProximityThreshold(Units.inchesToMeters(3))
                     .withProximityHysteresis(0.01));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
@@ -209,9 +217,9 @@ public final class Constants {
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 
     // Motion constraints
-    public static final double lvl1blockerMAX_ACCEL = 0.0; // rad/s^2
-    public static final double lvl1blockerMAX_VELOCITY = 0.0; // rad/s
-    public static final double lvl1blockerJERK = 0.0; // rad/s^3
+    public static final double lvl1blockerMAX_ACCEL = 1000; // rad/s^2
+    public static final double lvl1blockerMAX_VELOCITY = 50; // rad/s
+    public static final double lvl1blockerJERK = 1000; // rad/s^3
 
     public static final double L1_BLOCKER_CORAL_ENGAGED_POSITION = 0.0; // radians
     public static final double L1_BLOCKER_CORAL_DISENGAGED_POSITION = 0.0; // radians
@@ -324,7 +332,6 @@ public final class Constants {
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
     public static final double DRUM_RADIUS_INCHES = 1.128;
-    public static final double kElevatorDrumRadius = Units.inchesToMeters(DRUM_RADIUS_INCHES);
     public static final double kGearing = (1.0 / 5.0);
     public static final double kElevatorUnitToRotorRatio =
         kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
@@ -333,7 +340,7 @@ public final class Constants {
         ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
     public static final double DRUM_RADIUS_METERS =
-        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
+        Units.inchesToMeters(DRUM_RADIUS_INCHES); // Radius of drum/pulley
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
@@ -401,16 +408,6 @@ public final class Constants {
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
 
-    public static final double kElevatorDrumRadius = Units.inchesToMeters(1.128);
-    public static final double kGearing = (13.0 / 50.0);
-    public static final double kElevatorUnitToRotorRatio =
-        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
-
-    public static final double GEAR_RATIO =
-        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
-    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
-    public static final double DRUM_RADIUS_METERS =
-        ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
     public static final double MIN_HEIGHT_METERS = Units.inchesToMeters(ELEVATOR_ZERO_SETPOINT_INCH); // Minimum elevator height
     public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(ELEVATOR_MAX_SETPOINT_INCH); // Maximum elevator height
   }
@@ -569,62 +566,6 @@ public final class Constants {
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
-  // ====================Feeder (2_)====================
-  public static class FeederConstants {
-    public static final int RIGHT_ID = 20;
-    public static final int LEFT_ID = 21;
-    public static final int CANRANGE_ID = 22;
-
-    public static final double ROLLER_MOI = 0.001;
-    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
-
-    public static final double ROLLER_kP = 0;
-    public static final double ROLLER_kI = 0;
-    public static final double ROLLER_kD = 0;
-    public static final double ROLLER_kS = 0;
-    public static final double ROLLER_kA = 0;
-
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
-    public static final double STALLED_CURRENT = 1000.0;
-    public static final double STALLED_RPS = 0.0;
-    public static final double DEJAM_DURATION_SECONDS = 0.05;
-    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
-
-    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(ROLLER_kP)
-                    .withKI(ROLLER_kI)
-                    .withKD(ROLLER_kD)
-                    .withKS(ROLLER_kS)
-                    .withKA(ROLLER_kA))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
-
-    public static final CANrangeConfiguration CANRANGE_CONFIG =
-        new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
-            .withProximityParams(
-                new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.01));
-
-    public static final double FEEDER_IN_VOLTS = 12.0;
-    public static final double FEEDER_OUT_VOLTS = -12.0;
-    public static final double FEEDER_STOP_VOLTS = 0.0;
-  }
-
   // ====================LED (8_)====================
   public static final class LEDConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
@@ -634,6 +575,7 @@ public final class Constants {
     public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
+   // ====================Vision Constants====================
   public static class VisionConstants {
     public static final String DETECTION_LIMELIGHT = "limelight-center";
     public static final AprilTagFieldLayout fieldLayout =
