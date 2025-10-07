@@ -267,16 +267,11 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
-
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(15.75))
-                    .withProximityHysteresis(0.01));
+                    .withProximityHysteresis(0.0));
   }
 
   // ====================Elevator (4_)====================
@@ -568,18 +563,13 @@ public final class Constants {
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
-    
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.01));
+                    .withProximityHysteresis(0.0));
   }
 
   // ====================Climb (6_)====================
@@ -659,15 +649,11 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(
-                new FovParamsConfigs()
-                    .withFOVRangeX(6.75)
-                    .withFOVRangeY(6.75)
-            )
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.01));
+                    .withProximityHysteresis(0.00));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
     public static final double FEEDER_OUT_VOLTS = -12.0;

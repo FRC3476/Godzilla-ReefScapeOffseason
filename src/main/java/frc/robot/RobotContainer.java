@@ -258,7 +258,7 @@ public class RobotContainer {
 
     // Intake State buttons
     NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
-    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("L1 (When Pressed)");
+    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("IntakeL1 (When Pressed)");
     NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
     NetworkTableEntry intakeStateRejectCoralEntry =
         intakeTable.getEntry("Reject Coral (When Pressed)");
@@ -267,6 +267,7 @@ public class RobotContainer {
     NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Scoring (When Pressed)");
     NetworkTableEntry intakeStateScoringPrepEntry =
         intakeTable.getEntry("Scoring Prep (When Pressed)");
+    NetworkTableEntry intakeStateNoneEntry = intakeTable.getEntry("Manual Control (When Pressed)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
@@ -295,6 +296,7 @@ public class RobotContainer {
     intakeStateHandOffEntry.setBoolean(false);
     intakeStateScoringEntry.setBoolean(false);
     intakeStateScoringPrepEntry.setBoolean(false);
+    intakeStateNoneEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
@@ -328,6 +330,7 @@ public class RobotContainer {
         new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
     Trigger intakeStateScoringPrepTrigger =
         new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
+    Trigger intakeStateNoneTrigger = new Trigger(() -> intakeStateNoneEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -396,6 +399,10 @@ public class RobotContainer {
         intake
             .setIntakeStateCommand(IntakeState.SCORING_PREP)
             .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
+    intakeStateNoneTrigger.onTrue(
+        intake
+            .setIntakeStateCommand(IntakeState.NONE)
+            .andThen(() -> intakeStateNoneEntry.setBoolean(false)));
   }
 
   private void buildEndEffectorTab() {
@@ -1258,8 +1265,10 @@ public class RobotContainer {
     Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
     Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
     Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
-    Command intakeL1UpButtonCommand = intake.disengageCoralL1Stall().withName("intakeL1UpButton");
-    Command intakeL1DownButtonCommand = intake.engageCoralL1Stall().withName("intakeL1DownButton");
+    Command intakeL1UpButtonCommand =
+        intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
+    Command intakeL1DownButtonCommand =
+        intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
     Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
     Command feederInButtonOffCommand = intake.feederSTOP().withName("feederInButtonOff");
     Command feederOutButtonCommand = intake.feederRVS().withName("feederOutButton");
