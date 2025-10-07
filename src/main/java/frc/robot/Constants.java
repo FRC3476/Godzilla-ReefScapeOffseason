@@ -331,20 +331,18 @@ public final class Constants {
 
     public static final double ELEVATOR_CURRENT_LIMIT_AMPS = 80;
 
-    public static final double DRUM_RADIUS_INCHES = 1.128;
-    public static final double kGearing = (1.0 / 5.0);
-    public static final double kElevatorUnitToRotorRatio =
-        kGearing * 2.0 * kElevatorDrumRadius * Math.PI;
-
-    public static final double GEAR_RATIO =
-        ElevatorConstants.kElevatorUnitToRotorRatio; // Adjust based on your gearing
-    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
+    public static final double DRUM_RADIUS_INCHES = 1.128; // Radius of drum/pulley
     public static final double DRUM_RADIUS_METERS =
         Units.inchesToMeters(DRUM_RADIUS_INCHES); // Radius of drum/pulley
+    public static final double kGearing = (1.0 / 5.0); //Motor to drum gearing
+    public static final double kElevatorUnitToRotorRatio =
+        kGearing * 2.0 * DRUM_RADIUS_METERS * Math.PI; //Ratio between elevator units (here, meters for sim bot) to motor rotations
+
+    public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
-        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);
+        1 / (kGearing * 2.0 * DRUM_RADIUS_INCHES * Math.PI);  //Ratio between elevator units (here, inches for real bot) to motor rotations
 
     public static final double STALLED_CURRENT = 1000;
     public static final double STALLED_RPS = 0.0;
