@@ -541,6 +541,22 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
                     .withProximityHysteresis(0.01));
+
+    public enum ClawState {
+      NONE,
+      IDLE,
+      INTAKING_CORAL,
+      SCORING,
+      SCORING_L1,
+      HOLDING_ALGAE,
+      GROUND_INTAKE_ALGAE
+    }
+
+    // Roller Voltages
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 0.0;
+    public static final double ROLLER_SCORING_VOLTS = 0.0;
+    public static final double ROLLER_SCORING_L1_VOLTS = 0.0;
+    public static final double ROLLER_GROUND_INTAKE_ALGAE_VOLTS = 0.0;
   }
 
   // ====================Climb (6_)====================
