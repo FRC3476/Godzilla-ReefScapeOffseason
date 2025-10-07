@@ -141,8 +141,8 @@ public final class Constants {
     }
 
     // Gear ratios
-    public static final double PIVOT_RTS = 16; // X44- (pivot slap down): (61.71 : 1)
-    public static final double PIVOT_STM = 54 / 15;
+    public static final double PIVOT_RTS = 16 * 12 / 10; // X44- (pivot slap down): (61.71 : 1)
+    public static final double PIVOT_STM = 54 / 12;
     public static final double PIVOT_GEAR_RATIO = 1.0 / (PIVOT_RTS * PIVOT_STM);
 
     public static final double L1_BAR_GEAR_RATIO = 1.0 / 3.0; // X44- L1 bar: (1:3)
@@ -328,7 +328,7 @@ public final class Constants {
                     .withMotionMagicJerk(Tunable_ELEVATOR_Jerk))
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
