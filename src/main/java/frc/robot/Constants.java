@@ -87,6 +87,41 @@ public final class Constants {
     public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
   }
 
+  // ====================Feeder (2_)====================
+  public static class FeederConstants {
+    public static final int RIGHT_ID = 20;
+    public static final int LEFT_ID = 21;
+    public static final int CANRANGE_ID = 22;
+
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
+    public static final double STALLED_CURRENT = 1000.0;
+    public static final double STALLED_RPS = 0.0;
+    public static final double DEJAM_DURATION_SECONDS = 0.05;
+    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+
+    public static final CANrangeConfiguration CANRANGE_CONFIG =
+        new CANrangeConfiguration()
+            .withProximityParams(
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(0.05)
+                    .withProximityHysteresis(0.01));
+
+    public static final double FEEDER_IN_VOLTS = 12.0;
+    public static final double FEEDER_OUT_VOLTS = -12.0;
+    public static final double FEEDER_STOP_VOLTS = 0.0;
+  }
+
   // ====================Intake (3_)====================
   public static class IntakeConstants {
 
@@ -98,18 +133,8 @@ public final class Constants {
     public static final int CANCODER_ID = 33;
     public static final int CANRANGE_ID = 34;
 
-    // Pivot position for L1 scoring (radians)
-    public static final double SCORE_PREPPED_L1_PIVOT_POSITION_ROTATIONS =
-        Units.degreesToRotations(65.7874127);
-    // Stowed position for intake pivot
-    public static final double INTAKE_PIVOT_STOWED_POSITION = 0.0;
-
-    public static final double SCORE_PREPPED_L1_ROLLER_VOLTS = 0.0;
-
     // Setpoints
-    public static final double PIVOT_TOLERANCE_ROTATIONS = 0.0;
-    public static final double PIVOT_L1_SETPOINT_ROTATIONS = IntakeConstants.SCORE_PREPPED_L1_PIVOT_POSITION_ROTATIONS;
-    public static final double ROLLER_L1_SETPOINT_VOLTS = 0.0;
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
@@ -118,14 +143,13 @@ public final class Constants {
         Units.degreesToRotations(104.5837512); // Intake up angle
     public static final double PIVOT_SCORING_POSITION =
         Units.degreesToRotations(65.7874127); // L1 scoring position
-    public static final double SCORING_PREP_PIVOT_POSITION_ROTATIONS = 0.0;
 
     // L1 Blocker Positions
     public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
     public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
 
     // Roller Voltages
-    public static final double ROLLER_SCORING_OUT_VOLTS = 0.0;
+    public static final double ROLLER_SCORING_OUT_VOLTS = 6.0;
 
     public enum IntakeState {
       NONE,
@@ -321,27 +345,6 @@ public final class Constants {
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
 
-    public enum ElevatorState {
-      DEFAULT,
-      JOG_UP,
-      JOG_DOWN,
-      STOW_RESET,
-      // ========
-      COLLECT_CORAL_GROUND,
-      COLLECT_CORAL_STATION,
-      STAGE_CORAL_HANDOFF,
-      RESET_CORAL_HANDOFF,
-      COLLECT_BOTTOM_ALGAE,
-      COLLECT_TOP_ALGAE,
-      STOW_ALGAE,
-      // ========
-      SCORE_CORAL_L2,
-      SCORE_CORAL_L3,
-      SCORE_CORAL_L4,
-      SCORE_ALGAE_PROCESSOR,
-      SCORE_ALGAE_NET,
-    }
-
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
     public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
@@ -405,12 +408,6 @@ public final class Constants {
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
-    public static final double ROLLER_kP = 0;
-    public static final double ROLLER_kI = 0;
-    public static final double ROLLER_kD = 0;
-    public static final double ROLLER_kS = 0;
-    public static final double ROLLER_kA = 0;
-
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
@@ -423,7 +420,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 1000.0;
     public static final double ROLLER_STALLED_RPS = 0.0;
 
-    public static final double PIVOT_TOLERANCE_ROTATIONS = (double) 5 / 360;
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
 
     // ========End Effector Constant Positions========
     // Standardized angle constants with RADIAN suffix
@@ -483,35 +480,6 @@ public final class Constants {
                     .withStatorCurrentLimitEnable(true)
                     .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
-    public static final TalonFXConfiguration PIVOT_TALON_MOVING_CONFIG =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(Tunable_PIVOT_kP)
-                    .withKI(Tunable_PIVOT_kI)
-                    .withKD(Tunable_PIVOT_kD)
-                    .withKG(Tunable_PIVOT_kG)
-                    .withGravityType(GravityTypeValue.Arm_Cosine))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
-                    .withMotionMagicAcceleration(Tunable_PIVOT_Accel)
-                    .withMotionMagicJerk(Tunable_PIVOT_Jerk))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withFeedback(
-                new FeedbackConfigs()
-                    .withRotorToSensorRatio(PIVOT_RTS)
-                    .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
-                    .withSensorToMechanismRatio(PIVOT_STM)
-                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
-
     public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
         new CANcoderConfiguration()
             .withMagnetSensor(
@@ -521,13 +489,6 @@ public final class Constants {
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(ROLLER_kP)
-                    .withKI(ROLLER_kI)
-                    .withKD(ROLLER_kD)
-                    .withKS(ROLLER_kS)
-                    .withKA(ROLLER_kA))
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
@@ -550,15 +511,6 @@ public final class Constants {
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
 
-    public static final double PIVOT_kP = 0;
-    public static final double PIVOT_kI = 0;
-    public static final double PIVOT_kD = 0;
-    public static final double PIVOT_kG = 0;
-
-    public static final double PIVOT_Velo = 0;
-    public static final double PIVOT_Accel = 0;
-    public static final double PIVOT_Jerk = 0;
-
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
     public static final TalonFXConfiguration CLIMB_TALON_CONFIG =
@@ -571,54 +523,6 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
-  }
-
-  // ====================Feeder (2_)====================
-  public static class FeederConstants {
-    public static final int RIGHT_ID = 20;
-    public static final int LEFT_ID = 21;
-    public static final int CANRANGE_ID = 22;
-
-    public static final double ROLLER_kP = 0;
-    public static final double ROLLER_kI = 0;
-    public static final double ROLLER_kD = 0;
-    public static final double ROLLER_kS = 0;
-    public static final double ROLLER_kA = 0;
-
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
-    public static final double STALLED_CURRENT = 1000.0;
-    public static final double STALLED_RPS = 0.0;
-    public static final double DEJAM_DURATION_SECONDS = 0.05;
-    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
-
-    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(ROLLER_kP)
-                    .withKI(ROLLER_kI)
-                    .withKD(ROLLER_kD)
-                    .withKS(ROLLER_kS)
-                    .withKA(ROLLER_kA))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
-
-    public static final CANrangeConfiguration CANRANGE_CONFIG =
-        new CANrangeConfiguration()
-            .withProximityParams(
-                new ProximityParamsConfigs()
-                    .withProximityThreshold(0.05)
-                    .withProximityHysteresis(0.01));
-
-    public static final double FEEDER_IN_VOLTS = 12.0;
-    public static final double FEEDER_OUT_VOLTS = -12.0;
-    public static final double FEEDER_STOP_VOLTS = 0.0;
   }
 
   // ====================LED (8_)====================

@@ -207,7 +207,7 @@ public class Intake extends SubsystemBase {
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case SCORING_PREP:
-              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_ROTATIONS);
+              this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
               this.io.setRollerVoltage(0);
               this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
