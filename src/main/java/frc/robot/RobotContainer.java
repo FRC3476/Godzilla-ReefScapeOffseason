@@ -931,11 +931,11 @@ public class RobotContainer {
             .withActiveConfig(activeConfig)
             .withText("L1");
     // the Processor is handled by ronny, seperate button
-    // StreamDeckButton AlgaeProcessorButton =
-    //     new StreamDeckButton(3, 6, "Algea Processor")
-    //         .withInactiveConfig(tealConfig)
-    //         .withActiveConfig(activeConfig)
-    //         .withText("P");
+    StreamDeckButton AlgaeProcessorButton =
+        new StreamDeckButton(3, 6, "Algea Processor")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("P");
     StreamDeckButton ReefASideButton =
         new StreamDeckButton(3, 1, "Reef A Side")
             .withInactiveConfig(tealConfig)
@@ -1042,7 +1042,7 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(AlgaeBargeButton, () -> false);
     customStreamDeckButtonMap.put(AlgaeL2Button, () -> false);
     customStreamDeckButtonMap.put(AlgaeL1Button, () -> false);
-    // customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> false);
+    customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> false);
     customStreamDeckButtonMap.put(ReefASideButton, () -> false);
     customStreamDeckButtonMap.put(ReefBSideButton, () -> false);
     customStreamDeckButtonMap.put(ReefCSideButton, () -> false);
@@ -1099,9 +1099,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> RobotState.getStoredScorePosition().setAlgaeIntake(AlgaeIntake.L1_ALGAE)));
-    // streamdeck.button(AlgaeProcessorButton).onTrue(Commands.runOnce(() ->
-    // RobotState.getStoredScorePosition().setAlgaeIntake(AlgaeIntak))); The processor is handled by
-    // Ronny
+    streamdeck.button(AlgaeProcessorButton); // The processor is handled by Ronny
     streamdeck
         .button(ReefASideButton)
         .onTrue(

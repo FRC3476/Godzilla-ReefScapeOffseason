@@ -392,7 +392,8 @@ public final class Constants {
     public static final double DRUM_RADIUS_METERS =
         ElevatorConstants.kElevatorDrumRadius; // Radius of drum/pulley
     public static final double MIN_HEIGHT_METERS = 0.0; // Minimum elevator height
-    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(MAX_HEIGHT_INCH); // Maximum elevator height
+    public static final double MAX_HEIGHT_METERS =
+        Units.inchesToMeters(MAX_HEIGHT_INCH); // Maximum elevator height
   }
 
   // ====================End Effector (5_)====================
