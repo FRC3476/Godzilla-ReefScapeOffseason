@@ -136,7 +136,7 @@ public class Claw extends SubsystemBase {
               if (coralPosition == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR) {
                 this.io.setRollerVoltage(rollerHoldingCoralVolts.get());
               } else if (coralPosition == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR) {
-                this.io.setRollerVoltage(-rollerHoldingCoralVolts.get());
+                this.io.setRollerVoltage(-rollerHoldingCoralVolts.get() / 2);
               } else if (coralPosition == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR) {
                 this.io.setRollerVoltage(0);
               } else {
@@ -144,7 +144,7 @@ public class Claw extends SubsystemBase {
               }
               break;
             case SCORING:
-              this.io.setRollerVoltage(rollerScoringVolts.get());
+              this.io.setRollerVoltage(-rollerScoringVolts.get());
               break;
             case SCORING_L1:
               this.io.setRollerVoltage(rollerScoringL1Volts.get());
