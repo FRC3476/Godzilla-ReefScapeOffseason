@@ -28,10 +28,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.Field.FieldUtils;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -76,6 +78,7 @@ import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
+import frc.robot.util.PoseUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -438,6 +441,12 @@ public class RobotContainer {
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
     NetworkTableEntry clawHoldEntry = endEffectorTable.getEntry("Roller Hold (When Pressed)");
+
+    NetworkTableEntry clawScoreEntry = endEffectorTable.getEntry("Claw Score");
+    NetworkTableEntry clawScoreL1Entry = endEffectorTable.getEntry("Claw Score L1");
+    NetworkTableEntry clawAlgaeEntry = endEffectorTable.getEntry("Claw Algae Hold");
+    NetworkTableEntry clawNoneEntry = endEffectorTable.getEntry("Claw None");
+
     NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
 
@@ -455,6 +464,11 @@ public class RobotContainer {
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
     clawHoldEntry.setBoolean(false);
+    clawScoreEntry.setBoolean(false);
+    clawScoreL1Entry.setBoolean(false);
+    clawAlgaeEntry.setBoolean(false);
+    clawNoneEntry.setBoolean(false);
+
     pivotUpEntry.setBoolean(false);
     pivotDownEntry.setBoolean(false);
 
@@ -470,6 +484,11 @@ public class RobotContainer {
     Trigger clawForwardTrigger = new Trigger(() -> clawForwardEntry.getBoolean(false));
     Trigger clawReverseTrigger = new Trigger(() -> clawReverseEntry.getBoolean(false));
     Trigger clawHoldTrigger = new Trigger(() -> clawHoldEntry.getBoolean(false));
+    Trigger clawScoreTrigger = new Trigger(() -> clawScoreEntry.getBoolean(false));
+    Trigger clawScoreL1Trigger = new Trigger(() -> clawScoreL1Entry.getBoolean(false));
+    Trigger clawAlgaeTrigger = new Trigger(() -> clawAlgaeEntry.getBoolean(false));
+    Trigger clawNoneTrigger = new Trigger(() -> clawNoneEntry.getBoolean(false));
+
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
 
@@ -490,6 +509,20 @@ public class RobotContainer {
 
     clawHoldTrigger.onTrue(claw.holdAlgae());
     clawHoldTrigger.onFalse(claw.holdAlgae());
+
+    clawScoreTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.SCORING)
+            .andThen(() -> clawScoreEntry.setBoolean(false)));
+
+    clawScoreL1Trigger.onTrue(
+        claw.setClawStateCommand(ClawState.SCORING_L1)
+            .andThen(() -> clawScoreL1Entry.setBoolean(false)));
+
+    clawAlgaeTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.ALGAE).andThen(() -> clawAlgaeEntry.setBoolean(false)));
+
+    clawNoneTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.NONE).andThen(() -> clawNoneEntry.setBoolean(false)));
 
     pivotUpTrigger.whileTrue(endEffector.pivotUP());
     pivotUpTrigger.onFalse(endEffector.pivotSTOP());
@@ -790,9 +823,17 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4, Rotation2d.kZero)));
-    driveToOtherSideTrigger.onTrue(
-        DriveCommands.driveToPose(drive, new Pose2d(6, 4, Rotation2d.k180deg)));
+    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
+    // Rotation2d.kZero)));
+    driveToPoseTrigger.whileTrue(
+        DriveCommands.driveToPose(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+
+    driveToOtherSideTrigger.whileTrue(
+        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {
@@ -847,6 +888,13 @@ public class RobotContainer {
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
+
+    controller
+        .leftTrigger()
+        .onTrue(
+            intake
+                .setIntakeStateCommand(IntakeState.INTAKE)
+                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
     // // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));

@@ -245,11 +245,12 @@ public class DriveCommands {
 
   // drive to pose final
 
-  public static Command driveToPose(Drive drive, Pose2d targetPose) {
-    if (drive.getPose().minus(targetPose).getTranslation().getNorm() < 1) {
-      return driveToPosePID(drive, targetPose);
+  public static Command driveToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
+    if (drive.getPose().minus(targetPoseSupplier.get()).getTranslation().getNorm() < 1) {
+      return driveToPosePID(drive, targetPoseSupplier.get());
     }
-    return pathfindToPose(drive, targetPose).andThen(driveToPosePID(drive, targetPose));
+    return pathfindToPose(drive, targetPoseSupplier.get())
+        .andThen(driveToPosePID(drive, targetPoseSupplier.get()));
   }
 
   /**
