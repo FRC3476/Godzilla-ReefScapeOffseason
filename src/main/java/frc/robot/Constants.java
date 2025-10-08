@@ -546,10 +546,10 @@ public final class Constants {
       NONE,
       IDLE,
       INTAKING_CORAL,
+      HOLDING_CORAL,
       SCORING,
       SCORING_L1,
-      HOLDING_ALGAE,
-      GROUND_INTAKE_ALGAE
+      ALGAE
     }
 
     // Roller Voltages
