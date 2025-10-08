@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Field.FieldConstants;
+import frc.robot.Field.FieldConstants.AprilTagStruct;
 import frc.robot.Field.FieldUtils;
 import frc.robot.Field.varc.BargeTagTracker;
 import frc.robot.Field.varc.HPSTagTracker;
@@ -22,6 +23,9 @@ import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
 import frc.robot.util.PoseUtils;
+
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,7 +63,7 @@ public class RobotState extends MagicVirtualSubsystem {
     L2,
     L3,
     L4,
-    NONE,
+    BARGE, PROCESSOR, NONE
   }
 
   public enum AlgaeIntake {
@@ -68,21 +72,15 @@ public class RobotState extends MagicVirtualSubsystem {
     NONE
   }
 
-  public enum AlgaeScore{
-    BARGE, PROCESSOR, NONE
-  }
-
 
   class ScorePosition{
     private ReefSide reefSide;
     private CoralBranch coralBranch;
-    private BranchLevel branchLevel;
-    private AlgaeScore algaeScore;
+    private ScoreLevel scoreLevel;
     public ScorePosition(){
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
-      this.branchLevel = BranchLevel.NONE;
-      this.algaeScore = AlgaeScore.NONE;
+      this.scoreLevel = ScoreLevel.NONE;
     }
 
     public ReefSide getReefSide() {
@@ -96,20 +94,14 @@ public class RobotState extends MagicVirtualSubsystem {
     public ScoreLevel getScoreLevel() {
       return scoreLevel;
     }
-    public AlgaeScore getAlgaeScore(){
-      return algaeScore;
-    }
     public void setReefSide(ReefSide reefSide){
       this.reefSide = reefSide;
     }
     public void setBranchSide(CoralBranch coralBranch){
       this.coralBranch = coralBranch;
     }
-    public void setBranchLevel(BranchLevel branchLevel){
-      this.branchLevel = branchLevel;
-    }
-    public void setAlgaeScore(AlgaeScore algaeScore){
-      this.algaeScore = algaeScore;
+    public void setScoreLevel(ScoreLevel scoreLevel){
+      this.scoreLevel = scoreLevel;
     }
   }
 
@@ -117,6 +109,25 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public ScorePosition getStoredScorePosition(){
     return storedScorePosition;
+  }
+
+  public SuperstructureState getSuperstructureScoreAimState(){
+    switch (getStoredScorePosition().getScoreLevel()) {
+      case L1:
+        return SuperstructureState.L1_PIVOT;
+      case L2:
+        return SuperstructureState.L2_AIM;
+      case L3:
+        return SuperstructureState.L3_AIM;
+      case L4:
+        return SuperstructureState.L4_AIM;
+      case BARGE:
+        return SuperstructureState.BARGE_AIM_BACKWARD;
+      case PROCESSOR:
+        return SuperstructureState.PROCESSOR_AIM;
+      default:
+        return SuperstructureState.NONE;
+    }
   }
 
   private static final String logRoot = "RobotState/";
@@ -132,6 +143,10 @@ public class RobotState extends MagicVirtualSubsystem {
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
+
+  private static HashMap<AprilTagStruct, SuperstructureState> algaeDescoreMap = new HashMap(
+    
+  );
 
   private static boolean hasAlgae = false;
 
