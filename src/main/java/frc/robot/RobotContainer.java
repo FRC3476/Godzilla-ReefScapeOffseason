@@ -264,38 +264,38 @@ public class RobotContainer {
 
   private void buildIntakeTab() {
     // Get the NetworkTable for the Intake tab
-    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
+    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Elastic/Intake");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Elastic/Roller Forward (While Held)");
-    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Elastic/Roller Reverse (While Held)");
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Roller Reverse (While Held)");
 
     NetworkTableEntry intakeUpEntry = intakeTable.getEntry("ElasticPivot Up (While Held)");
-    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Elastic/Pivot Down (While Held)");
+    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
-    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Elastic/Pivot Up (When Pressed)");
+    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Pivot Up (When Pressed)");
     NetworkTableEntry intakeDownPosEntry =
-        intakeTable.getEntry("Elastic/Pivot Intake Position (When Pressed)");
+        intakeTable.getEntry("Pivot Intake Position (When Pressed)");
     NetworkTableEntry intakeScoringPosEntry =
-        intakeTable.getEntry("Elastic/Pivot Scoring Position (When Pressed)");
+        intakeTable.getEntry("Pivot Scoring Position (When Pressed)");
     NetworkTableEntry intakeZeroPosEntry =
-        intakeTable.getEntry("Elastic/Pivot Zero Position (When Pressed)");
+        intakeTable.getEntry("Pivot Zero Position (When Pressed)");
 
-    NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("Elastic/L1 Bar Up (While Held)");
-    NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("Elastic/L1 Bar Down (While Held)");
+    NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("L1 Bar Up (While Held)");
+    NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("L1 Bar Down (While Held)");
 
-    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Elastic/Feeder In (While Held)");
-    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Elastic/Feeder Out (While Held)");
+    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
+    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
 
     // Intake State buttons
     NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
     NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("IntakeL1 (When Pressed)");
     NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
     NetworkTableEntry intakeStateRejectCoralEntry =
-        intakeTable.getEntry("Elastic/Reject Coral (When Pressed)");
-    NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Elastic/Idle (When Pressed)");
-    NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Elastic/Hand Off (When Pressed)");
-    NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Elastic/Scoring (When Pressed)");
+        intakeTable.getEntry("Reject Coral (When Pressed)");
+    NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Idle (When Pressed)");
+    NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Hand Off (When Pressed)");
+    NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Scoring (When Pressed)");
     NetworkTableEntry intakeStateScoringPrepEntry =
         intakeTable.getEntry("Scoring Prep (When Pressed)");
     NetworkTableEntry intakeStateNoneEntry = intakeTable.getEntry("Manual Control (When Pressed)");
@@ -453,15 +453,15 @@ public class RobotContainer {
     NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
 
-    NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Elastic/Pivot Safe Up (When Pressed)");
-    NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Elastic/Pivot Fully Up (When Pressed)");
+    NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Pivot Safe Up (When Pressed)");
+    NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Pivot Fully Up (When Pressed)");
     NetworkTableEntry pivotSafeDownPosEntry =
-        endEffectorTable.getEntry("Elastic/Pivot Safe Down (When Pressed)");
+        endEffectorTable.getEntry("Pivot Safe Down (When Pressed)");
     NetworkTableEntry pivotDownPosEntry =
-        endEffectorTable.getEntry("Elastic/Pivot Fully Down (When Pressed)");
+        endEffectorTable.getEntry("Pivot Fully Down (When Pressed)");
     NetworkTableEntry pivotMiddlePosEntry =
-        endEffectorTable.getEntry("Elastic/Pivot Middle (When Pressed)");
-    NetworkTableEntry pivotManualZeroEntry = endEffectorTable.getEntry("Elastic/Pivot Zero (When Pressed)");
+        endEffectorTable.getEntry("Pivot Middle (When Pressed)");
+    NetworkTableEntry pivotManualZeroEntry = endEffectorTable.getEntry("Pivot Zero (When Pressed)");
 
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
@@ -566,16 +566,16 @@ public class RobotContainer {
     NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elastic/Elevator");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elastic/Elevator Up (While Held)");
-    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elastic/Elevator Down (While Held)");
+    NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
+    NetworkTableEntry elevatorDownEntry = elevatorTable.getEntry("Elevator Down (While Held)");
 
-    NetworkTableEntry elevatorL2Entry = elevatorTable.getEntry("Elastic/Elevator L2 (When Pressed)");
-    NetworkTableEntry elevatorL3Entry = elevatorTable.getEntry("Elastic/Elevator L3 (When Pressed)");
-    NetworkTableEntry elevatorL4Entry = elevatorTable.getEntry("Elastic/Elevator L4 (When Pressed)");
+    NetworkTableEntry elevatorL2Entry = elevatorTable.getEntry("Elevator L2 (When Pressed)");
+    NetworkTableEntry elevatorL3Entry = elevatorTable.getEntry("Elevator L3 (When Pressed)");
+    NetworkTableEntry elevatorL4Entry = elevatorTable.getEntry("Elevator L4 (When Pressed)");
     NetworkTableEntry elevatorDownPosEntry =
-        elevatorTable.getEntry("Elastic/Elevator Down Pos (When Pressed)");
+        elevatorTable.getEntry("Elevator Down Pos (When Pressed)");
     NetworkTableEntry elevatorManualZeroEntry =
-        elevatorTable.getEntry("Elastic/Zero the Elevator (When Pressed)");
+        elevatorTable.getEntry("Zero the Elevator (When Pressed)");
 
     // Initialize entries with default values
     elevatorUpEntry.setBoolean(false);
@@ -626,7 +626,7 @@ public class RobotContainer {
   private void buildSuperstructureTab() {
     superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
-    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
+    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
     NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
@@ -777,8 +777,8 @@ public class RobotContainer {
             .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
 
     // Add current state and target state monitoring
-    NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Elastic/Current State");
-    NetworkTableEntry targetStateEntry = superstructureTable.getEntry("Elastic/Target State");
+    NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Current State");
+    NetworkTableEntry targetStateEntry = superstructureTable.getEntry("Target State");
 
     // Update these entries periodically in the periodic method of RobotContainer
     // For now, we'll create them so they appear on the dashboard
@@ -841,11 +841,11 @@ public class RobotContainer {
   }
 
   private void buildClimberTab() {
-    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
+    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Elastic/Climber");
 
-    NetworkTableEntry climberOutEntry = climberTable.getEntry("Elastic/Climber Out (While Held)");
-    NetworkTableEntry climberDeployEntry = climberTable.getEntry("Elastic/Climber Deploy (When Pressed)");
-    NetworkTableEntry climberClimbEntry = climberTable.getEntry("Elastic/Climber Climb (When Pressed)");
+    NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
+    NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (When Pressed)");
+    NetworkTableEntry climberClimbEntry = climberTable.getEntry("Climber Climb (When Pressed)");
 
     climberOutEntry.setBoolean(false);
     climberDeployEntry.setBoolean(false);
@@ -864,7 +864,7 @@ public class RobotContainer {
   }
 
   private void buildTestTab() {
-    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Test");
+    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Elastic/Test");
 
     NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
 
