@@ -1121,7 +1121,7 @@ public class RobotContainer {
             .withActiveConfig(activeConfig)
             .withText("MS");
     StreamDeckButton setAutoScoringButton = 
-        new StreamDeckButton(0, 0, "Auto Score")
+        new StreamDeckButton(0, 2, "Auto Score")
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("AS");
