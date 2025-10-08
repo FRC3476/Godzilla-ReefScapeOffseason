@@ -22,14 +22,10 @@ import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
 import frc.robot.util.PoseUtils;
-import frc.robot.util.FieldConstants.Reef;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,15 +38,36 @@ import org.littletonrobotics.junction.Logger;
 
 public class RobotState extends MagicVirtualSubsystem {
 
-  public enum ReefSide{
-    A, B, C, D, E, F, NONE
+  public enum ReefSide {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    NONE
   }
-  public enum CoralBranch{
-    RIGHT, LEFT, NONE
+
+  public enum CoralBranch {
+    RIGHT,
+    LEFT,
+    NONE
   }
-  public enum BranchLevel{
-    ONE, TWO, THREE, FOUR, NONE
+
+  public enum ScoreLevel {
+    L1,
+    L2,
+    L3,
+    L4,
+    NONE,
   }
+
+  public enum AlgaeIntake {
+    L2_ALGAE,
+    L1_ALGAE,
+    NONE
+  }
+
   public enum AlgaeScore{
     BARGE, PROCESSOR, NONE
   }
@@ -67,14 +84,17 @@ public class RobotState extends MagicVirtualSubsystem {
       this.branchLevel = BranchLevel.NONE;
       this.algaeScore = AlgaeScore.NONE;
     }
-    public ReefSide getReefSide(){
+
+    public ReefSide getReefSide() {
       return reefSide;
     }
-    public CoralBranch getCoralBranch(){
+
+    public CoralBranch getCoralBranch() {
       return coralBranch;
     }
-    public BranchLevel getBranchLevel(){
-      return branchLevel;
+
+    public ScoreLevel getScoreLevel() {
+      return scoreLevel;
     }
     public AlgaeScore getAlgaeScore(){
       return algaeScore;
@@ -548,8 +568,6 @@ public class RobotState extends MagicVirtualSubsystem {
           calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
     }
   }
-
-
 
   @Override
   public void simulationPeriodic() {}
