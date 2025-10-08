@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -758,9 +759,9 @@ public class RobotContainer {
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
     driveToPoseTrigger.onTrue(
-        DriveCommands.driveToPose(drive, new Pose2d(3, 4, Rotation2d.kZero)));
+        new DriveToPosePIDCommand(drive, () -> new Pose2d(3, 4, Rotation2d.kZero)));
     driveToOtherSideTrigger.onTrue(
-        DriveCommands.driveToPose(drive, new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {

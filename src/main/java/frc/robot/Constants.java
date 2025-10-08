@@ -91,6 +91,15 @@ public final class Constants {
     public static final double AUTO_ALIGN_SPEED_MULTIPLIER = 0.2;
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.02;
     public static final double AUTO_ALIGN_DEGREE_TOLERANCE = 2;
+
+    public static final double DRIVE_TO_POSE_KP = 0.1;
+    public static final double DRIVE_TO_POSE_KI = 0.0;
+    public static final double DRIVE_TO_POSE_KD = 0.0;
+
+    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KD = 0.4;
+    public static final double ANGLE_MAX_VELOCITY = 8.0;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0;
   }
 
   // ====================Intake (3_)====================
