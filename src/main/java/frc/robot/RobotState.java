@@ -75,6 +75,10 @@ public class RobotState extends MagicVirtualSubsystem {
     NONE
   }
 
+  public enum CoralScoringMode{
+    MANUAL, AUTO
+  }
+
 
   class ScorePosition{
     private ReefSide reefSide;
@@ -133,6 +137,8 @@ public class RobotState extends MagicVirtualSubsystem {
     }
   }
 
+  private CoralScoringMode scoringMode;
+
   private static final String logRoot = "RobotState/";
 
   private static SuperstructureState currenState = SuperstructureState.NONE;
@@ -156,6 +162,7 @@ public class RobotState extends MagicVirtualSubsystem {
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
     storedScorePosition = new ScorePosition();
+    this.scoringMode = CoralScoringMode.MANUAL;
 
     // AB faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
@@ -182,6 +189,18 @@ public class RobotState extends MagicVirtualSubsystem {
     algaeDescoreMap.put(FieldConstants.redReefKL, SuperstructureState.ALGAE_LOW_INTAKE);
 
 
+  }
+
+  public CoralScoringMode getCoralScoringMode(){
+    return scoringMode;
+  }
+
+  public void setScoringModeManual(){
+    this.scoringMode = CoralScoringMode.MANUAL;
+  }
+
+  public void setScoringModeAuto(){
+    this.scoringMode = CoralScoringMode.AUTO;
   }
 
   public SuperstructureState getAlgaeDescoreSuperstructureState(){

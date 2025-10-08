@@ -923,12 +923,14 @@ public class RobotContainer {
             Commands.parallel(
                 superstructure.setStateCommand(
                     SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
-                claw.holdAlgae()));
+                claw.setClawStateCommand(ClawState.ALGAE)));
 
     // Processor Aim thingy
     controller
         .leftBumper()
-        .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor"));
+        .onTrue(
+            superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor")
+            .alongWith(claw.setClawStateCommand(ClawState.SCORING)));
 
     // Superstructure Stow
     controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
@@ -937,17 +939,17 @@ public class RobotContainer {
     controller.povRight().onTrue(intake.setIntakeStateCommand(IntakeState.STOW));
 
     // Intake ground coral
-    controller.leftTrigger(0.2).onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE));
+    controller.leftTrigger(0.2).onTrue(
+        intake.setIntakeStateCommand(IntakeState.INTAKE)
+        .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
     // ALGAE DESCORE PREP
     controller
         .y()
         .onTrue(
-            Commands.parallel(
-                superstructure.setStateCommand(
-                    robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim"),
-                claw.rollerRVS() // idk which way the claw goes
-                ));
+                superstructure.setStateCommand(robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
+                .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
+                );
 
     // Score position Aim
     controller
@@ -960,7 +962,14 @@ public class RobotContainer {
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            claw.rollerFWD() // idk which way the claw goes
+            switch (robotState.getCoralScoringMode()){
+                case MANUAL:
+                    claw.setClawStateCommand(ClawState.SCORING); // idk which way the claw goes
+                case AUTO:
+                    DriveCommands.pathfindToPose(drive, );
+                default:
+
+            }
             );
   }
 
@@ -1113,6 +1122,16 @@ public class RobotContainer {
             .withInactiveConfig(yellowOnBlackConfig)
             .withActiveConfig(activeConfig)
             .withText("C");
+    StreamDeckButton setManualScoringButton = 
+        new StreamDeckButton(0, 0, "Manual Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("MS");
+    StreamDeckButton setAutoScoringButton = 
+        new StreamDeckButton(0, 0, "Auto Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("AS");
 
     Command homeElevatorButtonCommand = elevator.homeElevator().withName("homeElevatorButton");
     Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
@@ -1146,6 +1165,7 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
 
     streamdeck.configureCustomButtons(customStreamDeckButtonMap);
 
@@ -1170,6 +1190,9 @@ public class RobotContainer {
     streamdeck.button(reefLeftSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
     streamdeck.button(reefLeftSideButton2).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
     streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
+    streamdeck.button(setManualScoringButton).onTrue(Commands.runOnce(() -> robotState.setScoringModeManual()));
+    streamdeck.button(setAutoScoringButton).onTrue(Commands.runOnce(() -> robotState.setScoringModeAuto()));
+
     streamdeck
         .button(climbDeployButton)
         .and(streamdeck.button(climbDeployButton2))
