@@ -243,6 +243,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    claw.setDefaultCommand(claw.clawDefault());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
@@ -619,6 +620,7 @@ public class RobotContainer {
   }
 
   private void buildSuperstructureTab() {
+    superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 

@@ -127,7 +127,7 @@ public final class Constants {
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.00));
+                    .withProximityHysteresis(0.006));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
     public static final double FEEDER_OUT_VOLTS = -12.0;
@@ -541,7 +541,7 @@ public final class Constants {
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.0));
+                    .withProximityHysteresis(0.006));
 
     public enum ClawState {
       NONE,
