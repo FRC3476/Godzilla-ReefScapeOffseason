@@ -5,15 +5,14 @@ import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.Intake;
 
-public class CleaningTest extends Command{
+public class CleaningTest extends Command {
 
-    public CleaningTest(Intake intake, Claw claw, Feeder feeder) {
-        claw.setRollerVoltage(1);
-        intake.setRollerVoltage(1);
-        feeder.setRollerVoltage(1);
-        intake.intakeFWD();
-        intake.feederFWD();
-        claw.rollerFWD();
-    }
-
+  public CleaningTest(Intake intake, Claw claw, Feeder feeder) {
+    claw.setRollerVoltage(1);
+    intake.setRollerVoltage(1);
+    feeder.setRollerVoltage(1);
+    intake.intakeFWD();
+    intake.feederFWD();
+    claw.rollerFWD();
+  }
 }

@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.RobotState;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
@@ -25,11 +27,16 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     stateMachine.continueTransition();
+    RobotState.setSuperstructureState(getCurrentState());
     Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
     Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
     Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
     Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput("CoralStateTracker/Coral State", CoralStateTracker.getCurrentPosition());
   }
 
   public Command setStateCommand(SuperstructureState state, String name) {

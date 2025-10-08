@@ -156,6 +156,15 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isHandoffState() {
+    switch (this) {
+      case STOW, STOW_CORAL, INTAKE_CORAL, INTAKE_CORAL_L1, FEED:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
