@@ -227,37 +227,37 @@ public class RobotContainer {
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
-    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Roller Reverse (While Held)");
+    NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Elastic/Roller Forward (While Held)");
+    NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Elastic/Roller Reverse (While Held)");
 
-    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
-    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
+    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("ElasticPivot Up (While Held)");
+    NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Elastic/Pivot Down (While Held)");
 
-    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Pivot Up (When Pressed)");
+    NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Elastic/Pivot Up (When Pressed)");
     NetworkTableEntry intakeDownPosEntry =
-        intakeTable.getEntry("Pivot Intake Position (When Pressed)");
+        intakeTable.getEntry("Elastic/Pivot Intake Position (When Pressed)");
     NetworkTableEntry intakeScoringPosEntry =
-        intakeTable.getEntry("Pivot Scoring Position (When Pressed)");
+        intakeTable.getEntry("Elastic/Pivot Scoring Position (When Pressed)");
     NetworkTableEntry intakeZeroPosEntry =
-        intakeTable.getEntry("Pivot Zero Position (When Pressed)");
+        intakeTable.getEntry("Elastic/Pivot Zero Position (When Pressed)");
 
-    NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("L1 Bar Up (While Held)");
-    NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("L1 Bar Down (While Held)");
+    NetworkTableEntry l1BarUpEntry = intakeTable.getEntry("Elastic/L1 Bar Up (While Held)");
+    NetworkTableEntry l1BarDownEntry = intakeTable.getEntry("Elastic/L1 Bar Down (While Held)");
 
-    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Feeder In (While Held)");
-    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Feeder Out (While Held)");
+    NetworkTableEntry feederForwardEntry = intakeTable.getEntry("Elastic/Feeder In (While Held)");
+    NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Elastic/Feeder Out (While Held)");
 
     // Intake State buttons
-    NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
-    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("L1 (When Pressed)");
-    NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
+    NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("Elastic/STOW (When Pressed)");
+    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("Elastic/L1 (When Pressed)");
+    NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Elastic/Intake (When Pressed)");
     NetworkTableEntry intakeStateRejectCoralEntry =
-        intakeTable.getEntry("Reject Coral (When Pressed)");
-    NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Idle (When Pressed)");
-    NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Hand Off (When Pressed)");
-    NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Scoring (When Pressed)");
+        intakeTable.getEntry("Elastic/Reject Coral (When Pressed)");
+    NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Elastic/Idle (When Pressed)");
+    NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Elastic/Hand Off (When Pressed)");
+    NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Elastic/Scoring (When Pressed)");
     NetworkTableEntry intakeStateScoringPrepEntry =
-        intakeTable.getEntry("Scoring Prep (When Pressed)");
+        intakeTable.getEntry("Elastic/Scoring Prep (When Pressed)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
@@ -391,23 +391,23 @@ public class RobotContainer {
 
   private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
-    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
+    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
-    NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
-    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
-    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
+    NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Elastic/Roller Forward (While Held)");
+    NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Elastic/Roller Reverse (While Held)");
+    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Elastic/Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Elastic/Pivot Down (While Held)");
 
-    NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Pivot Safe Up (When Pressed)");
-    NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Pivot Fully Up (When Pressed)");
+    NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Elastic/Pivot Safe Up (When Pressed)");
+    NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Elastic/Pivot Fully Up (When Pressed)");
     NetworkTableEntry pivotSafeDownPosEntry =
-        endEffectorTable.getEntry("Pivot Safe Down (When Pressed)");
+        endEffectorTable.getEntry("Elastic/Pivot Safe Down (When Pressed)");
     NetworkTableEntry pivotDownPosEntry =
-        endEffectorTable.getEntry("Pivot Fully Down (When Pressed)");
+        endEffectorTable.getEntry("Elastic/Pivot Fully Down (When Pressed)");
     NetworkTableEntry pivotMiddlePosEntry =
-        endEffectorTable.getEntry("Pivot Middle (When Pressed)");
-    NetworkTableEntry pivotManualZeroEntry = endEffectorTable.getEntry("Pivot Zero (When Pressed)");
+        endEffectorTable.getEntry("Elastic/Pivot Middle (When Pressed)");
+    NetworkTableEntry pivotManualZeroEntry = endEffectorTable.getEntry("Elastic/Pivot Zero (When Pressed)");
 
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
@@ -546,26 +546,26 @@ public class RobotContainer {
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
-    NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
-    NetworkTableEntry stowCoralEntry = superstructureTable.getEntry("STOW_CORAL");
-    NetworkTableEntry stowAlgaeEntry = superstructureTable.getEntry("STOW_ALGAE");
-    NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("INTAKE_CORAL");
-    NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("INTAKE_CORAL_L1");
-    NetworkTableEntry feedEntry = superstructureTable.getEntry("FEED");
-    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("L1_PIVOT");
-    NetworkTableEntry l2FadeAwayEntry = superstructureTable.getEntry("L2_FADEAWAY");
-    NetworkTableEntry l3FadeAwayEntry = superstructureTable.getEntry("L3_FADEAWAY");
-    NetworkTableEntry l4FadeAwayEntry = superstructureTable.getEntry("L4_FadeAway");
-    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("L1_SCORE");
-    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
-    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
-    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
-    NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
-    NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
-    NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
-    NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("BARGE_AIM_CENTER");
-    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
-    NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("BARGE_AIM_BACKWARD");
+    NetworkTableEntry stowEntry = superstructureTable.getEntry("Elastic/STOW");
+    NetworkTableEntry stowCoralEntry = superstructureTable.getEntry("Elastic/STOW_CORAL");
+    NetworkTableEntry stowAlgaeEntry = superstructureTable.getEntry("Elastic/STOW_ALGAE");
+    NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("Elastic/INTAKE_CORAL");
+    NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("Elastic/INTAKE_CORAL_L1");
+    NetworkTableEntry feedEntry = superstructureTable.getEntry("Elastic/FEED");
+    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("Elastic/L1_PIVOT");
+    NetworkTableEntry l2FadeAwayEntry = superstructureTable.getEntry("Elastic/L2_FADEAWAY");
+    NetworkTableEntry l3FadeAwayEntry = superstructureTable.getEntry("Elastic/L3_FADEAWAY");
+    NetworkTableEntry l4FadeAwayEntry = superstructureTable.getEntry("Elastic/L4_FadeAway");
+    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("Elastic/L1_SCORE");
+    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("Elastic/L2_SCORE");
+    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("Elastic/L3_SCORE");
+    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("Elastic/L4_SCORE");
+    NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("Elastic/ALGAE_HIGH_INTAKE");
+    NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("Elastic/ALGAE_LOW_INTAKE");
+    NetworkTableEntry processorAimEntry = superstructureTable.getEntry("Elastic/PROCESSOR_AIM");
+    NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_CENTER");
+    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_FORWARD");
+    NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_BACKWARD");
 
     // Initialize entries with default values
     stowEntry.setBoolean(false);
@@ -694,8 +694,8 @@ public class RobotContainer {
             .andThen(() -> bargeAimBackwardEntry.setBoolean(false)));
 
     // Add current state and target state monitoring
-    NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Current State");
-    NetworkTableEntry targetStateEntry = superstructureTable.getEntry("Target State");
+    NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Elastic/Current State");
+    NetworkTableEntry targetStateEntry = superstructureTable.getEntry("Elastic/Target State");
 
     // Update these entries periodically in the periodic method of RobotContainer
     // For now, we'll create them so they appear on the dashboard
@@ -706,12 +706,12 @@ public class RobotContainer {
   private void buildDriveTab() {
     NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
 
-    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
-    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Characterize Slip Current");
-    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Characterize Wheel Radius");
-    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
-    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
-    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
+    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Elastic/Characterize Feedforward");
+    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Elastic/Characterize Slip Current");
+    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Elastic/Characterize Wheel Radius");
+    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Elastic/Drive Stop X");
+    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Elastic/Drive Forward");
+    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Elastic/Drive Turn Clockwise");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -741,9 +741,9 @@ public class RobotContainer {
   private void buildClimberTab() {
     NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
 
-    NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
-    NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (When Pressed)");
-    NetworkTableEntry climberClimbEntry = climberTable.getEntry("Climber Climb (When Pressed)");
+    NetworkTableEntry climberOutEntry = climberTable.getEntry("Elastic/Climber Out (While Held)");
+    NetworkTableEntry climberDeployEntry = climberTable.getEntry("Elastic/Climber Deploy (When Pressed)");
+    NetworkTableEntry climberClimbEntry = climberTable.getEntry("Elastic/Climber Climb (When Pressed)");
 
     climberOutEntry.setBoolean(false);
     climberDeployEntry.setBoolean(false);
