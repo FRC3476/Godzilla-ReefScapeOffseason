@@ -9,6 +9,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.util.RobotTime;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
@@ -41,6 +42,11 @@ public class Superstructure extends SubsystemBase {
 
   public Command setStateCommand(SuperstructureState state, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name);
+  }
+
+  public Command setStateCommand(Supplier<SuperstructureState> stateSupplier, String name) {
+    return new InstantCommand(() -> stateMachine.setTargetState(stateSupplier.get()))
+        .withName(name);
   }
 
   public Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {

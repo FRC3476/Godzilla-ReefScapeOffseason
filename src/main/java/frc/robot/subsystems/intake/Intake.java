@@ -110,8 +110,8 @@ public class Intake extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    return false;
-    // return io.checkRollerStalled() && isCoralInIntake();
+    // return false;
+    return io.checkRollerStalled() || feeder.checkForJam();
   }
 
   public Trigger coralInIntakeTrigger() {
