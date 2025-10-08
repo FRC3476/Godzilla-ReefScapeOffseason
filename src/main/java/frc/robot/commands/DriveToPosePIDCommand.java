@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.subsystems.drive.Drive;
@@ -74,5 +75,9 @@ public class DriveToPosePIDCommand extends Command {
   @Override
   public boolean isFinished() {
     return xAtSetpoint && yAtSetpoint && angleController.atSetpoint();
+  }
+
+  public Trigger atSetpoint() {
+    return new Trigger(() -> xAtSetpoint && yAtSetpoint && angleController.atSetpoint());
   }
 }
