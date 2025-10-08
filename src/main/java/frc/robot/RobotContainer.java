@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotState.CoralBranch;
+import frc.robot.RobotState.CoralScoringMode;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.Field.FieldUtils;
@@ -897,7 +898,7 @@ public class RobotContainer {
                 .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
     // // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // // Reset gyro to 0° when B button is pressed
     controller
@@ -929,8 +930,7 @@ public class RobotContainer {
     controller
         .leftBumper()
         .onTrue(
-            superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor")
-            .alongWith(claw.setClawStateCommand(ClawState.SCORING)));
+            superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor"));
 
     // Superstructure Stow
     controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
@@ -962,15 +962,8 @@ public class RobotContainer {
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            switch (robotState.getCoralScoringMode()){
-                case MANUAL:
-                    claw.setClawStateCommand(ClawState.SCORING); // idk which way the claw goes
-                case AUTO:
-                    DriveCommands.pathfindToPose(drive, );
-                default:
-
-            }
-            );
+                Commands.runOnce(() -> claw.setClawStateCommand(ClawState.SCORING))
+        );
   }
 
   private void configureDriveStreamDeckBindings() {

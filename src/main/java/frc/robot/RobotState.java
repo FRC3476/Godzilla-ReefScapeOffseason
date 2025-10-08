@@ -137,6 +137,25 @@ public class RobotState extends MagicVirtualSubsystem {
     }
   }
 
+  // public Pose2d getScoringPose(){
+  //   switch (getStoredScorePosition().getReefSide()){
+  //     case A:
+  //       return FieldConstants.  
+  //     case B:
+  //       return    
+  //     case C:
+  //       return    
+  //     case D:
+  //       return    
+  //     case E:
+  //       return    
+  //     case F:
+  //       return    
+  //     default:
+  //       return 
+  //   }
+  }
+
   private CoralScoringMode scoringMode;
 
   private static final String logRoot = "RobotState/";
