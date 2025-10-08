@@ -23,12 +23,20 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldUtils;
+import frc.robot.RobotState.CoralBranch;
+import frc.robot.RobotState.ReefSide;
+import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -64,10 +72,20 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
+import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
+import frc.robot.util.PoseUtils;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -86,6 +104,17 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Climber climber;
   private final Feeder feeder;
+  private final Vision vision;
+
+  private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
+      new Consumer<VisionFieldPoseEstimate>() {
+        @Override
+        public void accept(VisionFieldPoseEstimate estimate) {
+          drive.addVisionMeasurement(estimate);
+        }
+      };
+
+  private final RobotState robotState = new RobotState(visionEstimateConsumer);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -104,15 +133,17 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOReal());
         claw = new Claw(new ClawIOReal() {});
         elevator = new Elevator(new ElevatorIOReal());
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
+        vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
             new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight)
+                new ModuleIOTalonFX(TunerConstants.BackRight),
+                robotState
                 // ,superstructure
                 );
         break;
@@ -124,15 +155,17 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
+        vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight)
+                new ModuleIOSim(TunerConstants.BackRight),
+                robotState
                 // ,superstructure
                 );
         break;
@@ -144,15 +177,17 @@ public class RobotContainer {
         endEffector = new EndEffector(new EndEffectorIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
-        superstructure = new Superstructure(elevator, endEffector);
+        superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
+        vision = new Vision(new VisionIO() {}, robotState);
         drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {}
+                new ModuleIO() {},
+                robotState
                 // ,superstructure
                 );
         break;
@@ -166,9 +201,9 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Slip Current Characterization (Wall Test)",
-        DriveCommands.slipCurrentCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Slip Current Characterization (Wall Test)",
+    //     DriveCommands.slipCurrentCharacterization(drive));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -193,11 +228,14 @@ public class RobotContainer {
 
     // Configure arbitrary triggers
     configureArbitraryTriggers();
+
+    configureSuperstructureTrigger();
   }
 
   private void configureButtonBindings() {
     configureXboxBindings();
-    configureStreamDeckBindings();
+    // configureTestingStreamDeckBindings();
+    configureDriveStreamDeckBindings();
   }
 
   private void RegisterDefaultCommands() {
@@ -207,9 +245,10 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    elevator.setDefaultCommand(defaultElevatorCommand());
-    endEffector.setDefaultCommand(defaultEndEffectorCommand());
+            () -> -controller.getRightX() / 2));
+    // elevator.setDefaultCommand(defaultElevatorCommand());
+    // endEffector.setDefaultCommand(defaultEndEffectorCommand());
+    claw.setDefaultCommand(claw.clawDefault());
     intake.setDefaultCommand(intake.intakeDefault());
   }
 
@@ -220,6 +259,7 @@ public class RobotContainer {
     buildSuperstructureTab();
     buildClimberTab();
     buildDriveTab();
+    buildTestTab();
   }
 
   private void buildIntakeTab() {
@@ -248,16 +288,17 @@ public class RobotContainer {
     NetworkTableEntry feederReverseEntry = intakeTable.getEntry("Elastic/Feeder Out (While Held)");
 
     // Intake State buttons
-    NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("Elastic/STOW (When Pressed)");
-    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("Elastic/L1 (When Pressed)");
-    NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Elastic/Intake (When Pressed)");
+    NetworkTableEntry intakeStateStowEntry = intakeTable.getEntry("STOW (When Pressed)");
+    NetworkTableEntry intakeStateIntakeL1Entry = intakeTable.getEntry("IntakeL1 (When Pressed)");
+    NetworkTableEntry intakeStateIntakeEntry = intakeTable.getEntry("Intake (When Pressed)");
     NetworkTableEntry intakeStateRejectCoralEntry =
         intakeTable.getEntry("Elastic/Reject Coral (When Pressed)");
     NetworkTableEntry intakeStateIdleEntry = intakeTable.getEntry("Elastic/Idle (When Pressed)");
     NetworkTableEntry intakeStateHandOffEntry = intakeTable.getEntry("Elastic/Hand Off (When Pressed)");
     NetworkTableEntry intakeStateScoringEntry = intakeTable.getEntry("Elastic/Scoring (When Pressed)");
     NetworkTableEntry intakeStateScoringPrepEntry =
-        intakeTable.getEntry("Elastic/Scoring Prep (When Pressed)");
+        intakeTable.getEntry("Scoring Prep (When Pressed)");
+    NetworkTableEntry intakeStateNoneEntry = intakeTable.getEntry("Manual Control (When Pressed)");
 
     // Initialize entries with default values
     intakeForwardEntry.setBoolean(false);
@@ -286,6 +327,7 @@ public class RobotContainer {
     intakeStateHandOffEntry.setBoolean(false);
     intakeStateScoringEntry.setBoolean(false);
     intakeStateScoringPrepEntry.setBoolean(false);
+    intakeStateNoneEntry.setBoolean(false);
 
     // Create triggers based on the NetworkTableEntry values
     Trigger intakeForwardTrigger = new Trigger(() -> intakeForwardEntry.getBoolean(false));
@@ -319,6 +361,7 @@ public class RobotContainer {
         new Trigger(() -> intakeStateScoringEntry.getBoolean(false));
     Trigger intakeStateScoringPrepTrigger =
         new Trigger(() -> intakeStateScoringPrepEntry.getBoolean(false));
+    Trigger intakeStateNoneTrigger = new Trigger(() -> intakeStateNoneEntry.getBoolean(false));
 
     // Configure the while-held behavior
     intakeForwardTrigger.whileTrue(intake.intakeFWD());
@@ -348,7 +391,7 @@ public class RobotContainer {
     intakeUpPosTrigger.onTrue(
         intake.setPivotUp().andThen(() -> intakeUpPosEntry.setBoolean(false)));
     intakeDownPosTrigger.onTrue(
-        intake.movePivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
+        intake.setPivotDown().andThen(() -> intakeDownPosEntry.setBoolean(false)));
     intakeScoringPosTrigger.onTrue(
         intake.setPivotScoring().andThen(() -> intakeScoringPosEntry.setBoolean(false)));
     intakeZeroPosTrigger.onTrue(
@@ -357,36 +400,40 @@ public class RobotContainer {
     // Configure intake state button triggers
     intakeStateStowTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.STOW)
+            .setIntakeStateCommand(IntakeState.STOW)
             .andThen(() -> intakeStateStowEntry.setBoolean(false)));
     intakeStateIntakeL1Trigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE_L1)
+            .setIntakeStateCommand(IntakeState.INTAKE_L1)
             .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
     intakeStateIntakeTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.INTAKE)
+            .setIntakeStateCommand(IntakeState.INTAKE)
             .andThen(() -> intakeStateIntakeEntry.setBoolean(false)));
     intakeStateRejectCoralTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.REJECT_CORAL)
+            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
             .andThen(() -> intakeStateRejectCoralEntry.setBoolean(false)));
     intakeStateIdleTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.IDLE)
+            .setIntakeStateCommand(IntakeState.IDLE)
             .andThen(() -> intakeStateIdleEntry.setBoolean(false)));
     intakeStateHandOffTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.HAND_OFF)
+            .setIntakeStateCommand(IntakeState.HAND_OFF)
             .andThen(() -> intakeStateHandOffEntry.setBoolean(false)));
     intakeStateScoringTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING)
+            .setIntakeStateCommand(IntakeState.SCORING)
             .andThen(() -> intakeStateScoringEntry.setBoolean(false)));
     intakeStateScoringPrepTrigger.onTrue(
         intake
-            .setIntakeState(IntakeState.SCORING_PREP)
+            .setIntakeStateCommand(IntakeState.SCORING_PREP)
             .andThen(() -> intakeStateScoringPrepEntry.setBoolean(false)));
+    intakeStateNoneTrigger.onTrue(
+        intake
+            .setIntakeStateCommand(IntakeState.NONE)
+            .andThen(() -> intakeStateNoneEntry.setBoolean(false)));
   }
 
   private void buildEndEffectorTab() {
@@ -394,10 +441,17 @@ public class RobotContainer {
     NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
-    NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Elastic/Roller Forward (While Held)");
-    NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Elastic/Roller Reverse (While Held)");
-    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Elastic/Pivot Up (While Held)");
-    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Elastic/Pivot Down (While Held)");
+    NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
+    NetworkTableEntry clawReverseEntry = endEffectorTable.getEntry("Roller Reverse (While Held)");
+    NetworkTableEntry clawHoldEntry = endEffectorTable.getEntry("Roller Hold (When Pressed)");
+
+    NetworkTableEntry clawScoreEntry = endEffectorTable.getEntry("Claw Score");
+    NetworkTableEntry clawScoreL1Entry = endEffectorTable.getEntry("Claw Score L1");
+    NetworkTableEntry clawAlgaeEntry = endEffectorTable.getEntry("Claw Algae Hold");
+    NetworkTableEntry clawNoneEntry = endEffectorTable.getEntry("Claw None");
+
+    NetworkTableEntry pivotUpEntry = endEffectorTable.getEntry("Pivot Up (While Held)");
+    NetworkTableEntry pivotDownEntry = endEffectorTable.getEntry("Pivot Down (While Held)");
 
     NetworkTableEntry pivotSafeUpEntry = endEffectorTable.getEntry("Elastic/Pivot Safe Up (When Pressed)");
     NetworkTableEntry pivotUpPosEntry = endEffectorTable.getEntry("Elastic/Pivot Fully Up (When Pressed)");
@@ -412,6 +466,12 @@ public class RobotContainer {
     // Initialize entries with default values
     clawForwardEntry.setBoolean(false);
     clawReverseEntry.setBoolean(false);
+    clawHoldEntry.setBoolean(false);
+    clawScoreEntry.setBoolean(false);
+    clawScoreL1Entry.setBoolean(false);
+    clawAlgaeEntry.setBoolean(false);
+    clawNoneEntry.setBoolean(false);
+
     pivotUpEntry.setBoolean(false);
     pivotDownEntry.setBoolean(false);
 
@@ -426,6 +486,12 @@ public class RobotContainer {
     // Create triggers based on the NetworkTableEntry values
     Trigger clawForwardTrigger = new Trigger(() -> clawForwardEntry.getBoolean(false));
     Trigger clawReverseTrigger = new Trigger(() -> clawReverseEntry.getBoolean(false));
+    Trigger clawHoldTrigger = new Trigger(() -> clawHoldEntry.getBoolean(false));
+    Trigger clawScoreTrigger = new Trigger(() -> clawScoreEntry.getBoolean(false));
+    Trigger clawScoreL1Trigger = new Trigger(() -> clawScoreL1Entry.getBoolean(false));
+    Trigger clawAlgaeTrigger = new Trigger(() -> clawAlgaeEntry.getBoolean(false));
+    Trigger clawNoneTrigger = new Trigger(() -> clawNoneEntry.getBoolean(false));
+
     Trigger pivotUpTrigger = new Trigger(() -> pivotUpEntry.getBoolean(false));
     Trigger pivotDownTrigger = new Trigger(() -> pivotDownEntry.getBoolean(false));
 
@@ -444,6 +510,23 @@ public class RobotContainer {
     clawReverseTrigger.whileTrue(claw.rollerRVS());
     clawReverseTrigger.onFalse(claw.rollerSTOP());
 
+    clawHoldTrigger.onTrue(claw.holdAlgae());
+    clawHoldTrigger.onFalse(claw.holdAlgae());
+
+    clawScoreTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.SCORING)
+            .andThen(() -> clawScoreEntry.setBoolean(false)));
+
+    clawScoreL1Trigger.onTrue(
+        claw.setClawStateCommand(ClawState.SCORING_L1)
+            .andThen(() -> clawScoreL1Entry.setBoolean(false)));
+
+    clawAlgaeTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.ALGAE).andThen(() -> clawAlgaeEntry.setBoolean(false)));
+
+    clawNoneTrigger.onTrue(
+        claw.setClawStateCommand(ClawState.NONE).andThen(() -> clawNoneEntry.setBoolean(false)));
+
     pivotUpTrigger.whileTrue(endEffector.pivotUP());
     pivotUpTrigger.onFalse(endEffector.pivotSTOP());
 
@@ -452,26 +535,26 @@ public class RobotContainer {
 
     pivotUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS)
             .andThen(() -> pivotUpPosEntry.setBoolean(false)));
     pivotSafeUpPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeUpEntry.setBoolean(false)));
     pivotSafeDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS)
             .andThen(() -> pivotSafeDownPosEntry.setBoolean(false)));
     pivotDownPosTrigger.onTrue(
         endEffector
-            .rotatePivot(() -> Constants.EndEffectorConstants.MIN_ANGLE_RADIAN)
+            .rotatePivotCommand(() -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS)
             .andThen(() -> pivotDownPosEntry.setBoolean(false)));
     pivotMiddlePosTrigger.onTrue(
         endEffector
-            .rotatePivot(
+            .rotatePivotCommand(
                 () ->
-                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_RADIAN
-                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_RADIAN)
+                    (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+                            + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
                         / 2)
             .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
     pivotManualZeroTrigger.onTrue(
@@ -522,50 +605,50 @@ public class RobotContainer {
 
     elevatorL2Trigger.onTrue(
         elevator
-            .manualSetPosition(
-                () -> Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH)
+            .setTargetPositionCommand(() -> SuperstructureState.L2_AIM.getElevatorHeight())
             .andThen(() -> elevatorL2Entry.setBoolean(false)));
     elevatorL3Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L3_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L3_AIM.getElevatorHeight())
             .andThen(() -> elevatorL3Entry.setBoolean(false)));
     elevatorL4Trigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.L4_SCORE.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.L4_AIM.getElevatorHeight())
             .andThen(() -> elevatorL4Entry.setBoolean(false)));
     elevatorDownPosTrigger.onTrue(
         elevator
-            .manualSetPosition(() -> SuperstructureState.STOW.getElevatorHeight())
+            .setTargetPositionCommand(() -> SuperstructureState.STOW.getElevatorHeight())
             .andThen(() -> elevatorDownPosEntry.setBoolean(false)));
     elevatorManualZeroTrigger.onTrue(
         elevator.manualSetElevatorZero().andThen(() -> elevatorManualZeroEntry.setBoolean(false)));
   }
 
   private void buildSuperstructureTab() {
+    superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
-    NetworkTableEntry stowEntry = superstructureTable.getEntry("Elastic/STOW");
-    NetworkTableEntry stowCoralEntry = superstructureTable.getEntry("Elastic/STOW_CORAL");
-    NetworkTableEntry stowAlgaeEntry = superstructureTable.getEntry("Elastic/STOW_ALGAE");
-    NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("Elastic/INTAKE_CORAL");
-    NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("Elastic/INTAKE_CORAL_L1");
-    NetworkTableEntry feedEntry = superstructureTable.getEntry("Elastic/FEED");
-    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("Elastic/L1_PIVOT");
-    NetworkTableEntry l2FadeAwayEntry = superstructureTable.getEntry("Elastic/L2_FADEAWAY");
-    NetworkTableEntry l3FadeAwayEntry = superstructureTable.getEntry("Elastic/L3_FADEAWAY");
-    NetworkTableEntry l4FadeAwayEntry = superstructureTable.getEntry("Elastic/L4_FadeAway");
-    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("Elastic/L1_SCORE");
-    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("Elastic/L2_SCORE");
-    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("Elastic/L3_SCORE");
-    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("Elastic/L4_SCORE");
-    NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("Elastic/ALGAE_HIGH_INTAKE");
-    NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("Elastic/ALGAE_LOW_INTAKE");
-    NetworkTableEntry processorAimEntry = superstructureTable.getEntry("Elastic/PROCESSOR_AIM");
-    NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_CENTER");
-    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_FORWARD");
-    NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("Elastic/BARGE_AIM_BACKWARD");
+    NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
+    NetworkTableEntry stowCoralEntry = superstructureTable.getEntry("STOW_CORAL");
+    NetworkTableEntry stowAlgaeEntry = superstructureTable.getEntry("STOW_ALGAE");
+    NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("INTAKE_CORAL");
+    NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("INTAKE_CORAL_L1");
+    NetworkTableEntry feedEntry = superstructureTable.getEntry("FEED");
+    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("L1_PIVOT");
+    NetworkTableEntry l2FadeawayEntry = superstructureTable.getEntry("L2_FADEAWAY");
+    NetworkTableEntry l3FadeawayEntry = superstructureTable.getEntry("L3_FADEAWAY");
+    NetworkTableEntry l4FadeawayEntry = superstructureTable.getEntry("L4_FADEAWAY");
+    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("L1_SCORE");
+    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
+    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
+    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
+    NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
+    NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
+    NetworkTableEntry bargeAimCenterEntry = superstructureTable.getEntry("BARGE_AIM_CENTER");
+    NetworkTableEntry bargeAimBackwardEntry = superstructureTable.getEntry("BARGE_AIM_BACKWARD");
+    NetworkTableEntry bargeAimForwardEntry = superstructureTable.getEntry("BARGE_AIM_FORWARD");
 
     // Initialize entries with default values
     stowEntry.setBoolean(false);
@@ -575,9 +658,9 @@ public class RobotContainer {
     intakeCoralL1Entry.setBoolean(false);
     feedEntry.setBoolean(false);
     l1PivotEntry.setBoolean(false);
-    l2FadeAwayEntry.setBoolean(false);
-    l3FadeAwayEntry.setBoolean(false);
-    l4FadeAwayEntry.setBoolean(false);
+    l2FadeawayEntry.setBoolean(false);
+    l3FadeawayEntry.setBoolean(false);
+    l4FadeawayEntry.setBoolean(false);
     l1ScoreEntry.setBoolean(false);
     l2ScoreEntry.setBoolean(false);
     l3ScoreEntry.setBoolean(false);
@@ -586,8 +669,8 @@ public class RobotContainer {
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
     bargeAimCenterEntry.setBoolean(false);
-    bargeAimForwardEntry.setBoolean(false);
     bargeAimBackwardEntry.setBoolean(false);
+    bargeAimForwardEntry.setBoolean(false);
 
     // Create triggers for each button
     Trigger stowTrigger = new Trigger(() -> stowEntry.getBoolean(false));
@@ -597,9 +680,9 @@ public class RobotContainer {
     Trigger intakeCoralL1Trigger = new Trigger(() -> intakeCoralL1Entry.getBoolean(false));
     Trigger feedTrigger = new Trigger(() -> feedEntry.getBoolean(false));
     Trigger l1PivotTrigger = new Trigger(() -> l1PivotEntry.getBoolean(false));
-    Trigger l2FadeAwayTrigger = new Trigger(() -> l2FadeAwayEntry.getBoolean(false));
-    Trigger l3FadeAwayTrigger = new Trigger(() -> l3FadeAwayEntry.getBoolean(false));
-    Trigger l4FadeAwayTrigger = new Trigger(() -> l4FadeAwayEntry.getBoolean(false));
+    Trigger l2FadeawayTrigger = new Trigger(() -> l2FadeawayEntry.getBoolean(false));
+    Trigger l3FadeawayTrigger = new Trigger(() -> l3FadeawayEntry.getBoolean(false));
+    Trigger l4FadeawayTrigger = new Trigger(() -> l4FadeawayEntry.getBoolean(false));
     Trigger l1ScoreTrigger = new Trigger(() -> l1ScoreEntry.getBoolean(false));
     Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
     Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
@@ -608,8 +691,8 @@ public class RobotContainer {
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
     Trigger bargeAimCenterTrigger = new Trigger(() -> bargeAimCenterEntry.getBoolean(false));
-    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
     Trigger bargeAimBackwardTrigger = new Trigger(() -> bargeAimBackwardEntry.getBoolean(false));
+    Trigger bargeAimForwardTrigger = new Trigger(() -> bargeAimForwardEntry.getBoolean(false));
 
     // Wire triggers to superstructure state commands
     stowTrigger.onTrue(
@@ -640,33 +723,33 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_PIVOT")
             .andThen(() -> l1PivotEntry.setBoolean(false)));
-    l2FadeAwayTrigger.onTrue(
+    l2FadeawayTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L2_FADEAWAY, "Set L2_AIM")
-            .andThen(() -> l2FadeAwayEntry.setBoolean(false)));
-    l3FadeAwayTrigger.onTrue(
+            .setStateCommand(SuperstructureState.L2_FADEAWAY, "Set L2_FADEAWAY")
+            .andThen(() -> l2FadeawayEntry.setBoolean(false)));
+    l3FadeawayTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L3_FADEAWAY, "Set L3_AIM")
-            .andThen(() -> l3FadeAwayEntry.setBoolean(false)));
-    l4FadeAwayTrigger.onTrue(
+            .setStateCommand(SuperstructureState.L3_FADEAWAY, "Set L3_FADEAWAY")
+            .andThen(() -> l3FadeawayEntry.setBoolean(false)));
+    l4FadeawayTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L4_FADEAWAY, "Set L4_AIM")
-            .andThen(() -> l4FadeAwayEntry.setBoolean(false)));
+            .setStateCommand(SuperstructureState.L4_FADEAWAY, "Set L4_FADEAWAY")
+            .andThen(() -> l4FadeawayEntry.setBoolean(false)));
     l1ScoreTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L1_SCORE, "Set L1_SCORE")
+            .setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_SCORE")
             .andThen(() -> l1ScoreEntry.setBoolean(false)));
     l2ScoreTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L2_SCORE, "Set L2_SCORE")
+            .setStateCommand(SuperstructureState.L2_AIM, "Set L2_SCORE")
             .andThen(() -> l2ScoreEntry.setBoolean(false)));
     l3ScoreTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L3_SCORE, "Set L3_SCORE")
+            .setStateCommand(SuperstructureState.L3_AIM, "Set L3_SCORE")
             .andThen(() -> l3ScoreEntry.setBoolean(false)));
     l4ScoreTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L4_SCORE, "Set L4_SCORE")
+            .setStateCommand(SuperstructureState.L4_AIM, "Set L4_SCORE")
             .andThen(() -> l4ScoreEntry.setBoolean(false)));
     algaeHighIntakeTrigger.onTrue(
         superstructure
@@ -684,14 +767,14 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_CENTER, "Set BARGE_AIM_CENTER")
             .andThen(() -> bargeAimCenterEntry.setBoolean(false)));
-    bargeAimForwardTrigger.onTrue(
-        superstructure
-            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
-            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
     bargeAimBackwardTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD")
             .andThen(() -> bargeAimBackwardEntry.setBoolean(false)));
+    bargeAimForwardTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD")
+            .andThen(() -> bargeAimForwardEntry.setBoolean(false)));
 
     // Add current state and target state monitoring
     NetworkTableEntry currentStateEntry = superstructureTable.getEntry("Elastic/Current State");
@@ -704,14 +787,16 @@ public class RobotContainer {
   }
 
   private void buildDriveTab() {
-    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
+    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Elastic/Drive");
 
-    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Elastic/Characterize Feedforward");
-    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Elastic/Characterize Slip Current");
-    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Elastic/Characterize Wheel Radius");
-    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Elastic/Drive Stop X");
-    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Elastic/Drive Forward");
-    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Elastic/Drive Turn Clockwise");
+    NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
+    NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Characterize Slip Current");
+    NetworkTableEntry driveWheelRadiusEntry = driveTable.getEntry("Characterize Wheel Radius");
+    NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
+    NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
+    NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
+    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -719,6 +804,8 @@ public class RobotContainer {
     driveStopXEntry.setBoolean(false);
     driveForwardEntry.setBoolean(false);
     driveClockwiseEntry.setBoolean(false);
+    driveToPoseEntry.setBoolean(false);
+    driveToOtherSideEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -726,16 +813,31 @@ public class RobotContainer {
     Trigger driveStopXTrigger = new Trigger(() -> driveStopXEntry.getBoolean(false));
     Trigger driveForwardTrigger = new Trigger(() -> driveForwardEntry.getBoolean(false));
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
+    Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
+    Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    driveSlipCurrentTrigger.whileTrue(DriveCommands.slipCurrentCharacterization(drive));
+    driveSlipCurrentTrigger.whileTrue(
+        Commands.print("running slip current test")
+            .andThen(DriveCommands.slipCurrentCharacterization(drive)));
     driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
     driveStopXTrigger.onTrue(
         Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
     driveForwardTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.5, 0.0, 0.0))));
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.5))));
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
+    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
+    // Rotation2d.kZero)));
+    driveToPoseTrigger.whileTrue(
+        DriveCommands.driveToPose(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+
+    driveToOtherSideTrigger.whileTrue(
+        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {
@@ -761,6 +863,18 @@ public class RobotContainer {
         climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
   }
 
+  private void buildTestTab() {
+    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Test");
+
+    NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
+
+    cleaningEntry.setBoolean(false);
+
+    Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
+
+    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
+  }
+
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -779,10 +893,17 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller
+        .leftTrigger()
+        .onTrue(
+            intake
+                .setIntakeStateCommand(IntakeState.INTAKE)
+                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
-    // Reset gyro to 0° when B button is pressed
+    // // Switch to X pattern when X button is pressed
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // // Reset gyro to 0° when B button is pressed
     controller
         .b()
         .onTrue(
@@ -792,124 +913,776 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // controller
+    //     .rightTrigger();
+    //     // .onTrue(
+    //         // DriveCommands.
+    //     // );
+
+    // Ground algae intake
+    controller
+        .rightBumper()
+        .onTrue(
+            Commands.parallel(
+                superstructure.setStateCommand(
+                    SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
+                claw.setClawStateCommand(ClawState.ALGAE)));
+
+    // Processor Aim thingy
+    controller
+        .leftBumper()
+        // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
+        // Processor"));
+        .onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
+
+    // Superstructure Stow
+    controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
+
+    // Intake Stow
+    controller.povRight().onTrue(intake.setIntakeStateCommand(IntakeState.STOW));
+
+    // Intake ground coral
+    controller
+        .leftTrigger(0.2)
+        .onTrue(
+            intake
+                .setIntakeStateCommand(IntakeState.INTAKE)
+                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
+
+    // ALGAE DESCORE PREP
+    controller
+        .x()
+        .onTrue(
+            superstructure
+                .setStateCommand(
+                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
+                .alongWith(claw.setClawStateCommand(ClawState.ALGAE)));
+
+    // Score position Aim
+    controller
+        .y()
+        .onTrue(
+            superstructure.setStateCommand(
+                () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring"));
+
+    // Manual spit out game piece
+    controller
+        .rightTrigger(0.2) // check
+        .onTrue(
+            Commands.sequence(
+                claw.setClawStateCommand(ClawState.SCORING),
+                new WaitCommand(0.4),
+                superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")));
   }
 
-  private void configureStreamDeckBindings() {
-    StreamDeckButtonConfig inactiveConfig =
+  private void configureDriveStreamDeckBindings() {
+    StreamDeckButtonConfig orangeConfig =
         new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
-    StreamDeckButtonConfig activeConfig =
+    StreamDeckButtonConfig tealConfig =
         new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+    StreamDeckButtonConfig tealOnWhiteConfig =
+        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOTeal.toString(), "");
+    StreamDeckButtonConfig orangeOnWhiteConfig =
+        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOOrange.toString(), "");
+    StreamDeckButtonConfig redConfig =
+        new StreamDeckButtonConfig(LedState.kRed.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig yellowConfig =
+        new StreamDeckButtonConfig(LedState.kYellow.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig yellowOnBlackConfig =
+        new StreamDeckButtonConfig(LedState.kOff.toString(), LedState.kYellow.toString(), "");
+    StreamDeckButtonConfig activeConfig =
+        new StreamDeckButtonConfig(LedState.kGreen.toString(), LedState.kOff.toString(), "");
 
-    StreamDeckButton swerveXButton =
-        new StreamDeckButton(3, 7, "Swerve X")
-            .withInactiveConfig(inactiveConfig)
+    StreamDeckButton coralL4Button =
+        new StreamDeckButton(0, 7, "Coral L4")
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
-            .withInactiveText("X")
-            .withActiveText("Swerve X");
+            .withText("L4");
+    StreamDeckButton coralL3Button =
+        new StreamDeckButton(1, 7, "Coral L3")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L3");
+    StreamDeckButton coralL2Button =
+        new StreamDeckButton(2, 7, "Coral L2")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L2");
+    StreamDeckButton coralL1Button =
+        new StreamDeckButton(3, 7, "Coral L1")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L1");
+    StreamDeckButton AlgaeBargeButton =
+        new StreamDeckButton(0, 6, "Algea Barge")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("B");
+    StreamDeckButton AlgaeL2Button =
+        new StreamDeckButton(1, 6, "Algea L2")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L2");
+    StreamDeckButton AlgaeL1Button =
+        new StreamDeckButton(2, 6, "Algea L1")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L1");
+    // the Processor is handled by ronny, seperate button
+    StreamDeckButton AlgaeProcessorButton =
+        new StreamDeckButton(3, 6, "Algea Processor")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("P");
+    StreamDeckButton ReefASideButton =
+        new StreamDeckButton(3, 1, "Reef A Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("A");
+    StreamDeckButton ReefBSideButton =
+        new StreamDeckButton(2, 2, "Reef B Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("B");
+    StreamDeckButton ReefCSideButton =
+        new StreamDeckButton(1, 2, "Reef C Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton ReefDSideButton =
+        new StreamDeckButton(0, 1, "Reef D Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("D");
+    StreamDeckButton ReefESideButton =
+        new StreamDeckButton(1, 0, "Reef E Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("E");
+    StreamDeckButton ReefFSideButton =
+        new StreamDeckButton(2, 0, "Reef F Side")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("F");
+    StreamDeckButton reefRightSideButton =
+        new StreamDeckButton(3, 4, "Reef Right Side 1")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("R");
+    StreamDeckButton reefRightSideButton2 =
+        new StreamDeckButton(3, 5, "Reef Right Side 2")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("R");
+    StreamDeckButton reefLeftSideButton =
+        new StreamDeckButton(3, 2, "Reef Left Side 1")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L");
+    StreamDeckButton reefLeftSideButton2 =
+        new StreamDeckButton(3, 3, "Reef Left Side 2")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L");
+    StreamDeckButton homeElevatorButton =
+        new StreamDeckButton(2, 4, "Home Elevator")
+            .withInactiveConfig(tealOnWhiteConfig)
+            .withActiveConfig(activeConfig)
+            .withText("HE");
+    StreamDeckButton zeroGyroButton =
+        new StreamDeckButton(2, 3, "Zero Gyro 1")
+            .withInactiveConfig(tealOnWhiteConfig)
+            .withActiveConfig(activeConfig)
+            .withText("GZ");
+    StreamDeckButton zeroGyroButton2 =
+        new StreamDeckButton(2, 5, "Zero Gyro 2")
+            .withInactiveConfig(tealOnWhiteConfig)
+            .withActiveConfig(activeConfig)
+            .withText("GZ");
+    StreamDeckButton climbDeployButton =
+        new StreamDeckButton(1, 3, "Climb Deploy 1")
+            .withInactiveConfig(yellowConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbDeployButton2 =
+        new StreamDeckButton(1, 5, "Climb Deploy 2")
+            .withInactiveConfig(yellowConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbClimbButton =
+        new StreamDeckButton(0, 3, "Auto Climb 1")
+            .withInactiveConfig(redConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbClimbButton2 =
+        new StreamDeckButton(0, 5, "Auto Climb 2")
+            .withInactiveConfig(redConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton manualClimbButton =
+        new StreamDeckButton(0, 4, "Manual Climb")
+            .withInactiveConfig(yellowOnBlackConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton setManualScoringButton =
+        new StreamDeckButton(0, 0, "Manual Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("MS");
+    StreamDeckButton setAutoScoringButton =
+        new StreamDeckButton(0, 2, "Auto Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("AS");
+
+    Command homeElevatorButtonCommand = elevator.homeElevator().withName("homeElevatorButton");
+    Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
+    Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
+    Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");
+    Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
+
+    Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
+
+    customStreamDeckButtonMap.put(coralL4Button, () -> false);
+    customStreamDeckButtonMap.put(coralL3Button, () -> false);
+    customStreamDeckButtonMap.put(coralL2Button, () -> false);
+    customStreamDeckButtonMap.put(coralL1Button, () -> false);
+    customStreamDeckButtonMap.put(AlgaeBargeButton, () -> false);
+    customStreamDeckButtonMap.put(AlgaeL2Button, () -> false);
+    customStreamDeckButtonMap.put(AlgaeL1Button, () -> false);
+    customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> false);
+    customStreamDeckButtonMap.put(ReefASideButton, () -> false);
+    customStreamDeckButtonMap.put(ReefBSideButton, () -> false);
+    customStreamDeckButtonMap.put(ReefCSideButton, () -> false);
+    customStreamDeckButtonMap.put(ReefDSideButton, () -> false);
+    customStreamDeckButtonMap.put(ReefESideButton, () -> false);
+    customStreamDeckButtonMap.put(ReefFSideButton, () -> false);
+    customStreamDeckButtonMap.put(reefRightSideButton, () -> false);
+    customStreamDeckButtonMap.put(reefRightSideButton2, () -> false);
+    customStreamDeckButtonMap.put(reefLeftSideButton, () -> false);
+    customStreamDeckButtonMap.put(reefLeftSideButton2, () -> false);
+    customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbDeployButton, climbDelpoyButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbDeployButton2, climbDelpoyButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
+
+    streamdeck.configureCustomButtons(customStreamDeckButtonMap);
+
+    streamdeck.configureDefaultButtons(Set.of(zeroGyroButton, zeroGyroButton2));
+
+    streamdeck
+        .button(coralL4Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L4)));
+    streamdeck
+        .button(coralL3Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L3)));
+    streamdeck
+        .button(coralL2Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L2)));
+    streamdeck
+        .button(coralL1Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L1)));
+    streamdeck
+        .button(AlgaeBargeButton)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.BARGE)));
+    streamdeck.button(AlgaeL2Button).onTrue(Commands.none());
+    streamdeck.button(AlgaeL1Button).onTrue(Commands.none());
+    streamdeck
+        .button(AlgaeProcessorButton)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.BARGE)));
+    streamdeck
+        .button(ReefASideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.A)));
+    streamdeck
+        .button(ReefBSideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.B)));
+    streamdeck
+        .button(ReefCSideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.C)));
+    streamdeck
+        .button(ReefDSideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.D)));
+    streamdeck
+        .button(ReefESideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.E)));
+    streamdeck
+        .button(ReefFSideButton)
+        .onTrue(
+            Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.F)));
+    streamdeck
+        .button(reefRightSideButton)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT)));
+    streamdeck
+        .button(reefRightSideButton2)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT)));
+    streamdeck
+        .button(reefLeftSideButton)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
+    streamdeck
+        .button(reefLeftSideButton2)
+        .onTrue(
+            Commands.runOnce(
+                () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
+    streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
+    streamdeck
+        .button(setManualScoringButton)
+        .onTrue(Commands.runOnce(() -> robotState.setScoringModeManual()));
+    streamdeck
+        .button(setAutoScoringButton)
+        .onTrue(Commands.runOnce(() -> robotState.setScoringModeAuto()));
+
+    streamdeck
+        .button(climbDeployButton)
+        .and(streamdeck.button(climbDeployButton2))
+        .onTrue(climbDelpoyButtonCommand);
+    streamdeck
+        .button(climbClimbButton)
+        .and(streamdeck.button(climbClimbButton2))
+        .onTrue(climbClimbButtonCommand);
+    streamdeck
+        .button(manualClimbButton)
+        .and(streamdeck.button(climbClimbButton))
+        .and(streamdeck.button(climbClimbButton2))
+        .onTrue(manualClimbButtonCommand);
+    streamdeck.button(climbDeployButton).onFalse(manualClimbOffButtonCommand);
+    streamdeck.button(climbDeployButton2).onFalse(manualClimbOffButtonCommand);
+    streamdeck.button(climbClimbButton).onFalse(manualClimbOffButtonCommand);
+    streamdeck.button(climbClimbButton2).onFalse(manualClimbOffButtonCommand);
+    streamdeck.button(manualClimbButton).onFalse(manualClimbOffButtonCommand);
+    streamdeck
+        .button(zeroGyroButton)
+        .and(streamdeck.button(zeroGyroButton2))
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
+
+    // manualClimbOffButtonCommand
+
+  }
+
+  private void configureTestingStreamDeckBindings() {
+    StreamDeckButtonConfig orangeConfig =
+        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig tealConfig =
+        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+    StreamDeckButtonConfig grayConfig =
+        new StreamDeckButtonConfig(LedState.kGray.toString(), LedState.kWhite.toString(), "");
+    StreamDeckButtonConfig redConfig =
+        new StreamDeckButtonConfig(LedState.kRed.toString(), LedState.kOff.toString(), "");
+    StreamDeckButtonConfig activeConfig =
+        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kOff.toString(), "");
+
+    // StreamDeckButton swerveXButton =
+    //     new StreamDeckButton(3, 7, "Swerve X")
+    //         .withInactiveConfig(inactiveConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withInactiveText("X")
+    //         .withActiveText("Swerve X");
     StreamDeckButton intakeInButton =
         new StreamDeckButton(1, 0, "Intake In")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT In");
     StreamDeckButton intakeOutButton =
         new StreamDeckButton(1, 1, "Intake Out")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Out");
     StreamDeckButton intakeUpButton =
         new StreamDeckButton(0, 0, "Intake Up")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Up");
     StreamDeckButton intakeDownButton =
         new StreamDeckButton(0, 1, "Intake Down")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Down");
     StreamDeckButton intakeL1UpButton =
         new StreamDeckButton(3, 0, "Intake L1Up")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT L1Up");
     StreamDeckButton intakeL1DownButton =
         new StreamDeckButton(3, 1, "Intake L1Down")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT L1Down");
     StreamDeckButton feederInButton =
         new StreamDeckButton(2, 0, "Feeder In ")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("FEED In");
     StreamDeckButton feederOutButton =
         new StreamDeckButton(2, 1, "Feeder Out")
-            .withInactiveConfig(inactiveConfig)
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("FEED Out ");
     StreamDeckButton intakePosUpButton =
-        new StreamDeckButton(0, 3, "Intake PosUp")
-            .withInactiveConfig(inactiveConfig)
+        new StreamDeckButton(0, 2, "Intake PosUp")
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT PosUp");
     StreamDeckButton intakePosDownButton =
-        new StreamDeckButton(0, 4, "Intake PosDown")
-            .withInactiveConfig(inactiveConfig)
+        new StreamDeckButton(2, 2, "Intake PosDown")
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT PosDown");
     StreamDeckButton intakePosScoreButton =
-        new StreamDeckButton(0, 5, "Intake PosScore")
-            .withInactiveConfig(inactiveConfig)
+        new StreamDeckButton(1, 2, "Intake PosScore")
+            .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT PosScore");
+    StreamDeckButton intakeDefaultButton =
+        new StreamDeckButton(0, 3, "Intake Default")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("INT Default");
     StreamDeckButton intakeZeroButton =
-        new StreamDeckButton(1, 3, "Intake Zero")
-            .withInactiveConfig(inactiveConfig)
+        new StreamDeckButton(3, 2, "Intake Zero")
+            .withInactiveConfig(redConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Zero");
-    // StreamDeckButton intakeStateButton =
-    //     new StreamDeckButton(0, 0, "Intake State")
+    StreamDeckButton noneButton =
+        new StreamDeckButton(1, 3, "none")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("NONE");
+    StreamDeckButton stowButton =
+        new StreamDeckButton(3, 3, "stow")
+            .withInactiveConfig(grayConfig)
+            .withActiveConfig(activeConfig)
+            .withText("STOW");
+    StreamDeckButton stowCoralButton =
+        new StreamDeckButton(2, 3, "stowCoral")
+            .withInactiveConfig(grayConfig)
+            .withActiveConfig(activeConfig)
+            .withText("STOW C");
+    StreamDeckButton stowAlgaeButton =
+        new StreamDeckButton(1, 3, "stowAlgae")
+            .withInactiveConfig(grayConfig)
+            .withActiveConfig(activeConfig)
+            .withText("STOW A");
+    // StreamDeckButton intakeCoralButton =
+    //     new StreamDeckButton(3,7, "intakeCoral")
     //         .withInactiveConfig(inactiveConfig)
     //         .withActiveConfig(activeConfig)
-    //         .withText("INT State");
+    //         .withText("intakeCoral");
+    // StreamDeckButton intakeCoralL1Button =
+    //     new StreamDeckButton(3,7, "intakeCoralL1")
+    //         .withInactiveConfig(inactiveConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("intakeCoralL1");
+    // StreamDeckButton feedButton =
+    //     new StreamDeckButton(3,7, "feed")
+    //         .withInactiveConfig(inactiveConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("feed");
+    StreamDeckButton l1PivotButton =
+        new StreamDeckButton(3, 5, "l1Pivot")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L1 PIV");
+    StreamDeckButton l2FadeawayButton =
+        new StreamDeckButton(2, 5, "l2Fadeaway")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L2 F");
+    StreamDeckButton l3FadeawayButton =
+        new StreamDeckButton(1, 5, "l3Fadeaway")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L3 F");
+    StreamDeckButton l4FadeawayButton =
+        new StreamDeckButton(0, 5, "l4Fadeaway")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L4 F");
+    StreamDeckButton l1ScoreButton =
+        new StreamDeckButton(3, 4, "l1Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L1 S");
+    StreamDeckButton l2ScoreButton =
+        new StreamDeckButton(2, 4, "l2Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L2 S");
+    StreamDeckButton l3ScoreButton =
+        new StreamDeckButton(1, 4, "l3Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L3 S");
+    StreamDeckButton l4ScoreButton =
+        new StreamDeckButton(0, 4, "l4Score")
+            .withInactiveConfig(orangeConfig)
+            .withActiveConfig(activeConfig)
+            .withText("L4 S");
+    StreamDeckButton algaeHighIntakeButton =
+        new StreamDeckButton(1, 6, "algaeHighIntake")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("ALG H");
+    StreamDeckButton algaeLowIntakeButton =
+        new StreamDeckButton(2, 6, "algaeLowIntake")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("ALG L");
+    StreamDeckButton processorAimButton =
+        new StreamDeckButton(3, 7, "processorAim")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("P");
+    StreamDeckButton bargeAimCenterButton =
+        new StreamDeckButton(1, 7, "bargeAimCenter")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("B-C");
+    StreamDeckButton bargeAimForwardButton =
+        new StreamDeckButton(2, 7, "bargeAimForward")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("B-F");
+    StreamDeckButton bargeAimBackwardButton =
+        new StreamDeckButton(0, 7, "bargeAimBackward")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("B-B");
 
-    streamdeck.configureButtons(
-        Set.of(
-            swerveXButton,
-            intakeInButton,
-            intakeOutButton,
-            intakeUpButton,
-            intakeDownButton,
-            intakeL1UpButton,
-            intakeL1DownButton,
-            feederInButton,
-            feederOutButton,
-            intakePosUpButton,
-            intakePosDownButton,
-            intakePosScoreButton,
-            intakeZeroButton));
+    // Command swerveXButtonCommand =
+    // Commands.runOnce(drive::stopWithX, drive).withName("swerveXButton");
+    Command intakeInButtonCommand = intake.intakeFWD().withName("intakeInButton");
+    Command intakeInButtonOffCommand = intake.intakeSTOP().withName("intakeInButtonOff");
+    Command intakeOutButtonCommand = intake.intakeRVS().withName("intakeOutButton");
+    Command intakeOutButtonOffCommand = intake.intakeSTOP().withName("intakeOutButtonOff");
+    Command intakeUpButtonCommand = intake.pivotManualTestForward().withName("intakeUpButton");
+    Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
+    Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
+    Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
+    Command intakeL1UpButtonCommand =
+        intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
+    Command intakeL1DownButtonCommand =
+        intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
+    Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
+    Command feederInButtonOffCommand = intake.feederSTOP().withName("feederInButtonOff");
+    Command feederOutButtonCommand = intake.feederRVS().withName("feederOutButton");
+    Command feederOutButtonOffCommand = intake.feederSTOP().withName("feederOutButtonOff");
+    // Command intakePosUpButtonCommand = intake.setPivotUp().withName("intakePosUpButton");
+    // Command intakePosDownButtonCommand = intake.setPivotDown().withName("intakePosDownButton");
+    Command intakePosScoreButtonCommand = intake.setPivotScoring().withName("intakePosScoreButton");
+    Command intakeDefaultButtonCommand =
+        Commands.runOnce(() -> CommandScheduler.getInstance().cancel(intake.getCurrentCommand()))
+            .withName("intakeDefaultButton");
+    Command intakeZeroButtonCommand = intake.zeroPivotAtPivotUp().withName("intakeZeroButton");
 
-    streamdeck.button(swerveXButton).onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // streamdeck.configureDefaultButtons(
+    //     Set.of(
+    //         swerveXButton,
+    //         intakeInButton,
+    //         intakeOutButton,
+    //         intakeUpButton,
+    //         intakeDownButton,
+    //         intakeL1UpButton,
+    //         intakeL1DownButton,
+    //         feederInButton,
+    //         feederOutButton,
+    //         intakeZeroButton));
 
-    streamdeck.button(intakeInButton).whileTrue(intake.intakeFWD());
-    streamdeck.button(intakeInButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeOutButton).whileTrue(intake.intakeRVS());
-    streamdeck.button(intakeOutButton).onFalse(intake.intakeSTOP());
-    streamdeck.button(intakeUpButton).whileTrue(intake.pivotManualTestForward());
-    streamdeck.button(intakeUpButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeDownButton).whileTrue(intake.pivotManualTestReverse());
-    streamdeck.button(intakeDownButton).onFalse(intake.pivotStop());
-    streamdeck.button(intakeL1UpButton).whileTrue(intake.l1BarFWD());
-    streamdeck.button(intakeL1UpButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(intakeL1DownButton).whileTrue(intake.l1BarRVS());
-    streamdeck.button(intakeL1DownButton).onFalse(intake.l1BarSTOP());
-    streamdeck.button(feederInButton).whileTrue(intake.feederFWD());
-    streamdeck.button(feederInButton).onFalse(intake.feederSTOP());
-    streamdeck.button(feederOutButton).whileTrue(intake.feederRVS());
-    streamdeck.button(feederOutButton).onFalse(intake.feederSTOP());
-    streamdeck.button(intakePosUpButton).onTrue(intake.setPivotUp());
-    streamdeck.button(intakePosDownButton).onTrue(intake.movePivotDown());
-    streamdeck.button(intakePosScoreButton).onTrue(intake.setPivotScoring());
-    streamdeck.button(intakeZeroButton).onTrue(intake.zeroPivotAtPivotUp());
+    // streamdeck.configureToggleButtons(
+    //     Set.of(intakePosUpButton, intakePosDownButton, intakePosScoreButton));
+
+    Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
+
+    // customStreamDeckButtonMap.put(swerveXButton, swerveXButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeInButton, intakeInButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeOutButton, intakeOutButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakePosUpButton, intakePosUpButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakePosDownButton, intakePosDownButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakePosScoreButton, intakePosScoreButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeDefaultButton, intake.getDefaultCommand()::isScheduled);
+    customStreamDeckButtonMap.put(intakeZeroButton, intakeZeroButtonCommand::isScheduled);
+
+    customStreamDeckButtonMap.put(
+        noneButton, () -> superstructure.getCurrentState() == SuperstructureState.NONE);
+    customStreamDeckButtonMap.put(
+        stowButton, () -> superstructure.getCurrentState() == SuperstructureState.STOW);
+    customStreamDeckButtonMap.put(
+        stowCoralButton, () -> superstructure.getCurrentState() == SuperstructureState.STOW_CORAL);
+    customStreamDeckButtonMap.put(
+        stowAlgaeButton, () -> superstructure.getCurrentState() == SuperstructureState.STOW_ALGAE);
+    // customStreamDeckButtonMap.put(intakeCoralButton, () -> superstructure.getCurrentState() ==
+    // SuperstructureState.INTAKE_CORAL);
+    // customStreamDeckButtonMap.put(intakeCoralL1Button, () -> superstructure.getCurrentState() ==
+    // SuperstructureState.INTAKE_CORAL_L1);
+    // customStreamDeckButtonMap.put(feedButton, () -> superstructure.getCurrentState() ==
+    // SuperstructureState.FEED);
+    customStreamDeckButtonMap.put(
+        l1PivotButton, () -> superstructure.getCurrentState() == SuperstructureState.L1_PIVOT);
+    customStreamDeckButtonMap.put(
+        l2FadeawayButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.L2_FADEAWAY);
+    customStreamDeckButtonMap.put(
+        l3FadeawayButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.L3_FADEAWAY);
+    customStreamDeckButtonMap.put(
+        l4FadeawayButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.L4_FADEAWAY);
+    customStreamDeckButtonMap.put(
+        l1ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L1_PIVOT);
+    customStreamDeckButtonMap.put(
+        l2ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L2_AIM);
+    customStreamDeckButtonMap.put(
+        l3ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L3_AIM);
+    customStreamDeckButtonMap.put(
+        l4ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L4_AIM);
+    customStreamDeckButtonMap.put(
+        algaeHighIntakeButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.ALGAE_HIGH_INTAKE);
+    customStreamDeckButtonMap.put(
+        algaeLowIntakeButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.ALGAE_LOW_INTAKE);
+    customStreamDeckButtonMap.put(
+        processorAimButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.PROCESSOR_AIM);
+    customStreamDeckButtonMap.put(
+        bargeAimCenterButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.BARGE_AIM_CENTER);
+    customStreamDeckButtonMap.put(
+        bargeAimForwardButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.BARGE_AIM_FORWARD);
+    customStreamDeckButtonMap.put(
+        bargeAimBackwardButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.BARGE_AIM_BACKWARD);
+
+    streamdeck.configureCustomButtons(customStreamDeckButtonMap);
+
+    // streamdeck.button(swerveXButton).onTrue(swerveXButtonCommand);
+    streamdeck.button(intakeInButton).whileTrue(intakeInButtonCommand);
+    streamdeck.button(intakeInButton).onFalse(intakeInButtonOffCommand);
+    streamdeck.button(intakeOutButton).whileTrue(intakeOutButtonCommand);
+    streamdeck.button(intakeOutButton).onFalse(intakeOutButtonOffCommand);
+    streamdeck.button(intakeUpButton).whileTrue(intakeUpButtonCommand);
+    streamdeck.button(intakeUpButton).onFalse(intakeUpButtonOffCommand);
+    streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
+    streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
+    streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
+    streamdeck.button(intakeL1DownButton).whileTrue(intakeL1DownButtonCommand);
+    streamdeck.button(feederInButton).whileTrue(feederInButtonCommand);
+    streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);
+    streamdeck.button(feederOutButton).whileTrue(feederOutButtonCommand);
+    streamdeck.button(feederOutButton).onFalse(feederOutButtonOffCommand);
+    // streamdeck.button(intakePosUpButton).onTrue(intakePosUpButtonCommand);
+    // streamdeck.button(intakePosDownButton).onTrue(intakePosDownButtonCommand);
+    streamdeck.button(intakePosScoreButton).onTrue(intakePosScoreButtonCommand);
+    streamdeck.button(intakeDefaultButton).onTrue(intakeDefaultButtonCommand);
+    streamdeck.button(intakeZeroButton).onTrue(intakeZeroButtonCommand);
+
+    streamdeck
+        .button(noneButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.NONE, "Set NONE"));
+    streamdeck
+        .button(stowButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW"));
+    streamdeck
+        .button(stowCoralButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_CORAL, "Set STOW_CORAL"));
+    streamdeck
+        .button(stowAlgaeButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Set STOW_ALGAE"));
+    // streamdeck.button(intakeCoralButton).onTrue(superstructure.setStateCommand(SuperstructureState.INTAKE_CORAL, "Set INTAKE_CORAL"));
+    // streamdeck.button(intakeCoralL1Button).onTrue(superstructure.setStateCommand(SuperstructureState.INTAKE_CORAL_L1, "Set INTAKE_CORAL_L1"));
+    // streamdeck.button(feedButton).onTrue(superstructure.setStateCommand(SuperstructureState.FEED,
+    // "Set FEED"));
+    streamdeck
+        .button(l1PivotButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_PIVOT"));
+    streamdeck
+        .button(l2FadeawayButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L2_FADEAWAY, "Set L2_FADEAWAY"));
+    streamdeck
+        .button(l3FadeawayButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L3_FADEAWAY, "Set L3_FADEAWAY"));
+    streamdeck
+        .button(l4FadeawayButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L4_FADEAWAY, "Set L4_FADEAWAY"));
+    streamdeck
+        .button(l1ScoreButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_AIM"));
+    streamdeck
+        .button(l2ScoreButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L2_AIM, "Set L2_AIM"));
+    streamdeck
+        .button(l3ScoreButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L3_AIM, "Set L3_AIM"));
+    streamdeck
+        .button(l4ScoreButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L4_AIM, "Set L4_AIM"));
+    streamdeck
+        .button(algaeHighIntakeButton)
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.ALGAE_HIGH_INTAKE, "Set ALGAE_HIGH_INTAKE"));
+    streamdeck
+        .button(algaeLowIntakeButton)
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.ALGAE_LOW_INTAKE, "Set ALGAE_LOW_INTAKE"));
+    streamdeck
+        .button(processorAimButton)
+        .onTrue(
+            superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Set PROCESSOR_AIM"));
+    streamdeck
+        .button(bargeAimCenterButton)
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.BARGE_AIM_CENTER, "Set BARGE_AIM_CENTER"));
+    streamdeck
+        .button(bargeAimForwardButton)
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.BARGE_AIM_FORWARD, "Set BARGE_AIM_FORWARD"));
+    streamdeck
+        .button(bargeAimBackwardButton)
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD"));
   }
 
   private void configureArbitraryTriggers() {
@@ -917,6 +1690,11 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
   }
+
+  private void configureSuperstructureTrigger() {
+    superstructure.setTriggers();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -926,21 +1704,15 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public Command defaultElevatorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return elevator.moveToTargetPosition(
-          () -> superstructure.getCurrentState().getElevatorHeight());
-    }
+  public Elevator getElevator() {
+    return elevator;
   }
 
-  public Command defaultEndEffectorCommand() {
-    if (superstructure.getCurrentState() == SuperstructureState.NONE) {
-      return Commands.none();
-    } else {
-      return endEffector.rotatePivot(
-          () -> superstructure.getCurrentState().getEndEffectorRotation());
-    }
+  public EndEffector getEndEffector() {
+    return endEffector;
+  }
+
+  public Intake getIntake() {
+    return intake;
   }
 }

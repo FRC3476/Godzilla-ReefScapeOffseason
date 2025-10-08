@@ -9,16 +9,15 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
-import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
@@ -26,11 +25,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
   protected TalonFX pivotTalonFX;
   protected CANcoder pivotCancoder;
 
-  private MotionMagicVoltage pivot_m_request =
-      new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private MotionMagicVoltage pivot_m_request = new MotionMagicVoltage(0).withEnableFOC(true);
 
-  private VoltageOut pivotVoltageRequest =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private VoltageOut pivotVoltageRequest = new VoltageOut(0).withEnableFOC(true);
 
   private final BaseStatusSignal[] signals;
 
@@ -83,16 +80,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
         // ,pivotControlMode
         );
     ParentDevice.optimizeBusUtilizationForAll(pivotTalonFX);
-    PhoenixUtil.registerSignals(
-        true,
-        pivotPosition,
-        pivotAppliedVolts,
-        pivotTorqueCurrentAmps,
-        pivotSupplyCurrentAmps,
-        pivotTempCelsius,
-        pivotSetpoint
-        // ,pivotControlMode
-        );
 
     // Need to do this because the canCoder wraps from its 0 position.
     setPositionFromAbsolute();
@@ -129,8 +116,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
-  public void setPivotPosition(double position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(position / 2 / Math.PI));
+  public void setPivotPosition(DoubleSupplier position) {
+    pivotTalonFX.setControl(pivot_m_request.withPosition(position.getAsDouble()));
   }
 
   @Override
@@ -170,8 +157,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotCancoder.getAbsolutePosition().getValueAsDouble());
 
     double pivotDownAbsoluteRotations =
-        Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
-            * EndEffectorConstants.PIVOT_STM;
+        EndEffectorConstants.MIN_ANGLE_ROTATIONS * EndEffectorConstants.PIVOT_STM;
     double magnetOffset =
         pivotDownAbsoluteRotations - pivotCancoder.getAbsolutePosition().getValueAsDouble();
     magnetOffset = Util.rangeModulo(magnetOffset, 0.5, -0.5);
@@ -189,7 +175,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotCancoder.setPosition(
         pivotCancoder.getAbsolutePosition().getValueAsDouble()
             + Math.round(
-                Units.radiansToRotations(EndEffectorConstants.MIN_ANGLE_RADIAN)
-                    * EndEffectorConstants.PIVOT_STM));
+                EndEffectorConstants.MIN_ANGLE_ROTATIONS * EndEffectorConstants.PIVOT_STM));
   }
 }

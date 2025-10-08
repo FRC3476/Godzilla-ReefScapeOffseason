@@ -3,23 +3,46 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.RobotTime;
+import org.littletonrobotics.junction.Logger;
 
 public class Claw extends SubsystemBase {
 
   private final ClawIO io;
   private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
 
+  private static final LoggedTunableNumber rollerVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
+  private static final LoggedTunableNumber rollerIntakeCoralVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
+  private static final LoggedTunableNumber rollerHoldingCoralVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
+  private static final LoggedTunableNumber rollerScoringVolts =
+      new LoggedTunableNumber("Claw/RollerScoringVolts", EndEffectorConstants.ROLLER_SCORING_VOLTS);
+  private static final LoggedTunableNumber rollerScoringL1Volts =
+      new LoggedTunableNumber(
+          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
+
+  private ClawState currentState = ClawState.NONE;
+
   public Claw(ClawIO io) {
     this.io = io;
   }
 
-  private static final LoggedTunableNumber rollerVolts =
-      new LoggedTunableNumber("EndEffector/RollerVolts", 1.0);
-
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
+    io.updateInputs(inputs);
+    Logger.processInputs("Claw", inputs);
+    Logger.recordOutput("Claw/CurrentState", currentState);
+
     boolean firstSensorTriggered =
         inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
     boolean secondSensorTriggered =
@@ -29,6 +52,9 @@ public class Claw extends SubsystemBase {
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
 
     RobotState.setHasAlgae(hasAlgae());
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   public void setRollerVoltage(double voltage) {
@@ -57,15 +83,101 @@ public class Claw extends SubsystemBase {
     return io.checkRollerStalled() && !isCoralInEndeffector();
   }
 
+  public Command clawDefault() {
+    return Commands.run(
+        () -> {
+          CoralStateTracker.CoralPosition coralPosition = CoralStateTracker.getCurrentPosition();
+
+          switch (this.currentState) {
+            case NONE:
+              break;
+            case IDLE:
+              break;
+            case INTAKING_CORAL:
+              // Check if coral is in end effector and automatically transition to HOLDING_CORAL
+              if (coralPosition == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR
+                  || coralPosition == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR
+                  || coralPosition == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR) {
+                this.currentState = ClawState.HOLDING_CORAL;
+              }
+              break;
+            case HOLDING_CORAL:
+              break;
+            case SCORING:
+              // Transition to IDLE when coral is out of the end effector
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.currentState = ClawState.IDLE;
+              }
+              break;
+            case SCORING_L1:
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.currentState = ClawState.IDLE;
+              }
+              break;
+            case ALGAE:
+              break;
+            default:
+              this.currentState = ClawState.IDLE;
+              break;
+          }
+
+          switch (this.currentState) {
+            case NONE:
+              break;
+            case IDLE:
+              this.io.setRollerVoltage(0);
+              break;
+            case INTAKING_CORAL:
+              this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+              break;
+            case HOLDING_CORAL:
+              // move coral forward if at first sensor, backward if at second sensor, do nothing if
+              // staged
+              if (coralPosition == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR) {
+                this.io.setRollerVoltage(rollerHoldingCoralVolts.get());
+              } else if (coralPosition == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR) {
+                this.io.setRollerVoltage(-rollerHoldingCoralVolts.get() / 2);
+              } else if (coralPosition == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR) {
+                this.io.setRollerVoltage(0);
+              } else {
+                this.io.setRollerVoltage(0);
+              }
+              break;
+            case SCORING:
+              this.io.setRollerVoltage(-rollerScoringVolts.get());
+              break;
+            case SCORING_L1:
+              this.io.setRollerVoltage(rollerScoringL1Volts.get());
+              break;
+            case ALGAE:
+              this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
+              break;
+            default:
+              this.io.setRollerVoltage(0);
+              break;
+          }
+        },
+        this);
+  }
+
+  public Command setClawStateCommand(ClawState state) {
+    return Commands.runOnce(() -> this.currentState = state, this);
+  }
+
   public Command rollerFWD() {
-    return Commands.run(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
   }
 
   public Command rollerRVS() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
   }
 
   public Command rollerSTOP() {
-    return Commands.run(() -> this.io.setRollerVoltage(0), this);
+    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
+  }
+
+  public Command holdAlgae() {
+    return Commands.runOnce(
+        () -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
   }
 }

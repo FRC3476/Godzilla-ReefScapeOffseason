@@ -4,8 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.RobotState;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.util.RobotTime;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure extends SubsystemBase {
@@ -15,24 +19,34 @@ public class Superstructure extends SubsystemBase {
   private Elevator elevator;
   private SuperstructureStateMachine stateMachine;
 
-  public Superstructure(Elevator elevator, EndEffector endEffector) {
+  public Superstructure(Elevator elevator, EndEffector endEffector, RobotContainer container) {
     this.endEffector = endEffector;
     this.elevator = elevator;
-    this.stateMachine = new SuperstructureStateMachine();
+    this.stateMachine = new SuperstructureStateMachine(container);
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
   }
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     stateMachine.continueTransition();
+    RobotState.setSuperstructureState(getCurrentState());
     Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
     Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
     Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
     Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput("CoralStateTracker/Coral State", CoralStateTracker.getCurrentPosition());
   }
 
   public Command setStateCommand(SuperstructureState state, String name) {
     return new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name);
+  }
+
+  public Command setStateCommand(Supplier<SuperstructureState> stateSupplier, String name) {
+    return new InstantCommand(() -> stateMachine.setTargetState(stateSupplier.get()))
+        .withName(name);
   }
 
   public Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
@@ -42,6 +56,10 @@ public class Superstructure extends SubsystemBase {
 
   public SuperstructureState getCurrentState() {
     return stateMachine.getCurrentState();
+  }
+
+  public SuperstructureState getCurrentTargetState() {
+    return stateMachine.getCurrentTargetState();
   }
 
   public double calculateDynamicTranslationalAccelLimit() {

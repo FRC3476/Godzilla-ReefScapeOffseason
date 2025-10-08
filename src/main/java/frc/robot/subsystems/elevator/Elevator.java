@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.RobotTime;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /* **********
@@ -50,10 +52,11 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
-    Logger.recordOutput("Elevator/Profile/TargetPosition", setpoint);
+    Logger.recordOutput("Elevator/TargetPosition", setpoint);
     // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
     // Logger.recordOutput("Elevator/foreignObjectDetected", checkForJam());
@@ -76,36 +79,60 @@ public class Elevator extends SubsystemBase {
           elevatorAccel.get(),
           elevatorJerk.get());
     }
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
-  public void setTargetPosition(double position) {
+  public void setTargetPositionCommand(double position) {
     position =
         MathUtil.clamp(
             position,
             ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
             ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
     setpoint = position;
-    io.setElevatorTargetPosition(position);
+    this.io.setElevatorTargetPosition(position);
   }
 
-  public boolean isInTolerance() {
+  @AutoLogOutput(key = "Elevator/InSetpointTolerance")
+  public boolean isInToleranceSetpoint() {
     return MathUtil.isNear(
-        setpoint,
-        inputs.rightMotorData.position(),
-        ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+  }
+
+  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
+  public boolean isInToleranceTransition() {
+    return MathUtil.isNear(
+        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {
     return setpoint;
   }
 
-  public Command moveToTargetPosition(DoubleSupplier positionSupplier) {
-    return Commands.runOnce(() -> this.setTargetPosition(positionSupplier.getAsDouble()), this);
+  public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
+    return Commands.sequence(
+        this.setTargetPositionCommand(heightSupplier), this.waitUntilTargetPositionCommand());
   }
 
-  public Command manualSetPosition(DoubleSupplier inchSupplier) {
+  public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
+    setpoint = heightSupplier.getAsDouble();
     return Commands.runOnce(
-        () -> this.io.setElevatorTargetPosition(inchSupplier.getAsDouble()), this);
+        () ->
+            this.io.setElevatorTargetPosition(
+                MathUtil.clamp(
+                    heightSupplier.getAsDouble(),
+                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
+        this);
+  }
+
+  public Command waitUntilTargetPositionCommand() {
+    return Commands.waitUntil(() -> isInToleranceSetpoint());
+  }
+
+  public Command waitUntilTransitionPositionCommand() {
+    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {
@@ -132,7 +159,7 @@ public class Elevator extends SubsystemBase {
             >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
                 - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
       // false alarm, elevator is stalling at the top
-      setTargetPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
       return false;
     } else {
       return io.checkMotorsStalled();
@@ -159,7 +186,9 @@ public class Elevator extends SubsystemBase {
 
   public Command dejamElevator() {
     return Commands.runOnce(
-        () -> setTargetPosition(getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
+        () ->
+            setTargetPositionCommand(
+                getCurrentPosition() + ElevatorConstants.DEJAM_DISTANCE_INCHES),
         this);
   }
 
