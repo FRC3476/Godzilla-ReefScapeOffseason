@@ -127,7 +127,7 @@ public final class Constants {
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.01));
+                    .withProximityHysteresis(0.00));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
     public static final double FEEDER_OUT_VOLTS = -12.0;
@@ -542,6 +542,22 @@ public final class Constants {
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
                     .withProximityHysteresis(0.0));
+
+    public enum ClawState {
+      NONE,
+      IDLE,
+      INTAKING_CORAL,
+      HOLDING_CORAL,
+      SCORING,
+      SCORING_L1,
+      ALGAE
+    }
+
+    // Roller Voltages
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 0.0;
+    public static final double ROLLER_SCORING_VOLTS = 12;
+    public static final double ROLLER_SCORING_L1_VOLTS = -6;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
   }
 
   // ====================Climb (6_)====================
