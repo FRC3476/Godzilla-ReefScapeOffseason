@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
@@ -81,7 +80,6 @@ import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
-import frc.robot.util.PoseUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -828,17 +826,17 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
-    // Rotation2d.kZero)));
-    driveToPoseTrigger.whileTrue(
-        DriveCommands.driveToPose(
-            drive,
-            () ->
-                PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+    driveToPoseTrigger.onTrue(
+        DriveCommands.driveToPose(drive, () -> new Pose2d(3, 4, Rotation2d.kZero)));
+    // driveToPoseTrigger.whileTrue(
+    //     DriveCommands.driveToPose(
+    //         drive,
+    //         () ->
+    //             PoseUtils.getPerpendicularOffsetPose(
+    //                 FieldUtils.getClosestReefPole().getPose(), 0.56)));
 
     driveToOtherSideTrigger.whileTrue(
-        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
   }
 
   private void buildClimberTab() {

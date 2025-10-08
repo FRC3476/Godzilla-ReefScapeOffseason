@@ -27,6 +27,8 @@ public class DriveToPosePIDCommand extends Command {
               DriveConstants.ANGLE_MAX_VELOCITY, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
   private final Drive drive;
+  private boolean xAtSetpoint = false;
+  private boolean yAtSetpoint = false;
 
   public DriveToPosePIDCommand(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
@@ -34,6 +36,7 @@ public class DriveToPosePIDCommand extends Command {
     this.targetPoseSupplier = targetPoseSupplier;
     angleController.enableContinuousInput(-Math.PI, Math.PI);
     angleController.reset(drive.getRotation().getRadians());
+    driveController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
   }
 
   @Override
@@ -44,8 +47,10 @@ public class DriveToPosePIDCommand extends Command {
     double xError = currentPose.getX() - targetPose.getX();
     double yError = currentPose.getY() - targetPose.getY();
 
-    double xSpeed = driveController.calculate(xError, 0.0);
-    double ySpeed = driveController.calculate(yError, 0.0);
+    double xSpeed = driveController.calculate(FieldUtils.getFlipped() * xError, 0.0);
+    xAtSetpoint = driveController.atSetpoint();
+    double ySpeed = driveController.calculate(FieldUtils.getFlipped() * yError, 0.0);
+    yAtSetpoint = driveController.atSetpoint();
     double omega =
         angleController.calculate(
             currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
@@ -68,6 +73,6 @@ public class DriveToPosePIDCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return driveController.atSetpoint() && angleController.atSetpoint();
+    return xAtSetpoint && yAtSetpoint && angleController.atSetpoint();
   }
 }

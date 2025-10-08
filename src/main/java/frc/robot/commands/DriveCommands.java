@@ -193,40 +193,6 @@ public class DriveCommands {
         .onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
   }
 
-  // raw drive to specific pose2d
-
-  public static Command driveToPosePID(Drive drive, Pose2d targetPose) {
-    Supplier<Rotation2d> rotSupplier = () -> targetPose.getRotation();
-    Pose2d targetPoseRotationZero =
-        new Pose2d(targetPose.getX(), targetPose.getY(), Rotation2d.kZero);
-    Supplier<Pose2d> transformSupplier = () -> drive.getPose().relativeTo(targetPoseRotationZero);
-    DoubleSupplier xSupplier =
-        () -> {
-          double deltaX = transformSupplier.get().getX();
-          if (MathUtil.isNear(0.0, deltaX, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
-            return 0.0;
-          }
-          return (deltaX * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
-              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaX);
-        };
-    DoubleSupplier ySupplier =
-        () -> {
-          double deltaY = transformSupplier.get().getY();
-          if (MathUtil.isNear(0.0, deltaY, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
-            return 0.0;
-          }
-          return (deltaY * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
-              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaY);
-        };
-    return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
-        .onlyWhile(
-            () ->
-                drive.getPose().minus(targetPose).getTranslation().getNorm()
-                        > DriveConstants.AUTO_ALIGN_NORM_TOLERANCE
-                    || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees())
-                        > DriveConstants.AUTO_ALIGN_DEGREE_TOLERANCE));
-  }
-
   // pathfind to pose with pathplanner
 
   public static Command pathfindToPose(Drive drive, Pose2d targetPose) {
@@ -244,10 +210,10 @@ public class DriveCommands {
 
   public static Command driveToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
     if (drive.getPose().minus(targetPoseSupplier.get()).getTranslation().getNorm() < 1) {
-      return driveToPosePID(drive, targetPoseSupplier.get());
+      return new DriveToPosePIDCommand(drive, targetPoseSupplier);
     }
     return pathfindToPose(drive, targetPoseSupplier.get())
-        .andThen(driveToPosePID(drive, targetPoseSupplier.get()));
+        .andThen(new DriveToPosePIDCommand(drive, targetPoseSupplier));
   }
 
   /**
