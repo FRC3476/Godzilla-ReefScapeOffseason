@@ -145,7 +145,7 @@ public class RobotState extends MagicVirtualSubsystem {
         getGlobalPose()
             .plus(
                 new Transform2d(
-                    new Translation2d(EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
                     Rotation2d.kZero));
     double distanceToLeft =
         clearancePose
