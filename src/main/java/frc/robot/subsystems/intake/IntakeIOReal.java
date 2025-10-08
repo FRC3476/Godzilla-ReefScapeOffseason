@@ -16,7 +16,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
@@ -92,7 +91,6 @@ public class IntakeIOReal implements IntakeIO {
     PhoenixUtil.tryUntilOk(
         5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
 
-    
     PhoenixUtil.tryUntilOk(
         5, () -> canRange.getConfigurator().apply(IntakeConstants.CANRANGE_CONFIG));
 
@@ -107,7 +105,7 @@ public class IntakeIOReal implements IntakeIO {
     pivotSupplyCurrent = pivotMotor.getSupplyCurrent();
     pivotStatorCurrent = pivotMotor.getStatorCurrent();
     pivotTemperature = pivotMotor.getDeviceTemp();
-    pivotVelocityRPS = pivotMotor.getVelocity(); 
+    pivotVelocityRPS = pivotMotor.getVelocity();
     pivotPositionRot = pivotMotor.getPosition();
     pivotPositionSetpointRotations = pivotMotor.getClosedLoopReference();
 

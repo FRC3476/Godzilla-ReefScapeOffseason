@@ -15,6 +15,7 @@ import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
@@ -37,6 +38,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class RobotState extends MagicVirtualSubsystem {
   private static final String logRoot = "RobotState/";
+
+  private static SuperstructureState currenState = SuperstructureState.NONE;
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
@@ -75,6 +78,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static Pose2d getGlobalPose() {
     return RobotState.globalPose;
+  }
+
+  public static void setSuperstructureState(SuperstructureState state) {
+    currenState = state;
+  }
+
+  public static SuperstructureState getSuperstructureState() {
+    return currenState;
   }
 
   public static Trigger onTeamSide() {

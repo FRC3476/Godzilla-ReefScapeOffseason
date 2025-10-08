@@ -73,6 +73,16 @@ public class CoralStateTracker {
           currentPosition = CoralPosition.AT_FEEDER;
           lastTransitionTime = now;
         }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
+        }
         break;
 
       case AT_INTAKE:
@@ -84,6 +94,16 @@ public class CoralStateTracker {
         }
         if (feederTriggered) {
           currentPosition = CoralPosition.AT_FEEDER;
+          lastTransitionTime = now;
+        }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
           lastTransitionTime = now;
         }
         break;
@@ -101,6 +121,16 @@ public class CoralStateTracker {
 
         } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
           currentPosition = CoralPosition.NONE;
+        }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
         }
         break;
 

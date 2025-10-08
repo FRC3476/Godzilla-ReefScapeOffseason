@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
-import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
@@ -25,8 +24,7 @@ public class ClawIOReal implements ClawIO {
 
   private TorqueCurrentFOC roller_c_request =
       new TorqueCurrentFOC(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
-  private VoltageOut roller_m_request =
-      new VoltageOut(0).withEnableFOC(true);
+  private VoltageOut roller_m_request = new VoltageOut(0).withEnableFOC(true);
 
   StatusSignal<AngularVelocity> rollerVelocityRPS;
   StatusSignal<Voltage> rollerAppliedVolts;
