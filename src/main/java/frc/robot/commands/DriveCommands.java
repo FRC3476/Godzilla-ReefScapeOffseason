@@ -13,6 +13,11 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -29,8 +34,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
@@ -168,7 +174,7 @@ public class DriveCommands {
 
   // drive using object detection for coral
 
-  public static Command driveToCoral(Drive drive, Vision vision, Intake intake) {
+  public static Command driveToCoral(Drive drive, Vision vision) {
     boolean isFlipped =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
@@ -188,6 +194,62 @@ public class DriveCommands {
                     + (isFlipped ? 180 : 0));
     return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
         .onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
+  }
+
+  // raw drive to specific pose2d
+
+  public static Command driveToPosePID(Drive drive, Pose2d targetPose) {
+    Supplier<Rotation2d> rotSupplier = () -> targetPose.getRotation();
+    Pose2d targetPoseRotationZero =
+        new Pose2d(targetPose.getX(), targetPose.getY(), Rotation2d.kZero);
+    Supplier<Pose2d> transformSupplier = () -> drive.getPose().relativeTo(targetPoseRotationZero);
+    DoubleSupplier xSupplier =
+        () -> {
+          double deltaX = transformSupplier.get().getX();
+          if (MathUtil.isNear(0.0, deltaX, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
+            return 0.0;
+          }
+          return (deltaX * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
+              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaX);
+        };
+    DoubleSupplier ySupplier =
+        () -> {
+          double deltaY = transformSupplier.get().getY();
+          if (MathUtil.isNear(0.0, deltaY, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
+            return 0.0;
+          }
+          return (deltaY * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
+              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaY);
+        };
+    return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
+        .onlyWhile(
+            () ->
+                drive.getPose().minus(targetPose).getTranslation().getNorm()
+                        > DriveConstants.AUTO_ALIGN_NORM_TOLERANCE
+                    || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees())
+                        > DriveConstants.AUTO_ALIGN_DEGREE_TOLERANCE));
+  }
+
+  // pathfind to pose with pathplanner
+
+  public static Command pathfindToPose(Drive drive, Pose2d targetPose) {
+    return AutoBuilder.pathfindToPose(
+        targetPose,
+        new PathConstraints(
+            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+            DriveConstants.MAX_TRANSLATIONAL_ACCEL,
+            TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
+            DriveConstants.MAX_ROTATIONAL_ACCEL),
+        0.0);
+  }
+
+  // drive to pose final
+
+  public static Command driveToPose(Drive drive, Pose2d targetPose) {
+    if (drive.getPose().minus(targetPose).getTranslation().getNorm() < 1) {
+      return driveToPosePID(drive, targetPose);
+    }
+    return pathfindToPose(drive, targetPose).andThen(driveToPosePID(drive, targetPose));
   }
 
   /**

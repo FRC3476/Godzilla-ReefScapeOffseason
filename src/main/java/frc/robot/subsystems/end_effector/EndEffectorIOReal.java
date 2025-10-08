@@ -15,7 +15,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
-import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
@@ -26,11 +25,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
   protected TalonFX pivotTalonFX;
   protected CANcoder pivotCancoder;
 
-  private MotionMagicVoltage pivot_m_request =
-      new MotionMagicVoltage(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private MotionMagicVoltage pivot_m_request = new MotionMagicVoltage(0).withEnableFOC(true);
 
-  private VoltageOut pivotVoltageRequest =
-      new VoltageOut(PhysicalConstants.ABSOLUTE_ZERO).withEnableFOC(true);
+  private VoltageOut pivotVoltageRequest = new VoltageOut(0).withEnableFOC(true);
 
   private final BaseStatusSignal[] signals;
 
