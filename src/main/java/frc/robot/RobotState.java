@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 // Use import "import frc.robot.RobotState" instead of wpilib's RobotState
@@ -53,10 +56,17 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static boolean hasAlgae = false;
 
+  private static final SendableChooser<Integer> hasAlgaeOverride = new SendableChooser<>();
+
   public RobotState(Consumer<VisionFieldPoseEstimate> visionEstimateConsumer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
+
+    hasAlgaeOverride.setDefaultOption("Default", 0);
+    hasAlgaeOverride.addOption("Has Algae", 1);
+    hasAlgaeOverride.addOption("Has No Algae", 2);
+    SmartDashboard.putData("State Overrides/HasAlgae Override", hasAlgaeOverride);
   }
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
@@ -126,7 +136,13 @@ public class RobotState extends MagicVirtualSubsystem {
         .get();
   }
 
+  @AutoLogOutput(key = "RobotState/Has Algae?")
   public static boolean hasAlgae() {
+    if (hasAlgaeOverride.getSelected() == 1) {
+      return true;
+    } else if (hasAlgaeOverride.getSelected() == 2) {
+      return false;
+    }
     return hasAlgae;
   }
 
