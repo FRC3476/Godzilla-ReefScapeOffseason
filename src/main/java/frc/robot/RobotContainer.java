@@ -945,7 +945,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 superstructure.setStateCommand(
-                    RobotState.(), "Algae Descore Aim"),
+                    robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim"),
                 claw.rollerRVS() // idk which way the claw goes
                 ));
 
@@ -954,7 +954,7 @@ public class RobotContainer {
         .x()
         .onTrue(
             superstructure.setStateCommand(
-                RobotState.getSuperstructureScoreAimState(), "Aim Scoring"));
+                robotState.getSuperstructureScoreAimState(), "Aim Scoring"));
 
     // Manual spit out game piece
     controller

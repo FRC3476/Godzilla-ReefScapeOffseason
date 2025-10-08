@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldConstants.AprilTagStruct;
 import frc.robot.Field.FieldUtils;
+import frc.robot.Field.ReefFace;
 import frc.robot.Field.varc.BargeTagTracker;
 import frc.robot.Field.varc.HPSTagTracker;
 import frc.robot.Field.varc.ReefTagTracker;
@@ -24,12 +25,14 @@ import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
 import frc.robot.util.PoseUtils;
 
+import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -144,9 +147,7 @@ public class RobotState extends MagicVirtualSubsystem {
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
 
-  private static HashMap<AprilTagStruct, SuperstructureState> algaeDescoreMap = new HashMap(
-    
-  );
+  private static HashMap<ReefFace, SuperstructureState> algaeDescoreMap;
 
   private static boolean hasAlgae = false;
 
@@ -155,7 +156,38 @@ public class RobotState extends MagicVirtualSubsystem {
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
     storedScorePosition = new ScorePosition();
+
+    // AB faces = HIGH
+    algaeDescoreMap.put(FieldConstants.blueReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
+    
+    // CD faces = LOW
+    algaeDescoreMap.put(FieldConstants.blueReefCD, SuperstructureState.ALGAE_LOW_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefCD, SuperstructureState.ALGAE_LOW_INTAKE);
+    
+    // EF faces = HIGH
+    algaeDescoreMap.put(FieldConstants.blueReefEF, SuperstructureState.ALGAE_HIGH_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefEF, SuperstructureState.ALGAE_HIGH_INTAKE);
+    
+    // GH faces = LOW
+    algaeDescoreMap.put(FieldConstants.blueReefGH, SuperstructureState.ALGAE_LOW_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefGH, SuperstructureState.ALGAE_LOW_INTAKE);
+    
+    // IJ faces = HIGH
+    algaeDescoreMap.put(FieldConstants.blueReefIJ, SuperstructureState.ALGAE_HIGH_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefIJ, SuperstructureState.ALGAE_HIGH_INTAKE);
+    
+    // KL faces = LOW
+    algaeDescoreMap.put(FieldConstants.blueReefKL, SuperstructureState.ALGAE_LOW_INTAKE);
+    algaeDescoreMap.put(FieldConstants.redReefKL, SuperstructureState.ALGAE_LOW_INTAKE);
+
+
   }
+
+  public SuperstructureState getAlgaeDescoreSuperstructureState(){
+    return algaeDescoreMap.get(FieldUtils.getClosestReef());
+  }
+
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
