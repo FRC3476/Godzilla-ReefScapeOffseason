@@ -17,15 +17,19 @@ public class Claw extends SubsystemBase {
   private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
 
   private static final LoggedTunableNumber rollerVolts =
-      new LoggedTunableNumber("Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
+      new LoggedTunableNumber(
+          "Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
   private static final LoggedTunableNumber rollerIntakeCoralVolts =
-      new LoggedTunableNumber("Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
+      new LoggedTunableNumber(
+          "Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
   private static final LoggedTunableNumber rollerHoldingCoralVolts =
-      new LoggedTunableNumber("Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
+      new LoggedTunableNumber(
+          "Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
   private static final LoggedTunableNumber rollerScoringVolts =
       new LoggedTunableNumber("Claw/RollerScoringVolts", EndEffectorConstants.ROLLER_SCORING_VOLTS);
   private static final LoggedTunableNumber rollerScoringL1Volts =
-      new LoggedTunableNumber("Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
+      new LoggedTunableNumber(
+          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
 
@@ -83,7 +87,7 @@ public class Claw extends SubsystemBase {
     return Commands.run(
         () -> {
           CoralStateTracker.CoralPosition coralPosition = CoralStateTracker.getCurrentPosition();
-          
+
           switch (this.currentState) {
             case NONE:
               break;
@@ -127,15 +131,16 @@ public class Claw extends SubsystemBase {
               this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
               break;
             case HOLDING_CORAL:
-              // move coral forward if at first sensor, backward if at second sensor, do nothing if staged
+              // move coral forward if at first sensor, backward if at second sensor, do nothing if
+              // staged
               if (coralPosition == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR) {
-                this.io.setRollerVoltage(rollerHoldingCoralVolts.get()); 
+                this.io.setRollerVoltage(rollerHoldingCoralVolts.get());
               } else if (coralPosition == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR) {
                 this.io.setRollerVoltage(-rollerHoldingCoralVolts.get());
               } else if (coralPosition == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR) {
-                this.io.setRollerVoltage(0); 
+                this.io.setRollerVoltage(0);
               } else {
-                this.io.setRollerVoltage(0); 
+                this.io.setRollerVoltage(0);
               }
               break;
             case SCORING:
