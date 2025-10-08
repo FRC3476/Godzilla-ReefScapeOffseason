@@ -21,12 +21,12 @@ public class Intake extends SubsystemBase {
   private Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-      new LoggedTunableNumber("Intake/RollerVolts", 1.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-      new LoggedTunableNumber("Intake/RollerRejectVolts", 1.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
-      new LoggedTunableNumber("Feeder/RollerVolts", 1.0);
-  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
+      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.9);
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber pivotKP =
@@ -162,7 +162,9 @@ public class Intake extends SubsystemBase {
               if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
                   && RobotState.getSuperstructureState().isHandoffState()) {
                 this.currentState = IntakeState.HAND_OFF;
-              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER) {
+              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+                  || CoralStateTracker.getCurrentPosition()
+                      == CoralPosition.STAGED_IN_END_EFFECTOR) {
                 this.currentState = IntakeState.IDLE;
               }
 

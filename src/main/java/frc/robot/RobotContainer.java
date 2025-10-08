@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -817,7 +816,7 @@ public class RobotContainer {
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
 
-    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
+    // cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
   /**
