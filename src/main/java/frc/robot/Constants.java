@@ -150,7 +150,7 @@ public final class Constants {
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
-        Units.degreesToRotations(-26.9162484); // Intake down angle
+        Units.degreesToRotations(-40); // Intake down angle
     public static final double PIVOT_UP_POSITION =
         Units.degreesToRotations(104.5837512); // Intake up angle
     public static final double PIVOT_SCORING_POSITION =
@@ -369,7 +369,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ElevatorConstants.kGearing))
+                    .withSensorToMechanismRatio(ElevatorConstants.ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)

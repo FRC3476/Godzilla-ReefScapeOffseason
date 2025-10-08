@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Field.FieldConstants;
-import frc.robot.Field.FieldConstants.AprilTagStruct;
 import frc.robot.Field.FieldUtils;
 import frc.robot.Field.ReefFace;
 import frc.robot.Field.varc.BargeTagTracker;
@@ -24,15 +23,11 @@ import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
 import frc.robot.util.PoseUtils;
-
-import java.lang.reflect.Field;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +61,9 @@ public class RobotState extends MagicVirtualSubsystem {
     L2,
     L3,
     L4,
-    BARGE, PROCESSOR, NONE
+    BARGE,
+    PROCESSOR,
+    NONE
   }
 
   public enum AlgaeIntake {
@@ -75,16 +72,17 @@ public class RobotState extends MagicVirtualSubsystem {
     NONE
   }
 
-  public enum CoralScoringMode{
-    MANUAL, AUTO
+  public enum CoralScoringMode {
+    MANUAL,
+    AUTO
   }
 
-
-  class ScorePosition{
+  class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel scoreLevel;
-    public ScorePosition(){
+
+    public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.scoreLevel = ScoreLevel.NONE;
@@ -101,58 +99,73 @@ public class RobotState extends MagicVirtualSubsystem {
     public ScoreLevel getScoreLevel() {
       return scoreLevel;
     }
-    public void setReefSide(ReefSide reefSide){
+
+    public void setReefSide(ReefSide reefSide) {
       this.reefSide = reefSide;
     }
-    public void setBranchSide(CoralBranch coralBranch){
+
+    public void setBranchSide(CoralBranch coralBranch) {
       this.coralBranch = coralBranch;
     }
-    public void setScoreLevel(ScoreLevel scoreLevel){
+
+    public void setScoreLevel(ScoreLevel scoreLevel) {
       this.scoreLevel = scoreLevel;
     }
   }
 
   private ScorePosition storedScorePosition;
 
-  public ScorePosition getStoredScorePosition(){
+  public ScorePosition getStoredScorePosition() {
     return storedScorePosition;
   }
 
-  public SuperstructureState getSuperstructureScoreAimState(){
+  private SuperstructureState fadeawayState;
+
+  public SuperstructureState getSuperstructureScoreAimState() {
     switch (getStoredScorePosition().getScoreLevel()) {
       case L1:
+        fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.L1_PIVOT;
       case L2:
+        fadeawayState = SuperstructureState.L2_FADEAWAY;
         return SuperstructureState.L2_AIM;
       case L3:
+        fadeawayState = SuperstructureState.L3_FADEAWAY;
         return SuperstructureState.L3_AIM;
       case L4:
+        fadeawayState = SuperstructureState.L4_FADEAWAY;
         return SuperstructureState.L4_AIM;
       case BARGE:
+        fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
         return SuperstructureState.BARGE_AIM_BACKWARD;
       case PROCESSOR:
+        fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.PROCESSOR_AIM;
       default:
         return SuperstructureState.NONE;
     }
   }
 
+  public SuperstructureState getFadeawayState() {
+    return fadeawayState;
+  }
+
   // public Pose2d getScoringPose(){
   //   switch (getStoredScorePosition().getReefSide()){
   //     case A:
-  //       return FieldConstants.  
+  //       return FieldConstants.
   //     case B:
-  //       return    
+  //       return
   //     case C:
-  //       return    
+  //       return
   //     case D:
-  //       return    
+  //       return
   //     case E:
-  //       return    
+  //       return
   //     case F:
-  //       return    
+  //       return
   //     default:
-  //       return 
+  //       return
   //   }
   // }
 
@@ -182,50 +195,49 @@ public class RobotState extends MagicVirtualSubsystem {
     driveYawAngularVelocity.addSample(0.0, 0.0);
     storedScorePosition = new ScorePosition();
     this.scoringMode = CoralScoringMode.MANUAL;
+    algaeDescoreMap = new HashMap<ReefFace, SuperstructureState>();
+    fadeawayState = SuperstructureState.NONE;
 
     // AB faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
-    
+
     // CD faces = LOW
     algaeDescoreMap.put(FieldConstants.blueReefCD, SuperstructureState.ALGAE_LOW_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefCD, SuperstructureState.ALGAE_LOW_INTAKE);
-    
+
     // EF faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefEF, SuperstructureState.ALGAE_HIGH_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefEF, SuperstructureState.ALGAE_HIGH_INTAKE);
-    
+
     // GH faces = LOW
     algaeDescoreMap.put(FieldConstants.blueReefGH, SuperstructureState.ALGAE_LOW_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefGH, SuperstructureState.ALGAE_LOW_INTAKE);
-    
+
     // IJ faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefIJ, SuperstructureState.ALGAE_HIGH_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefIJ, SuperstructureState.ALGAE_HIGH_INTAKE);
-    
+
     // KL faces = LOW
     algaeDescoreMap.put(FieldConstants.blueReefKL, SuperstructureState.ALGAE_LOW_INTAKE);
     algaeDescoreMap.put(FieldConstants.redReefKL, SuperstructureState.ALGAE_LOW_INTAKE);
-
-
   }
 
-  public CoralScoringMode getCoralScoringMode(){
+  public CoralScoringMode getCoralScoringMode() {
     return scoringMode;
   }
 
-  public void setScoringModeManual(){
+  public void setScoringModeManual() {
     this.scoringMode = CoralScoringMode.MANUAL;
   }
 
-  public void setScoringModeAuto(){
+  public void setScoringModeAuto() {
     this.scoringMode = CoralScoringMode.AUTO;
   }
 
-  public SuperstructureState getAlgaeDescoreSuperstructureState(){
+  public SuperstructureState getAlgaeDescoreSuperstructureState() {
     return algaeDescoreMap.get(FieldUtils.getClosestReef());
   }
-
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
@@ -609,6 +621,12 @@ public class RobotState extends MagicVirtualSubsystem {
   public void periodic() {
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
+    Logger.recordOutput(
+        "StoredSuperstructureState/Score Level", storedScorePosition.getScoreLevel());
+    Logger.recordOutput(
+        "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());
+    Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
+    Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
 
     updateLogger();
 
