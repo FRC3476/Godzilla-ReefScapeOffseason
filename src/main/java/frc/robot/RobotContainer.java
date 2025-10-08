@@ -217,6 +217,11 @@ public class RobotContainer {
 
     autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
+    // Superstructure characterization
+    autoChooser.addOption(
+        "Superstructure Transition Time Characterization",
+        superstructure.buildCharacterizationCommand());
+
     // Configure default commands for subsystems
     RegisterDefaultCommands();
 

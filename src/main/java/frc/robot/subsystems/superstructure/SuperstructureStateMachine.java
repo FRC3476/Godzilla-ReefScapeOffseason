@@ -7,12 +7,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -224,6 +228,87 @@ public class SuperstructureStateMachine {
             + Math.abs(to.getEndEffectorRotation() - from.getEndEffectorRotation()));
   }
 
+  // Checks if the superstructure is stable (not transitioning).
+  public boolean isStable() {
+    return !isTransitioning;
+  }
+
+  /**
+   * almost the same as https://github.com/Team254/FRC-2025-Public/blob/ae1aa582b1cadb8462e6cb90718880d11a8f42b1/src/main/java/com/team254/frc2025/subsystems/superstructure/SuperstructureStateMachine.java#L392
+   *
+   * Essentially works by going through every possible transition and executing it while recording the time taken. 
+   * If the transition fails to complete in the allotted time, it records a penalty instead.
+   */
+  public Command buildCharacterizationCommand() {
+    Command overallSequence = Commands.none();
+
+    File costFile = new File(Filesystem.getDeployDirectory(), TRANSITION_COSTS_FILE);
+
+    for (SuperstructureTransition transition : transitions) {
+      final double[] startTime = new double[1];
+
+      Command transitionSequence =
+          Commands.sequence(
+              new InstantCommand(
+                  () -> {
+                    stateManager.setCurrentState(transition.getFromState(), registeredStates);
+                    stateManager.setTargetState(transition.getFromState(), registeredStates);
+                    Logger.recordOutput(
+                        "Superstructure/CharacterizationState",
+                        transition.getFromState() + " to " + transition.getToState());
+                  }),
+              new WaitUntilCommand(() -> isStable()),
+              new InstantCommand(() -> startTime[0] = Timer.getFPGATimestamp()),
+              Commands.sequence(
+                      transition.getToState().getCommand(container),
+                      new InstantCommand(
+                          () -> stateManager.setCurrentState(transition.getToState(), registeredStates)))
+                  .withTimeout(5.0),
+              // Record result
+              new InstantCommand(
+                  () -> {
+                    double duration = Timer.getFPGATimestamp() - startTime[0];
+                    String logMessage;
+
+                    // Check if transition completed successfully
+                    if (!stateManager.getCurrentState().equals(transition.getToState())) {
+                      logMessage =
+                          transition.getFromState().name()
+                              + ","
+                              + transition.getToState().name()
+                              + ",100"; // penalty
+                    } else {
+                      logMessage =
+                          transition.getFromState().name()
+                              + ","
+                              + transition.getToState().name()
+                              + ","
+                              + duration;
+                    }
+
+                    // Write to file
+                    try (FileWriter fw = new FileWriter(costFile, true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        PrintWriter out = new PrintWriter(bw)) {
+                      out.println(logMessage);
+                    } catch (IOException e) {
+                      e.printStackTrace();
+                    }
+                  }))
+              .withTimeout(5.0);
+
+      overallSequence = Commands.sequence(overallSequence, transitionSequence);
+    }
+
+    overallSequence =
+        Commands.sequence(
+            overallSequence,
+            new InstantCommand(
+                () -> Logger.recordOutput("Superstructure/CharacterizationComplete", true)));
+
+    return overallSequence;
+  }
+
   /**
    * Continues the transition process to reach the target state. This method handles the main
    * transition logic and command scheduling.
@@ -351,7 +436,6 @@ public class SuperstructureStateMachine {
   /** Checks if a transition is blocked by current conditions. */
   private boolean isTransitionBlocked(SuperstructureTransition transition) {
     SuperstructureState toState = transition.getToState();
-    SuperstructureState fromState = transition.getFromState();
     return toState.isCoralState() && RobotState.hasAlgae();
   }
 

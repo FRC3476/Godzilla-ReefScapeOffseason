@@ -61,6 +61,10 @@ public class Superstructure extends SubsystemBase {
   public SuperstructureState getCurrentTargetState() {
     return stateMachine.getCurrentTargetState();
   }
+  // seems sensinble because every other method here does this
+  public Command buildCharacterizationCommand() {
+    return stateMachine.buildCharacterizationCommand();
+  }
 
   public double calculateDynamicTranslationalAccelLimit() {
 
