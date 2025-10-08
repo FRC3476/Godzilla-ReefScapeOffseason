@@ -36,6 +36,7 @@ import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
@@ -244,7 +245,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRightX() / 2));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
@@ -871,7 +872,7 @@ public class RobotContainer {
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
 
-    // cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
+    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
   /**
@@ -931,7 +932,9 @@ public class RobotContainer {
     // Processor Aim thingy
     controller
         .leftBumper()
-        .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim Processor"));
+        // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
+        // Processor"));
+        .onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
 
     // Superstructure Stow
     controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
@@ -949,7 +952,7 @@ public class RobotContainer {
 
     // ALGAE DESCORE PREP
     controller
-        .y()
+        .x()
         .onTrue(
             superstructure
                 .setStateCommand(
@@ -958,7 +961,7 @@ public class RobotContainer {
 
     // Score position Aim
     controller
-        .x()
+        .y()
         .onTrue(
             superstructure.setStateCommand(
                 () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring"));
@@ -969,7 +972,7 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 claw.setClawStateCommand(ClawState.SCORING),
-                new WaitCommand(0.2),
+                new WaitCommand(0.4),
                 superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")));
   }
 
