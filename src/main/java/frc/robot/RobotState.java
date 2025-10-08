@@ -154,7 +154,7 @@ public class RobotState extends MagicVirtualSubsystem {
   //     default:
   //       return 
   //   }
-  }
+  // }
 
   private CoralScoringMode scoringMode;
 
