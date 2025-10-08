@@ -51,16 +51,21 @@ public class RobotState extends MagicVirtualSubsystem {
   public enum BranchLevel{
     ONE, TWO, THREE, FOUR, NONE
   }
+  public enum AlgaeScore{
+    BARGE, PROCESSOR, NONE
+  }
 
 
-  private class ScorePosition{
+  class ScorePosition{
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private BranchLevel branchLevel;
+    private AlgaeScore algaeScore;
     public ScorePosition(){
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.branchLevel = BranchLevel.NONE;
+      this.algaeScore = AlgaeScore.NONE;
     }
     public ReefSide getReefSide(){
       return reefSide;
@@ -71,24 +76,28 @@ public class RobotState extends MagicVirtualSubsystem {
     public BranchLevel getBranchLevel(){
       return branchLevel;
     }
+    public AlgaeScore getAlgaeScore(){
+      return algaeScore;
+    }
     public void setReefSide(ReefSide reefSide){
       this.reefSide = reefSide;
     }
-    public void setCoralBranch(CoralBranch coralBranch){
+    public void setBranchSide(CoralBranch coralBranch){
       this.coralBranch = coralBranch;
     }
     public void setBranchLevel(BranchLevel branchLevel){
       this.branchLevel = branchLevel;
     }
+    public void setAlgaeScore(AlgaeScore algaeScore){
+      this.algaeScore = algaeScore;
+    }
   }
 
-  private static ScorePosition storedScorePosition;
+  private ScorePosition storedScorePosition;
 
-  public static ScorePosition getStoredScorePosition(){
+  public ScorePosition getStoredScorePosition(){
     return storedScorePosition;
   }
-
-
 
   private static final String logRoot = "RobotState/";
 
@@ -110,6 +119,7 @@ public class RobotState extends MagicVirtualSubsystem {
     this.visionEstimateConsumer = visionEstimateConsumer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
+    storedScorePosition = new ScorePosition();
   }
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =

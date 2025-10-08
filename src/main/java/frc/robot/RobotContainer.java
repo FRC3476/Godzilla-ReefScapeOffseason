@@ -29,6 +29,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.RobotState.AlgaeScore;
+import frc.robot.RobotState.BranchLevel;
+import frc.robot.RobotState.CoralBranch;
+import frc.robot.RobotState.ReefSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -1048,24 +1052,24 @@ public class RobotContainer {
 
     streamdeck.configureDefaultButtons(Set.of(zeroGyroButton, zeroGyroButton2));
 
-    streamdeck.button(coralL4Button).onTrue(Commands.none());
-    streamdeck.button(coralL3Button).onTrue(Commands.none());
-    streamdeck.button(coralL2Button).onTrue(Commands.none());
-    streamdeck.button(coralL1Button).onTrue(Commands.none());
-    streamdeck.button(AlgaeBargeButton).onTrue(Commands.none());
+    streamdeck.button(coralL4Button).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchLevel(BranchLevel.FOUR)));
+    streamdeck.button(coralL3Button).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchLevel(BranchLevel.THREE)));
+    streamdeck.button(coralL2Button).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchLevel(BranchLevel.TWO)));
+    streamdeck.button(coralL1Button).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchLevel(BranchLevel.ONE)));
+    streamdeck.button(AlgaeBargeButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setAlgaeScore(AlgaeScore.BARGE)));
     streamdeck.button(AlgaeL2Button).onTrue(Commands.none());
     streamdeck.button(AlgaeL1Button).onTrue(Commands.none());
-    streamdeck.button(AlgaeProcessorButton).onTrue(Commands.none());
-    streamdeck.button(ReefASideButton).onTrue(Commands.none());
-    streamdeck.button(ReefBSideButton).onTrue(Commands.none());
-    streamdeck.button(ReefCSideButton).onTrue(Commands.none());
-    streamdeck.button(ReefDSideButton).onTrue(Commands.none());
-    streamdeck.button(ReefESideButton).onTrue(Commands.none());
-    streamdeck.button(ReefFSideButton).onTrue(Commands.none());
-    streamdeck.button(reefRightSideButton).onTrue(Commands.none());
-    streamdeck.button(reefRightSideButton2).onTrue(Commands.none());
-    streamdeck.button(reefLeftSideButton).onTrue(Commands.none());
-    streamdeck.button(reefLeftSideButton2).onTrue(Commands.none());
+    streamdeck.button(AlgaeProcessorButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setAlgaeScore(AlgaeScore.BARGE)));
+    streamdeck.button(ReefASideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.A)));
+    streamdeck.button(ReefBSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.B)));
+    streamdeck.button(ReefCSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.C)));
+    streamdeck.button(ReefDSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.D)));
+    streamdeck.button(ReefESideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.E)));
+    streamdeck.button(ReefFSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.F)));
+    streamdeck.button(reefRightSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT)));
+    streamdeck.button(reefRightSideButton2).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT)));
+    streamdeck.button(reefLeftSideButton).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
+    streamdeck.button(reefLeftSideButton2).onTrue(Commands.runOnce(() -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT)));
     streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
     streamdeck
         .button(climbDeployButton)
