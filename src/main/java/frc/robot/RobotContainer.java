@@ -269,7 +269,7 @@ public class RobotContainer {
 
   private void buildIntakeTab() {
     // Get the NetworkTable for the Intake tab
-    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
+    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Elastic/Intake");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
@@ -443,7 +443,7 @@ public class RobotContainer {
 
   private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
-    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("EndEffector");
+    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
@@ -568,7 +568,7 @@ public class RobotContainer {
 
   private void buildElevatorTab() {
     // Get the NetworkTable for the Elevator tab
-    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elevator");
+    NetworkTable elevatorTable = NetworkTableInstance.getDefault().getTable("Elastic/Elevator");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry elevatorUpEntry = elevatorTable.getEntry("Elevator Up (While Held)");
@@ -631,7 +631,7 @@ public class RobotContainer {
   private void buildSuperstructureTab() {
     superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
-    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Superstructure");
+    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
     NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
@@ -792,7 +792,7 @@ public class RobotContainer {
   }
 
   private void buildDriveTab() {
-    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Drive");
+    NetworkTable driveTable = NetworkTableInstance.getDefault().getTable("Elastic/Drive");
 
     NetworkTableEntry driveFeedforwardEntry = driveTable.getEntry("Characterize Feedforward");
     NetworkTableEntry driveSlipCurrentEntry = driveTable.getEntry("Characterize Slip Current");
@@ -846,7 +846,7 @@ public class RobotContainer {
   }
 
   private void buildClimberTab() {
-    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Climber");
+    NetworkTable climberTable = NetworkTableInstance.getDefault().getTable("Elastic/Climber");
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
     NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (When Pressed)");
@@ -869,7 +869,7 @@ public class RobotContainer {
   }
 
   private void buildTestTab() {
-    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Test");
+    NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Elastic/Test");
 
     NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
 
