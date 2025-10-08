@@ -157,7 +157,8 @@ public class RobotState extends MagicVirtualSubsystem {
             .minus(FieldUtils.getClosestReef().rightPole.getPose())
             .getTranslation()
             .getNorm();
-    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
+    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
   }
 
   public static final double LOOKBACK_TIME = 1.0;
