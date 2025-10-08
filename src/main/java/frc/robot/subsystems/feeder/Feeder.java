@@ -38,7 +38,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean checkForJam() {
-    return io.checkMotorsStalled() && isCoralInFeeder();
+    return io.checkMotorsStalled();
   }
 
   public Trigger dejamTrigger =

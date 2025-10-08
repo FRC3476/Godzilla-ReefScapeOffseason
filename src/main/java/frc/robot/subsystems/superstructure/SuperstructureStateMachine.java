@@ -218,7 +218,10 @@ public class SuperstructureStateMachine {
    * @return The transition cost, or default cost if not specified
    */
   public double getTransitionCost(SuperstructureState from, SuperstructureState to) {
-    return transitionCostMap.getOrDefault(getTransitionKey(from, to), DEFAULT_TRANSITION_COST);
+    return transitionCostMap.getOrDefault(
+        getTransitionKey(from, to),
+        DEFAULT_TRANSITION_COST
+            + Math.abs(to.getEndEffectorRotation() - from.getEndEffectorRotation()));
   }
 
   /**
