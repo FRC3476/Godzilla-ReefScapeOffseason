@@ -468,8 +468,6 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
 
-    isSafeToStow();
-
     updateLogger();
 
     {
