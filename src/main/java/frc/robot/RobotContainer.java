@@ -270,7 +270,7 @@ public class RobotContainer {
     NetworkTableEntry intakeForwardEntry = intakeTable.getEntry("Roller Forward (While Held)");
     NetworkTableEntry intakeReverseEntry = intakeTable.getEntry("Roller Reverse (While Held)");
 
-    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("ElasticPivot Up (While Held)");
+    NetworkTableEntry intakeUpEntry = intakeTable.getEntry("Pivot Up (While Held)");
     NetworkTableEntry intakeDownEntry = intakeTable.getEntry("Pivot Down (While Held)");
 
     NetworkTableEntry intakeUpPosEntry = intakeTable.getEntry("Pivot Up (When Pressed)");
