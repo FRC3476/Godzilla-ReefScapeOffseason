@@ -369,7 +369,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
+                    .withSensorToMechanismRatio(ElevatorConstants.ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
@@ -401,10 +401,10 @@ public final class Constants {
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 2;
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785 + 2.5;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 2.5;
+        ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 4;
     public static final double ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
     public static final double ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
@@ -478,8 +478,7 @@ public final class Constants {
         Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883);
-    public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS =
-        Units.degreesToRotations(3.1972053);
+    public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS = Units.degreesToRotations(2);
     public static final double L4_AWAY_FROM_REEF_ANGLE_ROTATIONS = L4_AGAINST_REEF_ANGLE_ROTATIONS;
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
@@ -537,7 +536,7 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(12.75).withFOVRangeY(12.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
