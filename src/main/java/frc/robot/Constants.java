@@ -571,58 +571,6 @@ public final class Constants {
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
   }
 
-  // ====================Feeder (2_)====================
-  public static class FeederConstants {
-    public static final int RIGHT_ID = 20;
-    public static final int LEFT_ID = 21;
-    public static final int CANRANGE_ID = 22;
-
-    public static final double ROLLER_MOI = 0.001;
-    public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
-
-    public static final double ROLLER_kP = 0;
-    public static final double ROLLER_kI = 0;
-    public static final double ROLLER_kD = 0;
-    public static final double ROLLER_kS = 0;
-    public static final double ROLLER_kA = 0;
-
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
-    public static final double STALLED_CURRENT = 1000.0;
-    public static final double STALLED_RPS = 0.0;
-    public static final double DEJAM_DURATION_SECONDS = 0.05;
-    public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
-
-    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(ROLLER_kP)
-                    .withKI(ROLLER_kI)
-                    .withKD(ROLLER_kD)
-                    .withKS(ROLLER_kS)
-                    .withKA(ROLLER_kA))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
-
-    public static final CANrangeConfiguration CANRANGE_CONFIG =
-        new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
-            .withProximityParams(
-                new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.00));
-
-    public static final double FEEDER_IN_VOLTS = 12.0;
-    public static final double FEEDER_OUT_VOLTS = -12.0;
-    public static final double FEEDER_STOP_VOLTS = 0.0;
-  }
-
   // ====================LED (8_)====================
   public static final class LEDConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
