@@ -50,10 +50,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.PoseUtils;
 import frc.robot.util.RobotTime;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -191,6 +193,13 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
+
+    Logger.recordOutput(
+        "Odometry/Target Pole Pos",
+        PoseUtils.getPerpendicularOffsetPose(FieldUtils.getClosestReefPole().getPose(), 0.6));
+    Logger.recordOutput(
+        "Odometry/Distance to Target",
+        FieldUtils.getClosestReefPole().getPose().minus(getPose()).getTranslation().getNorm());
 
     for (var module : modules) {
       module.periodic();

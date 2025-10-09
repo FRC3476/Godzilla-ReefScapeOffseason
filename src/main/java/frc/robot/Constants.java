@@ -88,11 +88,15 @@ public final class Constants {
         3476.0; // Velocity derivative indicating wheels started spinning
     public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
 
-    public static final double AUTO_ALIGN_AXIS_TOLERANCE = 0.013;
-    public static final double AUTO_ALIGN_FEEDFORWARD = 0.15;
-    public static final double AUTO_ALIGN_SPEED_MULTIPLIER = 0.2;
-    public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.02;
-    public static final double AUTO_ALIGN_DEGREE_TOLERANCE = 2;
+    public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
+
+    public static final double DRIVE_TO_POSE_KP = 1.0;
+    public static final double DRIVE_TO_POSE_KI = 0.0;
+    public static final double DRIVE_TO_POSE_KD = 0.0;
+
+    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KD = 0.4;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0;
   }
 
   // ====================Feeder (2_)====================

@@ -187,6 +187,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static Pose2d globalPose = Pose2d.kZero;
 
+  private static Pose2d visionPose;
+
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
@@ -573,7 +575,13 @@ public class RobotState extends MagicVirtualSubsystem {
   public void updateMegatagEstimate(VisionFieldPoseEstimate megatagEstimate) {
     lastUsedMegatagTimestamp = megatagEstimate.getTimestampSeconds();
     lastUsedMegatagPose = megatagEstimate.getVisionRobotPoseMeters();
+    visionPose = megatagEstimate.getVisionRobotPoseMeters();
+    Logger.recordOutput("RobotState/Vision Pose", visionPose);
     visionEstimateConsumer.accept(megatagEstimate);
+  }
+
+  public static Pose2d getVisionPose() {
+    return visionPose;
   }
 
   public double lastUsedMegatagTimestamp() {

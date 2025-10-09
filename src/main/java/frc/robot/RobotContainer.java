@@ -36,6 +36,8 @@ import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -820,6 +822,7 @@ public class RobotContainer {
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
     NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
     NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
+    NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -829,6 +832,7 @@ public class RobotContainer {
     driveClockwiseEntry.setBoolean(false);
     driveToPoseEntry.setBoolean(false);
     driveToOtherSideEntry.setBoolean(false);
+    resetPoseToVisionEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -838,6 +842,7 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
     Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
+    Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(
@@ -850,17 +855,26 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
-    // Rotation2d.kZero)));
     driveToPoseTrigger.whileTrue(
-        DriveCommands.driveToPose(
+        new PathfindToPoseCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     driveToOtherSideTrigger.whileTrue(
-        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
+
+    resetPoseToVisionTrigger.onTrue(
+        Commands.runOnce(
+            () -> {
+              drive.setPose(RobotState.getVisionPose());
+            },
+            drive));
   }
 
   private void buildClimberTab() {
