@@ -3,7 +3,6 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.RobotState;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
@@ -12,7 +11,6 @@ public class VisionIOHardwareLimelight implements VisionIO {
       NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightATableName);
   NetworkTable tableB =
       NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightBTableName);
-  RobotState robotState;
   AtomicReference<VisionIOInputs> latestInputs = new AtomicReference<>(new VisionIOInputs());
   int imuMode = 1;
 
@@ -23,8 +21,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       new double[VisionConstants.kExpectedStdDevArrayLength];
 
   /** Creates a new Limelight vision IO instance. */
-  public VisionIOHardwareLimelight(RobotState robotState) {
-    this.robotState = robotState;
+  public VisionIOHardwareLimelight() {
     setLLSettings();
   }
 
@@ -54,7 +51,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   }
 
   @Override
-  public void readInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs) {
     readCameraData(tableA, inputs.cameraA, VisionConstants.kLimelightATableName);
     readCameraData(tableB, inputs.cameraB, VisionConstants.kLimelightBTableName);
     latestInputs.set(inputs);

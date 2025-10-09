@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -59,6 +60,7 @@ public class Module {
   }
 
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
@@ -75,6 +77,9 @@ public class Module {
     driveDisconnectedAlert.set(!inputs.driveConnected);
     turnDisconnectedAlert.set(!inputs.turnConnected);
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
+
+    Logger.recordOutput(
+        "Module" + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */

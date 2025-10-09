@@ -27,7 +27,7 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
-  private static Pose2d globalPose = new Pose2d();
+  private static Pose2d globalPose = Pose2d.kZero;
 
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();

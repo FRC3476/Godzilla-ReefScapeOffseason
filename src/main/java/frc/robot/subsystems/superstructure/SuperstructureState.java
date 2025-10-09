@@ -47,18 +47,15 @@ public enum SuperstructureState {
   L4_AIM(
       Constants.SuperstructureConstants.L4_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
-  L1_SCORE(
-      Constants.SuperstructureConstants.L1_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
-  L2_SCORE(
-      Constants.SuperstructureConstants.L2_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
-  L3_SCORE(
-      Constants.SuperstructureConstants.L3_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
-  L4_SCORE(
-      Constants.SuperstructureConstants.L4_SCORE_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L2_AWAY_FROM_REEF(
+      Constants.SuperstructureConstants.L2_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L2_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L3_AWAY_FROM_REEF(
+      Constants.SuperstructureConstants.L3_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L3_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L4_AWAY_FROM_REEF(
+      Constants.SuperstructureConstants.L4_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L4_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_FADEAWAY(
       Constants.SuperstructureConstants.L2_FADEAWAY_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -146,10 +143,18 @@ public enum SuperstructureState {
           L2_AIM,
           L3_AIM,
           L4_AIM,
-          L1_SCORE,
-          L2_SCORE,
-          L3_SCORE,
-          L4_SCORE:
+          L2_AWAY_FROM_REEF,
+          L3_AWAY_FROM_REEF,
+          L4_AWAY_FROM_REEF:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public boolean isHandoffState() {
+    switch (this) {
+      case STOW, STOW_CORAL, INTAKE_CORAL, INTAKE_CORAL_L1, FEED:
         return true;
       default:
         return false;
@@ -169,19 +174,22 @@ public enum SuperstructureState {
           INTAKE_CORAL_L1,
           FEED,
           INTAKE_ALGAE_GROUND,
-          L1_PIVOT,
-          L1_SCORE: // low in states
+          L1_PIVOT: // low in states
         return Util.mergeSets(lowOutStates(), lowInStates());
       case L2_AIM,
           L3_AIM,
-          L2_SCORE,
-          L3_SCORE,
           L2_FADEAWAY,
+          L2_AWAY_FROM_REEF,
           L3_FADEAWAY,
+          L3_AWAY_FROM_REEF,
           ALGAE_LOW_INTAKE,
           PROCESSOR_AIM: // low out states
         return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-      case L4_AIM, L4_SCORE, L4_FADEAWAY, ALGAE_HIGH_INTAKE, BARGE_AIM_BACKWARD: // high out states
+      case L4_AIM,
+          L4_FADEAWAY,
+          L4_AWAY_FROM_REEF,
+          ALGAE_HIGH_INTAKE,
+          BARGE_AIM_BACKWARD: // high out states
         return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
       case BARGE_AIM_CENTER, BARGE_AIM_FORWARD:
         return Util.mergeSets(highOutStates(), highInStates()); // high in states
@@ -199,23 +207,22 @@ public enum SuperstructureState {
         INTAKE_CORAL_L1,
         FEED,
         L1_PIVOT,
-        L1_SCORE,
         INTAKE_ALGAE_GROUND);
   }
 
   public Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_SCORE, L2_AIM, ALGAE_LOW_INTAKE);
+    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_AIM, L2_AWAY_FROM_REEF, ALGAE_LOW_INTAKE);
   }
 
   public Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
         L3_AIM,
-        L3_SCORE,
         ALGAE_HIGH_INTAKE,
         L3_FADEAWAY,
+        L3_AWAY_FROM_REEF,
         L4_FADEAWAY,
         L4_AIM,
-        L4_SCORE,
+        L4_AWAY_FROM_REEF,
         BARGE_AIM_BACKWARD);
   }
 

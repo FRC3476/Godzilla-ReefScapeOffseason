@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.RobotTime;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -51,6 +52,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
@@ -77,6 +79,9 @@ public class Elevator extends SubsystemBase {
           elevatorAccel.get(),
           elevatorJerk.get());
     }
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   public void setTargetPositionCommand(double position) {
@@ -89,10 +94,16 @@ public class Elevator extends SubsystemBase {
     this.io.setElevatorTargetPosition(position);
   }
 
-  @AutoLogOutput(key = "Elevator/InTolerance")
-  public boolean isInTolerance() {
+  @AutoLogOutput(key = "Elevator/InSetpointTolerance")
+  public boolean isInToleranceSetpoint() {
     return MathUtil.isNear(
         setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
+  }
+
+  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
+  public boolean isInToleranceTransition() {
+    return MathUtil.isNear(
+        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
   }
 
   public double getTargetPosition() {
@@ -117,7 +128,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command waitUntilTargetPositionCommand() {
-    return Commands.waitUntil(() -> isInTolerance());
+    return Commands.waitUntil(() -> isInToleranceSetpoint());
+  }
+
+  public Command waitUntilTransitionPositionCommand() {
+    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {
