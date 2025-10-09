@@ -90,13 +90,13 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 1.0;
+    public static final double DRIVE_TO_POSE_KP = 6.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
-    public static final double DRIVE_TO_POSE_KD = 0.0;
+    public static final double DRIVE_TO_POSE_KD = 0.1;
 
     public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 20.0;
+    public static final double ANGLE_MAX_ACCELERATION = 15.0;
   }
 
   // ====================Feeder (2_)====================
@@ -355,8 +355,8 @@ public final class Constants {
                 * Math.PI); // Ratio between elevator units (here, inches for real bot) to motor
     // rotations
 
-    public static final double STALLED_CURRENT = 1000;
-    public static final double STALLED_RPS = 0.0;
+    public static final double STALLED_CURRENT = 10;
+    public static final double STALLED_RPS = 10.0;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
@@ -393,8 +393,8 @@ public final class Constants {
     public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
 
     // Homing sequence constants
-    public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
-    public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
+    public static final double ELEVATOR_HOMING_VOLTAGE = -1; // Downward voltage for homing
+    public static final double HOMING_TIMEOUT_SECONDS = 6.0; // Max time to allow for homing
 
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
@@ -737,9 +737,9 @@ public final class Constants {
     public static double L4_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; 
+        EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS;
     public static double L4_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L4_AWAY_FROM_REEF_ANGLE_ROTATIONS; 
+        EndEffectorConstants.L4_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;

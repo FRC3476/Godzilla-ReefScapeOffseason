@@ -152,18 +152,20 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (isHomingComplete()) {
-      return false;
-    } else if (io.checkMotorsStalled()
-        && getCurrentPosition()
-            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
-                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
-      // false alarm, elevator is stalling at the top
-      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
-      return false;
-    } else {
-      return io.checkMotorsStalled();
-    }
+    return false; //disabling check for Jam since it's untested. At least the homing works now
+    
+    // if (isHomingComplete()) {
+    //   return false;
+    // } else if (io.checkMotorsStalled()
+    //     && getCurrentPosition()
+    //         >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+    //             - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+    //   // false alarm, elevator is stalling at the top
+    //   setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    //   return false;
+    // } else {
+    //   return io.checkMotorsStalled();
+    // }
   }
 
   private boolean isHomingComplete() {

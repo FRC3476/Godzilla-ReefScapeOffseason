@@ -980,7 +980,12 @@ public class RobotContainer {
     controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
 
     // Intake Stow
-    controller.povRight().onTrue(intake.setIntakeStateCommand(IntakeState.STOW));
+    controller
+        .povRight()
+        .onTrue(
+            intake
+                .setIntakeStateCommand(IntakeState.STOW)
+                .alongWith(claw.setClawStateCommand(ClawState.IDLE)));
 
     // Intake ground coral
     controller
@@ -1009,14 +1014,14 @@ public class RobotContainer {
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
-                DriveCommands.driveToPose(
-                    drive,
-                    () ->
-                        PoseUtils.getPerpendicularOffsetPose(
-                            FieldUtils.getClosestReefPole().getPose(), 0.56)),
-                new WaitCommand(0.2),
+                // new PathfindToPoseCommand(
+                //     drive,
+                //     () ->
+                //         PoseUtils.getPerpendicularOffsetPose(
+                //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                // new WaitCommand(0.2),
                 claw.setClawStateCommand(ClawState.SCORING),
                 new WaitUntilCommand(
                     () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE),
@@ -1740,7 +1745,8 @@ public class RobotContainer {
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
     //         superstructure.setStateCommand(
-    //             SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after scoring"));
+    //             SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after
+    // scoring"));
     // RobotState.finishedBargeScoringBackward()
     //     .onTrue(
     //         superstructure.setStateCommand(

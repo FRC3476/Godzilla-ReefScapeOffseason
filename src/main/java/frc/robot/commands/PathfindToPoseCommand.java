@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
@@ -37,9 +38,7 @@ public class PathfindToPoseCommand extends Command {
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
-          new TrapezoidProfile.Constraints(
-              TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-              DriveConstants.ANGLE_MAX_ACCELERATION));
+          new TrapezoidProfile.Constraints(8.0, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
   private final Drive drive;
   private Command pathfindCommand;
@@ -50,6 +49,7 @@ public class PathfindToPoseCommand extends Command {
     this.targetPoseSupplier = targetPoseSupplier;
     xController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
     yController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
+    angleController.setTolerance(Units.degreesToRadians(1.5));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
