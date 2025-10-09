@@ -1689,6 +1689,10 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+    RobotState.finishedBargeScoringForward().onTrue(superstructure.setStateCommand(
+        SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after scoring"));
+    RobotState.finishedBargeScoringBackward().onTrue(superstructure.setStateCommand(
+        SuperstructureState.STOW, "Auto set BARGE_AIM_CENTER after scoring"));
   }
 
   private void configureSuperstructureTrigger() {
