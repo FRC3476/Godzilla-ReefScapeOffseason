@@ -473,9 +473,9 @@ public final class Constants {
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = Units.degreesToRotations(-52.0336836);
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
-    public static final double PROCESSOR_ANGLE_ROTATIONS = ALGAE_IDLE_ANGLE_ROTATIONS;
+    public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L2_L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
