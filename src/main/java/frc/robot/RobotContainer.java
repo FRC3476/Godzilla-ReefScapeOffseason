@@ -438,7 +438,8 @@ public class RobotContainer {
 
   private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
-    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
+    NetworkTable endEffectorTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
@@ -626,7 +627,8 @@ public class RobotContainer {
   private void buildSuperstructureTab() {
     superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
-    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
+    NetworkTable superstructureTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
     NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
@@ -643,6 +645,9 @@ public class RobotContainer {
     NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
     NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
     NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry l2AwayFromReefEntry = superstructureTable.getEntry("L2_AWAY_FROM_REEF");
+    NetworkTableEntry l3AwayFromReefEntry = superstructureTable.getEntry("L3_AWAY_FROM_REEF");
+    NetworkTableEntry l4AwayFromReefEntry = superstructureTable.getEntry("L4_AWAY_FROM_REEF");
     NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
     NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
     NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
@@ -665,6 +670,9 @@ public class RobotContainer {
     l2ScoreEntry.setBoolean(false);
     l3ScoreEntry.setBoolean(false);
     l4ScoreEntry.setBoolean(false);
+    l2AwayFromReefEntry.setBoolean(false);
+    l3AwayFromReefEntry.setBoolean(false);
+    l4AwayFromReefEntry.setBoolean(false);
     algaeHighIntakeEntry.setBoolean(false);
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
@@ -687,6 +695,9 @@ public class RobotContainer {
     Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
     Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
     Trigger l4ScoreTrigger = new Trigger(() -> l4ScoreEntry.getBoolean(false));
+    Trigger l2AwayFromReefTrigger = new Trigger(() -> l2AwayFromReefEntry.getBoolean(false));
+    Trigger l3AwayFromReefTrigger = new Trigger(() -> l3AwayFromReefEntry.getBoolean(false));
+    Trigger l4AwayFromReefTrigger = new Trigger(() -> l4AwayFromReefEntry.getBoolean(false));
     Trigger algaeHighIntakeTrigger = new Trigger(() -> algaeHighIntakeEntry.getBoolean(false));
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
@@ -751,6 +762,18 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.L4_AIM, "Set L4_SCORE")
             .andThen(() -> l4ScoreEntry.setBoolean(false)));
+    l2AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_SCORE")
+            .andThen(() -> l2AwayFromReefEntry.setBoolean(false)));
+    l3AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L3_AWAY_FROM_REEF, "Set L3_SCORE")
+            .andThen(() -> l3AwayFromReefEntry.setBoolean(false)));
+    l4AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L4_AWAY_FROM_REEF, "Set L4_SCORE")
+            .andThen(() -> l4AwayFromReefEntry.setBoolean(false)));
     algaeHighIntakeTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.ALGAE_HIGH_INTAKE, "Set ALGAE_HIGH_INTAKE")
