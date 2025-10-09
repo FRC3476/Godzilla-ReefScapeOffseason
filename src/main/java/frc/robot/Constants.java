@@ -561,6 +561,14 @@ public final class Constants {
     public static final double ROLLER_SCORING_VOLTS = 12;
     public static final double ROLLER_SCORING_L1_VOLTS = -6;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
+
+    // Reef Collision Avoidance
+    public static final double FULLY_EXTENDED_DISTANCE_METERS =
+        Units.inchesToMeters(
+            24); // distance from the center of the robot to the end of the end effector
+    public static final double MIN_STOW_CLEARANCE_METERS =
+        Units.inchesToMeters(
+            24); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
