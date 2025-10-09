@@ -799,6 +799,7 @@ public class RobotContainer {
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
     NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
     NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
+    NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -808,6 +809,7 @@ public class RobotContainer {
     driveClockwiseEntry.setBoolean(false);
     driveToPoseEntry.setBoolean(false);
     driveToOtherSideEntry.setBoolean(false);
+    resetPoseToVisionEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -817,6 +819,7 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
     Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
+    Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(
@@ -842,14 +845,21 @@ public class RobotContainer {
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+                    FieldUtils.getClosestReefPole().getPose(), 1.0)));
 
     driveToOtherSideTrigger.whileTrue(
         new DriveToPosePIDCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+                    FieldUtils.getClosestReefPole().getPose(), 1.0)));
+
+    resetPoseToVisionTrigger.onTrue(
+        Commands.runOnce(
+            () -> {
+              drive.setPose(RobotState.getVisionPose());
+            },
+            drive));
   }
 
   private void buildClimberTab() {
