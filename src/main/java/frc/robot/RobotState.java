@@ -677,8 +677,26 @@ public class RobotState extends MagicVirtualSubsystem {
     return exclusiveTag.get();
   }
 
+  public void setTrajectoryTargetPose(Pose2d pose) {
+    trajectoryTargetPose = Optional.of(pose);
+  }
+
+  public Optional<Pose2d> getTrajectoryTargetPose() {
+    return trajectoryTargetPose;
+  }
+
+  public void setTrajectoryCurrentPose(Pose2d pose) {
+    trajectoryCurrentPose = Optional.of(pose);
+  }
+
+  public Optional<Pose2d> getTrajectoryCurrentPose() {
+    return trajectoryCurrentPose;
+  }
+
   @Override
   public void periodic() {
+    updateGlobalPose(fieldToRobot.getLatest().getValue());
+
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(

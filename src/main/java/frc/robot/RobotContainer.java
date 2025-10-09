@@ -13,10 +13,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,11 +23,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.Field.FieldUtils;
@@ -40,18 +36,14 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
-import frc.robot.commands.test.DrivetrainTest;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
 import frc.robot.subsystems.climb.ClimberIOReal;
 import frc.robot.subsystems.climb.ClimberIOSim;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveIOHardware;
+import frc.robot.subsystems.drive.DriveIOSim;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
@@ -86,6 +78,7 @@ import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
+import frc.robot.util.pathplanner.auto.AutoBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +94,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private final DriveSubsystem drive;
   private final Intake intake;
   private final EndEffector endEffector;
   private final Claw claw;
@@ -142,15 +135,12 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                robotState
-                // ,superstructure
-                );
+            new DriveSubsystem(
+                new DriveIOHardware(
+                    robotState,
+                    Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
+                    Constants.DriveConstants.kDrivetrain.getModuleConstants()),
+                robotState);
         break;
 
       case SIM:
@@ -164,15 +154,12 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight),
-                robotState
-                // ,superstructure
-                );
+            new DriveSubsystem(
+                new DriveIOSim(
+                    robotState,
+                    Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
+                    Constants.DriveConstants.kDrivetrain.getModuleConstants()),
+                robotState);
         break;
 
       default:
@@ -185,16 +172,7 @@ public class RobotContainer {
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                robotState
-                // ,superstructure
-                );
+        drive = new DriveSubsystem(new DriveIO() {}, robotState);
         break;
     }
 
@@ -202,25 +180,25 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
     //     "Drive Slip Current Characterization (Wall Test)",
     //     DriveCommands.slipCurrentCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+    // autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
     // Configure default commands for subsystems
     RegisterDefaultCommands();
@@ -250,7 +228,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX() / 2));
+            () -> -controller.getRightX()));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
@@ -847,17 +825,18 @@ public class RobotContainer {
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
     Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
-    driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    driveSlipCurrentTrigger.whileTrue(
-        Commands.print("running slip current test")
-            .andThen(DriveCommands.slipCurrentCharacterization(drive)));
-    driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(
-        Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
-    driveForwardTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
-    driveClockwiseTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
+    // driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
+    // driveSlipCurrentTrigger.whileTrue(
+    //     Commands.print("running slip current test")
+    //         .andThen(DriveCommands.slipCurrentCharacterization(drive)));
+    // driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
+    // driveStopXTrigger.onTrue(
+    //     Commands.runOnce(drive::stopWithX, drive).andThen(() ->
+    // driveStopXEntry.setBoolean(false)));
+    // driveForwardTrigger.whileTrue(
+    //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
+    // driveClockwiseTrigger.whileTrue(
+    //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
     driveToPoseTrigger.whileTrue(
         new PathfindToPoseCommand(
             drive,
@@ -875,7 +854,7 @@ public class RobotContainer {
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(
             () -> {
-              drive.setPose(RobotState.getVisionPose());
+              drive.resetOdometry(RobotState.getVisionPose());
             },
             drive));
   }
@@ -949,8 +928,9 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                        drive.resetOdometry(
+                            new Pose2d(
+                                RobotState.getGlobalPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
 
@@ -1335,8 +1315,9 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                        drive.resetOdometry(
+                            new Pose2d(
+                                RobotState.getGlobalPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
 
