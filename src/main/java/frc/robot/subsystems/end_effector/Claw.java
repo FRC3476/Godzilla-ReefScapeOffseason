@@ -105,9 +105,9 @@ public class Claw extends SubsystemBase {
               break;
             case SCORING:
               // Transition to IDLE when coral is out of the end effector
-              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
-                this.currentState = ClawState.IDLE;
-              }
+              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+              //   this.currentState = ClawState.IDLE;
+              // }
               break;
             case SCORING_L1:
               if (coralPosition == CoralStateTracker.CoralPosition.NONE) {

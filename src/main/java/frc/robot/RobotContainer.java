@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -70,6 +71,8 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
@@ -973,9 +976,17 @@ public class RobotContainer {
         .rightTrigger(0.2) // check
         .onTrue(
             Commands.sequence(
+                DriveCommands.driveToPose(
+                    drive,
+                    () ->
+                        PoseUtils.getPerpendicularOffsetPose(
+                            FieldUtils.getClosestReefPole().getPose(), 0.56)),
+                new WaitCommand(0.2),
                 claw.setClawStateCommand(ClawState.SCORING),
-                new WaitCommand(0.4),
-                superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")));
+                new WaitUntilCommand(
+                    () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE),
+                superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade"),
+                claw.setClawStateCommand(ClawState.IDLE)));
   }
 
   private void configureDriveStreamDeckBindings() {

@@ -127,7 +127,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/Roller Forward (While Held)",
+              "topic": "/Elastic/Intake/Roller Forward (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -140,20 +140,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/Roller Reverse (While Held)",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Pivot Up (While Held)",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/Intake/Pivot Up (While Held)",
+              "topic": "/Elastic/Intake/Roller Reverse (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -166,7 +153,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/Pivot Down (While Held)",
+              "topic": "/Elastic/Intake/Pivot Down (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -193,7 +180,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/Feeder In (While Held)",
+              "topic": "/Elastic/Intake/Feeder In (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -206,7 +193,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/Feeder Out (While Held)",
+              "topic": "/Elastic/Intake/Feeder Out (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -219,7 +206,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/L1 Bar Down (While Held)",
+              "topic": "/Elastic/Intake/L1 Bar Down (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -232,7 +219,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Intake/L1 Bar Up (While Held)",
+              "topic": "/Elastic/Intake/L1 Bar Up (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -259,7 +246,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Pivot Scoring Position (When Pressed)",
+              "topic": "/Elastic/Intake/Pivot Scoring Position (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -272,7 +259,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Pivot Intake Position (When Pressed)",
+              "topic": "/Elastic/Intake/Pivot Intake Position (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -285,20 +272,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Pivot Up (When Pressed)",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Pivot Zero Position (When Pressed)",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/Intake/Pivot Zero Position (When Pressed)",
+              "topic": "/Elastic/Intake/Pivot Up (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -437,33 +411,20 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Idle (When Pressed)",
+              "topic": "/Elastic/Intake/Idle (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Intake (When Pressed)",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Intake/Intake (When Pressed)",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "STOW (When Pressed)",
             "x": 1024.0,
-            "y": 0.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/STOW (When Pressed)",
+              "topic": "/Elastic/Intake/Intake (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -472,37 +433,24 @@
             "title": "Scoring Prep (When Pressed)",
             "x": 1280.0,
             "y": 384.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Scoring Prep (When Pressed)",
+              "topic": "/Elastic/Intake/Scoring Prep (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Scoring (When Pressed)",
-            "x": 1280.0,
-            "y": 512.0,
-            "width": 128.0,
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Scoring (When Pressed)",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "L1 (When Pressed)",
-            "x": 1152.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Intake/L1 (When Pressed)",
+              "topic": "/Elastic/Intake/Scoring (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -511,11 +459,11 @@
             "title": "Hand Off (When Pressed)",
             "x": 1280.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Hand Off (When Pressed)",
+              "topic": "/Elastic/Intake/Hand Off (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -528,7 +476,59 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Intake/Reject Coral (When Pressed)",
+              "topic": "/Elastic/Intake/Reject Coral (When Pressed)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "IntakeL1 (When Pressed)",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Intake/IntakeL1 (When Pressed)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Manual Control (When Pressed)",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Intake/Manual Control (When Pressed)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Pivot Up (While Held)",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Elastic/Intake/Pivot Up (While Held)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Pivot Zero Position (When Pressed)",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Elastic/Intake/Pivot Zero Position (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -549,7 +549,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator Down (While Held)",
+              "topic": "/Elastic/Elevator/Elevator Down (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -562,7 +562,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator Up (While Held)",
+              "topic": "/Elastic/Elevator/Elevator Up (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -589,7 +589,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator L2 (When Pressed)",
+              "topic": "/Elastic/Elevator/Elevator L2 (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -602,7 +602,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator L3 (When Pressed)",
+              "topic": "/Elastic/Elevator/Elevator L3 (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -615,7 +615,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator L4 (When Pressed)",
+              "topic": "/Elastic/Elevator/Elevator L4 (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -628,7 +628,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Elevator Down Pos (When Pressed)",
+              "topic": "/Elastic/Elevator/Elevator Down Pos (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -641,7 +641,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Elevator/Zero the Elevator (When Pressed)",
+              "topic": "/Elastic/Elevator/Zero the Elevator (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -774,20 +774,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Drive/Characterize Feedforward",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Characterize Slip Current",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/Drive/Characterize Slip Current",
+              "topic": "/Elastic/Drive/Characterize Feedforward",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -800,7 +787,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Drive/Characterize Wheel Radius",
+              "topic": "/Elastic/Drive/Characterize Wheel Radius",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -813,7 +800,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Drive/Drive Forward",
+              "topic": "/Elastic/Drive/Drive Forward",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -826,7 +813,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Drive/Drive Stop X",
+              "topic": "/Elastic/Drive/Drive Stop X",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -839,48 +826,61 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Drive/Drive Turn Clockwise",
+              "topic": "/Elastic/Drive/Drive Turn Clockwise",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
-            "title": "Drivetrain Test",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/Shuffleboard/Drive/Drivetrain Test",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "title": "Drive Stop",
+            "title": "Characterize Slip Current",
             "x": 384.0,
-            "y": 512.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Command",
+            "type": "Toggle Switch",
             "properties": {
-              "topic": "/Shuffleboard/Drive/Drive Stop",
+              "topic": "/Elastic/Drive/Characterize Slip Current",
               "period": 0.06,
-              "show_type": true
+              "data_type": "boolean"
             }
           },
           {
-            "title": "Drive X-Lock",
-            "x": 640.0,
-            "y": 512.0,
-            "width": 256.0,
+            "title": "Reset Pose To Vision",
+            "x": 896.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
-            "type": "Command",
+            "type": "Toggle Button",
             "properties": {
-              "topic": "/Shuffleboard/Drive/Drive X-Lock",
+              "topic": "/Elastic/Drive/Reset Pose To Vision",
               "period": 0.06,
-              "show_type": true
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Drive To Pose",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Elastic/Drive/Drive To Pose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Drive To Other Side",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Elastic/Drive/Drive To Other Side",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
@@ -899,7 +899,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/STOW",
+              "topic": "/Elastic/Superstructure/STOW",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -912,7 +912,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/INTAKE_CORAL",
+              "topic": "/Elastic/Superstructure/INTAKE_CORAL",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -925,7 +925,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L2_SCORE",
+              "topic": "/Elastic/Superstructure/L2_SCORE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -938,7 +938,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L3_SCORE",
+              "topic": "/Elastic/Superstructure/L3_SCORE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -951,20 +951,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L4_SCORE",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "PROCESSOR_AIM",
-            "x": 384.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Superstructure/PROCESSOR_AIM",
+              "topic": "/Elastic/Superstructure/L4_SCORE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -977,7 +964,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L1_SCORE",
+              "topic": "/Elastic/Superstructure/L1_SCORE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -990,7 +977,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/ALGAE_HIGH_INTAKE",
+              "topic": "/Elastic/Superstructure/ALGAE_HIGH_INTAKE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1003,7 +990,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/ALGAE_LOW_INTAKE",
+              "topic": "/Elastic/Superstructure/ALGAE_LOW_INTAKE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1016,7 +1003,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/BARGE_AIM_CENTER",
+              "topic": "/Elastic/Superstructure/BARGE_AIM_CENTER",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1029,7 +1016,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/BARGE_AIM_BACKWARD",
+              "topic": "/Elastic/Superstructure/BARGE_AIM_BACKWARD",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1042,7 +1029,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/BARGE_AIM_FORWARD",
+              "topic": "/Elastic/Superstructure/BARGE_AIM_FORWARD",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1055,7 +1042,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/FEED",
+              "topic": "/Elastic/Superstructure/FEED",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1068,7 +1055,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/INTAKE_CORAL_L1",
+              "topic": "/Elastic/Superstructure/INTAKE_CORAL_L1",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1081,7 +1068,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L1_PIVOT",
+              "topic": "/Elastic/Superstructure/L1_PIVOT",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1094,7 +1081,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L2_AIM",
+              "topic": "/Elastic/Superstructure/L2_AIM",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1107,7 +1094,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L3_AIM",
+              "topic": "/Elastic/Superstructure/L3_AIM",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1120,7 +1107,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L4_AIM",
+              "topic": "/Elastic/Superstructure/L4_AIM",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1133,7 +1120,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/STOW_ALGAE",
+              "topic": "/Elastic/Superstructure/STOW_ALGAE",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1146,7 +1133,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/STOW_CORAL",
+              "topic": "/Elastic/Superstructure/STOW_CORAL",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1159,7 +1146,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L2_FADEAWAY",
+              "topic": "/Elastic/Superstructure/L2_FADEAWAY",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1172,20 +1159,72 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L3_FADEAWAY",
+              "topic": "/Elastic/Superstructure/L3_FADEAWAY",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
-            "title": "L4_FadeAway",
+            "title": "L4_FADEAWAY",
             "x": 384.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Superstructure/L4_FadeAway",
+              "topic": "/Elastic/Superstructure/L4_FADEAWAY",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "PROCESSOR_AIM",
+            "x": 384.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Superstructure/PROCESSOR_AIM",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "L2_AWAY_FROM_REEF",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Superstructure/L2_AWAY_FROM_REEF",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "L3_AWAY_FROM_REEF",
+            "x": 896.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Superstructure/L3_AWAY_FROM_REEF",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "L4_AWAY_FROM_REEF",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/Superstructure/L4_AWAY_FROM_REEF",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1206,7 +1245,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Roller Forward (While Held)",
+              "topic": "/Elastic/EndEffector/Roller Forward (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1219,7 +1258,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Roller Reverse (While Held)",
+              "topic": "/Elastic/EndEffector/Roller Reverse (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1232,7 +1271,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Up (While Held)",
+              "topic": "/Elastic/EndEffector/Pivot Up (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1245,7 +1284,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Down (While Held)",
+              "topic": "/Elastic/EndEffector/Pivot Down (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1272,7 +1311,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Fully Down (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Fully Down (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1285,7 +1324,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Fully Up (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Fully Up (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1298,7 +1337,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Middle (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Middle (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1311,7 +1350,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Safe Down (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Safe Down (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1324,7 +1363,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Safe Up (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Safe Up (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1407,7 +1446,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Pivot Zero (When Pressed)",
+              "topic": "/Elastic/EndEffector/Pivot Zero (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1462,7 +1501,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/EndEffector/Roller Hold (When Pressed)",
+              "topic": "/Elastic/EndEffector/Roller Hold (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1479,6 +1518,32 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
+            }
+          },
+          {
+            "title": "Claw None",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/EndEffector/Claw None",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Claw Score",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Elastic/EndEffector/Claw Score",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
@@ -1497,7 +1562,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/Climber/Climber Out (While Held)",
+              "topic": "/Elastic/Climber/Climber Out (While Held)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1524,7 +1589,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Climber/Climber Climb (When Pressed)",
+              "topic": "/Elastic/Climber/Climber Climb (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1537,7 +1602,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Climber/Climber Deploy (When Pressed)",
+              "topic": "/Elastic/Climber/Climber Deploy (When Pressed)",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1605,7 +1670,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Blink Red",
+              "topic": "/Elastic/Led/Blink Red",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1618,7 +1683,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Fire",
+              "topic": "/Elastic/Led/Fire",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1631,7 +1696,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/Led/Fire",
+              "topic": "/Elastic/Led/Fire",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1648,7 +1713,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Rainbow",
+              "topic": "/Elastic/Led/Rainbow",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1661,7 +1726,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Solid Orange",
+              "topic": "/Elastic/Led/Solid Orange",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1674,7 +1739,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Solid Red",
+              "topic": "/Elastic/Led/Solid Red",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -1687,7 +1752,7 @@
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Led/Solid Teal",
+              "topic": "/Elastic/Led/Solid Teal",
               "period": 0.06,
               "data_type": "boolean"
             }
