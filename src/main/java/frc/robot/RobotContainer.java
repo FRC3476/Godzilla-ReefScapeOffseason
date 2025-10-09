@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -1024,7 +1023,7 @@ public class RobotContainer {
                 // new WaitCommand(0.2),
                 claw.setClawStateCommand(ClawState.SCORING),
                 new WaitUntilCommand(
-                    () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE),
+                    () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE).withTimeout(0.3),
                 superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade"),
                 claw.setClawStateCommand(ClawState.IDLE)));
   }
@@ -1140,7 +1139,7 @@ public class RobotContainer {
             .withText("L");
     StreamDeckButton homeElevatorButton =
         new StreamDeckButton(2, 4, "Home Elevator")
-            .withInactiveConfig(tealOnWhiteConfig)
+            .withInactiveConfig(orangeOnWhiteConfig)
             .withActiveConfig(activeConfig)
             .withText("HE");
     StreamDeckButton zeroGyroButton =

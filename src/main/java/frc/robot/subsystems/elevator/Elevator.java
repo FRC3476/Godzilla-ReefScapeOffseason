@@ -152,8 +152,8 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    return false; //disabling check for Jam since it's untested. At least the homing works now
-    
+    return false; // disabling check for Jam since it's untested. At least the homing works now
+
     // if (isHomingComplete()) {
     //   return false;
     // } else if (io.checkMotorsStalled()
