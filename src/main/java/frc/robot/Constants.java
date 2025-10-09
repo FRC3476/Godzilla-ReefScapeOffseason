@@ -341,7 +341,7 @@ public final class Constants {
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 10;
 
     public static final double ELEVATOR_SETPOINT_LARGE_TOLERANCE_INCH = 3;
 
@@ -460,7 +460,7 @@ public final class Constants {
 
     public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
     public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
-    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
+    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(30);
 
     // ========End Effector Constant Positions========
     // Standardized angle constants with RADIAN suffix
