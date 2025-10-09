@@ -178,7 +178,7 @@ public class Robot extends LoggedRobot {
 
     // Optionally switch the thread to high priority to improve loop
     // timing (see the template project documentation for details)
-    Threads.setCurrentThreadPriority(true, 99);
+    // Threads.setCurrentThreadPriority(true, 99);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing

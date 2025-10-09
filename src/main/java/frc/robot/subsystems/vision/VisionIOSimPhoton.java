@@ -12,7 +12,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
-import frc.robot.SimulatedRobotState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,15 +33,15 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
   private PhotonCameraSim cameraSim;
   private PhotonCameraSim cameraBSim;
   private final VisionSystemSim visionSim;
-  private final SimulatedRobotState simRobotState;
+  // private final SimulatedRobotState simRobotState;
 
   private final int kResWidth = 1280;
   private final int kResHeight = 800;
 
   /** Creates a new simulated vision IO instance using PhotonVision. */
-  public VisionIOSimPhoton(RobotState state, SimulatedRobotState simRobotState) {
-    super(state);
-    this.simRobotState = simRobotState;
+  // public VisionIOSimPhoton(RobotState state, SimulatedRobotState simRobotState) {
+  public VisionIOSimPhoton() {
+    super();
 
     visionSim = new VisionSystemSim("main");
     visionSim.addAprilTags(VisionConstants.kAprilTagLayoutReefsOnly);
@@ -96,8 +95,9 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
   }
 
   @Override
-  public void readInputs(VisionIOInputs inputs) {
-    Pose2d estimatedPose = simRobotState.getLatestFieldToRobot();
+  public void updateInputs(VisionIOInputs inputs) {
+    // Pose2d estimatedPose = simRobotState.getLatestFieldToRobot();
+    Pose2d estimatedPose = RobotState.getGlobalPose();
     if (estimatedPose != null) {
       visionSim.update(estimatedPose);
       Logger.recordOutput("Vision/SimIO/updateSimPose", estimatedPose);
@@ -111,7 +111,7 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
     writeToTable(camera.getAllUnreadResults(), table, cameraSim);
     writeToTable(cameraB.getAllUnreadResults(), tableB, cameraBSim);
 
-    super.readInputs(inputs);
+    super.updateInputs(inputs);
   }
 
   /** Generates robot pose data from PhotonVision results. */
