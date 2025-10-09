@@ -315,17 +315,13 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static Trigger finishedBargeScoringForward() {
     return new Trigger(
-      () ->
-        getSuperstructureState() == SuperstructureState.BARGE_AIM_FORWARD && !hasAlgae()
-    );
-  } 
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_FORWARD && !hasAlgae());
+  }
 
   public static Trigger finishedBargeScoringBackward() {
     return new Trigger(
-      () -> 
-        getSuperstructureState() == SuperstructureState.BARGE_AIM_BACKWARD && !hasAlgae()
-    );
-  } 
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_BACKWARD && !hasAlgae());
+  }
 
   public static TargetAngleTracker getClosestAlignmentTracker() {
     return autoAlignmentTrackers.stream()
