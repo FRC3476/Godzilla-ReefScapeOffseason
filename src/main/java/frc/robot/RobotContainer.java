@@ -438,7 +438,8 @@ public class RobotContainer {
 
   private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
-    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
+    NetworkTable endEffectorTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
@@ -626,7 +627,8 @@ public class RobotContainer {
   private void buildSuperstructureTab() {
     superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
-    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
+    NetworkTable superstructureTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
     NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
@@ -1689,10 +1691,14 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
-    RobotState.finishedBargeScoringForward().onTrue(superstructure.setStateCommand(
-        SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after scoring"));
-    RobotState.finishedBargeScoringBackward().onTrue(superstructure.setStateCommand(
-        SuperstructureState.STOW, "Auto set BARGE_AIM_CENTER after scoring"));
+    RobotState.finishedBargeScoringForward()
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after scoring"));
+    RobotState.finishedBargeScoringBackward()
+        .onTrue(
+            superstructure.setStateCommand(
+                SuperstructureState.STOW, "Auto set BARGE_AIM_CENTER after scoring"));
   }
 
   private void configureSuperstructureTrigger() {
