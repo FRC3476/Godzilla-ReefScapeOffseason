@@ -90,9 +90,9 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 1.0;
+    public static final double DRIVE_TO_POSE_KP = 5.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
-    public static final double DRIVE_TO_POSE_KD = 0.0;
+    public static final double DRIVE_TO_POSE_KD = 1.0;
 
     public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;

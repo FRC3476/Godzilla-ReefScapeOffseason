@@ -830,6 +830,12 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
     // driveToPoseTrigger.onTrue(
     //     DriveCommands.driveToPose(drive, () -> new Pose2d(3, 4, Rotation2d.kZero)));
+    // driveToPoseTrigger.whileTrue(
+    //     DriveCommands.driveToPose(
+    //         drive,
+    //         () ->
+    //             PoseUtils.getPerpendicularOffsetPose(
+    //                 FieldUtils.getClosestReefPole().getPose(), 0.56)));
     driveToPoseTrigger.whileTrue(
         DriveCommands.driveToPose(
             drive,
@@ -838,7 +844,11 @@ public class RobotContainer {
                     FieldUtils.getClosestReefPole().getPose(), 0.56)));
 
     driveToOtherSideTrigger.whileTrue(
-        new DriveToPosePIDCommand(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
   }
 
   private void buildClimberTab() {

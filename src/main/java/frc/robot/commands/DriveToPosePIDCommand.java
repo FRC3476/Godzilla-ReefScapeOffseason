@@ -14,12 +14,17 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.function.Supplier;
 
 public class DriveToPosePIDCommand extends Command {
-  private final PIDController driveController =
+  private final PIDController xController =
       new PIDController(
           DriveConstants.DRIVE_TO_POSE_KP,
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD);
-  ProfiledPIDController angleController =
+  private final PIDController yController =
+      new PIDController(
+          DriveConstants.DRIVE_TO_POSE_KP,
+          DriveConstants.DRIVE_TO_POSE_KI,
+          DriveConstants.DRIVE_TO_POSE_KD);
+  private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
@@ -28,16 +33,19 @@ public class DriveToPosePIDCommand extends Command {
               DriveConstants.ANGLE_MAX_VELOCITY, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
   private final Drive drive;
-  private boolean xAtSetpoint = false;
-  private boolean yAtSetpoint = false;
 
   public DriveToPosePIDCommand(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
+    xController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
+    yController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+  }
+
+  @Override
+  public void initialize() {
     angleController.reset(drive.getRotation().getRadians());
-    driveController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
   }
 
   @Override
@@ -48,10 +56,8 @@ public class DriveToPosePIDCommand extends Command {
     double xError = currentPose.getX() - targetPose.getX();
     double yError = currentPose.getY() - targetPose.getY();
 
-    double xSpeed = driveController.calculate(FieldUtils.getFlipped() * xError, 0.0);
-    xAtSetpoint = driveController.atSetpoint();
-    double ySpeed = driveController.calculate(FieldUtils.getFlipped() * yError, 0.0);
-    yAtSetpoint = driveController.atSetpoint();
+    double xSpeed = xController.calculate(FieldUtils.getFlipped() * xError, 0.0);
+    double ySpeed = yController.calculate(FieldUtils.getFlipped() * yError, 0.0);
     double omega =
         angleController.calculate(
             currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
@@ -68,16 +74,18 @@ public class DriveToPosePIDCommand extends Command {
 
   @Override
   public void end(boolean interrupt) {
-    driveController.reset();
+    xController.reset();
+    yController.reset();
     angleController.reset(drive.getRotation().getRadians());
   }
 
   @Override
   public boolean isFinished() {
-    return xAtSetpoint && yAtSetpoint && angleController.atSetpoint();
+    return xController.atSetpoint() && yController.atSetpoint() && angleController.atSetpoint();
   }
 
   public Trigger atSetpoint() {
-    return new Trigger(() -> xAtSetpoint && yAtSetpoint && angleController.atSetpoint());
+    return new Trigger(
+        () -> xController.atSetpoint() && yController.atSetpoint() && angleController.atSetpoint());
   }
 }

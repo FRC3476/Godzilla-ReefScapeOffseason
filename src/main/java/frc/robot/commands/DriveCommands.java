@@ -195,24 +195,20 @@ public class DriveCommands {
 
   // pathfind to pose with pathplanner
 
-  public static Command pathfindToPose(Drive drive, Pose2d targetPose) {
-    return AutoBuilder.pathfindToPose(
-        targetPose,
+  public static Command pathfindToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
+    return AutoBuilder.pathfindToPoseFlipped(
+        targetPoseSupplier.get(),
         new PathConstraints(
             TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
             DriveConstants.MAX_TRANSLATIONAL_ACCEL,
             TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-            DriveConstants.MAX_ROTATIONAL_ACCEL),
-        0.0);
+            DriveConstants.MAX_ROTATIONAL_ACCEL));
   }
 
   // drive to pose final
 
   public static Command driveToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    if (drive.getPose().minus(targetPoseSupplier.get()).getTranslation().getNorm() < 1) {
-      return new DriveToPosePIDCommand(drive, targetPoseSupplier);
-    }
-    return pathfindToPose(drive, targetPoseSupplier.get())
+    return pathfindToPose(drive, targetPoseSupplier)
         .andThen(new DriveToPosePIDCommand(drive, targetPoseSupplier));
   }
 
