@@ -37,6 +37,7 @@ import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -837,7 +838,7 @@ public class RobotContainer {
     //             PoseUtils.getPerpendicularOffsetPose(
     //                 FieldUtils.getClosestReefPole().getPose(), 0.56)));
     driveToPoseTrigger.whileTrue(
-        DriveCommands.driveToPose(
+        new PathfindToPoseCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(

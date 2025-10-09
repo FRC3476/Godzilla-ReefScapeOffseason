@@ -13,11 +13,6 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -35,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -191,25 +185,6 @@ public class DriveCommands {
                     + (isFlipped ? 180 : 0));
     return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
         .onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
-  }
-
-  // pathfind to pose with pathplanner
-
-  public static Command pathfindToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    return AutoBuilder.pathfindToPoseFlipped(
-        targetPoseSupplier.get(),
-        new PathConstraints(
-            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-            DriveConstants.MAX_TRANSLATIONAL_ACCEL,
-            TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-            DriveConstants.MAX_ROTATIONAL_ACCEL));
-  }
-
-  // drive to pose final
-
-  public static Command driveToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    return pathfindToPose(drive, targetPoseSupplier)
-        .andThen(new DriveToPosePIDCommand(drive, targetPoseSupplier));
   }
 
   /**
