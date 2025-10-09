@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.Field.ReefFace;
@@ -328,6 +331,29 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static void setHasAlgae(boolean input) {
     hasAlgae = input;
+  }
+
+  @AutoLogOutput(key = "RobotState/Safe to Stow?")
+  public static boolean isSafeToStow() {
+    // imaginary position of end effector if extended as far as possible
+    Pose2d clearancePose =
+        getGlobalPose()
+            .plus(
+                new Transform2d(
+                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                    Rotation2d.kZero));
+    double distanceToLeft =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().leftPole.getPose())
+            .getTranslation()
+            .getNorm();
+    double distanceToRight =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().rightPole.getPose())
+            .getTranslation()
+            .getNorm();
+    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
   }
 
   public static final double LOOKBACK_TIME = 1.0;
