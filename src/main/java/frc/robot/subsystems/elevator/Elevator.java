@@ -94,23 +94,18 @@ public class Elevator extends SubsystemBase {
     this.io.setElevatorTargetPosition(position);
   }
 
-  @AutoLogOutput(key = "Elevator/InTolerance")
-  public boolean isInTolerance() {
+  @AutoLogOutput(key = "Elevator/InSetpointTolerance")
+  public boolean isInToleranceSetpoint() {
     return MathUtil.isNear(
         setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
-  @AutoLogOutput(key = "Elevator/InTolerance")
-  public boolean isInTolerance(boolean isTransitionState) {
+  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
+  public boolean isInToleranceTransition() {
     return MathUtil.isNear(
-        setpoint,
-        this.getCurrentPosition(),
-        isTransitionState
-            ? ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH
-            : ElevatorConstants.ELEVATOR_SETPOINT_LARGE_TOLERANCE_INCH);
+        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
   }
 
-  @AutoLogOutput(key = "Elevator/Setpoint")
   public double getTargetPosition() {
     return setpoint;
   }
@@ -139,11 +134,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command waitUntilTargetPositionCommand() {
-    return Commands.waitUntil(() -> isInTolerance());
+    return Commands.waitUntil(() -> isInToleranceSetpoint());
   }
 
-  public Command waitUntilTargetPositionCommand(boolean isInTransitionState) {
-    return Commands.waitUntil(() -> isInTolerance(isInTransitionState));
+  public Command waitUntilTransitionPositionCommand() {
+    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {

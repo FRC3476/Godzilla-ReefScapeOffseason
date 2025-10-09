@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralStateTracker {
@@ -14,6 +16,8 @@ public class CoralStateTracker {
     STAGED_IN_END_EFFECTOR
   }
 
+  private static final SendableChooser<CoralPosition> coralStateOverride = new SendableChooser<>();
+
   private static final double TIMEOUT_SECONDS = 0.5;
 
   private static CoralPosition currentPosition = CoralPosition.NONE;
@@ -26,7 +30,17 @@ public class CoralStateTracker {
 
   private static CoralStateTracker instance = new CoralStateTracker();
 
-  private CoralStateTracker() {}
+  private CoralStateTracker() {
+    coralStateOverride.setDefaultOption("Default", null);
+    coralStateOverride.addOption("None", CoralPosition.NONE);
+    coralStateOverride.addOption("At Intake", CoralPosition.AT_INTAKE);
+    coralStateOverride.addOption("Going to Feeder", CoralPosition.GOING_TO_FEEDER);
+    coralStateOverride.addOption("At Feeder", CoralPosition.AT_FEEDER);
+    coralStateOverride.addOption("At First End Effector", CoralPosition.AT_FIRST_END_EFFECTOR);
+    coralStateOverride.addOption("At Second End Effector", CoralPosition.AT_SECOND_END_EFFECTOR);
+    coralStateOverride.addOption("Staged in End Effector", CoralPosition.STAGED_IN_END_EFFECTOR);
+    SmartDashboard.putData("State Overrides/CoralState Override", coralStateOverride);
+  }
 
   public static CoralStateTracker getInstance() {
     return instance;
@@ -73,6 +87,16 @@ public class CoralStateTracker {
           currentPosition = CoralPosition.AT_FEEDER;
           lastTransitionTime = now;
         }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
+        }
         break;
 
       case AT_INTAKE:
@@ -84,6 +108,16 @@ public class CoralStateTracker {
         }
         if (feederTriggered) {
           currentPosition = CoralPosition.AT_FEEDER;
+          lastTransitionTime = now;
+        }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
           lastTransitionTime = now;
         }
         break;
@@ -101,6 +135,16 @@ public class CoralStateTracker {
 
         } else if (now - lastTransitionTime > TIMEOUT_SECONDS) {
           currentPosition = CoralPosition.NONE;
+        }
+        if (firstEndEffectorTriggered && secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.STAGED_IN_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (firstEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_FIRST_END_EFFECTOR;
+          lastTransitionTime = now;
+        } else if (secondEndEffectorTriggered) {
+          currentPosition = CoralPosition.AT_SECOND_END_EFFECTOR;
+          lastTransitionTime = now;
         }
         break;
 
@@ -169,6 +213,9 @@ public class CoralStateTracker {
   }
 
   public static CoralPosition getCurrentPosition() {
+    if (coralStateOverride.getSelected() != null) {
+      return coralStateOverride.getSelected();
+    }
     return currentPosition;
   }
 

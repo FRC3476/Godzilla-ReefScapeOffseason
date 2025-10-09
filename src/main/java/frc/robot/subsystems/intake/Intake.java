@@ -7,8 +7,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.RobotState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -19,12 +21,12 @@ public class Intake extends SubsystemBase {
   private Feeder feeder;
 
   private static final LoggedTunableNumber rollerIntakeVolts =
-      new LoggedTunableNumber("Intake/RollerVolts", 1.0);
+      new LoggedTunableNumber("Intake/RollerVolts", 12.0);
   private static final LoggedTunableNumber rollerRejectVolts =
-      new LoggedTunableNumber("Intake/RollerRejectVolts", 1.0); // Placeholder value
+      new LoggedTunableNumber("Intake/RollerRejectVolts", 12.0); // Placeholder value
   private static final LoggedTunableNumber feederVolts =
-      new LoggedTunableNumber("Feeder/RollerVolts", 1.0);
-  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.4);
+      new LoggedTunableNumber("Feeder/RollerVolts", 12.0);
+  private static final LoggedTunableNumber l1Volts = new LoggedTunableNumber("Feeder/L1Volts", 0.9);
 
   // Tunable numbers for manual testing
   private static final LoggedTunableNumber pivotKP =
@@ -108,8 +110,8 @@ public class Intake extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    return false;
-    // return io.checkRollerStalled() && isCoralInIntake();
+    // return false;
+    return io.checkRollerStalled() || feeder.checkForJam();
   }
 
   public Trigger coralInIntakeTrigger() {
@@ -157,19 +159,34 @@ public class Intake extends SubsystemBase {
               break;
             case INTAKE:
               // Check if coral is detected in feeder and automatically transition to IDLE
-              if (feeder.isCoralInFeeder()) {
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+                  && RobotState.getSuperstructureState().isHandoffState()) {
+                this.currentState = IntakeState.HAND_OFF;
+              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+                  || CoralStateTracker.getCurrentPosition()
+                      == CoralPosition.STAGED_IN_END_EFFECTOR) {
                 this.currentState = IntakeState.IDLE;
               }
+
               break;
             case REJECT_CORAL:
               break;
             case HAND_OFF:
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR
+                  || CoralStateTracker.getCurrentPosition()
+                      == CoralPosition.AT_SECOND_END_EFFECTOR) {
+                this.currentState = IntakeState.IDLE;
+              }
               break;
             case SCORING:
               break;
             case SCORING_PREP:
               break;
             case IDLE:
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+                  && RobotState.getSuperstructureState().isHandoffState()) {
+                this.currentState = IntakeState.HAND_OFF;
+              }
               break;
             default:
               this.currentState = IntakeState.IDLE;
@@ -188,13 +205,13 @@ public class Intake extends SubsystemBase {
             case INTAKE_L1:
               this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
               this.io.setRollerVoltage(rollerIntakeVolts.get());
-              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+              engageCoralL1Stall();
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
             case INTAKE:
               this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
               this.io.setRollerVoltage(rollerIntakeVolts.get());
-              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_DISENGAGED_POSITION);
+              disengageCoralL1Stall();
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
             case REJECT_CORAL:
@@ -209,13 +226,13 @@ public class Intake extends SubsystemBase {
             case SCORING:
               this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
               this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
-              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+              engageCoralL1Stall();
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case SCORING_PREP:
-              this.io.setPivotPosition(IntakeConstants.SCORING_PREP_PIVOT_POSITION_ROTATIONS);
+              this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
               this.io.setRollerVoltage(0);
-              this.io.setLvl1BlockerPosition(IntakeConstants.L1_BLOCKER_ENGAGED_POSITION);
+              engageCoralL1Stall();
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case IDLE:
@@ -250,7 +267,6 @@ public class Intake extends SubsystemBase {
   }
 
   public Command zeroPivotAtPivotUp() {
-    System.out.println("BUTTON PRESSED");
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
 
@@ -303,12 +319,20 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
   }
 
-  public Command engageCoralL1Stall() {
-    return Commands.run(() -> io.setLvl1BlockerVoltage(-l1Volts.get()));
+  public Command engageCoralL1StallCommand() {
+    return Commands.run(() -> engageCoralL1Stall());
   }
 
-  public Command disengageCoralL1Stall() {
-    return Commands.run(() -> io.setLvl1BlockerVoltage(l1Volts.get()));
+  public void engageCoralL1Stall() {
+    io.setLvl1BlockerVoltage(-l1Volts.get());
+  }
+
+  public Command disengageCoralL1StallCommand() {
+    return Commands.run(() -> disengageCoralL1Stall());
+  }
+
+  public void disengageCoralL1Stall() {
+    io.setLvl1BlockerVoltage(l1Volts.get());
   }
 
   public Command feederFWD() {
