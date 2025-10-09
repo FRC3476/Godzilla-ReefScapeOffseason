@@ -196,7 +196,10 @@ public class Drive extends SubsystemBase {
 
     Logger.recordOutput(
         "Odometry/Target Pole Pos",
-        PoseUtils.getPerpendicularOffsetPose(FieldUtils.getClosestReefPole().getPose(), 0.56));
+        PoseUtils.getPerpendicularOffsetPose(FieldUtils.getClosestReefPole().getPose(), 0.6));
+    Logger.recordOutput(
+        "Odometry/Distance to Target",
+        FieldUtils.getClosestReefPole().getPose().minus(getPose()).getTranslation().getNorm());
 
     for (var module : modules) {
       module.periodic();

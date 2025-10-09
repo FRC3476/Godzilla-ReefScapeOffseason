@@ -440,7 +440,8 @@ public class RobotContainer {
 
   private void buildEndEffectorTab() {
     // Get the NetworkTable for the EndEffector tab
-    NetworkTable endEffectorTable = NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
+    NetworkTable endEffectorTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/EndEffector");
 
     // Create NetworkTableEntry instances for while-held functionality
     NetworkTableEntry clawForwardEntry = endEffectorTable.getEntry("Roller Forward (While Held)");
@@ -628,7 +629,8 @@ public class RobotContainer {
   private void buildSuperstructureTab() {
     superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
-    NetworkTable superstructureTable = NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
+    NetworkTable superstructureTable =
+        NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");
 
     // Create NetworkTableEntry instances for each SuperstructureState
     NetworkTableEntry stowEntry = superstructureTable.getEntry("STOW");
@@ -832,27 +834,19 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    // driveToPoseTrigger.onTrue(
-    //     DriveCommands.driveToPose(drive, () -> new Pose2d(3, 4, Rotation2d.kZero)));
-    // driveToPoseTrigger.whileTrue(
-    //     DriveCommands.driveToPose(
-    //         drive,
-    //         () ->
-    //             PoseUtils.getPerpendicularOffsetPose(
-    //                 FieldUtils.getClosestReefPole().getPose(), 0.56)));
     driveToPoseTrigger.whileTrue(
         new PathfindToPoseCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 1.0)));
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     driveToOtherSideTrigger.whileTrue(
         new DriveToPosePIDCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 1.0)));
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(
