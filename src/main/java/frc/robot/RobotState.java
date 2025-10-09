@@ -125,27 +125,27 @@ public class RobotState extends MagicVirtualSubsystem {
     return storedScorePosition;
   }
 
-  private SuperstructureState fadeawayState;
+  // private SuperstructureState fadeawayState;
 
   public SuperstructureState getSuperstructureScoreAimState() {
-    switch (getStoredScorePosition().getScoreLevel()) {
+    switch (storedScorePosition.getScoreLevel()) {
       case L1:
-        fadeawayState = SuperstructureState.NONE;
+        // fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.L1_PIVOT;
       case L2:
-        fadeawayState = SuperstructureState.L2_FADEAWAY;
+        // fadeawayState = SuperstructureState.L2_FADEAWAY;
         return SuperstructureState.L2_AIM;
       case L3:
-        fadeawayState = SuperstructureState.L3_FADEAWAY;
+        // fadeawayState = SuperstructureState.L3_FADEAWAY;
         return SuperstructureState.L3_AIM;
       case L4:
-        fadeawayState = SuperstructureState.L4_FADEAWAY;
+        // fadeawayState = SuperstructureState.L4_FADEAWAY;
         return SuperstructureState.L4_AIM;
       case BARGE:
-        fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
+        // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
         return SuperstructureState.BARGE_AIM_BACKWARD;
       case PROCESSOR:
-        fadeawayState = SuperstructureState.NONE;
+        // fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.PROCESSOR_AIM;
       default:
         return SuperstructureState.NONE;
@@ -153,7 +153,22 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public SuperstructureState getFadeawayState() {
-    return fadeawayState;
+    switch (storedScorePosition.getScoreLevel()) {
+      case L1:
+        return SuperstructureState.STOW;
+      case L2:
+        return SuperstructureState.L2_FADEAWAY;
+      case L3:
+        return SuperstructureState.L3_FADEAWAY;
+      case L4:
+        return SuperstructureState.L4_FADEAWAY;
+      case BARGE:
+        return SuperstructureState.BARGE_AIM_BACKWARD;
+      case PROCESSOR:
+        return SuperstructureState.STOW;
+      default:
+        return SuperstructureState.NONE;
+    }
   }
 
   // public Pose2d getScoringPose(){
@@ -211,7 +226,7 @@ public class RobotState extends MagicVirtualSubsystem {
     storedScorePosition = new ScorePosition();
     this.scoringMode = CoralScoringMode.MANUAL;
     algaeDescoreMap = new HashMap<ReefFace, SuperstructureState>();
-    fadeawayState = SuperstructureState.NONE;
+    // fadeawayState = SuperstructureState.NONE;
 
     // AB faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
