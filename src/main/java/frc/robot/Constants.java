@@ -127,7 +127,7 @@ public final class Constants {
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.006));
+                    .withProximityHysteresis(0.00));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
     public static final double FEEDER_OUT_VOLTS = -12.0;
@@ -369,7 +369,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ElevatorConstants.ELEVATOR_MOTOR_TO_SENSOR_RATIO))
+                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
@@ -401,10 +401,10 @@ public final class Constants {
     // Coral scoring heights
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 2;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785 + 2.5;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 4;
+        ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 2.5;
     public static final double ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
     public static final double ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
@@ -471,14 +471,15 @@ public final class Constants {
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = Units.degreesToRotations(-52.0336836);
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
-    public static final double PROCESSOR_ANGLE_ROTATIONS = ALGAE_IDLE_ANGLE_ROTATIONS;
+    public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L2_L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883);
-    public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS = Units.degreesToRotations(2);
+    public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS =
+        Units.degreesToRotations(3.1972053);
     public static final double L4_AWAY_FROM_REEF_ANGLE_ROTATIONS = L4_AGAINST_REEF_ANGLE_ROTATIONS;
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
@@ -536,11 +537,11 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(12.75).withFOVRangeY(12.75))
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(Units.inchesToMeters(3))
-                    .withProximityHysteresis(0.006));
+                    .withProximityHysteresis(0.0));
 
     public enum ClawState {
       NONE,
@@ -557,14 +558,6 @@ public final class Constants {
     public static final double ROLLER_SCORING_VOLTS = 12;
     public static final double ROLLER_SCORING_L1_VOLTS = -6;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
-
-    // Reef Collision Avoidance
-    public static final double FULLY_EXTENDED_DISTANCE_METERS =
-        Units.inchesToMeters(
-            24); // distance from the center of the robot to the end of the end effector
-    public static final double MIN_STOW_CLEARANCE_METERS =
-        Units.inchesToMeters(
-            24); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
