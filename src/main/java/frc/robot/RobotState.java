@@ -670,7 +670,7 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
     Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
 
-    updateLogger();
+    // updateLogger();
 
     {
       reefTracker.update();
