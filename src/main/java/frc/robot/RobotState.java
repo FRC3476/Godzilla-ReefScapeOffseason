@@ -187,6 +187,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static Pose2d globalPose = Pose2d.kZero;
 
+  private static Pose2d visionPose;
+
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
@@ -311,6 +313,16 @@ public class RobotState extends MagicVirtualSubsystem {
             PoseUtils.getPerpendicularError(
                     RobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d())
                 < 0.5);
+  }
+
+  public static Trigger finishedBargeScoringForward() {
+    return new Trigger(
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_FORWARD && !hasAlgae());
+  }
+
+  public static Trigger finishedBargeScoringBackward() {
+    return new Trigger(
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_BACKWARD && !hasAlgae());
   }
 
   public static TargetAngleTracker getClosestAlignmentTracker() {
@@ -573,7 +585,13 @@ public class RobotState extends MagicVirtualSubsystem {
   public void updateMegatagEstimate(VisionFieldPoseEstimate megatagEstimate) {
     lastUsedMegatagTimestamp = megatagEstimate.getTimestampSeconds();
     lastUsedMegatagPose = megatagEstimate.getVisionRobotPoseMeters();
+    visionPose = megatagEstimate.getVisionRobotPoseMeters();
+    Logger.recordOutput("RobotState/Vision Pose", visionPose);
     visionEstimateConsumer.accept(megatagEstimate);
+  }
+
+  public static Pose2d getVisionPose() {
+    return visionPose;
   }
 
   public double lastUsedMegatagTimestamp() {

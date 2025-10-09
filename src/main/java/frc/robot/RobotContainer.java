@@ -37,6 +37,8 @@ import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.commands.test.DrivetrainTest;
 import frc.robot.generated.TunerConstants;
@@ -648,6 +650,9 @@ public class RobotContainer {
     NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
     NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
     NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry l2AwayFromReefEntry = superstructureTable.getEntry("L2_AWAY_FROM_REEF");
+    NetworkTableEntry l3AwayFromReefEntry = superstructureTable.getEntry("L3_AWAY_FROM_REEF");
+    NetworkTableEntry l4AwayFromReefEntry = superstructureTable.getEntry("L4_AWAY_FROM_REEF");
     NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
     NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
     NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
@@ -670,6 +675,9 @@ public class RobotContainer {
     l2ScoreEntry.setBoolean(false);
     l3ScoreEntry.setBoolean(false);
     l4ScoreEntry.setBoolean(false);
+    l2AwayFromReefEntry.setBoolean(false);
+    l3AwayFromReefEntry.setBoolean(false);
+    l4AwayFromReefEntry.setBoolean(false);
     algaeHighIntakeEntry.setBoolean(false);
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
@@ -692,6 +700,9 @@ public class RobotContainer {
     Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
     Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
     Trigger l4ScoreTrigger = new Trigger(() -> l4ScoreEntry.getBoolean(false));
+    Trigger l2AwayFromReefTrigger = new Trigger(() -> l2AwayFromReefEntry.getBoolean(false));
+    Trigger l3AwayFromReefTrigger = new Trigger(() -> l3AwayFromReefEntry.getBoolean(false));
+    Trigger l4AwayFromReefTrigger = new Trigger(() -> l4AwayFromReefEntry.getBoolean(false));
     Trigger algaeHighIntakeTrigger = new Trigger(() -> algaeHighIntakeEntry.getBoolean(false));
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
@@ -756,6 +767,18 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.L4_AIM, "Set L4_SCORE")
             .andThen(() -> l4ScoreEntry.setBoolean(false)));
+    l2AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_SCORE")
+            .andThen(() -> l2AwayFromReefEntry.setBoolean(false)));
+    l3AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L3_AWAY_FROM_REEF, "Set L3_SCORE")
+            .andThen(() -> l3AwayFromReefEntry.setBoolean(false)));
+    l4AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L4_AWAY_FROM_REEF, "Set L4_SCORE")
+            .andThen(() -> l4AwayFromReefEntry.setBoolean(false)));
     algaeHighIntakeTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.ALGAE_HIGH_INTAKE, "Set ALGAE_HIGH_INTAKE")
@@ -802,6 +825,7 @@ public class RobotContainer {
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
     NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
     NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
+    NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -811,6 +835,7 @@ public class RobotContainer {
     driveClockwiseEntry.setBoolean(false);
     driveToPoseEntry.setBoolean(false);
     driveToOtherSideEntry.setBoolean(false);
+    resetPoseToVisionEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -820,6 +845,7 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
     Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
+    Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
     driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
     driveSlipCurrentTrigger.whileTrue(
@@ -832,17 +858,26 @@ public class RobotContainer {
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     driveClockwiseTrigger.whileTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
-    // Rotation2d.kZero)));
     driveToPoseTrigger.whileTrue(
-        DriveCommands.driveToPose(
+        new PathfindToPoseCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     driveToOtherSideTrigger.whileTrue(
-        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
+
+    resetPoseToVisionTrigger.onTrue(
+        Commands.runOnce(
+            () -> {
+              drive.setPose(RobotState.getVisionPose());
+            },
+            drive));
   }
 
   private void buildClimberTab() {
@@ -1702,6 +1737,14 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+    // RobotState.finishedBargeScoringForward()
+    //     .onTrue(
+    //         superstructure.setStateCommand(
+    //             SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after scoring"));
+    // RobotState.finishedBargeScoringBackward()
+    //     .onTrue(
+    //         superstructure.setStateCommand(
+    //             SuperstructureState.STOW, "Auto set BARGE_AIM_CENTER after scoring"));
   }
 
   private void configureSuperstructureTrigger() {
