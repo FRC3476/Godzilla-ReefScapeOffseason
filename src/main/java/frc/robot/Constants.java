@@ -390,7 +390,7 @@ public final class Constants {
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
-    public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 56.375; // max height
 
     // Homing sequence constants
     public static final double ELEVATOR_HOMING_VOLTAGE = -1; // Downward voltage for homing
