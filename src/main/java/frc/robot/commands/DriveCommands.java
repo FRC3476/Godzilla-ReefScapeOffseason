@@ -13,8 +13,6 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
@@ -31,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -40,7 +37,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.05;
+  private static final double DEADBAND = 0.025;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
@@ -74,7 +71,7 @@ public class DriveCommands {
     SwerveRequest.FieldCentric fieldCentricReq =
         new SwerveRequest.FieldCentric()
             .withDeadband(
-                Constants.DriveConstants.kDriveMaxSpeed * 0.05) // Add a 5% deadband in open loop
+                Constants.DriveConstants.kDriveMaxSpeed * 0.025) // Add a 5% deadband in open loop
             .withRotationalDeadband(
                 Constants.DriveConstants.kDriveMaxAngularRate * Constants.kSteerJoystickDeadband)
             .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
@@ -121,8 +118,7 @@ public class DriveCommands {
             0.0,
             DriveConstants.ANGLE_KD,
             new TrapezoidProfile.Constraints(
-                TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-                DriveConstants.ANGLE_MAX_ACCELERATION));
+                DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveRequest.FieldCentricFacingAngle facingAngle =

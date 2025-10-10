@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import java.util.function.Supplier;
 
@@ -35,8 +32,7 @@ public class DriveToPosePIDCommand extends Command {
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-              DriveConstants.ANGLE_MAX_ACCELERATION));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
   private final DriveSubsystem drive;
 

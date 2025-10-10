@@ -118,16 +118,16 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
-    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KP = 20.0;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 15.0;
+    public static final double ANGLE_MAX_ACCELERATION = 30.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxYAccelerationMetersPerSecondSquared = 10.0;
     public static final double kDriveMaxAngularRate = 8.2;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
-    public static final double kHeadingControllerP = 5.0;
+    public static final double kHeadingControllerP = 8.0;
     public static final double kHeadingControllerI = 0;
     public static final double kHeadingControllerD = 0;
     public static final CommandSwerveDrivetrain kDrivetrain =
@@ -478,7 +478,7 @@ public final class Constants {
         0; // 8.675; // 14.418111 + 2;
     public static final double ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH = 7.078988 + 1;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 24.79; // 30.029785 + 2.5;
     public static final double ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH = 23.003301 + 1;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =

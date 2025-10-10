@@ -27,14 +27,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
@@ -852,7 +850,8 @@ public class RobotContainer {
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+                    FieldUtils.getClosestReefPole().getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
 
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(
@@ -906,24 +905,29 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.driveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+                () ->
+                    -controller.getLeftY()
+                        * Math.abs(controller.getLeftY())
+                        * Constants.DriveConstants.kDriveMaxSpeed,
+                () ->
+                    -controller.getLeftX()
+                        * Math.abs(controller.getLeftX())
+                        * Constants.DriveConstants.kDriveMaxSpeed,
+                () -> FieldUtils.isRedAlliance() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg));
 
     // // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // // Reset gyro to 0° when B button is pressed
+    // // Auto Align
     controller
         .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.resetOdometry(
-                            new Pose2d(
-                                RobotState.getGlobalPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+        .whileTrue(
+            new DriveToPosePIDCommand(
+                drive,
+                () ->
+                    PoseUtils.getPerpendicularOffsetPose(
+                        FieldUtils.getClosestReefPole().getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
 
     // controller
     //     .rightTrigger();
@@ -992,18 +996,15 @@ public class RobotContainer {
                     //     () ->
                     //         PoseUtils.getPerpendicularOffsetPose(
                     //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                    // new WaitCommand(0.2),
-                    Commands.print("scoring with claw"),
+                    // new WaitCommand(0.2)
                     claw.setClawStateCommand(ClawState.SCORING).asProxy(),
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                         .withTimeout(3),
-                    Commands.print("coral is out"),
                     superstructure
                         .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                         .asProxy(),
-                    Commands.print("set to fadeaway: " + robotState.getFadeawayState().toString()),
-                    claw.setClawStateCommand(ClawState.IDLE))
+                    claw.setClawStateCommand(ClawState.IDLE).asProxy())
                 .asProxy());
   }
 

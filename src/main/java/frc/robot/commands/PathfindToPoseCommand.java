@@ -37,7 +37,8 @@ public class PathfindToPoseCommand extends Command {
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
-          new TrapezoidProfile.Constraints(8.0, DriveConstants.ANGLE_MAX_ACCELERATION));
+          new TrapezoidProfile.Constraints(
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
   private final DriveSubsystem drive;
   private Command pathfindCommand;
