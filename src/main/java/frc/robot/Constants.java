@@ -467,7 +467,7 @@ public final class Constants {
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
-    public static final double ELEVATOR_MAX_SETPOINT_INCH = 56.375; // max height
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 55.5; // max height
 
     // Homing sequence constants
     public static final double ELEVATOR_HOMING_VOLTAGE = -1; // Downward voltage for homing
@@ -841,7 +841,6 @@ public final class Constants {
 
     public static double L4_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
-    // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
 
