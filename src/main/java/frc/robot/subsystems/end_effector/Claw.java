@@ -7,6 +7,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -108,6 +109,10 @@ public class Claw extends SubsystemBase {
               // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
               //   this.currentState = ClawState.IDLE;
               // }
+              // transition to idle if in stow
+              if (RobotState.getSuperstructureState().isHandoffState()) {
+                this.currentState = ClawState.IDLE;
+              }
               break;
             case SCORING_L1:
               if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
