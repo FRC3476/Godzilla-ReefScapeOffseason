@@ -105,14 +105,13 @@ public class PathfindToPoseCommand extends Command {
 
       ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, omega);
 
-      drive.applyRequest(
-          () ->
-              robotSpeeds.withSpeeds(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      FieldUtils.isRedAlliance()
-                          ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
-                          : RobotState.getGlobalPose().getRotation())));
+      drive.setControl(
+          robotSpeeds.withSpeeds(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  FieldUtils.isRedAlliance()
+                      ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
+                      : RobotState.getGlobalPose().getRotation())));
 
       Logger.recordOutput(
           "Commands/" + getName() + "/xControllerAtSetpoint", xController.atSetpoint());
