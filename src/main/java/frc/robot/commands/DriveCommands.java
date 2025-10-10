@@ -72,7 +72,8 @@ public class DriveCommands {
     SwerveRequest.FieldCentric fieldCentricReq =
         new SwerveRequest.FieldCentric()
             // .withDeadband(
-            //     Constants.DriveConstants.kDriveMaxSpeed * 0.025) // Add a 5% deadband in open loop
+            //     Constants.DriveConstants.kDriveMaxSpeed * 0.025) // Add a 5% deadband in open
+            // loop
             // .withRotationalDeadband(
             //     Constants.DriveConstants.kDriveMaxAngularRate * Constants.kSteerJoystickDeadband)
             .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);

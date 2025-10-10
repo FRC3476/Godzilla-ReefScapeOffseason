@@ -899,9 +899,9 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureXboxBindings() {
 
-    // Lock to 0° when A button is held
+    // Lock to 0° when button is held
     controller
-        .a()
+        .b()
         .whileTrue(
             DriveCommands.driveAtAngle(
                 drive,
@@ -920,7 +920,7 @@ public class RobotContainer {
 
     // // Auto Align
     controller
-        .b()
+        .a()
         .whileTrue(
             new DriveToPosePIDCommand(
                 drive,
@@ -976,8 +976,8 @@ public class RobotContainer {
         .onTrue(
             superstructure
                 .setStateCommand(
-                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
-                .alongWith(claw.setClawStateCommand(ClawState.ALGAE)));
+                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim").asProxy()
+                .alongWith(claw.setClawStateCommand(ClawState.ALGAE)).asProxy());
 
     // Score position Aim
     controller
@@ -1051,16 +1051,16 @@ public class RobotContainer {
             .withInactiveConfig(tealConfig)
             .withActiveConfig(activeConfig)
             .withText("B");
-    StreamDeckButton AlgaeL2Button =
-        new StreamDeckButton(1, 6, "Algea L2")
-            .withInactiveConfig(tealConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L2");
-    StreamDeckButton AlgaeL1Button =
-        new StreamDeckButton(2, 6, "Algea L1")
-            .withInactiveConfig(tealConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L1");
+    // StreamDeckButton AlgaeL2Button =
+    //     new StreamDeckButton(1, 6, "Algea L2")
+    //         .withInactiveConfig(tealConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L2");
+    // StreamDeckButton AlgaeL1Button =
+    //     new StreamDeckButton(2, 6, "Algea L1")
+    //         .withInactiveConfig(tealConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L1");
     // the Processor is handled by ronny, seperate button
     StreamDeckButton AlgaeProcessorButton =
         new StreamDeckButton(3, 6, "Algea Processor")
@@ -1176,24 +1176,24 @@ public class RobotContainer {
 
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
-    customStreamDeckButtonMap.put(coralL4Button, () -> false);
-    customStreamDeckButtonMap.put(coralL3Button, () -> false);
-    customStreamDeckButtonMap.put(coralL2Button, () -> false);
-    customStreamDeckButtonMap.put(coralL1Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeBargeButton, () -> false);
-    customStreamDeckButtonMap.put(AlgaeL2Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeL1Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> false);
-    customStreamDeckButtonMap.put(ReefASideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefBSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefCSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefDSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefESideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefFSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefRightSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefRightSideButton2, () -> false);
-    customStreamDeckButtonMap.put(reefLeftSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefLeftSideButton2, () -> false);
+    customStreamDeckButtonMap.put(coralL4Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L4);
+    customStreamDeckButtonMap.put(coralL3Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L3);
+    customStreamDeckButtonMap.put(coralL2Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L2);
+    customStreamDeckButtonMap.put(coralL1Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L1);
+    customStreamDeckButtonMap.put(AlgaeBargeButton, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.BARGE);
+    // customStreamDeckButtonMap.put(AlgaeL2Button, () -> false);
+    // customStreamDeckButtonMap.put(AlgaeL1Button, () -> false);
+    customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.PROCESSOR);
+    customStreamDeckButtonMap.put(ReefASideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.A);
+    customStreamDeckButtonMap.put(ReefBSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.B);
+    customStreamDeckButtonMap.put(ReefCSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.C);
+    customStreamDeckButtonMap.put(ReefDSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.D);
+    customStreamDeckButtonMap.put(ReefESideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
+    customStreamDeckButtonMap.put(ReefFSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
+    customStreamDeckButtonMap.put(reefRightSideButton, () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(reefRightSideButton2, () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(reefLeftSideButton, () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(reefLeftSideButton2, () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
     customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton, climbDelpoyButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton2, climbDelpoyButtonCommand::isScheduled);
@@ -1231,8 +1231,8 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.BARGE)));
-    streamdeck.button(AlgaeL2Button).onTrue(Commands.none());
-    streamdeck.button(AlgaeL1Button).onTrue(Commands.none());
+    // streamdeck.button(AlgaeL2Button).onTrue(Commands.none());
+    // streamdeck.button(AlgaeL1Button).onTrue(Commands.none());
     streamdeck
         .button(AlgaeProcessorButton)
         .onTrue(
