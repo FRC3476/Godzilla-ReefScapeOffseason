@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -19,6 +20,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -48,6 +51,11 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
   private final StatusSignal<LinearAcceleration> accelerationX;
   private final StatusSignal<LinearAcceleration> accelerationY;
 
+  private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
+  private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
+
+  private boolean operatorPerspectiveApplied = false;
+
   private RobotState robotState_;
 
   public DriveIOHardware(
@@ -72,6 +80,21 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     this.getOdometryThread().setThreadPriority(99);
 
     registerTelemetry(telemetryConsumer_);
+  }
+
+  @Override
+  public void updateOperatorPerspective() {
+    if (!operatorPerspectiveApplied || DriverStation.isDisabled()) {
+      DriverStation.getAlliance()
+          .ifPresent(
+              allianceColor -> {
+                setOperatorPerspectiveForward(
+                    allianceColor == Alliance.Red
+                        ? kRedAlliancePerspectiveRotation
+                        : kBlueAlliancePerspectiveRotation);
+                operatorPerspectiveApplied = true;
+              });
+    }
   }
 
   public void resetOdometry(Pose2d pose) {

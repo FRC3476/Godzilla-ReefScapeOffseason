@@ -69,7 +69,7 @@ public final class Constants {
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
-  public static final double kSteerJoystickDeadband = 0.05;
+  public static final double kSteerJoystickDeadband = 0.012;
   public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
@@ -114,7 +114,7 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 6.0;
+    public static final double DRIVE_TO_POSE_KP = 12.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
@@ -150,6 +150,8 @@ public final class Constants {
 
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
+
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.65;
   }
 
   public static final class AutoConstants {

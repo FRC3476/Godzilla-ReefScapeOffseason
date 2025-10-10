@@ -26,8 +26,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
@@ -228,7 +230,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRightX() * Math.abs(controller.getRightX())));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
@@ -801,7 +803,7 @@ public class RobotContainer {
     NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
     NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
-    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Auto Align to Closest");
     NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
     NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
@@ -837,19 +839,22 @@ public class RobotContainer {
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
     // driveClockwiseTrigger.whileTrue(
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    driveToPoseTrigger.whileTrue(
-        new PathfindToPoseCommand(
-            drive,
-            () ->
-                PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
+
+    // driveToPoseTrigger.whileTrue(
+    //     new PathfindToPoseCommand(
+    //         drive,
+    //         () ->
+    //             PoseUtils.getPerpendicularOffsetPose(
+    //                 FieldConstants.redReefCD.rightPole.getPose(), 0.65)));
+
+    // FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     driveToOtherSideTrigger.whileTrue(
         new DriveToPosePIDCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.65)));
+                    FieldUtils.getClosestReefPole().getPose(), DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
 
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(

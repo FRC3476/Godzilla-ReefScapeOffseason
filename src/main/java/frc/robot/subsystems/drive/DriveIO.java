@@ -51,5 +51,7 @@ public interface DriveIO {
 
   default void addVisionMeasurement(VisionFieldPoseEstimate visionFieldPoseEstimate) {}
 
+  default void updateOperatorPerspective() {}
+
   default void setStateStdDevs(double xStd, double yStd, double rotStd) {}
 }

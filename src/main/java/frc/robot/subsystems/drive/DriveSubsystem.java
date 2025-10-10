@@ -136,6 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
     io.readInputs(inputs);
+    io.updateOperatorPerspective();
     telemetry.telemeterize(inputs);
     Logger.processInputs("DriveInputs", inputs);
     io.logModules(inputs);
