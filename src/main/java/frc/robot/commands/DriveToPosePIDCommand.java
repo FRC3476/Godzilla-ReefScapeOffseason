@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -38,6 +39,8 @@ public class DriveToPosePIDCommand extends Command {
 
   private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
+  private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
+
   public DriveToPosePIDCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
     this.drive = drive;
@@ -57,14 +60,19 @@ public class DriveToPosePIDCommand extends Command {
     Pose2d currentPose = RobotState.getGlobalPose();
     Pose2d targetPose = targetPoseSupplier.get();
 
+    double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+    double ffScaler =
+        MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
+
     double xError = currentPose.getX() - targetPose.getX();
     double yError = currentPose.getY() - targetPose.getY();
 
     double xSpeed = xController.calculate(FieldUtils.getFlipped() * xError, 0.0);
     double ySpeed = yController.calculate(FieldUtils.getFlipped() * yError, 0.0);
     double omega =
-        angleController.calculate(
-            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+        angleController.getSetpoint().velocity * ffScaler
+            + angleController.calculate(
+                currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
     ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, omega);
 

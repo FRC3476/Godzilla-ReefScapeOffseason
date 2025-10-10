@@ -127,18 +127,24 @@ public class DriveCommands {
                 DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SwerveRequest.FieldCentricFacingAngle facingAngle =
-        new SwerveRequest.FieldCentricFacingAngle()
-            .withHeadingPID(DriveConstants.ANGLE_KP, 0.0, DriveConstants.ANGLE_KD);
+    SwerveRequest.FieldCentric fieldCentric =
+        new SwerveRequest.FieldCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
     // Construct command
     return Commands.run(
         () -> {
+          double currentRotation = RobotState.getGlobalPose().getRotation().getRadians();
+          double targetRotation = rotationSupplier.get().getRadians();
+          double omega =
+              angleController.calculate(currentRotation, targetRotation)
+                  + angleController.getSetpoint().velocity;
+
           drive.setControl(
-              facingAngle
+              fieldCentric
                   .withVelocityX(xSupplier.getAsDouble() * Constants.DriveConstants.kDriveMaxSpeed)
                   .withVelocityY(ySupplier.getAsDouble() * Constants.DriveConstants.kDriveMaxSpeed)
-                  .withTargetDirection(rotationSupplier.get()));
+                  .withRotationalRate(omega));
         },
         drive);
   }
