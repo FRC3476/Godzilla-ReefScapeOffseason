@@ -87,11 +87,13 @@ public class RobotState extends MagicVirtualSubsystem {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel scoreLevel;
+    private AlgaeIntake algaeIntake;
 
     public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.scoreLevel = ScoreLevel.NONE;
+      this.algaeIntake = AlgaeIntake.NONE;
     }
 
     public ReefSide getReefSide() {
@@ -106,6 +108,10 @@ public class RobotState extends MagicVirtualSubsystem {
       return scoreLevel;
     }
 
+    public AlgaeIntake getAlgaeIntake() {
+      return algaeIntake;
+    }
+
     public void setReefSide(ReefSide reefSide) {
       this.reefSide = reefSide;
     }
@@ -116,6 +122,10 @@ public class RobotState extends MagicVirtualSubsystem {
 
     public void setScoreLevel(ScoreLevel scoreLevel) {
       this.scoreLevel = scoreLevel;
+    }
+
+    public void setAlgaeIntake(AlgaeIntake algaeIntake) {
+      this.algaeIntake = algaeIntake;
     }
   }
 
@@ -143,6 +153,9 @@ public class RobotState extends MagicVirtualSubsystem {
         return SuperstructureState.L4_AIM;
       case BARGE:
         // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
+        if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
+          return SuperstructureState.BARGE_AIM_FORWARD;
+        }
         return SuperstructureState.BARGE_AIM_BACKWARD;
       case PROCESSOR:
         // fadeawayState = SuperstructureState.NONE;
@@ -163,7 +176,7 @@ public class RobotState extends MagicVirtualSubsystem {
       case L4:
         return SuperstructureState.L4_FADEAWAY;
       case BARGE:
-        return SuperstructureState.BARGE_AIM_BACKWARD;
+        return SuperstructureState.BARGE_AIM_CENTER;
       case PROCESSOR:
         return SuperstructureState.STOW;
       default:
@@ -266,7 +279,14 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public SuperstructureState getAlgaeDescoreSuperstructureState() {
-    return algaeDescoreMap.get(FieldUtils.getClosestReef());
+    switch (storedScorePosition.getAlgaeIntake()) {
+      case L1_ALGAE:
+        return SuperstructureState.ALGAE_LOW_INTAKE;
+      case L2_ALGAE:
+        return SuperstructureState.ALGAE_HIGH_INTAKE;
+      default:
+        return algaeDescoreMap.get(FieldUtils.getClosestReef());
+    }
   }
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
