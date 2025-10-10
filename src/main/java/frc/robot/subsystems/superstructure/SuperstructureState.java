@@ -182,12 +182,12 @@ public enum SuperstructureState {
           L2_AWAY_FROM_REEF,
           L3_FADEAWAY,
           L3_AWAY_FROM_REEF,
-          ALGAE_LOW_INTAKE,
           PROCESSOR_AIM: // low out states
         return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
       case L4_AIM,
           L4_FADEAWAY,
           L4_AWAY_FROM_REEF,
+          ALGAE_LOW_INTAKE,
           ALGAE_HIGH_INTAKE,
           BARGE_AIM_BACKWARD: // high out states
         return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
@@ -211,7 +211,7 @@ public enum SuperstructureState {
   }
 
   public Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_AIM, L2_AWAY_FROM_REEF, ALGAE_LOW_INTAKE);
+    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_AIM, L2_AWAY_FROM_REEF);
   }
 
   public Set<SuperstructureState> highOutStates() {
@@ -223,7 +223,8 @@ public enum SuperstructureState {
         L4_FADEAWAY,
         L4_AIM,
         L4_AWAY_FROM_REEF,
-        BARGE_AIM_BACKWARD);
+        BARGE_AIM_BACKWARD,
+        ALGAE_LOW_INTAKE);
   }
 
   public Set<SuperstructureState> highInStates() {
