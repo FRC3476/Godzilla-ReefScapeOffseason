@@ -1297,6 +1297,7 @@ public class RobotContainer {
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
+        .and(streamdeck.button(manualClimbButton).negate())
         .onTrue(climbClimbButtonCommand);
     streamdeck
         .button(manualClimbButton)
