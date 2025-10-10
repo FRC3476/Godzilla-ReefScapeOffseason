@@ -432,8 +432,8 @@ public final class Constants {
                 * Math.PI); // Ratio between elevator units (here, inches for real bot) to motor
     // rotations
 
-    public static final double STALLED_CURRENT = 10;
-    public static final double STALLED_RPS = 10.0;
+    public static final double STALLED_CURRENT = 40;
+    public static final double STALLED_RPS = 2;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
@@ -450,7 +450,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ElevatorConstants.ELEVATOR_MOTOR_TO_SENSOR_RATIO))
+                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
@@ -467,18 +467,19 @@ public final class Constants {
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
-    public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 56.375; // max height
 
     // Homing sequence constants
     public static final double ELEVATOR_HOMING_VOLTAGE = -1; // Downward voltage for homing
     public static final double HOMING_TIMEOUT_SECONDS = 6.0; // Max time to allow for homing
 
     // Coral scoring heights
-    public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
+    public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH =
+        0; // 8.675; // 14.418111 + 2;
     public static final double ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH = 7.078988 + 1;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
-    public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785 + 2.5;
+    public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 24.79; // 30.029785 + 2.5;
     public static final double ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH = 23.003301 + 1;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 4;
@@ -543,18 +544,18 @@ public final class Constants {
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_ROTATIONS = Units.degreesToRotations(119.8473749);
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
-    public static final double MAX_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(35); // old value 53.9126895
-    public static final double MIN_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(-21); // old value -61.1115004
+    public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
+    public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
 
     // Pivot positions in rotations
-    public static final double IDLE_ANGLE_ROTATIONS = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+    public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
     public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
-    public static final double L2_L3_AGAINST_REEF_ANGLE_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+    public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
+        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
+    public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
+        Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883);
     public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS = Units.degreesToRotations(2);
@@ -562,8 +563,7 @@ public final class Constants {
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
-    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS =
-        EndEffectorConstants.MAX_ANGLE_ROTATIONS;
+    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
@@ -796,7 +796,7 @@ public final class Constants {
     public static double L2_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_AGAINST_REEF_ANGLE_ROTATIONS;
     public static double L2_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
@@ -805,7 +805,7 @@ public final class Constants {
     public static double L3_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L3_AGAINST_REEF_ANGLE_ROTATIONS;
     public static double L3_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
@@ -827,14 +827,14 @@ public final class Constants {
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
     public static double L3_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
     public static double L4_SCORE_ELEVATOR_HEIGHT_INCH =

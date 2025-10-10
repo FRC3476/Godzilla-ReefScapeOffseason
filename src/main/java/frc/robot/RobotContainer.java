@@ -18,8 +18,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -899,12 +897,7 @@ public class RobotContainer {
     cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  /** Use this method to define your button->command mappings. */
   private void configureXboxBindings() {
 
     // Lock to 0° when A button is held
@@ -916,13 +909,6 @@ public class RobotContainer {
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
-
-    controller
-        .leftTrigger()
-        .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.INTAKE)
-                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
     // // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -999,19 +985,26 @@ public class RobotContainer {
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
-        .whileTrue(
+        .onTrue(
             Commands.sequence(
-                // new PathfindToPoseCommand(
-                //     drive,
-                //     () ->
-                //         PoseUtils.getPerpendicularOffsetPose(
-                //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                // new WaitCommand(0.2),
-                claw.setClawStateCommand(ClawState.SCORING),
-                new WaitUntilCommand(
-                    () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE),
-                superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade"),
-                claw.setClawStateCommand(ClawState.IDLE)));
+                    // new PathfindToPoseCommand(
+                    //     drive,
+                    //     () ->
+                    //         PoseUtils.getPerpendicularOffsetPose(
+                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                    // new WaitCommand(0.2),
+                    Commands.print("scoring with claw"),
+                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                    new WaitUntilCommand(
+                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                        .withTimeout(3),
+                    Commands.print("coral is out"),
+                    superstructure
+                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                        .asProxy(),
+                    Commands.print("set to fadeaway: " + robotState.getFadeawayState().toString()),
+                    claw.setClawStateCommand(ClawState.IDLE))
+                .asProxy());
   }
 
   private void configureDriveStreamDeckBindings() {
@@ -1125,7 +1118,7 @@ public class RobotContainer {
             .withText("L");
     StreamDeckButton homeElevatorButton =
         new StreamDeckButton(2, 4, "Home Elevator")
-            .withInactiveConfig(tealOnWhiteConfig)
+            .withInactiveConfig(orangeOnWhiteConfig)
             .withActiveConfig(activeConfig)
             .withText("HE");
     StreamDeckButton zeroGyroButton =

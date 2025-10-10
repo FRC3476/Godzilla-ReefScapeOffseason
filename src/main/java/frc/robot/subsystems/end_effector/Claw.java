@@ -144,6 +144,7 @@ public class Claw extends SubsystemBase {
               }
               break;
             case SCORING:
+              System.out.println("running roller at " + (-rollerScoringVolts.get()));
               this.io.setRollerVoltage(-rollerScoringVolts.get());
               break;
             case SCORING_L1:
@@ -161,7 +162,7 @@ public class Claw extends SubsystemBase {
   }
 
   public Command setClawStateCommand(ClawState state) {
-    return Commands.runOnce(() -> this.currentState = state, this);
+    return Commands.runOnce(() -> currentState = state);
   }
 
   public Command rollerFWD() {
