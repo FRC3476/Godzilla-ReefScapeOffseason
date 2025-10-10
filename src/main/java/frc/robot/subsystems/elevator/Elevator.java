@@ -116,15 +116,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
-    setpoint = heightSupplier.getAsDouble();
-    return Commands.runOnce(
-        () ->
-            this.io.setElevatorTargetPosition(
-                MathUtil.clamp(
-                    heightSupplier.getAsDouble(),
-                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
-                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
-        this);
+    setpoint =
+        MathUtil.clamp(
+            heightSupplier.getAsDouble(),
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    return Commands.runOnce(() -> this.io.setElevatorTargetPosition(setpoint), this);
   }
 
   public Command waitUntilTargetPositionCommand() {

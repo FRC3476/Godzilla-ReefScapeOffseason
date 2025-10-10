@@ -1,11 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.util.FlippingUtil;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,10 +10,14 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Field.FieldUtils;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.util.pathplanner.auto.AutoBuilder;
+import frc.robot.util.pathplanner.path.PathConstraints;
+import frc.robot.util.pathplanner.util.FlippingUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -38,12 +37,20 @@ public class PathfindToPoseCommand extends Command {
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
-          new TrapezoidProfile.Constraints(8.0, DriveConstants.ANGLE_MAX_ACCELERATION));
+          new TrapezoidProfile.Constraints(
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
-  private final Drive drive;
+  private final DriveSubsystem drive;
   private Command pathfindCommand;
 
-  public PathfindToPoseCommand(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
+  private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+
+  static final double kPathfindSpeedScalingFactor = 0.8;
+  static final double kPathfindAccelScalingFactor = 0.8;
+  static final double kPathfindYAccelScalingFactor = 0.4;
+  static final double kPathfindAngularScalingFactor = 0.8;
+
+  public PathfindToPoseCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
@@ -55,7 +62,7 @@ public class PathfindToPoseCommand extends Command {
 
   @Override
   public void initialize() {
-    angleController.reset(drive.getRotation().getRadians());
+    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
     Logger.recordOutput("Odometry/Target Pathfinding Pose", FieldUtils.isRedAlliance());
     Pose2d pathfindingTarget = targetPoseSupplier.get();
     if (FieldUtils.isRedAlliance()) {
@@ -65,10 +72,16 @@ public class PathfindToPoseCommand extends Command {
         AutoBuilder.pathfindToPoseFlipped(
             pathfindingTarget,
             new PathConstraints(
-                TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-                DriveConstants.MAX_TRANSLATIONAL_ACCEL,
-                TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-                DriveConstants.MAX_ROTATIONAL_ACCEL),
+                Constants.DriveConstants.kDriveMaxSpeed * kPathfindSpeedScalingFactor,
+                Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared
+                    * kPathfindAccelScalingFactor,
+                Constants.DriveConstants.kDriveMaxAngularRate * kPathfindAngularScalingFactor,
+                Constants.DriveConstants.kMaxAngularSpeedRadiansPerSecondSquared
+                    * kPathfindAngularScalingFactor,
+                Constants.DriveConstants.kMaxXAccelerationMetersPerSecondSquared
+                    * kPathfindAccelScalingFactor,
+                Constants.DriveConstants.kMaxYAccelerationMetersPerSecondSquared
+                    * kPathfindYAccelScalingFactor),
             0.0);
     pathfindCommand.initialize();
   }
@@ -76,11 +89,13 @@ public class PathfindToPoseCommand extends Command {
   @Override
   public void execute() {
     if (pathfindCommand.isFinished()) {
-      Pose2d currentPose = drive.getPose();
+      Pose2d currentPose = RobotState.getGlobalPose();
       Pose2d targetPose = targetPoseSupplier.get();
 
       double xError = currentPose.getX() - targetPose.getX();
+      Logger.recordOutput("Commands/" + getName() + "/xError", xError);
       double yError = currentPose.getY() - targetPose.getY();
+      Logger.recordOutput("Commands/" + getName() + "/yError", yError);
 
       double xSpeed = xController.calculate(FieldUtils.getFlipped() * xError, 0.0);
       double ySpeed = yController.calculate(FieldUtils.getFlipped() * yError, 0.0);
@@ -90,23 +105,33 @@ public class PathfindToPoseCommand extends Command {
 
       ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, omega);
 
-      drive.runVelocity(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              speeds,
-              FieldUtils.isRedAlliance()
-                  ? drive.getRotation().plus(Rotation2d.k180deg)
-                  : drive.getRotation()));
+      drive.applyRequest(
+          () ->
+              robotSpeeds.withSpeeds(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      FieldUtils.isRedAlliance()
+                          ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
+                          : RobotState.getGlobalPose().getRotation())));
+
+      Logger.recordOutput(
+          "Commands/" + getName() + "/xControllerAtSetpoint", xController.atSetpoint());
+      Logger.recordOutput(
+          "Commands/" + getName() + "/yControllerAtSetpoint", yController.atSetpoint());
+      Logger.recordOutput(
+          "Commands/" + getName() + "/AngleAtSetpoint", angleController.atSetpoint());
     } else {
       pathfindCommand.execute();
-      angleController.reset(drive.getRotation().getRadians());
+      angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
     }
   }
 
   @Override
   public void end(boolean interrupt) {
+    pathfindCommand.end(true);
     xController.reset();
     yController.reset();
-    angleController.reset(drive.getRotation().getRadians());
+    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
   }
 
   @Override

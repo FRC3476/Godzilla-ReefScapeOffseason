@@ -25,8 +25,13 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drive.CompTunerConstants;
+import frc.robot.subsystems.drive.SimTunerConstants;
 import java.util.Arrays;
 
 /**
@@ -64,8 +69,27 @@ public final class Constants {
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
+  public static final double kSteerJoystickDeadband = 0.012;
+  public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
+  public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
+  public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
+    public static final boolean useMapleSim = false;
+    public static final double kDriveMaxSpeed = 3.6;
+
+    public static final double DRIVE_BASE_RADIUS =
+        Math.max(
+            Math.max(
+                Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
+                Math.hypot(
+                    TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY)),
+            Math.max(
+                Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
+                Math.hypot(
+                    TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
+
     // Acceleration limits
     // Large numnbers so they don't do anything.
     public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
@@ -90,13 +114,66 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 6.0;
+    public static final double DRIVE_TO_POSE_KP = 12.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
-    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KP = 20.0;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 15.0;
+    public static final double ANGLE_MAX_ACCELERATION = 30.0;
+
+    public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kMaxYAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kDriveMaxAngularRate = 8.2;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
+    public static final double kHeadingControllerP = 8.0;
+    public static final double kHeadingControllerI = 0;
+    public static final double kHeadingControllerD = 0;
+    public static final CommandSwerveDrivetrain kDrivetrain =
+        Robot.isSimulation()
+            ? SimTunerConstants.createDrivetrain()
+            : CompTunerConstants.createDrivetrain();
+    public static final double kRobotWeightPounds = 150.0;
+    public static final double kBumperLengthInches = 35.625;
+    public static final double kBumperWidthInches = 35.625;
+    public static final double kWheelCoefficientOfFriction = 1.0;
+    public static final int kDriveMotorCount = 1;
+
+    public static final double kDisabledDriveXStdDev = 1.0;
+    public static final double kDisabledDriveYStdDev = 1.0;
+    public static final double kDisabledDriveRotStdDev = 1.0;
+
+    public static final double kEnabledDriveXStdDev = 0.3;
+    public static final double kEnabledDriveYStdDev = 0.3;
+    public static final double kEnabledDriveRotStdDev = 0.2;
+
+    public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
+    public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
+
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.65;
+  }
+
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3.6;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.74;
+    public static final double kMaxAngularSpeedRadiansPerSecond = 6.5;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 31.538;
+
+    public static final double kPXYController = 5.0;
+    public static final double kPLTEController = 3.0;
+    public static final double kPCTEController = 6.0;
+    public static final double kPThetaController = 5.0;
+
+    public static final double kTranslationKa = 0.0;
+    public static final double kMaxEndPathVelocity = 2.0; // m/s
+
+    public static final double kTriggerTimeBeforeEnd = 0.8; // seconds
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   // ====================Feeder (2_)====================
@@ -401,7 +478,7 @@ public final class Constants {
         0; // 8.675; // 14.418111 + 2;
     public static final double ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH = 7.078988 + 1;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 24.79; // 30.029785 + 2.5;
     public static final double ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH = 23.003301 + 1;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =

@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Field.FieldUtils;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import java.util.function.Supplier;
 
 public class DriveToPosePIDCommand extends Command {
@@ -33,12 +32,13 @@ public class DriveToPosePIDCommand extends Command {
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-              DriveConstants.ANGLE_MAX_ACCELERATION));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
   private final Supplier<Pose2d> targetPoseSupplier;
-  private final Drive drive;
+  private final DriveSubsystem drive;
 
-  public DriveToPosePIDCommand(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
+  private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+
+  public DriveToPosePIDCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
@@ -49,12 +49,12 @@ public class DriveToPosePIDCommand extends Command {
 
   @Override
   public void initialize() {
-    angleController.reset(drive.getRotation().getRadians());
+    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
   }
 
   @Override
   public void execute() {
-    Pose2d currentPose = drive.getPose();
+    Pose2d currentPose = RobotState.getGlobalPose();
     Pose2d targetPose = targetPoseSupplier.get();
 
     double xError = currentPose.getX() - targetPose.getX();
@@ -68,19 +68,20 @@ public class DriveToPosePIDCommand extends Command {
 
     ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, omega);
 
-    drive.runVelocity(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            speeds,
-            FieldUtils.isRedAlliance()
-                ? drive.getRotation().plus(Rotation2d.k180deg)
-                : drive.getRotation()));
+    drive.setControl(
+        robotSpeeds.withSpeeds(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                speeds,
+                FieldUtils.isRedAlliance()
+                    ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
+                    : RobotState.getGlobalPose().getRotation())));
   }
 
   @Override
   public void end(boolean interrupt) {
     xController.reset();
     yController.reset();
-    angleController.reset(drive.getRotation().getRadians());
+    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
   }
 
   @Override
