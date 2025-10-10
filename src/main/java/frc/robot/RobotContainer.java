@@ -27,14 +27,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
@@ -852,7 +850,8 @@ public class RobotContainer {
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+                    FieldUtils.getClosestReefPole().getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
 
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(
@@ -993,17 +992,13 @@ public class RobotContainer {
                     //         PoseUtils.getPerpendicularOffsetPose(
                     //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
                     // new WaitCommand(0.2),
-                    Commands.print("scoring with claw"),
-                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                         .withTimeout(3),
-                    Commands.print("coral is out"),
                     superstructure
                         .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                         .asProxy(),
-                    Commands.print("set to fadeaway: " + robotState.getFadeawayState().toString()),
-                    claw.setClawStateCommand(ClawState.IDLE))
+                    claw.setClawStateCommand(ClawState.IDLE).asProxy())
                 .asProxy());
   }
 
@@ -1296,6 +1291,7 @@ public class RobotContainer {
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
+        .and(streamdeck.button(manualClimbButton).negate())
         .onTrue(climbClimbButtonCommand);
     streamdeck
         .button(manualClimbButton)

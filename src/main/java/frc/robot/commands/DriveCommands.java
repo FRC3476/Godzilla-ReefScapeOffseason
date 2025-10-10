@@ -36,6 +36,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -73,10 +74,10 @@ public class DriveCommands {
 
     SwerveRequest.FieldCentric fieldCentricReq =
         new SwerveRequest.FieldCentric()
-            .withDeadband(
-                Constants.DriveConstants.kDriveMaxSpeed * 0.05) // Add a 5% deadband in open loop
-            .withRotationalDeadband(
-                Constants.DriveConstants.kDriveMaxAngularRate * Constants.kSteerJoystickDeadband)
+            // .withDeadband(
+            //     Constants.DriveConstants.kDriveMaxSpeed * 0.05) // Add a 5% deadband in open loop
+            // .withRotationalDeadband(
+            //     Constants.DriveConstants.kDriveMaxAngularRate * Constants.kSteerJoystickDeadband)
             .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
     return Commands.run(
@@ -84,13 +85,16 @@ public class DriveCommands {
           // Square linear values for more precise control
           double xJoy = xSupplier.getAsDouble();
           double yJoy = ySupplier.getAsDouble();
+          xJoy = Util.handleDeadband(xJoy, 0.05);
+          yJoy = Util.handleDeadband(yJoy, 0.05);
           xJoy = Math.copySign(xJoy * xJoy, xJoy);
           yJoy = Math.copySign(yJoy * yJoy, yJoy);
 
-          // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          //   // Apply rotation deadband
+          //   double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square rotation value for more precise control
+          double omega = omegaSupplier.getAsDouble();
           omega = Math.copySign(omega * omega, omega);
 
           // Convert to field relative speeds & send command

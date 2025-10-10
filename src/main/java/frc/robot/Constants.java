@@ -654,8 +654,10 @@ public final class Constants {
 
     public static final int ID = 60;
 
-    public static final double CLIMB_DEPLOY_POSITION = 0.0;
-    public static final double CLIMB_CLIMB_POSITION = 0.0;
+    public static final double CLIMB_DEPLOY_POSITION = 65;
+    public static final double CLIMB_CLIMB_POSITION = 209;
+    public static final double CLIMB_DEPLOY_VOLTAGE = 3.5;
+    public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
 

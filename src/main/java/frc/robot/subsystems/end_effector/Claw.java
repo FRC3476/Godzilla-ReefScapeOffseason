@@ -144,7 +144,6 @@ public class Claw extends SubsystemBase {
               }
               break;
             case SCORING:
-              System.out.println("running roller at " + (-rollerScoringVolts.get()));
               this.io.setRollerVoltage(-rollerScoringVolts.get());
               break;
             case SCORING_L1:
