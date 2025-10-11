@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 15.632284768211921,
+        "y": 7.068646523178808
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.25586541156679,
+        "y": 5.48144467085643
+      },
+      "isLocked": false,
+      "linkedName": "RedProcessorIntake"
+    },
+    {
+      "anchor": {
+        "x": 13.925227649006622,
+        "y": 5.100082781456953
+      },
+      "prevControl": {
+        "x": 15.395447720400517,
+        "y": 6.790292729063236
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RP3E"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.54,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -125.00000000000001
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -125.00000000000001
+  },
+  "useDefaultConstraints": true
+}

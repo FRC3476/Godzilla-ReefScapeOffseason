@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RedProcessor6"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
