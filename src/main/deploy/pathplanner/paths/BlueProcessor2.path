@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.025681818181818,
-        "y": 2.7935085227272727
+        "x": 5.16528409090909,
+        "y": 2.4744176136363625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3105681818181814,
-        "y": 1.8661505681818176
+        "x": 4.692591059602649,
+        "y": 1.7440811258278144
       },
       "isLocked": false,
       "linkedName": "BP1E"
     },
     {
       "anchor": {
-        "x": 1.9245170454545453,
-        "y": 1.0285369318181814
+        "x": 3.3923220198675494,
+        "y": 1.9910596026490066
       },
       "prevControl": {
-        "x": 4.4971875,
-        "y": 2.4744176136363625
+        "x": 4.532781456953642,
+        "y": 1.9692673841059605
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "BlueProcessorIntake"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6590370955011837,
-      "rotationDegrees": 52.50000000000001
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
