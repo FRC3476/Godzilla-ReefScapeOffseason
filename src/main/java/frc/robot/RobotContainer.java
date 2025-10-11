@@ -1581,8 +1581,8 @@ public class RobotContainer {
     Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
     Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
     Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
-    Command intakeL1UpButtonCommand =
-        intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
+    // Command intakeL1UpButtonCommand =
+    //     intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
     Command intakeL1DownButtonCommand =
         intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
     Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");

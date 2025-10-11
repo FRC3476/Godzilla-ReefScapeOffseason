@@ -327,10 +327,6 @@ public class Intake extends SubsystemBase {
     io.setLvl1BlockerVoltage(-l1Volts.get());
   }
 
-  public Command disengageCoralL1StallCommand() {
-    return Commands.run(() -> disengageCoralL1Stall());
-  }
-
   public void disengageCoralL1Stall() {
     io.setLvl1BlockerVoltage(l1Volts.get());
   }

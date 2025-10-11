@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.util.Util;
 import java.util.EnumSet;
 import java.util.Set;
@@ -37,7 +39,8 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_ROTATIONS),
   L1_PIVOT(
       Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS),
+      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS,
+      (container) -> container.getIntake().setIntakeStateCommand(IntakeState.INTAKE_L1)),
   L2_AIM(
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
