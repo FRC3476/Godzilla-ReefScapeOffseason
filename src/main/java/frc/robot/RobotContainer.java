@@ -207,7 +207,7 @@ public class RobotContainer {
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-            .withTimeout(1.0));
+            .withTimeout(2.0));
 
     // RIGHT ALIGN
     NamedCommands.registerCommand(
@@ -218,7 +218,7 @@ public class RobotContainer {
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-            .withTimeout(1.0));
+            .withTimeout(2.0));
 
     NamedCommands.registerCommand("ConfirmScore", new Score(superstructure, claw, robotState));
 
