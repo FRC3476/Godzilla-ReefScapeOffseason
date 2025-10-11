@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BlueProcessor6"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.900807119205298,
+        "y": 2.8118998344370856
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.792130490608877,
+        "y": 1.839853782537227
+      },
+      "isLocked": false,
+      "linkedName": "BP5E"
+    },
+    {
+      "anchor": {
+        "x": 1.9245170454545453,
+        "y": 1.0285369318181814
+      },
+      "prevControl": {
+        "x": 2.787658016851838,
+        "y": 1.8451202288200244
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BlueProcessorIntake"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.54,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 55.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 55.0
+  },
+  "useDefaultConstraints": true
+}
