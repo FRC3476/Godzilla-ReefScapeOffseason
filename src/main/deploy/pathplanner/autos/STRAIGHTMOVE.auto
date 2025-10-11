@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "StraightMove1"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "STRAIGHTMOVE"
-                }
-              },
               {
                 "type": "named",
                 "data": {
