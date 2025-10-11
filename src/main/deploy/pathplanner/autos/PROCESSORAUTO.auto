@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BlueProcessor1"
+                  "pathName": "Processor1"
                 }
               },
               {
@@ -83,7 +83,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "BlueProcessor2"
+                        "pathName": "Processor2"
                       }
                     },
                     {
@@ -124,7 +124,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BlueProcessor3"
+                  "pathName": "Processor3"
                 }
               },
               {

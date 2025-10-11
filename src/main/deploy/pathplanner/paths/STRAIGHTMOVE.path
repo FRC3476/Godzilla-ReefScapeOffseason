@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 15.632284768211921,
-        "y": 7.068646523178808
+        "x": 7.598352272727272,
+        "y": 4.059900568181818
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.25586541156679,
-        "y": 5.48144467085643
+        "x": 6.5756976357650485,
+        "y": 4.055711227516843
       },
       "isLocked": false,
-      "linkedName": "RedProcessorIntake"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.169630681818182,
-        "y": 5.336264204545455
+        "x": 6.042784090909091,
+        "y": 4.059900568181818
       },
       "prevControl": {
-        "x": 15.639850753212077,
-        "y": 7.026474152151739
+        "x": 6.397660772581585,
+        "y": 4.069610273618132
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RP3E"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

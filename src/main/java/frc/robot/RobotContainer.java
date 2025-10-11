@@ -37,7 +37,6 @@ import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
@@ -201,7 +200,7 @@ public class RobotContainer {
     // LEFT ALIGN
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
-        new MagicDriveToPoseCommand(
+        new DriveToPosePIDCommand(
                 drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
