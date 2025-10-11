@@ -849,11 +849,21 @@ public class RobotContainer {
 
     driveToOtherSideTrigger.whileTrue(
         new DriveToPosePIDCommand(
-            drive,
-            () ->
-                PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(),
-                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+                drive,
+                () -> {
+                    Pose2d targetPose;
+                    switch (robotState.getStoredScorePosition().getCoralBranch()) {
+                        case LEFT:
+                            targetPose = FieldUtils.getClosestReef().leftPole.getPose();
+                        case RIGHT:
+                            targetPose = FieldUtils.getClosestReef().rightPole.getPose();
+                        default:
+                            targetPose = FieldUtils.getClosestReefPole().getPose();
+                    }
+                    return PoseUtils.getPerpendicularOffsetPose(
+                        targetPose,
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
+                }));
 
     resetPoseToVisionTrigger.onTrue(
         Commands.runOnce(
@@ -923,10 +933,20 @@ public class RobotContainer {
         .whileTrue(
             new DriveToPosePIDCommand(
                 drive,
-                () ->
-                    PoseUtils.getPerpendicularOffsetPose(
-                        FieldUtils.getClosestReefPole().getPose(),
-                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+                () -> {
+                    Pose2d targetPose;
+                    switch (robotState.getStoredScorePosition().getCoralBranch()) {
+                        case LEFT:
+                            targetPose = FieldUtils.getClosestReef().leftPole.getPose();
+                        case RIGHT:
+                            targetPose = FieldUtils.getClosestReef().rightPole.getPose();
+                        default:
+                            targetPose = FieldUtils.getClosestReefPole().getPose();
+                    }
+                    return PoseUtils.getPerpendicularOffsetPose(
+                        targetPose,
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
+                }));
 
     // controller
     //     .rightTrigger();
