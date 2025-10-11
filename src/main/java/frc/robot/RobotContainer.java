@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -37,6 +39,7 @@ import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
@@ -82,8 +85,6 @@ import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
-import frc.robot.util.pathplanner.auto.AutoBuilder;
-import frc.robot.util.pathplanner.auto.NamedCommands;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -200,7 +201,7 @@ public class RobotContainer {
     // LEFT ALIGN
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
-        new DriveToPosePIDCommand(
+        new MagicDriveToPoseCommand(
                 drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
@@ -211,7 +212,7 @@ public class RobotContainer {
     // RIGHT ALIGN
     NamedCommands.registerCommand(
         "FinalRightPoleAlign",
-        new DriveToPosePIDCommand(
+        new MagicDriveToPoseCommand(
                 drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
@@ -244,6 +245,12 @@ public class RobotContainer {
         "IsCoralInEndEffector",
         new WaitUntilCommand(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR));
+
+    // ====================PID DRIVE COMMANDS====================
+    // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new
+    // Pose2d(6.043, 4.060, Rotation2d.k180deg)));
+    // NamedCommands.registerCommand("DriveStraightBlue", new DriveToPosePIDCommand(PEND, PEND,
+    // PEND));
 
     // ============================================================================================================================================
 
@@ -1001,7 +1008,7 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            new DriveToPosePIDCommand(
+            new MagicDriveToPoseCommand(
                 drive,
                 () -> {
                   Pose2d targetPose;
