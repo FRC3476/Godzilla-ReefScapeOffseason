@@ -40,7 +40,7 @@ public class ElevatorIOSim extends ElevatorIOReal {
     rightSimState = rightTalon.getSimState();
     leftSimState = leftTalon.getSimState();
 
-    rightSimState.Orientation = ChassisReference.Clockwise_Positive;
+    rightSimState.Orientation = ChassisReference.CounterClockwise_Positive;
     leftSimState.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Set up a Notifier to periodically update the simulation
