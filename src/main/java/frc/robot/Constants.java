@@ -120,7 +120,7 @@ public final class Constants {
 
     public static final double ANGLE_KP = 4.5;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 15.0;
+    public static final double ANGLE_MAX_ACCELERATION = 25.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
@@ -151,7 +151,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.65;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.625;
   }
 
   public static final class AutoConstants {
@@ -492,8 +492,8 @@ public final class Constants {
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
 
     // Algae scoring heights
-    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
-    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
+    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161 - 1.5;
+    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558 - 1.5;
 
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
@@ -644,10 +644,10 @@ public final class Constants {
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
-            24); // distance from the center of the robot to the end of the end effector
+            12); // distance from the center of the robot to the end of the end effector
     public static final double MIN_STOW_CLEARANCE_METERS =
         Units.inchesToMeters(
-            24); // area around that point that would hit something on the end effector
+            12); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
@@ -703,7 +703,7 @@ public final class Constants {
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
@@ -715,7 +715,7 @@ public final class Constants {
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);

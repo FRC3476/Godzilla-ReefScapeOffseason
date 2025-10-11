@@ -166,7 +166,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Configure AutoBuilder last
     AutoBuilder.configure(
-        () -> RobotState.getGlobalPose(), // Robot pose supplier
+        () -> robotState.getLatestFieldToRobot().getValue(), // Robot pose supplier
         (pose) -> {
           resetOdometry(pose);
         }, // Method to reset odometry (will be called if your auto has a starting pose)
