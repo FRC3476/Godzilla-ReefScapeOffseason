@@ -81,4 +81,9 @@ public class ClimberIOReal implements ClimberIO {
         ClimbConstants.STALL_AMPS,
         ClimbConstants.STALL_VELOCITY);
   }
+
+  @Override
+  public void setZero() {
+    talon.setPosition(0.0);
+  }
 }

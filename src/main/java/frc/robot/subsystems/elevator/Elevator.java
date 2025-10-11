@@ -121,15 +121,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
-    setpoint = heightSupplier.getAsDouble();
-    return Commands.runOnce(
-        () ->
-            this.io.setElevatorTargetPosition(
-                MathUtil.clamp(
-                    heightSupplier.getAsDouble(),
-                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
-                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
-        this);
+    setpoint =
+        MathUtil.clamp(
+            heightSupplier.getAsDouble(),
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    return Commands.runOnce(() -> this.io.setElevatorTargetPosition(setpoint), this);
   }
 
   public Command waitUntilTargetPositionCommand() {
@@ -157,18 +154,20 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (isHomingComplete()) {
-      return false;
-    } else if (io.checkMotorsStalled()
-        && getCurrentPosition()
-            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
-                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
-      // false alarm, elevator is stalling at the top
-      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
-      return false;
-    } else {
-      return io.checkMotorsStalled();
-    }
+    return false; // disabling check for Jam since it's untested. At least the homing works now
+
+    // if (isHomingComplete()) {
+    //   return false;
+    // } else if (io.checkMotorsStalled()
+    //     && getCurrentPosition()
+    //         >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+    //             - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+    //   // false alarm, elevator is stalling at the top
+    //   setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    //   return false;
+    // } else {
+    //   return io.checkMotorsStalled();
+    // }
   }
 
   private boolean isHomingComplete() {

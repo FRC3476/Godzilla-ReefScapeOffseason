@@ -77,6 +77,8 @@ public class VisionIOHardwareLimelight implements VisionIO {
         }
 
         camera.standardDeviations = table.getEntry("stddevs").getDoubleArray(DEFAULT_STDDEVS);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        System.err.println("Limelight ArrayIndex error (don't print this): " + e.getMessage());
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }

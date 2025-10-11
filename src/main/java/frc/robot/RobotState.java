@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.Field.ReefFace;
@@ -84,11 +87,13 @@ public class RobotState extends MagicVirtualSubsystem {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel scoreLevel;
+    private AlgaeIntake algaeIntake;
 
     public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
       this.scoreLevel = ScoreLevel.NONE;
+      this.algaeIntake = AlgaeIntake.NONE;
     }
 
     public ReefSide getReefSide() {
@@ -103,6 +108,10 @@ public class RobotState extends MagicVirtualSubsystem {
       return scoreLevel;
     }
 
+    public AlgaeIntake getAlgaeIntake() {
+      return algaeIntake;
+    }
+
     public void setReefSide(ReefSide reefSide) {
       this.reefSide = reefSide;
     }
@@ -114,6 +123,10 @@ public class RobotState extends MagicVirtualSubsystem {
     public void setScoreLevel(ScoreLevel scoreLevel) {
       this.scoreLevel = scoreLevel;
     }
+
+    public void setAlgaeIntake(AlgaeIntake algaeIntake) {
+      this.algaeIntake = algaeIntake;
+    }
   }
 
   private ScorePosition storedScorePosition;
@@ -122,27 +135,30 @@ public class RobotState extends MagicVirtualSubsystem {
     return storedScorePosition;
   }
 
-  private SuperstructureState fadeawayState;
+  // private SuperstructureState fadeawayState;
 
   public SuperstructureState getSuperstructureScoreAimState() {
-    switch (getStoredScorePosition().getScoreLevel()) {
+    switch (storedScorePosition.getScoreLevel()) {
       case L1:
-        fadeawayState = SuperstructureState.NONE;
+        // fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.L1_PIVOT;
       case L2:
-        fadeawayState = SuperstructureState.L2_FADEAWAY;
+        // fadeawayState = SuperstructureState.L2_FADEAWAY;
         return SuperstructureState.L2_AIM;
       case L3:
-        fadeawayState = SuperstructureState.L3_FADEAWAY;
+        // fadeawayState = SuperstructureState.L3_FADEAWAY;
         return SuperstructureState.L3_AIM;
       case L4:
-        fadeawayState = SuperstructureState.L4_FADEAWAY;
+        // fadeawayState = SuperstructureState.L4_FADEAWAY;
         return SuperstructureState.L4_AIM;
       case BARGE:
-        fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
+        // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
+        if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
+          return SuperstructureState.BARGE_AIM_FORWARD;
+        }
         return SuperstructureState.BARGE_AIM_BACKWARD;
       case PROCESSOR:
-        fadeawayState = SuperstructureState.NONE;
+        // fadeawayState = SuperstructureState.NONE;
         return SuperstructureState.PROCESSOR_AIM;
       default:
         return SuperstructureState.NONE;
@@ -150,7 +166,22 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public SuperstructureState getFadeawayState() {
-    return fadeawayState;
+    switch (storedScorePosition.getScoreLevel()) {
+      case L1:
+        return SuperstructureState.STOW;
+      case L2:
+        return SuperstructureState.L2_FADEAWAY;
+      case L3:
+        return SuperstructureState.L3_FADEAWAY;
+      case L4:
+        return SuperstructureState.L4_FADEAWAY;
+      case BARGE:
+        return SuperstructureState.BARGE_AIM_CENTER;
+      case PROCESSOR:
+        return SuperstructureState.STOW;
+      default:
+        return SuperstructureState.NONE;
+    }
   }
 
   // public Pose2d getScoringPose(){
@@ -184,6 +215,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static Pose2d globalPose = Pose2d.kZero;
 
+  private static Pose2d visionPose;
+
   private static ReefTagTracker reefTracker = new ReefTagTracker();
   private static HPSTagTracker hpsTracker = new HPSTagTracker();
   private static BargeTagTracker bargeTracker = new BargeTagTracker();
@@ -206,7 +239,7 @@ public class RobotState extends MagicVirtualSubsystem {
     storedScorePosition = new ScorePosition();
     this.scoringMode = CoralScoringMode.MANUAL;
     algaeDescoreMap = new HashMap<ReefFace, SuperstructureState>();
-    fadeawayState = SuperstructureState.NONE;
+    // fadeawayState = SuperstructureState.NONE;
 
     // AB faces = HIGH
     algaeDescoreMap.put(FieldConstants.blueReefAB, SuperstructureState.ALGAE_HIGH_INTAKE);
@@ -246,7 +279,14 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public SuperstructureState getAlgaeDescoreSuperstructureState() {
-    return algaeDescoreMap.get(FieldUtils.getClosestReef());
+    switch (storedScorePosition.getAlgaeIntake()) {
+      case L1_ALGAE:
+        return SuperstructureState.ALGAE_LOW_INTAKE;
+      case L2_ALGAE:
+        return SuperstructureState.ALGAE_HIGH_INTAKE;
+      default:
+        return algaeDescoreMap.get(FieldUtils.getClosestReef());
+    }
   }
 
   private static List<TargetAngleTracker> autoAlignmentTrackers =
@@ -310,6 +350,16 @@ public class RobotState extends MagicVirtualSubsystem {
                 < 0.5);
   }
 
+  public static Trigger finishedBargeScoringForward() {
+    return new Trigger(
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_FORWARD && !hasAlgae());
+  }
+
+  public static Trigger finishedBargeScoringBackward() {
+    return new Trigger(
+        () -> getSuperstructureState() == SuperstructureState.BARGE_AIM_BACKWARD && !hasAlgae());
+  }
+
   public static TargetAngleTracker getClosestAlignmentTracker() {
     return autoAlignmentTrackers.stream()
         .reduce((a, b) -> a.getDistanceMeters() < b.getDistanceMeters() ? a : b)
@@ -328,6 +378,29 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static void setHasAlgae(boolean input) {
     hasAlgae = input;
+  }
+
+  @AutoLogOutput(key = "RobotState/Safe to Stow?")
+  public static boolean isSafeToStow() {
+    // imaginary position of end effector if extended as far as possible
+    Pose2d clearancePose =
+        getGlobalPose()
+            .plus(
+                new Transform2d(
+                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                    Rotation2d.kZero));
+    double distanceToLeft =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().leftPole.getPose())
+            .getTranslation()
+            .getNorm();
+    double distanceToRight =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().rightPole.getPose())
+            .getTranslation()
+            .getNorm();
+    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
   }
 
   public static final double LOOKBACK_TIME = 1.0;
@@ -547,7 +620,13 @@ public class RobotState extends MagicVirtualSubsystem {
   public void updateMegatagEstimate(VisionFieldPoseEstimate megatagEstimate) {
     lastUsedMegatagTimestamp = megatagEstimate.getTimestampSeconds();
     lastUsedMegatagPose = megatagEstimate.getVisionRobotPoseMeters();
+    visionPose = megatagEstimate.getVisionRobotPoseMeters();
+    Logger.recordOutput("RobotState/Vision Pose", visionPose);
     visionEstimateConsumer.accept(megatagEstimate);
+  }
+
+  public static Pose2d getVisionPose() {
+    return visionPose;
   }
 
   public double lastUsedMegatagTimestamp() {
@@ -633,8 +712,26 @@ public class RobotState extends MagicVirtualSubsystem {
     return exclusiveTag.get();
   }
 
+  public void setTrajectoryTargetPose(Pose2d pose) {
+    trajectoryTargetPose = Optional.of(pose);
+  }
+
+  public Optional<Pose2d> getTrajectoryTargetPose() {
+    return trajectoryTargetPose;
+  }
+
+  public void setTrajectoryCurrentPose(Pose2d pose) {
+    trajectoryCurrentPose = Optional.of(pose);
+  }
+
+  public Optional<Pose2d> getTrajectoryCurrentPose() {
+    return trajectoryCurrentPose;
+  }
+
   @Override
   public void periodic() {
+    updateGlobalPose(fieldToRobot.getLatest().getValue());
+
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(
@@ -644,7 +741,7 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
     Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
 
-    updateLogger();
+    // updateLogger();
 
     {
       reefTracker.update();

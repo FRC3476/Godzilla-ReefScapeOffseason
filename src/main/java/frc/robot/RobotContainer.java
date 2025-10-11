@@ -13,42 +13,39 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
+import frc.robot.RobotState.AlgaeIntake;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
-import frc.robot.commands.test.DrivetrainTest;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
 import frc.robot.subsystems.climb.ClimberIOReal;
 import frc.robot.subsystems.climb.ClimberIOSim;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveIOHardware;
+import frc.robot.subsystems.drive.DriveIOSim;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
@@ -70,6 +67,8 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.led.LedState;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
@@ -81,6 +80,7 @@ import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
+import frc.robot.util.pathplanner.auto.AutoBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -96,7 +96,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private final DriveSubsystem drive;
   private final Intake intake;
   private final EndEffector endEffector;
   private final Claw claw;
@@ -137,15 +137,12 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                robotState
-                // ,superstructure
-                );
+            new DriveSubsystem(
+                new DriveIOHardware(
+                    robotState,
+                    Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
+                    Constants.DriveConstants.kDrivetrain.getModuleConstants()),
+                robotState);
         break;
 
       case SIM:
@@ -159,15 +156,12 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight),
-                robotState
-                // ,superstructure
-                );
+            new DriveSubsystem(
+                new DriveIOSim(
+                    robotState,
+                    Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
+                    Constants.DriveConstants.kDrivetrain.getModuleConstants()),
+                robotState);
         break;
 
       default:
@@ -180,16 +174,7 @@ public class RobotContainer {
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                robotState
-                // ,superstructure
-                );
+        drive = new DriveSubsystem(new DriveIO() {}, robotState);
         break;
     }
 
@@ -197,25 +182,25 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
     //     "Drive Slip Current Characterization (Wall Test)",
     //     DriveCommands.slipCurrentCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+    // autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
 
     // Configure default commands for subsystems
     RegisterDefaultCommands();
@@ -245,7 +230,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX() / 2));
+            () -> -controller.getRightX() * Math.abs(controller.getRightX())));
     // elevator.setDefaultCommand(defaultElevatorCommand());
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
@@ -645,6 +630,9 @@ public class RobotContainer {
     NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
     NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
     NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry l2AwayFromReefEntry = superstructureTable.getEntry("L2_AWAY_FROM_REEF");
+    NetworkTableEntry l3AwayFromReefEntry = superstructureTable.getEntry("L3_AWAY_FROM_REEF");
+    NetworkTableEntry l4AwayFromReefEntry = superstructureTable.getEntry("L4_AWAY_FROM_REEF");
     NetworkTableEntry algaeHighIntakeEntry = superstructureTable.getEntry("ALGAE_HIGH_INTAKE");
     NetworkTableEntry algaeLowIntakeEntry = superstructureTable.getEntry("ALGAE_LOW_INTAKE");
     NetworkTableEntry processorAimEntry = superstructureTable.getEntry("PROCESSOR_AIM");
@@ -667,6 +655,9 @@ public class RobotContainer {
     l2ScoreEntry.setBoolean(false);
     l3ScoreEntry.setBoolean(false);
     l4ScoreEntry.setBoolean(false);
+    l2AwayFromReefEntry.setBoolean(false);
+    l3AwayFromReefEntry.setBoolean(false);
+    l4AwayFromReefEntry.setBoolean(false);
     algaeHighIntakeEntry.setBoolean(false);
     algaeLowIntakeEntry.setBoolean(false);
     processorAimEntry.setBoolean(false);
@@ -689,6 +680,9 @@ public class RobotContainer {
     Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
     Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
     Trigger l4ScoreTrigger = new Trigger(() -> l4ScoreEntry.getBoolean(false));
+    Trigger l2AwayFromReefTrigger = new Trigger(() -> l2AwayFromReefEntry.getBoolean(false));
+    Trigger l3AwayFromReefTrigger = new Trigger(() -> l3AwayFromReefEntry.getBoolean(false));
+    Trigger l4AwayFromReefTrigger = new Trigger(() -> l4AwayFromReefEntry.getBoolean(false));
     Trigger algaeHighIntakeTrigger = new Trigger(() -> algaeHighIntakeEntry.getBoolean(false));
     Trigger algaeLowIntakeTrigger = new Trigger(() -> algaeLowIntakeEntry.getBoolean(false));
     Trigger processorAimTrigger = new Trigger(() -> processorAimEntry.getBoolean(false));
@@ -753,6 +747,18 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.L4_AIM, "Set L4_SCORE")
             .andThen(() -> l4ScoreEntry.setBoolean(false)));
+    l2AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_SCORE")
+            .andThen(() -> l2AwayFromReefEntry.setBoolean(false)));
+    l3AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L3_AWAY_FROM_REEF, "Set L3_SCORE")
+            .andThen(() -> l3AwayFromReefEntry.setBoolean(false)));
+    l4AwayFromReefTrigger.onTrue(
+        superstructure
+            .setStateCommand(SuperstructureState.L4_AWAY_FROM_REEF, "Set L4_SCORE")
+            .andThen(() -> l4AwayFromReefEntry.setBoolean(false)));
     algaeHighIntakeTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.ALGAE_HIGH_INTAKE, "Set ALGAE_HIGH_INTAKE")
@@ -797,8 +803,9 @@ public class RobotContainer {
     NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
     NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
-    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Drive To Pose");
-    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Pathfind to Pose");
+    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Auto Align to Closest Pole");
+    NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
     driveFeedforwardEntry.setBoolean(false);
     driveSlipCurrentEntry.setBoolean(false);
@@ -808,6 +815,7 @@ public class RobotContainer {
     driveClockwiseEntry.setBoolean(false);
     driveToPoseEntry.setBoolean(false);
     driveToOtherSideEntry.setBoolean(false);
+    resetPoseToVisionEntry.setBoolean(false);
 
     Trigger driveFeedforwardTrigger = new Trigger(() -> driveFeedforwardEntry.getBoolean(false));
     Trigger driveSlipCurrentTrigger = new Trigger(() -> driveSlipCurrentEntry.getBoolean(false));
@@ -817,29 +825,44 @@ public class RobotContainer {
     Trigger driveClockwiseTrigger = new Trigger(() -> driveClockwiseEntry.getBoolean(false));
     Trigger driveToPoseTrigger = new Trigger(() -> driveToPoseEntry.getBoolean(false));
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
+    Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
-    driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
-    driveSlipCurrentTrigger.whileTrue(
-        Commands.print("running slip current test")
-            .andThen(DriveCommands.slipCurrentCharacterization(drive)));
-    driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
-    driveStopXTrigger.onTrue(
-        Commands.runOnce(drive::stopWithX, drive).andThen(() -> driveStopXEntry.setBoolean(false)));
-    driveForwardTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
-    driveClockwiseTrigger.whileTrue(
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
-    // driveToPoseTrigger.onTrue(DriveCommands.driveToPose(drive, new Pose2d(3, 4,
-    // Rotation2d.kZero)));
+    // driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
+    // driveSlipCurrentTrigger.whileTrue(
+    //     Commands.print("running slip current test")
+    //         .andThen(DriveCommands.slipCurrentCharacterization(drive)));
+    // driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
+    // driveStopXTrigger.onTrue(
+    //     Commands.runOnce(drive::stopWithX, drive).andThen(() ->
+    // driveStopXEntry.setBoolean(false)));
+    // driveForwardTrigger.whileTrue(
+    //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0.0, 0.0))));
+    // driveClockwiseTrigger.whileTrue(
+    //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
+
     driveToPoseTrigger.whileTrue(
-        DriveCommands.driveToPose(
+        new PathfindToPoseCommand(
             drive,
             () ->
                 PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReefPole().getPose(), 0.56)));
+                    FieldConstants.redReefCD.rightPole.getPose(), 0.65)));
+
+    // FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
     driveToOtherSideTrigger.whileTrue(
-        DriveCommands.driveToPose(drive, () -> new Pose2d(6, 4, Rotation2d.k180deg)));
+        new DriveToPosePIDCommand(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getClosestReefPole().getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+
+    resetPoseToVisionTrigger.onTrue(
+        Commands.runOnce(
+            () -> {
+              drive.resetOdometry(RobotState.getVisionPose());
+            },
+            drive));
   }
 
   private void buildClimberTab() {
@@ -877,44 +900,35 @@ public class RobotContainer {
     cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  /** Use this method to define your button->command mappings. */
   private void configureXboxBindings() {
 
-    // Lock to 0° when A button is held
+    // Lock to 0° when button is held
     controller
-        .a()
+        .b()
         .whileTrue(
             DriveCommands.driveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+                () ->
+                    -controller.getLeftY()
+                        * Math.abs(controller.getLeftY())
+                        * Constants.DriveConstants.kDriveMaxSpeed,
+                () ->
+                    -controller.getLeftX()
+                        * Math.abs(controller.getLeftX())
+                        * Constants.DriveConstants.kDriveMaxSpeed,
+                () -> FieldUtils.isRedAlliance() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg));
 
+    // // Auto Align
     controller
-        .leftTrigger()
-        .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.INTAKE)
-                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
-
-    // // Switch to X pattern when X button is pressed
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+        .a()
+        .whileTrue(
+            new DriveToPosePIDCommand(
+                drive,
+                () ->
+                    PoseUtils.getPerpendicularOffsetPose(
+                        FieldUtils.getClosestReefPole().getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
 
     // controller
     //     .rightTrigger();
@@ -939,10 +953,17 @@ public class RobotContainer {
         .onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
 
     // Superstructure Stow
-    controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
+    controller.povLeft().onTrue(
+        RobotState.hasAlgae() ? 
+        superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae") : superstructure.setStateCommand(SuperstructureState.STOW, "Stow") );
 
     // Intake Stow
-    controller.povRight().onTrue(intake.setIntakeStateCommand(IntakeState.STOW));
+    controller
+        .povRight()
+        .onTrue(
+            intake
+                .setIntakeStateCommand(IntakeState.STOW)
+                .alongWith(claw.setClawStateCommand(ClawState.IDLE)));
 
     // Intake ground coral
     controller
@@ -959,7 +980,9 @@ public class RobotContainer {
             superstructure
                 .setStateCommand(
                     () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
-                .alongWith(claw.setClawStateCommand(ClawState.ALGAE)));
+                .asProxy()
+                .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
+                .asProxy());
 
     // Score position Aim
     controller
@@ -973,9 +996,21 @@ public class RobotContainer {
         .rightTrigger(0.2) // check
         .onTrue(
             Commands.sequence(
-                claw.setClawStateCommand(ClawState.SCORING),
-                new WaitCommand(0.4),
-                superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")));
+                    // new PathfindToPoseCommand(
+                    //     drive,
+                    //     () ->
+                    //         PoseUtils.getPerpendicularOffsetPose(
+                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                    // new WaitCommand(0.2)
+                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                    new WaitUntilCommand(
+                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                        .withTimeout(3),
+                    superstructure
+                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                        .asProxy(),
+                    claw.setClawStateCommand(ClawState.IDLE).asProxy())
+                .asProxy());
   }
 
   private void configureDriveStreamDeckBindings() {
@@ -1089,7 +1124,7 @@ public class RobotContainer {
             .withText("L");
     StreamDeckButton homeElevatorButton =
         new StreamDeckButton(2, 4, "Home Elevator")
-            .withInactiveConfig(tealOnWhiteConfig)
+            .withInactiveConfig(orangeOnWhiteConfig)
             .withActiveConfig(activeConfig)
             .withText("HE");
     StreamDeckButton zeroGyroButton =
@@ -1146,24 +1181,50 @@ public class RobotContainer {
 
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
-    customStreamDeckButtonMap.put(coralL4Button, () -> false);
-    customStreamDeckButtonMap.put(coralL3Button, () -> false);
-    customStreamDeckButtonMap.put(coralL2Button, () -> false);
-    customStreamDeckButtonMap.put(coralL1Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeBargeButton, () -> false);
-    customStreamDeckButtonMap.put(AlgaeL2Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeL1Button, () -> false);
-    customStreamDeckButtonMap.put(AlgaeProcessorButton, () -> false);
-    customStreamDeckButtonMap.put(ReefASideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefBSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefCSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefDSideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefESideButton, () -> false);
-    customStreamDeckButtonMap.put(ReefFSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefRightSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefRightSideButton2, () -> false);
-    customStreamDeckButtonMap.put(reefLeftSideButton, () -> false);
-    customStreamDeckButtonMap.put(reefLeftSideButton2, () -> false);
+    customStreamDeckButtonMap.put(
+        coralL4Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L4);
+    customStreamDeckButtonMap.put(
+        coralL3Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L3);
+    customStreamDeckButtonMap.put(
+        coralL2Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L2);
+    customStreamDeckButtonMap.put(
+        coralL1Button, () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L1);
+    customStreamDeckButtonMap.put(
+        AlgaeBargeButton,
+        () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.BARGE);
+    customStreamDeckButtonMap.put(
+        AlgaeL2Button,
+        () -> robotState.getStoredScorePosition().getAlgaeIntake() == AlgaeIntake.L2_ALGAE);
+    customStreamDeckButtonMap.put(
+        AlgaeL1Button,
+        () -> robotState.getStoredScorePosition().getAlgaeIntake() == AlgaeIntake.L1_ALGAE);
+    customStreamDeckButtonMap.put(
+        AlgaeProcessorButton,
+        () -> robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.PROCESSOR);
+    customStreamDeckButtonMap.put(
+        ReefASideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.A);
+    customStreamDeckButtonMap.put(
+        ReefBSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.B);
+    customStreamDeckButtonMap.put(
+        ReefCSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.C);
+    customStreamDeckButtonMap.put(
+        ReefDSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.D);
+    customStreamDeckButtonMap.put(
+        ReefESideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
+    customStreamDeckButtonMap.put(
+        ReefFSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
+    customStreamDeckButtonMap.put(
+        reefRightSideButton,
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(
+        reefRightSideButton2,
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(
+        reefLeftSideButton,
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    customStreamDeckButtonMap.put(
+        reefLeftSideButton2,
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
     customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton, climbDelpoyButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton2, climbDelpoyButtonCommand::isScheduled);
@@ -1201,8 +1262,31 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.BARGE)));
-    streamdeck.button(AlgaeL2Button).onTrue(Commands.none());
-    streamdeck.button(AlgaeL1Button).onTrue(Commands.none());
+    streamdeck
+        .button(AlgaeL2Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  ScorePosition stored = robotState.getStoredScorePosition();
+                  if (stored.getAlgaeIntake() == AlgaeIntake.L2_ALGAE) {
+                    stored.setAlgaeIntake(AlgaeIntake.NONE);
+                  } else {
+                    stored.setAlgaeIntake(AlgaeIntake.L2_ALGAE);
+                  }
+                }));
+    streamdeck
+        .button(AlgaeL1Button)
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  ScorePosition stored = robotState.getStoredScorePosition();
+                  if (stored.getAlgaeIntake() == AlgaeIntake.L1_ALGAE) {
+                    stored.setAlgaeIntake(AlgaeIntake.NONE);
+                  } else {
+                    stored.setAlgaeIntake(AlgaeIntake.L1_ALGAE);
+                  }
+                }));
+
     streamdeck
         .button(AlgaeProcessorButton)
         .onTrue(
@@ -1267,6 +1351,7 @@ public class RobotContainer {
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
+        .and(streamdeck.button(manualClimbButton).negate())
         .onTrue(climbClimbButtonCommand);
     streamdeck
         .button(manualClimbButton)
@@ -1284,8 +1369,9 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                        drive.resetOdometry(
+                            new Pose2d(
+                                RobotState.getGlobalPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
 
@@ -1691,6 +1777,15 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+    // RobotState.finishedBargeScoringForward()
+    //     .onTrue(
+    //         superstructure.setStateCommand(
+    //             SuperstructureState.BARGE_AIM_CENTER, "Auto set BARGE_AIM_CENTER after
+    // scoring"));
+    // RobotState.finishedBargeScoringBackward()
+    //     .onTrue(
+    //         superstructure.setStateCommand(
+    //             SuperstructureState.STOW, "Auto set BARGE_AIM_CENTER after scoring"));
   }
 
   private void configureSuperstructureTrigger() {

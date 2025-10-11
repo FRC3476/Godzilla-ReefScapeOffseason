@@ -105,9 +105,9 @@ public class Claw extends SubsystemBase {
               break;
             case SCORING:
               // Transition to IDLE when coral is out of the end effector
-              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
-                this.currentState = ClawState.IDLE;
-              }
+              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+              //   this.currentState = ClawState.IDLE;
+              // }
               break;
             case SCORING_L1:
               if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
@@ -161,7 +161,7 @@ public class Claw extends SubsystemBase {
   }
 
   public Command setClawStateCommand(ClawState state) {
-    return Commands.runOnce(() -> this.currentState = state, this);
+    return Commands.runOnce(() -> currentState = state);
   }
 
   public Command rollerFWD() {
