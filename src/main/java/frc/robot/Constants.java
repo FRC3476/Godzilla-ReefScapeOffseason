@@ -242,6 +242,8 @@ public final class Constants {
     public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
     public static final double L1_BLOCKER_ENGAGED_STALL_VOLTAGE = -4;
     public static final double L1_BLOCKER_DISENGAGED_STALL_VOLTAGE = 1;
+    public static final double L1_BLOCKER_TORQUE_ENGAGE_AMPS = 5;
+    public static final double L1_BLOCKER_TORQUE_DISENGAGE_AMPS = 1;
 
     // Roller Voltages
     public static final double ROLLER_SCORING_OUT_VOLTS = -6.0;

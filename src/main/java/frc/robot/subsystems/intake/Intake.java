@@ -206,13 +206,13 @@ public class Intake extends SubsystemBase {
             case INTAKE_L1:
               this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
               this.io.setRollerVoltage(6.0);
-              engageCoralL1Stall();
+              engageCoralL1Torque();
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
             case INTAKE:
               this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
               this.io.setRollerVoltage(rollerIntakeVolts.get());
-              disengageCoralL1Stall();
+              disengageCoralL1Torque();
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
             case REJECT_CORAL:
@@ -227,13 +227,13 @@ public class Intake extends SubsystemBase {
             case SCORING:
               this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
               this.io.setRollerVoltage(IntakeConstants.ROLLER_SCORING_OUT_VOLTS);
-              engageCoralL1Stall();
+              engageCoralL1Torque();
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case SCORING_PREP:
               this.io.setPivotPosition(IntakeConstants.PIVOT_SCORING_POSITION);
               this.io.setRollerVoltage(0);
-              engageCoralL1Stall();
+              engageCoralL1Torque();
               feeder.setRollerVoltage(FeederConstants.FEEDER_STOP_VOLTS);
               break;
             case IDLE:
@@ -319,6 +319,15 @@ public class Intake extends SubsystemBase {
   public Command l1BarSTOP() {
     return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
   }
+
+  public void engageCoralL1Torque(){
+    io.setLvl1BlockerTorque(IntakeConstants.L1_BLOCKER_TORQUE_ENGAGE_AMPS);
+  }
+
+  public void disengageCoralL1Torque(){
+    io.setLvl1BlockerTorque(IntakeConstants.L1_BLOCKER_TORQUE_DISENGAGE_AMPS);
+  }
+
 
   public Command engageCoralL1StallCommand() {
     return Commands.run(() -> engageCoralL1Stall());
