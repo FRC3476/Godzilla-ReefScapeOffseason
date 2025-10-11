@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState.AlgaeIntake;
 import frc.robot.RobotState.CoralBranch;
@@ -35,6 +36,7 @@ import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
@@ -801,8 +803,8 @@ public class RobotContainer {
     NetworkTableEntry driveStopXEntry = driveTable.getEntry("Drive Stop X");
     NetworkTableEntry driveForwardEntry = driveTable.getEntry("Drive Forward");
     NetworkTableEntry driveClockwiseEntry = driveTable.getEntry("Drive Turn Clockwise");
-    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Auto Align to Closest");
-    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Drive To Other Side");
+    NetworkTableEntry driveToPoseEntry = driveTable.getEntry("Pathfind to Pose");
+    NetworkTableEntry driveToOtherSideEntry = driveTable.getEntry("Auto Align to Closest Pole");
     NetworkTableEntry resetPoseToVisionEntry = driveTable.getEntry("Reset Pose To Vision");
 
     driveFeedforwardEntry.setBoolean(false);
@@ -838,12 +840,12 @@ public class RobotContainer {
     // driveClockwiseTrigger.whileTrue(
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
 
-    // driveToPoseTrigger.whileTrue(
-    //     new PathfindToPoseCommand(
-    //         drive,
-    //         () ->
-    //             PoseUtils.getPerpendicularOffsetPose(
-    //                 FieldConstants.redReefCD.rightPole.getPose(), 0.65)));
+    driveToPoseTrigger.whileTrue(
+        new PathfindToPoseCommand(
+            drive,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldConstants.redReefCD.rightPole.getPose(), 0.65)));
 
     // FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
@@ -971,7 +973,9 @@ public class RobotContainer {
         .onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
 
     // Superstructure Stow
-    controller.povLeft().onTrue(superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
+    controller.povLeft().onTrue(
+        RobotState.hasAlgae() ? 
+        superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae") : superstructure.setStateCommand(SuperstructureState.STOW, "Stow") );
 
     // Intake Stow
     controller

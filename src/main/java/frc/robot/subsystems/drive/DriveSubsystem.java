@@ -184,8 +184,10 @@ public class DriveSubsystem extends SubsystemBase {
                 0.01));
 
     AutoBuilder.configure(
-        () -> robotState.getLatestFieldToRobot().getValue(),
-        (pose) -> {},
+        () -> RobotState.getGlobalPose(),
+        (pose) -> {
+          resetOdometry(pose);
+        },
         () -> robotState.getLatestFusedRobotRelativeChassisSpeed(),
         controller,
         robotConfig,
