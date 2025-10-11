@@ -1486,7 +1486,10 @@ public class RobotContainer {
     streamdeck
         .button(climbDeployButton)
         .and(streamdeck.button(climbDeployButton2))
-        .onTrue(climbDelpoyButtonCommand);
+        .onTrue(
+            Commands.parallel(
+            climbDelpoyButtonCommand, 
+            superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")));
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
