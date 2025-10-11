@@ -972,9 +972,9 @@ public class RobotContainer {
     controller
         .leftTrigger(0.2)
         .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.INTAKE)
-                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
+            (RobotState.getSuperstructureState() == SuperstructureState.L1_PIVOT) ? 
+            intake.setIntakeStateCommand(IntakeState.INTAKE_L1) : 
+            intake.setIntakeStateCommand(IntakeState.INTAKE).alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
 
     // ALGAE DESCORE PREP
     controller
@@ -1582,7 +1582,7 @@ public class RobotContainer {
     Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
     Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
     // Command intakeL1UpButtonCommand =
-    //     intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
+    //     intake.().withName("intakeL1UpButton");
     Command intakeL1DownButtonCommand =
         intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
     Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
@@ -1620,7 +1620,7 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(intakeOutButton, intakeOutButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
@@ -1693,7 +1693,7 @@ public class RobotContainer {
     streamdeck.button(intakeUpButton).onFalse(intakeUpButtonOffCommand);
     streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
     streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
-    streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
+    // streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
     streamdeck.button(intakeL1DownButton).whileTrue(intakeL1DownButtonCommand);
     streamdeck.button(feederInButton).whileTrue(feederInButtonCommand);
     streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);
