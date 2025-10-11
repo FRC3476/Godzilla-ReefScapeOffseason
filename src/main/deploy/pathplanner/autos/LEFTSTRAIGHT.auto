@@ -9,6 +9,18 @@
           "data": {
             "pathName": "LeftStraight"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SuperStructureStartup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStartup"
+          }
         }
       ]
     }
