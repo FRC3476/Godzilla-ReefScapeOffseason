@@ -54,6 +54,7 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO io, Feeder feeder) {
     this.io = io;
     this.feeder = feeder;
+    io.zeroLvl1Blocker();
   }
 
   @Override
@@ -204,7 +205,7 @@ public class Intake extends SubsystemBase {
               break;
             case INTAKE_L1:
               this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
-              this.io.setRollerVoltage(rollerIntakeVolts.get());
+              this.io.setRollerVoltage(6.0);
               engageCoralL1Stall();
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
@@ -324,11 +325,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void engageCoralL1Stall() {
-    io.setLvl1BlockerVoltage(-l1Volts.get());
+    io.setLvl1BlockerVoltage(IntakeConstants.L1_BLOCKER_ENGAGED_STALL_VOLTAGE);
   }
 
   public void disengageCoralL1Stall() {
-    io.setLvl1BlockerVoltage(l1Volts.get());
+    io.setLvl1BlockerVoltage(IntakeConstants.L1_BLOCKER_DISENGAGED_STALL_VOLTAGE);
   }
 
   public Command feederFWD() {

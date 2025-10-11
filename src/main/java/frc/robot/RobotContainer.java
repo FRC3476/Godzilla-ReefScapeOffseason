@@ -966,15 +966,28 @@ public class RobotContainer {
         .onTrue(
             intake
                 .setIntakeStateCommand(IntakeState.STOW)
-                .alongWith(claw.setClawStateCommand(ClawState.IDLE)));
+                .asProxy()
+                .alongWith(claw.setClawStateCommand(ClawState.IDLE).asProxy()));
 
     // Intake ground coral
     controller
         .leftTrigger(0.2)
         .onTrue(
-            (RobotState.getSuperstructureState() == SuperstructureState.L1_PIVOT) ? 
-            intake.setIntakeStateCommand(IntakeState.INTAKE_L1) : 
-            intake.setIntakeStateCommand(IntakeState.INTAKE).alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy(),
+                    intake
+                        .setIntakeStateCommand(IntakeState.INTAKE)
+                        .asProxy()
+                        .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()),
+                    () -> robotState.isL1Mode())
+                .asProxy()
+            // (robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L1)
+            //     ? intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy()
+            //     : intake
+            //         .setIntakeStateCommand(IntakeState.INTAKE)
+            //         .asProxy()
+            //         .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy())
+            );
 
     // ALGAE DESCORE PREP
     controller
@@ -991,28 +1004,43 @@ public class RobotContainer {
     controller
         .y()
         .onTrue(
-            superstructure.setStateCommand(
-                () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring"));
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy(),
+                    superstructure
+                        .setStateCommand(
+                            () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                        .asProxy(),
+                    () -> robotState.isL1Mode())
+                .asProxy());
 
+    controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
+    controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
+    controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            Commands.sequence(
-                    // new PathfindToPoseCommand(
-                    //     drive,
-                    //     () ->
-                    //         PoseUtils.getPerpendicularOffsetPose(
-                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                    // new WaitCommand(0.2)
-                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                    new WaitUntilCommand(
-                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                        .withTimeout(3),
-                    superstructure
-                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
+                    Commands.sequence(
+                            // new PathfindToPoseCommand(
+                            //     drive,
+                            //     () ->
+                            //         PoseUtils.getPerpendicularOffsetPose(
+                            //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                            // new WaitCommand(0.2)
+                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                            new WaitUntilCommand(
+                                    () ->
+                                        CoralStateTracker.getCurrentPosition()
+                                            == CoralPosition.NONE)
+                                .withTimeout(3),
+                            superstructure
+                                .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                                .asProxy(),
+                            claw.setClawStateCommand(ClawState.IDLE).asProxy())
                         .asProxy(),
-                    claw.setClawStateCommand(ClawState.IDLE).asProxy())
+                    () -> robotState.isL1Mode())
                 .asProxy());
   }
 

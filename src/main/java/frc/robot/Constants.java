@@ -238,11 +238,13 @@ public final class Constants {
         Units.degreesToRotations(65.7874127); // L1 scoring position
 
     // L1 Blocker Positions
-    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_POSITION = -0.44;
     public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_STALL_VOLTAGE = -4;
+    public static final double L1_BLOCKER_DISENGAGED_STALL_VOLTAGE = 1;
 
     // Roller Voltages
-    public static final double ROLLER_SCORING_OUT_VOLTS = 6.0;
+    public static final double ROLLER_SCORING_OUT_VOLTS = -6.0;
 
     public enum IntakeState {
       NONE,
@@ -295,7 +297,7 @@ public final class Constants {
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
-    public static final double lvl1blockerKP = 0.0; // Proportional gain
+    public static final double lvl1blockerKP = 80.0; // Proportional gain
     public static final double lvl1blockerKI = 0.0; // Integral gain
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 

@@ -135,6 +135,10 @@ public class RobotState extends MagicVirtualSubsystem {
     return storedScorePosition;
   }
 
+  public boolean isL1Mode() {
+    return storedScorePosition.getScoreLevel() == ScoreLevel.L1;
+  }
+
   // private SuperstructureState fadeawayState;
 
   public SuperstructureState getSuperstructureScoreAimState() {
@@ -736,6 +740,7 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(
         "StoredSuperstructureState/Score Level", storedScorePosition.getScoreLevel());
+    Logger.recordOutput("isL1Mode", isL1Mode());
     Logger.recordOutput(
         "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
