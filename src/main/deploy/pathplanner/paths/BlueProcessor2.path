@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.16528409090909,
-        "y": 2.4744176136363625
+        "x": 5.06025,
+        "y": 2.6502499999999998
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.692591059602649,
-        "y": 1.7440811258278144
+        "x": 4.758,
+        "y": 1.8214999999999997
       },
       "isLocked": false,
       "linkedName": "BP1E"
     },
     {
       "anchor": {
-        "x": 3.3923220198675494,
-        "y": 1.9910596026490066
+        "x": 3.0517499999999997,
+        "y": 1.7629999999999995
       },
       "prevControl": {
-        "x": 4.532781456953642,
-        "y": 1.9692673841059605
+        "x": 4.192209437086092,
+        "y": 1.7412077814569533
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -136.9838458994161
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 122.50000000000001
+    "rotation": -62.64790914836393
   },
   "useDefaultConstraints": true
 }

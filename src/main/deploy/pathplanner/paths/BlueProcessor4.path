@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.420255681818182,
-        "y": 2.6937926136363637
+        "x": 3.51975,
+        "y": 2.679499999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.33873661292101,
-        "y": 1.4390557174526861
+        "x": 3.17788214185631,
+        "y": 2.114792258605293
       },
       "isLocked": false,
       "linkedName": "BP3E"
     },
     {
       "anchor": {
-        "x": 3.3923220198675494,
-        "y": 1.9910596026490066
+        "x": 3.0517499999999997,
+        "y": 1.7629999999999995
       },
       "prevControl": {
-        "x": 4.038784233646009,
-        "y": 2.73679741041778
+        "x": 3.228860169709176,
+        "y": 2.0787512380542656
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -136.9838458994161
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -120.7984334439795
   },
   "useDefaultConstraints": true
 }

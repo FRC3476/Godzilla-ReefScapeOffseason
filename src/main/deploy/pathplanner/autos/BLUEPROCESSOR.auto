@@ -27,18 +27,6 @@
           "data": {
             "pathName": "BlueProcessor4"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BlueProcessor5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BlueProcessor6"
-          }
         }
       ]
     }

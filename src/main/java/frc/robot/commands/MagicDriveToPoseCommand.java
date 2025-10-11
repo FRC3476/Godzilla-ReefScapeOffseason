@@ -7,16 +7,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.util.PoseUtils;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
-public class DriveToPosePIDCommand extends Command {
+public class MagicDriveToPoseCommand extends Command {
   private final PIDController xController =
       new PIDController(
           DriveConstants.DRIVE_TO_POSE_KP,
@@ -34,58 +34,65 @@ public class DriveToPosePIDCommand extends Command {
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
               DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
+
   private final Supplier<Pose2d> targetPoseSupplier;
   private final DriveSubsystem drive;
 
   private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
-  public DriveToPosePIDCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
+  public MagicDriveToPoseCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
     addRequirements(drive);
+
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
-    xController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
-    yController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
-    angleController.setTolerance(Units.degreesToRadians(1.5));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-  }
-
-  @Override
-  public void initialize() {
-    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
   }
 
   @Override
   public void execute() {
-    Pose2d currentPose = RobotState.getGlobalPose();
-    Pose2d targetPose = targetPoseSupplier.get();
+    Pose2d robotPose = RobotState.getGlobalPose();
+    Pose2d originalPose2d = targetPoseSupplier.get();
+    Pose2d targetPose =
+        originalPose2d.rotateAround(originalPose2d.getTranslation(), Rotation2d.kPi);
 
-    double xError = currentPose.getX() - targetPose.getX();
-    double yError = currentPose.getY() - targetPose.getY();
+    Logger.recordOutput("Commands/" + getName() + "/targetPose", targetPose);
 
-    double xSpeed = xController.calculate(FieldUtils.getFlipped() * xError, 0.0);
-    double ySpeed = yController.calculate(FieldUtils.getFlipped() * yError, 0.0);
-    double omega =
-        angleController.calculate(
-            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+    Rotation2d desiredTheta = targetPose.getRotation().plus(Rotation2d.kPi);
 
-    ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, omega);
+    double perpendicularError = PoseUtils.getPerpendicularError(robotPose, targetPose);
+    Logger.recordOutput("Commands/" + getName() + "/PerpendicularError", perpendicularError);
 
-    drive.setControl(
-        robotSpeeds.withSpeeds(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                speeds,
-                FieldUtils.isRedAlliance()
-                    ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
-                    : RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg))));
+    double parallelError = PoseUtils.getParallelError(robotPose, targetPose);
+    Logger.recordOutput("Commands/" + getName() + "/ParallelError", parallelError);
+
+    double thetaError = robotPose.getRotation().minus(desiredTheta).getRadians();
+    Logger.recordOutput("Commands/" + getName() + "/ThetaError", thetaError);
+
+    double parallelSpeed = xController.calculate(-parallelError, 0);
+    parallelSpeed = !xController.atSetpoint() ? parallelSpeed : 0;
+
+    double perpendicularSpeed = yController.calculate(-perpendicularError, 0);
+    if (thetaError < 0.05) {
+      perpendicularSpeed = !yController.atSetpoint() ? perpendicularSpeed : 0;
+    } else {
+      perpendicularSpeed = 0;
+    }
+
+    double angularSpeed = angleController.calculate(thetaError, 0);
+    angularSpeed = !angleController.atSetpoint() ? angularSpeed : 0;
+
+    ChassisSpeeds speeds = new ChassisSpeeds(perpendicularSpeed, parallelSpeed, angularSpeed);
+
+    drive.setControl(robotSpeeds.withSpeeds(speeds));
   }
 
   @Override
   public void end(boolean interrupt) {
     xController.reset();
     yController.reset();
-    angleController.reset(RobotState.getGlobalPose().getRotation().getRadians());
+    angleController.reset(0);
   }
 
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return xController.atSetpoint() && yController.atSetpoint() && angleController.atSetpoint();

@@ -76,7 +76,7 @@ public final class Constants {
 
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
-    public static final boolean useMapleSim = false;
+    public static final boolean useMapleSim = true;
     public static final double kDriveMaxSpeed = 3.6;
 
     public static final double DRIVE_BASE_RADIUS =
@@ -118,9 +118,9 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
-    public static final double ANGLE_KP = 20.0;
+    public static final double ANGLE_KP = 4.5;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 30.0;
+    public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;

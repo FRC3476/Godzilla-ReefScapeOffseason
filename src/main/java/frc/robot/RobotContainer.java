@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -38,8 +37,9 @@ import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.Score;
+import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
+import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
@@ -84,6 +84,7 @@ import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
 import frc.robot.util.pathplanner.auto.AutoBuilder;
+import frc.robot.util.pathplanner.auto.NamedCommands;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -182,50 +183,70 @@ public class RobotContainer {
     }
 
     // ====================LOADING COMMANDS====================
-    NamedCommands.registerCommand("SuperStructureStartup", superstructure
-                                .setStateCommand(SuperstructureState.STOW, "STOW")
-                                .asProxy());
+    NamedCommands.registerCommand(
+        "SuperStructureStartup",
+        superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy());
 
-    NamedCommands.registerCommand("IntakeStartup", intake.setIntakeStateCommand(IntakeState.IDLE).asProxy());
+    NamedCommands.registerCommand(
+        "IntakeStartup", intake.setIntakeStateCommand(IntakeState.IDLE).asProxy());
 
-    NamedCommands.registerCommand("ScoreTargetStartup",
-                                new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L4)));
+    NamedCommands.registerCommand(
+        "ScoreTargetStartup",
+        new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L4)));
 
     // ====================SCORING COMMANDS====================
-    NamedCommands.registerCommand("AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
+    NamedCommands.registerCommand(
+        "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
 
     // LEFT ALIGN
-    NamedCommands.registerCommand("FinalLeftPoleAlign", new DriveToPosePIDCommand(drive, () ->
+    NamedCommands.registerCommand(
+        "FinalLeftPoleAlign",
+        new MagicDriveToPoseCommand(
+                drive,
+                () ->
                     PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReef().leftPole.getPose(),
-                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-                    .withTimeout(1.0));
+                        FieldUtils.getClosestReef().leftPole.getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+            .withTimeout(1.0));
 
     // RIGHT ALIGN
-    NamedCommands.registerCommand("FinalRightPoleAlign", new DriveToPosePIDCommand(drive, () ->
+    NamedCommands.registerCommand(
+        "FinalRightPoleAlign",
+        new DriveToPosePIDCommand(
+                drive,
+                () ->
                     PoseUtils.getPerpendicularOffsetPose(
-                    FieldUtils.getClosestReef().rightPole.getPose(),
-                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-                    .withTimeout(1.0));
-    
+                        FieldUtils.getClosestReef().rightPole.getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+            .withTimeout(1.0));
+
     NamedCommands.registerCommand("ConfirmScore", new Score(superstructure, claw, robotState));
 
-    NamedCommands.registerCommand("StowRobotState",
-                                    new WaitUntilCommand(() -> RobotState.isSafeToStow())
-                                    .andThen(superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy()));
+    NamedCommands.registerCommand(
+        "StowRobotState",
+        new WaitUntilCommand(() -> RobotState.isSafeToStow())
+            .andThen(superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy()));
 
     // ====================INTAKE COMMANDS====================
-    NamedCommands.registerCommand("IntakeEnable", intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
+    NamedCommands.registerCommand(
+        "IntakeEnable", intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
 
-    NamedCommands.registerCommand("DriveToCoral", DriveCommands.driveToCoral(drive, vision).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "DriveToCoral", DriveCommands.driveToCoral(drive, vision).withTimeout(3.0));
 
     // ====================CORAL TRACKING COMMANDS====================
-    NamedCommands.registerCommand("SeesCoral", new WaitUntilCommand(() -> vision.isCoralDetected()).withTimeout(3.0));
-    NamedCommands.registerCommand("IsCoralInFeeder", new WaitUntilCommand(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER));
-    NamedCommands.registerCommand("IsCoralInEndEffector", new WaitUntilCommand(
-                                        () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR));
+    NamedCommands.registerCommand(
+        "SeesCoral", new WaitUntilCommand(() -> vision.isCoralDetected()).withTimeout(3.0));
+    NamedCommands.registerCommand(
+        "IsCoralInFeeder",
+        new WaitUntilCommand(
+            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER));
+    NamedCommands.registerCommand(
+        "IsCoralInEndEffector",
+        new WaitUntilCommand(
+            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR));
 
-    //============================================================================================================================================
+    // ============================================================================================================================================
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

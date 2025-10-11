@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3923220198675494,
-        "y": 1.9910596026490066
+        "x": 3.0517499999999997,
+        "y": 1.7629999999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.672548822356308,
-        "y": 2.2593878587459773
+        "x": 3.331976802488758,
+        "y": 2.03132825609697
       },
       "isLocked": false,
       "linkedName": "BlueProcessorIntake"
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -136.9838458994161
   },
   "useDefaultConstraints": true
 }
