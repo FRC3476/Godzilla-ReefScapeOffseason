@@ -953,7 +953,7 @@ public class RobotContainer {
     // Superstructure Stow
     controller.povLeft().onTrue(
         RobotState.hasAlgae() ? 
-        superstructure.setStateCommand(SuperstructureState.STOW, "Stow") : superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae") );
+        superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae") : superstructure.setStateCommand(SuperstructureState.STOW, "Stow") );
 
     // Intake Stow
     controller
