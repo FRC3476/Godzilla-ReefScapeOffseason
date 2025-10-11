@@ -128,29 +128,27 @@ public enum SuperstructureState {
   public Command getAsTransitionCommand(RobotContainer container, SuperstructureState currentState) {
     if (commandSupplier == null) {
       return Commands.none();
-    } else if (lowInStates().contains(currentState)){
-      if (highOutStates().contains(this) || highInStates().contains(this)){
-        return this.getCommand(container).onlyWhile(() -> {
-          
-        });
+    } else if (lowInStates().contains(currentState)){ //low -> high
+        if (highOutStates().contains(this) || highInStates().contains(this)){
+          return this.getCommand(container).onlyWhile(() ->
+          //only be in transition if the elevator current position is less than the safe low amount
+            container.getElevator().getCurrentPosition() < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES 
+          );
       }
     } else if (highInStates().contains(currentState)){
-      if (lowInStates().contains(this) || lowOutStates().contains(this)){
-        return this.getCommand(container).onlyWhile(() -> {
-          
-        });
+        if (lowInStates().contains(this) || lowOutStates().contains(this)){
+          return this.getCommand(container).onlyWhile(() ->
+            container.getElevator().getCurrentPosition() < Constants.SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+          );
       }
     } else if (lowOutStates().contains(currentState)){
-      if (highInStates().contains(this)){
-        return this.getCommand(container).onlyWhile(() -> {
-          
-        });
+        if (highInStates().contains(this)){
+          return this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe());
       }
     } else if (highOutStates().contains(currentState)){
-      if (lowInStates().contains(this)){
-        return this.getCommand(container).onlyWhile(() -> {
-          
-        });
+        if (lowInStates().contains(this)){
+          return this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe()
+          );
       }
     }
     return this.getCommand(container);
@@ -193,13 +191,17 @@ public enum SuperstructureState {
       return EnumSet.of(STOW);
     } else if (lowInStates().contains(this)) {
       return Util.mergeSets(lowOutStates(), lowInStates());
-    } else if (lowOutStates().contains(this)) {
+    } 
+    else if (lowOutStates().contains(this)) {
       return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-    } else if (highOutStates().contains(this)) {
-          return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
-    } else if (highInStates().contains(this)) {
-          return Util.mergeSets(highOutStates(), highInStates());
+    } 
+    else if (highOutStates().contains(this)) {
+      return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
+    } 
+    else if (highInStates().contains(this)) {
+      return Util.mergeSets(highOutStates(), highInStates());
     }
+
     return EnumSet.noneOf(SuperstructureState.class);
   }
 
@@ -216,15 +218,20 @@ public enum SuperstructureState {
   }
 
   public Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_AIM, L2_AWAY_FROM_REEF);
+    return EnumSet.of(
+        PROCESSOR_AIM, 
+        L2_FADEAWAY, 
+        L2_AIM, 
+        L2_AWAY_FROM_REEF,
+        L3_AIM,
+        L3_FADEAWAY,
+        L3_AWAY_FROM_REEF
+      );
   }
 
   public Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
-        L3_AIM,
         ALGAE_HIGH_INTAKE,
-        L3_FADEAWAY,
-        L3_AWAY_FROM_REEF,
         L4_FADEAWAY,
         L4_AIM,
         L4_AWAY_FROM_REEF,

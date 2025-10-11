@@ -7,9 +7,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
+import frc.robot.util.Util;
+
+import java.lang.constant.Constable;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
+import com.google.flatbuffers.Constants;
 
 public class EndEffector extends SubsystemBase {
 
@@ -137,5 +142,9 @@ public class EndEffector extends SubsystemBase {
 
   public Command setPivotZero() {
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
+  }
+
+  public boolean isPivotSafe(){
+    return Util.inRange(pivotSetpoint, EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS, EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
   }
 }
