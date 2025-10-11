@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.util.Util;
 import java.util.EnumSet;
 import java.util.Set;
@@ -111,15 +113,41 @@ public enum SuperstructureState {
     return this.commandSupplier.apply(container);
   }
 
-  public Command getAsTransitionCommand(RobotContainer container) {
+
+  //we don't know the current state since the command is only telling superstructure where to aim to
+  //So we need to pass in the current state
+  public Command getAsTransitionCommand(RobotContainer container, SuperstructureState currentState) {
     if (commandSupplier == null) {
       return Commands.none();
+    } else if (lowInStates().contains(currentState)){
+      if (highOutStates().contains(this) || highInStates().contains(this)){
+        return this.getCommand(container).onlyWhile(() -> {
+          
+        });
+      }
+    } else if (highInStates().contains(currentState)){
+      if (lowInStates().contains(this) || lowOutStates().contains(this)){
+        return this.getCommand(container).onlyWhile(() -> {
+          
+        });
+      }
+    } else if (lowOutStates().contains(currentState)){
+      if (highInStates().contains(this)){
+        return this.getCommand(container).onlyWhile(() -> {
+          
+        });
+      }
+    } else if (highOutStates().contains(currentState)){
+      if (lowInStates().contains(this)){
+        return this.getCommand(container).onlyWhile(() -> {
+          
+        });
+      }
     }
-    return new ParallelCommandGroup(
-        container.getElevator().moveElevatorTransitionCommand(() -> this.getElevatorHeight()),
-        container
-            .getEndEffector()
-            .moveEndEffectorTransitionCommand(() -> this.getEndEffectorRotation()));
+    return this.getCommand(container);
+
+
+    
   }
 
   public boolean isCoralState() {
@@ -143,32 +171,18 @@ public enum SuperstructureState {
   // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
-    switch (this) {
-      case NONE:
-        return EnumSet.of(STOW);
-      case STOW,
-          STOW_CORAL,
-          STOW_ALGAE,
-          INTAKE_CORAL,
-          INTAKE_CORAL_L1,
-          FEED,
-          INTAKE_ALGAE_GROUND,
-          L1_PIVOT: // low in states
-        return Util.mergeSets(lowOutStates(), lowInStates());
-      case L2_AIM,
-          L3_AIM,
-          L2_FADEAWAY,
-          L3_FADEAWAY,
-          ALGAE_LOW_INTAKE,
-          PROCESSOR_AIM: // low out states
-        return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-      case L4_AIM, L4_FADEAWAY, ALGAE_HIGH_INTAKE, BARGE_AIM_BACKWARD: // high out states
-        return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
-      case BARGE_AIM_CENTER, BARGE_AIM_FORWARD:
-        return Util.mergeSets(highOutStates(), highInStates()); // high in states
-      default:
-        return EnumSet.noneOf(SuperstructureState.class);
+    if (this == NONE) {
+      return EnumSet.of(STOW);
+    } else if (lowInStates().contains(this)) {
+      return Util.mergeSets(lowOutStates(), lowInStates());
+    } else if (lowOutStates().contains(this)) {
+      return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
+    } else if (highOutStates().contains(this)) {
+          return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
+    } else if (highInStates().contains(this)) {
+          return Util.mergeSets(highOutStates(), highInStates());
     }
+    return EnumSet.noneOf(SuperstructureState.class);
   }
 
   public Set<SuperstructureState> lowInStates() {

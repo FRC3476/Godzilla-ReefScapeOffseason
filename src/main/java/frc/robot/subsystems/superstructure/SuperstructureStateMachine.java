@@ -345,7 +345,7 @@ public class SuperstructureStateMachine {
     Command moveCommand =
         stateManager.getCurrentState().equals(stateManager.getTargetState())
             ? stateManager.getCurrentTargetState().getCommand(container)
-            : stateManager.getCurrentTargetState().getAsTransitionCommand(container);
+            : stateManager.getCurrentTargetState().getAsTransitionCommand(container, getCurrentState());
 
     Command command = Commands.sequence(moveCommand, checkFinishedCommand);
     command.schedule();

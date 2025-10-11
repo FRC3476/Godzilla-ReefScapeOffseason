@@ -343,7 +343,6 @@ public final class Constants {
     public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
     public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 10;
 
-    public static final double ELEVATOR_SETPOINT_LARGE_TOLERANCE_INCH = 3;
 
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1
