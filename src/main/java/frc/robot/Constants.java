@@ -492,7 +492,7 @@ public final class Constants {
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
 
     // Algae scoring heights
-    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
+    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_I NCH = 30.907161;
     public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
 
     // Barge heights
@@ -637,7 +637,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 1;
     public static final double ROLLER_SCORING_VOLTS = 12;
     public static final double ROLLER_SCORING_L1_VOLTS = -6;
-    public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
