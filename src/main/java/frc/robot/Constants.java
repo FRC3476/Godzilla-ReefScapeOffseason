@@ -533,8 +533,8 @@ public final class Constants {
     public static final double PIVOT_STM = 4;
     public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 1000.0;
-    public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 40;
+    public static final double ROLLER_STALLED_RPS = 10;
 
     public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
     public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
