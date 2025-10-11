@@ -281,6 +281,11 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
+  public void zeroLvl1Blocker() {
+    lvl1blockerMotor.setPosition(0.0);
+  }
+
+  @Override
   public void updatePivotPIDFF(
       double kP,
       double kI,

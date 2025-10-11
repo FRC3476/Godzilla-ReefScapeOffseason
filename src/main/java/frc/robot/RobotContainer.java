@@ -1060,15 +1060,28 @@ public class RobotContainer {
         .onTrue(
             intake
                 .setIntakeStateCommand(IntakeState.STOW)
-                .alongWith(claw.setClawStateCommand(ClawState.IDLE)));
+                .asProxy()
+                .alongWith(claw.setClawStateCommand(ClawState.IDLE).asProxy()));
 
     // Intake ground coral
     controller
         .leftTrigger(0.2)
         .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.INTAKE)
-                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL)));
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy(),
+                    intake
+                        .setIntakeStateCommand(IntakeState.INTAKE)
+                        .asProxy()
+                        .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()),
+                    () -> robotState.isL1Mode())
+                .asProxy()
+            // (robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L1)
+            //     ? intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy()
+            //     : intake
+            //         .setIntakeStateCommand(IntakeState.INTAKE)
+            //         .asProxy()
+            //         .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy())
+            );
 
     // ALGAE DESCORE PREP
     controller
@@ -1085,28 +1098,43 @@ public class RobotContainer {
     controller
         .y()
         .onTrue(
-            superstructure.setStateCommand(
-                () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring"));
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy(),
+                    superstructure
+                        .setStateCommand(
+                            () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                        .asProxy(),
+                    () -> robotState.isL1Mode())
+                .asProxy());
 
+    controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
+    controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
+    controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            Commands.sequence(
-                    // new PathfindToPoseCommand(
-                    //     drive,
-                    //     () ->
-                    //         PoseUtils.getPerpendicularOffsetPose(
-                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                    // new WaitCommand(0.2)
-                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                    new WaitUntilCommand(
-                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                        .withTimeout(3),
-                    superstructure
-                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+            Commands.either(
+                    intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
+                    Commands.sequence(
+                            // new PathfindToPoseCommand(
+                            //     drive,
+                            //     () ->
+                            //         PoseUtils.getPerpendicularOffsetPose(
+                            //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                            // new WaitCommand(0.2)
+                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                            new WaitUntilCommand(
+                                    () ->
+                                        CoralStateTracker.getCurrentPosition()
+                                            == CoralPosition.NONE)
+                                .withTimeout(3),
+                            superstructure
+                                .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                                .asProxy(),
+                            claw.setClawStateCommand(ClawState.IDLE).asProxy())
                         .asProxy(),
-                    claw.setClawStateCommand(ClawState.IDLE).asProxy())
+                    () -> robotState.isL1Mode())
                 .asProxy());
   }
 
@@ -1689,8 +1717,8 @@ public class RobotContainer {
     Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
     Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
     Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
-    Command intakeL1UpButtonCommand =
-        intake.disengageCoralL1StallCommand().withName("intakeL1UpButton");
+    // Command intakeL1UpButtonCommand =
+    //     intake.().withName("intakeL1UpButton");
     Command intakeL1DownButtonCommand =
         intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
     Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
@@ -1728,7 +1756,7 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(intakeOutButton, intakeOutButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
+    // customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
@@ -1801,7 +1829,7 @@ public class RobotContainer {
     streamdeck.button(intakeUpButton).onFalse(intakeUpButtonOffCommand);
     streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
     streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
-    streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
+    // streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
     streamdeck.button(intakeL1DownButton).whileTrue(intakeL1DownButtonCommand);
     streamdeck.button(feederInButton).whileTrue(feederInButtonCommand);
     streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);

@@ -164,54 +164,42 @@ public enum SuperstructureState {
   // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
-    switch (this) {
-      case NONE:
-        return EnumSet.of(STOW);
-      case STOW,
-          STOW_CORAL,
-          STOW_ALGAE,
-          INTAKE_CORAL,
-          INTAKE_CORAL_L1,
-          FEED,
-          INTAKE_ALGAE_GROUND,
-          L1_PIVOT: // low in states
-        return Util.mergeSets(lowOutStates(), lowInStates());
-      case L2_AIM,
-          L3_AIM,
-          L2_FADEAWAY,
-          L2_AWAY_FROM_REEF,
-          L3_FADEAWAY,
-          L3_AWAY_FROM_REEF,
-          PROCESSOR_AIM: // low out states
-        return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-      case L4_AIM,
-          L4_FADEAWAY,
-          L4_AWAY_FROM_REEF,
-          ALGAE_LOW_INTAKE,
-          ALGAE_HIGH_INTAKE,
-          BARGE_AIM_BACKWARD: // high out states
-        return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
-      case BARGE_AIM_CENTER, BARGE_AIM_FORWARD:
-        return Util.mergeSets(highOutStates(), highInStates()); // high in states
-      default:
-        return EnumSet.noneOf(SuperstructureState.class);
+
+    if (this == NONE) {
+      return EnumSet.of(STOW);
+    } else if (lowInStates().contains(this)) { // low in states
+      return Util.mergeSets(lowOutStates(), lowInStates());
+    } else if (lowOutStates().contains(this)) { // low out states
+      return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
+    } else if (highOutStates().contains(this)) { // high out states
+      return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
+    } else if (highInStates().contains(this)) { // high in states
+      return Util.mergeSets(highOutStates(), highInStates());
     }
+    return EnumSet.of(NONE);
   }
 
   public Set<SuperstructureState> lowInStates() {
     return EnumSet.of(
         STOW,
-        STOW_ALGAE,
         STOW_CORAL,
+        STOW_ALGAE,
         INTAKE_CORAL,
         INTAKE_CORAL_L1,
         FEED,
-        L1_PIVOT,
-        INTAKE_ALGAE_GROUND);
+        INTAKE_ALGAE_GROUND,
+        L1_PIVOT);
   }
 
   public Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(PROCESSOR_AIM, L2_FADEAWAY, L2_AIM, L2_AWAY_FROM_REEF);
+    return EnumSet.of(
+        L2_AIM,
+        L3_AIM,
+        L2_FADEAWAY,
+        L2_AWAY_FROM_REEF,
+        L3_FADEAWAY,
+        L3_AWAY_FROM_REEF,
+        PROCESSOR_AIM);
   }
 
   public Set<SuperstructureState> highOutStates() {

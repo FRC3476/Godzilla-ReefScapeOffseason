@@ -52,6 +52,8 @@ public interface IntakeIO {
 
   default void updateInputs(IntakeIOInputs inputs) {}
 
+  default void zeroLvl1Blocker() {}
+
   default void setPivotVoltage(double voltage) {}
 
   default void setRollerVoltage(double voltage) {}
