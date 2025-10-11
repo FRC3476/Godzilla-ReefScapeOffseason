@@ -1107,9 +1107,9 @@ public class RobotContainer {
                     () -> robotState.isL1Mode())
                 .asProxy());
 
-    controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
-    controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
-    controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
+    // controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
+    // controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
+    // controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
@@ -1177,23 +1177,23 @@ public class RobotContainer {
             .withActiveConfig(activeConfig)
             .withText("L1");
     StreamDeckButton AlgaeBargeButton =
-        new StreamDeckButton(0, 6, "Algea Barge")
+        new StreamDeckButton(0, 6, "Algae Barge")
             .withInactiveConfig(tealConfig)
             .withActiveConfig(activeConfig)
             .withText("B");
     StreamDeckButton AlgaeL2Button =
-        new StreamDeckButton(1, 6, "Algea L2")
+        new StreamDeckButton(1, 6, "Algae L2")
             .withInactiveConfig(tealConfig)
             .withActiveConfig(activeConfig)
             .withText("L2");
     StreamDeckButton AlgaeL1Button =
-        new StreamDeckButton(2, 6, "Algea L1")
+        new StreamDeckButton(2, 6, "Algae L1")
             .withInactiveConfig(tealConfig)
             .withActiveConfig(activeConfig)
             .withText("L1");
     // the Processor is handled by ronny, seperate button
     StreamDeckButton AlgaeProcessorButton =
-        new StreamDeckButton(3, 6, "Algea Processor")
+        new StreamDeckButton(3, 6, "Algae Processor")
             .withInactiveConfig(tealConfig)
             .withActiveConfig(activeConfig)
             .withText("P");
@@ -1919,6 +1919,12 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+
+    //
+    Trigger autoStowAlgaeTrigger = new Trigger(() -> RobotState.hasAlgae() && RobotState.getSuperstructureState() == SuperstructureState.INTAKE_ALGAE_GROUND);
+    
+    autoStowAlgaeTrigger.debounce(0.2).onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
+    
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
     //         superstructure.setStateCommand(
