@@ -20,10 +20,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -1044,15 +1047,16 @@ public class RobotContainer {
         .leftBumper()
         // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
         // Processor"));
-        .onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
+        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
 
     // Superstructure Stow
     controller
         .povLeft()
         .onTrue(
-            RobotState.hasAlgae()
-                ? superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae")
-                : superstructure.setStateCommand(SuperstructureState.STOW, "Stow"));
+            Commands.either(
+                superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae"),
+                superstructure.setStateCommand(SuperstructureState.STOW, "Stow"),
+                () -> RobotState.hasAlgae()));
 
     // Intake Stow
     controller
@@ -1067,21 +1071,10 @@ public class RobotContainer {
     controller
         .leftTrigger(0.2)
         .onTrue(
-            Commands.either(
-                    intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy(),
-                    intake
-                        .setIntakeStateCommand(IntakeState.INTAKE)
-                        .asProxy()
-                        .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()),
-                    () -> robotState.isL1Mode())
+            intake
+                .setIntakeStateCommand(IntakeState.INTAKE)
                 .asProxy()
-            // (robotState.getStoredScorePosition().getScoreLevel() == ScoreLevel.L1)
-            //     ? intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy()
-            //     : intake
-            //         .setIntakeStateCommand(IntakeState.INTAKE)
-            //         .asProxy()
-            //         .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy())
-            );
+                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()));
 
     // ALGAE DESCORE PREP
     controller
@@ -1098,13 +1091,8 @@ public class RobotContainer {
     controller
         .y()
         .onTrue(
-            Commands.either(
-                    intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy(),
-                    superstructure
-                        .setStateCommand(
-                            () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
-                        .asProxy(),
-                    () -> robotState.isL1Mode())
+            superstructure
+                .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
                 .asProxy());
 
     // controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
@@ -1114,28 +1102,77 @@ public class RobotContainer {
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            Commands.either(
-                    intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
-                    Commands.sequence(
-                            // new PathfindToPoseCommand(
-                            //     drive,
-                            //     () ->
-                            //         PoseUtils.getPerpendicularOffsetPose(
-                            //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                            // new WaitCommand(0.2)
-                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                            new WaitUntilCommand(
-                                    () ->
-                                        CoralStateTracker.getCurrentPosition()
-                                            == CoralPosition.NONE)
-                                .withTimeout(3),
-                            superstructure
-                                .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
-                                .asProxy(),
-                            claw.setClawStateCommand(ClawState.IDLE).asProxy())
-                        .asProxy(),
-                    () -> robotState.isL1Mode())
-                .asProxy());
+            // Commands.either(
+            //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
+            Commands.sequence(
+                // new PathfindToPoseCommand(
+                //     drive,
+                //     () ->
+                //         PoseUtils.getPerpendicularOffsetPose(
+                //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                // new WaitCommand(0.2)
+                new ConditionalCommand(
+                    claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                    () -> robotState.isL1Mode()),
+                new WaitUntilCommand(
+                        () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                    .withTimeout(3),
+                superstructure
+                    .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                    .asProxy(),
+                claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                new ConditionalCommand(
+                        new WaitUntilCommand(() -> RobotState.isSafeToStow())
+                            .andThen(
+                                superstructure
+                                    .setStateCommand(SuperstructureState.STOW, "STOW")
+                                    .asProxy()),
+                        Commands.none(),
+                        () -> RobotState.getSuperstructureState().isCoralState())
+                    .asProxy())
+            // () -> robotState.isL1Mode())
+            // .asProxy()
+            );
+
+    // controller
+    //     .rightTrigger(0.2) // check
+    //     .onTrue(
+    //         Commands.either(
+    //             Commands.sequence(
+    //                 new ConditionalCommand(
+    //                     claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+    //                     claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+    //                     () -> robotState.isL1Mode()),
+    //                 new WaitUntilCommand(
+    //                         () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+    //                     .withTimeout(3),
+    //                 superstructure
+    //                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+    //                     .asProxy(),
+    //                 claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+
+    //                 new WaitUntilCommand(() -> RobotState.isSafeToStow()),
+    //                 superstructure
+    //                     .setStateCommand(SuperstructureState.STOW, "STOW")
+    //                     .asProxy()
+    //             ),
+    //             Commands.sequence(
+    //                 new ConditionalCommand(
+    //                     claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+    //                     claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+    //                     () -> robotState.isL1Mode()),
+    //                 new WaitUntilCommand(
+    //                         () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+    //                     .withTimeout(3),
+    //                 superstructure
+    //                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+    //                     .asProxy(),
+    //                 claw.setClawStateCommand(ClawState.IDLE).asProxy()
+    //             ),
+    //             () -> RobotState.getSuperstructureState().isCoralState()
+    //         )
+    //     );
   }
 
   private void configureDriveStreamDeckBindings() {
@@ -1488,8 +1525,8 @@ public class RobotContainer {
         .and(streamdeck.button(climbDeployButton2))
         .onTrue(
             Commands.parallel(
-            climbDelpoyButtonCommand, 
-            superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")));
+                climbDelpoyButtonCommand,
+                superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")));
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
@@ -1921,10 +1958,24 @@ public class RobotContainer {
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
 
     //
-    Trigger autoStowAlgaeTrigger = new Trigger(() -> RobotState.hasAlgae() && RobotState.getSuperstructureState() == SuperstructureState.INTAKE_ALGAE_GROUND);
-    
-    autoStowAlgaeTrigger.debounce(0.2).onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
-    
+    Trigger autoStowAlgaeTrigger =
+        new Trigger(
+            () ->
+                RobotState.hasAlgae()
+                    && RobotState.getSuperstructureState()
+                        == SuperstructureState.INTAKE_ALGAE_GROUND);
+
+    autoStowAlgaeTrigger
+        .debounce(0.2)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
+
+    Trigger hasAlgaeHaptics = new Trigger(() -> RobotState.hasAlgae());
+
+    hasAlgaeHaptics.whileTrue(
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
+            .andThen(new WaitCommand(0.5))
+            .andThen(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
+
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
     //         superstructure.setStateCommand(

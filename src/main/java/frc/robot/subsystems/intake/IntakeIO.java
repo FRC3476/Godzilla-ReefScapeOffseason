@@ -63,7 +63,7 @@ public interface IntakeIO {
   default void setPivotPosition(double positionRotations) {}
 
   default void setLvl1BlockerPosition(double positionRotations) {}
-  
+
   default void setLvl1BlockerTorque(double amps) {}
 
   default void updatePivotPIDFF(

@@ -23,6 +23,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -30,12 +36,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "StraightMove1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimL4"
                 }
               }
             ]

@@ -320,14 +320,13 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(() -> this.io.setLvl1BlockerVoltage(0));
   }
 
-  public void engageCoralL1Torque(){
+  public void engageCoralL1Torque() {
     io.setLvl1BlockerTorque(IntakeConstants.L1_BLOCKER_TORQUE_ENGAGE_AMPS);
   }
 
-  public void disengageCoralL1Torque(){
+  public void disengageCoralL1Torque() {
     io.setLvl1BlockerTorque(IntakeConstants.L1_BLOCKER_TORQUE_DISENGAGE_AMPS);
   }
-
 
   public Command engageCoralL1StallCommand() {
     return Commands.run(() -> engageCoralL1Stall());
