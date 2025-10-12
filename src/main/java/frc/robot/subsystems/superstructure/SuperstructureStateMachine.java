@@ -173,8 +173,12 @@ public class SuperstructureStateMachine {
    * @throws IllegalArgumentException if the state is not registered
    */
   public void setTargetState(SuperstructureState state) {
-    stateManager.setTargetState(state, registeredStates);
-    continueTransition();
+    if (RobotState.getSuperstructureManualOverrideMode()) {
+      setTargetState(state, true, true);
+    } else {
+      stateManager.setTargetState(state, registeredStates);
+      continueTransition();
+    }
   }
 
   /**

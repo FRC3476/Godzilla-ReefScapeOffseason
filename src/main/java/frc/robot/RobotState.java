@@ -231,6 +231,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static final SendableChooser<Integer> hasAlgaeOverride = new SendableChooser<>();
 
+  private static boolean superstructureManualOverrideMode = false;
+
   public RobotState(Consumer<VisionFieldPoseEstimate> visionEstimateConsumer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
@@ -300,6 +302,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static void offerVisionObservation(PoseObservation observation) {
     RobotState.poseObservations.offer(observation);
+  }
+
+  public static boolean getSuperstructureManualOverrideMode() {
+    return superstructureManualOverrideMode;
+  }
+
+  public static void toggleSuperstructureManualOverrideMode() {
+    superstructureManualOverrideMode = !superstructureManualOverrideMode;
   }
 
   public static Queue<PoseObservation> getVisionObservations() {
