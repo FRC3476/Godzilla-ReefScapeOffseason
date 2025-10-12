@@ -227,7 +227,7 @@ public final class Constants {
     public static final int CANRANGE_ID = 34;
 
     // Setpoints
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(1.5);
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
@@ -424,8 +424,7 @@ public final class Constants {
 
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
-    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 0.5;
 
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1
@@ -515,11 +514,11 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
-    public static final double Tunable_PIVOT_kP = 35;
+    public static final double Tunable_PIVOT_kP = 70;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 0.5;
+    public static final double Tunable_PIVOT_kD = 1;
     public static final double Tunable_PIVOT_kG = 0.615;
-    public static final double Tunable_PIVOT_kS = 0.135;
+    public static final double Tunable_PIVOT_kS = 0.35;
 
     public static final double Tunable_PIVOT_Velo = 1000;
     public static final double Tunable_PIVOT_Accel = 12;
@@ -540,8 +539,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_RPS = 10;
 
     public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
-    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(2.5);
 
     // ========End Effector Constant Positions========
     // Standardized angle constants with RADIAN suffix
@@ -636,7 +634,7 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 1;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 2;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;

@@ -25,7 +25,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AimL4"
+            "name": "AimL1"
           }
         },
         {
@@ -39,12 +39,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalRightPoleAlign"
           }
         },
         {

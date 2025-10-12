@@ -102,12 +102,6 @@ public class Elevator extends SubsystemBase {
         setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
-  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
-  public boolean isInToleranceTransition() {
-    return MathUtil.isNear(
-        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
-  }
-
   public double getTargetPosition() {
     return setpoint;
   }
@@ -128,10 +122,6 @@ public class Elevator extends SubsystemBase {
 
   public Command waitUntilTargetPositionCommand() {
     return Commands.waitUntil(() -> isInToleranceSetpoint());
-  }
-
-  public Command waitUntilTransitionPositionCommand() {
-    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {

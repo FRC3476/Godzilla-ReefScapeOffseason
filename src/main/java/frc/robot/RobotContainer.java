@@ -195,11 +195,11 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "ScoreTargetStartup",
-        new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L4)));
+        new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L1)));
 
     // ====================SCORING COMMANDS====================
     NamedCommands.registerCommand(
-        "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
+        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
 
     // LEFT ALIGN
     NamedCommands.registerCommand(
@@ -1329,7 +1329,8 @@ public class RobotContainer {
             .withActiveForeground(LedState.kYellow.toString())
             .withText("MO");
 
-    Command homeElevatorButtonCommand = elevator.manualHomeElevator().withName("homeElevatorButton");
+    Command homeElevatorButtonCommand =
+        elevator.manualHomeElevator().withName("homeElevatorButton");
     Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");

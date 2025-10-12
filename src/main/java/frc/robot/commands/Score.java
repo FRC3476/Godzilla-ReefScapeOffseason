@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
@@ -21,7 +22,10 @@ public class Score extends SequentialCommandGroup {
   public Score(Superstructure superstructure, Claw claw, RobotState robotState) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
-        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+        new ConditionalCommand(
+            claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+            () -> robotState.isL1Mode()),
         new WaitUntilCommand(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
             .withTimeout(3),
         superstructure.setStateCommand(() -> robotState.getFadeawayState(), "Aim fade").asProxy(),
