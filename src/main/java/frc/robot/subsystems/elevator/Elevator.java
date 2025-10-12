@@ -79,7 +79,9 @@ public class Elevator extends SubsystemBase {
           elevatorAccel.get(),
           elevatorJerk.get());
     }
-
+    Logger.recordOutput(
+        "Elevator/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }

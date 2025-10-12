@@ -1945,6 +1945,7 @@ public class RobotContainer {
         .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
 
     Trigger hasAlgaeHaptics = new Trigger(() -> RobotState.hasAlgae());
+    Trigger hasCoralHaptics = new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
 
     hasAlgaeHaptics.onTrue(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
@@ -1952,6 +1953,14 @@ public class RobotContainer {
             .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
 
     hasAlgaeHaptics.onFalse(
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
+
+    hasCoralHaptics.onTrue(
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
+            .andThen(new WaitCommand(0.5))
+            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+
+    hasCoralHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
     // RobotState.finishedBargeScoringForward()

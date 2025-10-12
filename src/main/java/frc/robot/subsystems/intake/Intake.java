@@ -85,6 +85,9 @@ public class Intake extends SubsystemBase {
           pivotVelo.get(),
           pivotAccel.get(),
           pivotJerk.get());
+      Logger.recordOutput(
+          "Intake/currentCommand",
+          (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
     }
 
     Logger.recordOutput(

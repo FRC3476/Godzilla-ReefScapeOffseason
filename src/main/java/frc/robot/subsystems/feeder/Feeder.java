@@ -27,6 +27,9 @@ public class Feeder extends SubsystemBase {
 
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(
+        "Feeder/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
   }
 
   public boolean isCoralInFeeder() {

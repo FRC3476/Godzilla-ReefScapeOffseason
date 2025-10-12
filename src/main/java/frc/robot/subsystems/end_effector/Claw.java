@@ -55,6 +55,9 @@ public class Claw extends SubsystemBase {
 
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(
+        "Claw/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
   }
 
   public void setRollerVoltage(double voltage) {

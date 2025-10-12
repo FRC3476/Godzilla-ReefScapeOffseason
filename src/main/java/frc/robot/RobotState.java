@@ -755,6 +755,7 @@ public class RobotState extends MagicVirtualSubsystem {
         "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
     Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
+    Logger.recordOutput("SuperstructureManualOverride", getSuperstructureManualOverrideMode());
 
     // updateLogger();
 

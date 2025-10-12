@@ -199,7 +199,7 @@ public class SuperstructureStateMachine {
     stateManager.setTargetState(state, registeredStates);
 
     if (!DriverStation.isAutonomous() && wipeFuture) {
-      stateManager.clearCurrentTargetState();
+      stateManager.forceSetCurrentTargetState(state);
     }
 
     continueTransition();
@@ -273,7 +273,8 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineInitial");
     command.schedule();
   }
 
@@ -348,7 +349,8 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineExecute");
     command.schedule();
   }
 
@@ -478,8 +480,8 @@ public class SuperstructureStateMachine {
       currentTargetStateTime = Timer.getFPGATimestamp();
     }
 
-    public void clearCurrentTargetState() {
-      currentTargetState = null;
+    public void forceSetCurrentTargetState(SuperstructureState state) {
+      currentTargetState = state;
     }
 
     public SuperstructureState getFutureDesiredState() {
