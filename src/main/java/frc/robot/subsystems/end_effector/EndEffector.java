@@ -77,6 +77,9 @@ public class EndEffector extends SubsystemBase {
 
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(
+        "EndEffector/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
   }
 
   public double getCurrentPivotPosition() {

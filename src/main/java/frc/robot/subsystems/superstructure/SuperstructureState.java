@@ -16,6 +16,9 @@ import java.util.function.Function;
 
 public enum SuperstructureState {
   NONE(),
+  CLIMB(
+      Constants.SuperstructureConstants.CLIMB_ENDEFFECTOR_SAFE_ROTATIONS,
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS),
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -166,6 +169,9 @@ public enum SuperstructureState {
           L2_AIM,
           L3_AIM,
           L4_AIM,
+          L2_FADEAWAY,
+          L3_FADEAWAY,
+          L4_FADEAWAY,
           L2_AWAY_FROM_REEF,
           L3_AWAY_FROM_REEF,
           L4_AWAY_FROM_REEF:
@@ -187,47 +193,42 @@ public enum SuperstructureState {
   // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {
-    
-      if (this == NONE){
-        return EnumSet.of(STOW);
-      }
-      else if (lowInStates().contains(this)){ // low in states
-        return Util.mergeSets(lowOutStates(), lowInStates());
-      }
-      else if (lowOutStates().contains(this)){ // low out states
-        return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
-      }
-      else if (highOutStates().contains(this)){// high out states
-        return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
-      }
-      else if (highInStates().contains(this)){// high in states
-        return Util.mergeSets(highOutStates(), highInStates()); 
-      }
-      return EnumSet.of(NONE);
+
+    if (this == NONE) {
+      return EnumSet.of(STOW);
+    } else if (lowInStates().contains(this)) { // low in states
+      return Util.mergeSets(lowOutStates(), lowInStates());
+    } else if (lowOutStates().contains(this)) { // low out states
+      return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
+    } else if (highOutStates().contains(this)) { // high out states
+      return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
+    } else if (highInStates().contains(this)) { // high in states
+      return Util.mergeSets(highOutStates(), highInStates());
+    }
+    return EnumSet.of(NONE);
   }
 
   public Set<SuperstructureState> lowInStates() {
     return EnumSet.of(
-      STOW,
-      STOW_CORAL,
-      STOW_ALGAE,
-      INTAKE_CORAL,
-      INTAKE_CORAL_L1,
-      FEED,
-      INTAKE_ALGAE_GROUND,
-      L1_PIVOT);
+        STOW,
+        STOW_CORAL,
+        STOW_ALGAE,
+        INTAKE_CORAL,
+        INTAKE_CORAL_L1,
+        FEED,
+        INTAKE_ALGAE_GROUND,
+        L1_PIVOT);
   }
 
   public Set<SuperstructureState> lowOutStates() {
     return EnumSet.of(
-      L2_AIM,
-      L3_AIM,
-      L2_FADEAWAY,
-      L2_AWAY_FROM_REEF,
-      L3_FADEAWAY,
-      L3_AWAY_FROM_REEF,
-      PROCESSOR_AIM
-      );
+        L2_AIM,
+        L3_AIM,
+        L2_FADEAWAY,
+        L2_AWAY_FROM_REEF,
+        L3_FADEAWAY,
+        L3_AWAY_FROM_REEF,
+        PROCESSOR_AIM);
   }
 
   public Set<SuperstructureState> highOutStates() {

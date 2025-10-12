@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -23,6 +24,7 @@ public class Vision extends SubsystemBase {
   private final VisionIO io;
   private final RobotState state;
   private final VisionIO.VisionIOInputs inputs = new VisionIO.VisionIOInputs();
+  private final Debouncer debouce = new Debouncer(0.25);
 
   private boolean useVision = true;
 
@@ -32,7 +34,7 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isCoralDetected() {
-    return io.isCoralDetected();
+    return debouce.calculate(io.isCoralDetected());
   }
 
   public double getCoralTx() {
