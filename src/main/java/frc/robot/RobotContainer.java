@@ -1320,8 +1320,8 @@ public class RobotContainer {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("AS");
-    
-    StreamDeckButton manualOverrideButton = 
+
+    StreamDeckButton manualOverrideButton =
         new StreamDeckButton(3, 0, "Manual Override")
             .withInactiveBackground(LedState.kOff.toString())
             .withInactiveForeground(LedState.kWhite.toString())
@@ -1388,7 +1388,8 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
-    customStreamDeckButtonMap.put(manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
+    customStreamDeckButtonMap.put(
+        manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
 
     streamdeck.configureCustomButtons(customStreamDeckButtonMap);
 
@@ -1550,9 +1551,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
     streamdeck
         .button(manualOverrideButton)
-        .onTrue(
-            Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode())
-        );
+        .onTrue(Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode()));
 
     // manualClimbOffButtonCommand
 
@@ -1952,7 +1951,8 @@ public class RobotContainer {
             .andThen(new WaitCommand(0.5))
             .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
 
-    hasAlgaeHaptics.onFalse(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
+    hasAlgaeHaptics.onFalse(
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
