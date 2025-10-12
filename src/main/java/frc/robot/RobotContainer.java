@@ -405,16 +405,12 @@ public class RobotContainer {
     Trigger intakeScoringPosTrigger = new Trigger(() -> intakeScoringPosEntry.getBoolean(false));
     Trigger intakeZeroPosTrigger = new Trigger(() -> intakeZeroPosEntry.getBoolean(false));
 
-    Trigger l1BarUpTrigger = new Trigger(() -> l1BarUpEntry.getBoolean(false));
-    Trigger l1BarDownTrigger = new Trigger(() -> l1BarDownEntry.getBoolean(false));
-
     Trigger feederInTrigger = new Trigger(() -> feederForwardEntry.getBoolean(false));
     Trigger feederOutTrigger = new Trigger(() -> feederReverseEntry.getBoolean(false));
 
     // Create triggers for intake state buttons
     Trigger intakeStateStowTrigger = new Trigger(() -> intakeStateStowEntry.getBoolean(false));
-    Trigger intakeStateIntakeL1Trigger =
-        new Trigger(() -> intakeStateIntakeL1Entry.getBoolean(false));
+
     Trigger intakeStateIntakeTrigger = new Trigger(() -> intakeStateIntakeEntry.getBoolean(false));
     Trigger intakeStateRejectCoralTrigger =
         new Trigger(() -> intakeStateRejectCoralEntry.getBoolean(false));
@@ -440,12 +436,6 @@ public class RobotContainer {
     intakeDownTrigger.whileTrue(intake.pivotManualTestReverse());
     intakeDownTrigger.onFalse(intake.pivotStop());
 
-    l1BarUpTrigger.whileTrue(intake.l1BarFWD());
-    l1BarUpTrigger.onFalse(intake.l1BarSTOP());
-
-    l1BarDownTrigger.whileTrue(intake.l1BarRVS());
-    l1BarDownTrigger.onFalse(intake.l1BarSTOP());
-
     feederInTrigger.whileTrue(intake.feederFWD());
     feederInTrigger.onFalse(intake.feederSTOP());
 
@@ -466,10 +456,6 @@ public class RobotContainer {
         intake
             .setIntakeStateCommand(IntakeState.STOW)
             .andThen(() -> intakeStateStowEntry.setBoolean(false)));
-    intakeStateIntakeL1Trigger.onTrue(
-        intake
-            .setIntakeStateCommand(IntakeState.INTAKE_L1)
-            .andThen(() -> intakeStateIntakeL1Entry.setBoolean(false)));
     intakeStateIntakeTrigger.onTrue(
         intake
             .setIntakeStateCommand(IntakeState.INTAKE)
@@ -1596,16 +1582,6 @@ public class RobotContainer {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("INT Down");
-    StreamDeckButton intakeL1UpButton =
-        new StreamDeckButton(3, 0, "Intake L1Up")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("INT L1Up");
-    StreamDeckButton intakeL1DownButton =
-        new StreamDeckButton(3, 1, "Intake L1Down")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("INT L1Down");
     StreamDeckButton feederInButton =
         new StreamDeckButton(2, 0, "Feeder In ")
             .withInactiveConfig(orangeConfig)
@@ -1616,16 +1592,6 @@ public class RobotContainer {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("FEED Out ");
-    StreamDeckButton intakePosUpButton =
-        new StreamDeckButton(0, 2, "Intake PosUp")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("INT PosUp");
-    StreamDeckButton intakePosDownButton =
-        new StreamDeckButton(2, 2, "Intake PosDown")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("INT PosDown");
     StreamDeckButton intakePosScoreButton =
         new StreamDeckButton(1, 2, "Intake PosScore")
             .withInactiveConfig(orangeConfig)
@@ -1759,8 +1725,6 @@ public class RobotContainer {
     Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
     // Command intakeL1UpButtonCommand =
     //     intake.().withName("intakeL1UpButton");
-    Command intakeL1DownButtonCommand =
-        intake.engageCoralL1StallCommand().withName("intakeL1DownButton");
     Command feederInButtonCommand = intake.feederFWD().withName("feederInButton");
     Command feederInButtonOffCommand = intake.feederSTOP().withName("feederInButtonOff");
     Command feederOutButtonCommand = intake.feederRVS().withName("feederOutButton");
@@ -1797,7 +1761,6 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
     // customStreamDeckButtonMap.put(intakeL1UpButton, intakeL1UpButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(intakeL1DownButton, intakeL1DownButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederInButton, feederInButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(feederOutButton, feederOutButtonCommand::isScheduled);
     // customStreamDeckButtonMap.put(intakePosUpButton, intakePosUpButtonCommand::isScheduled);
@@ -1870,7 +1833,6 @@ public class RobotContainer {
     streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
     streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
     // streamdeck.button(intakeL1UpButton).whileTrue(intakeL1UpButtonCommand);
-    streamdeck.button(intakeL1DownButton).whileTrue(intakeL1DownButtonCommand);
     streamdeck.button(feederInButton).whileTrue(feederInButtonCommand);
     streamdeck.button(feederInButton).onFalse(feederInButtonOffCommand);
     streamdeck.button(feederOutButton).whileTrue(feederOutButtonCommand);

@@ -251,7 +251,6 @@ public final class Constants {
     public enum IntakeState {
       NONE,
       STOW,
-      INTAKE_L1,
       INTAKE,
       REJECT_CORAL,
       IDLE,
