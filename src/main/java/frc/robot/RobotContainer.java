@@ -1329,7 +1329,7 @@ public class RobotContainer {
             .withActiveForeground(LedState.kYellow.toString())
             .withText("MO");
 
-    Command homeElevatorButtonCommand = elevator.homeElevator().withName("homeElevatorButton");
+    Command homeElevatorButtonCommand = elevator.manualHomeElevator().withName("homeElevatorButton");
     Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");

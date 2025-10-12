@@ -180,6 +180,15 @@ public class Elevator extends SubsystemBase {
     return false;
   }
 
+  private boolean isManualHomingComplete() {
+    if (io.checkMotorsStalled()) {
+      io.setElevatorZero();
+      isZeroed = true;
+      return true;
+    }
+    return false;
+  }
+
   public Command manualSetElevatorZero() {
     isZeroed = true;
     return Commands.runOnce(() -> io.setElevatorZero(), this);
@@ -201,6 +210,15 @@ public class Elevator extends SubsystemBase {
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
         .withName("HomeElevator");
+  }
+  /** Command to home the elevator by running it slowly downward until it zeros. */
+  public Command manualHomeElevator() {
+    return Commands.run(
+            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+        .until(() -> isManualHomingComplete())
+        .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
+        .finallyDo(() -> this.io.setElevatorVoltage(0.0))
+        .withName("ManualHomeElevator");
   }
 
   public Trigger elevatorObjectTrigger =

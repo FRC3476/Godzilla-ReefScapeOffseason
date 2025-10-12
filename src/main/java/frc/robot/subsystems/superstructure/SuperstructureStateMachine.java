@@ -127,6 +127,10 @@ public class SuperstructureStateMachine {
     precomputeAllPaths();
   }
 
+  public void hardSetIsTransitioning(boolean b) {
+    isTransitioning = b;
+  }
+
   // ==================== PUBLIC API ====================
 
   /**
@@ -233,6 +237,7 @@ public class SuperstructureStateMachine {
    * transition logic and command scheduling.
    */
   public void continueTransition() {
+    Logger.recordOutput("Superstructure/IsTransitioning", isTransitioning);
     if (isTransitioning) {
       return;
     }

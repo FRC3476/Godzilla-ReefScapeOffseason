@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -41,36 +42,46 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command setStateCommand(SuperstructureState state, String name) {
-    return new InstantCommand(() -> clearCommandsIfManualOverride())
-        .andThen(new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name));
+    return Commands.either(
+        clearCommandsIfManualOverride()
+            .andThen(new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name)),
+        new InstantCommand(() -> stateMachine.setTargetState(state)).withName(name),
+        () -> RobotState.getSuperstructureManualOverrideMode());
   }
 
   public Command setStateCommand(Supplier<SuperstructureState> stateSupplier, String name) {
-    return new InstantCommand(() -> clearCommandsIfManualOverride())
-        .andThen(
-            new InstantCommand(() -> stateMachine.setTargetState(stateSupplier.get()))
-                .withName(name));
+    return Commands.either(
+        clearCommandsIfManualOverride()
+            .andThen(
+                new InstantCommand(() -> stateMachine.setTargetState(stateSupplier.get()))
+                    .withName(name)),
+        new InstantCommand(() -> stateMachine.setTargetState(stateSupplier.get())).withName(name),
+        () -> RobotState.getSuperstructureManualOverrideMode());
   }
 
   public Command setStateCommand(SuperstructureState state, boolean setFuture, String name) {
-    return new InstantCommand(() -> clearCommandsIfManualOverride())
-        .andThen(
-            new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
-                .withName(name));
+    return Commands.either(
+        clearCommandsIfManualOverride()
+            .andThen(
+                new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
+                    .withName(name)),
+        new InstantCommand(() -> stateMachine.setTargetState(state, setFuture, true))
+            .withName(name),
+        () -> RobotState.getSuperstructureManualOverrideMode());
   }
 
-  public void clearCommandsIfManualOverride() {
-    System.out.println("WARNING: HARD CLEARING SUPERSTRUCTURE COMMANDS");
-
-    if (RobotState.getSuperstructureManualOverrideMode()) {
-      if (elevator.getCurrentCommand() != null) {
-        elevator.getCurrentCommand().cancel();
-      }
-
-      if (endEffector.getCurrentCommand() != null) {
-        endEffector.getCurrentCommand().cancel();
-      }
-    }
+  public Command clearCommandsIfManualOverride() {
+    return Commands.runOnce(() -> elevator.getCurrentCommand().cancel())
+        .asProxy()
+        .onlyIf(() -> elevator.getCurrentCommand() != null)
+        .alongWith(
+            Commands.runOnce(() -> endEffector.getCurrentCommand().cancel())
+                .asProxy()
+                .onlyIf(() -> endEffector.getCurrentCommand() != null))
+        .asProxy()
+        .alongWith(
+            Commands.print("    WARNING: HARD CLEAR SUPERSTRUCTURE COMMANDS")
+                .alongWith(Commands.runOnce(() -> stateMachine.hardSetIsTransitioning(false))));
   }
 
   public SuperstructureState getCurrentState() {
