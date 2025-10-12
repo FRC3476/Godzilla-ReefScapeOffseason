@@ -1933,10 +1933,12 @@ public class RobotContainer {
 
     Trigger hasAlgaeHaptics = new Trigger(() -> RobotState.hasAlgae());
 
-    hasAlgaeHaptics.whileTrue(
+    hasAlgaeHaptics.onTrue(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
             .andThen(new WaitCommand(0.5))
-            .andThen(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
+            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+
+    hasAlgaeHaptics.onFalse(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
