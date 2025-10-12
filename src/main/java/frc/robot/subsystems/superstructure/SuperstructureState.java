@@ -5,10 +5,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.util.Util;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -125,39 +124,85 @@ public enum SuperstructureState {
     return this.commandSupplier.apply(container);
   }
 
-
-  //we don't know the current state since the command is only telling superstructure where to aim to
-  //So we need to pass in the current state
-  public Command getAsTransitionCommand(RobotContainer container, SuperstructureState currentState) {
+  // we don't know the current state since the command is only telling superstructure where to aim
+  // to
+  // So we need to pass in the current state
+  public Command getAsTransitionCommandWrong(
+      RobotContainer container, SuperstructureState currentState) {
     if (commandSupplier == null) {
       return Commands.none();
-    } else if (lowInStates().contains(currentState)){ //low -> high
-        if (highOutStates().contains(this) || highInStates().contains(this)){
-          return this.getCommand(container).onlyWhile(() ->
-          //only be in transition if the elevator current position is less than the safe low amount
-            container.getElevator().getCurrentPosition() < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES 
-          );
+    } else if (lowInStates().contains(currentState)) { // low -> high
+      if (highOutStates().contains(this) || highInStates().contains(this)) {
+        return this.getCommand(container)
+            .onlyWhile(
+                () ->
+                    // only be in transition if the elevator current position is less than the safe
+                    // low amount
+                    container.getElevator().getCurrentPosition()
+                        < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES);
       }
-    } else if (highInStates().contains(currentState)){
-        if (lowInStates().contains(this) || lowOutStates().contains(this)){
-          return this.getCommand(container).onlyWhile(() ->
-            container.getElevator().getCurrentPosition() < Constants.SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-          );
+    } else if (highInStates().contains(currentState)) {
+      if (lowInStates().contains(this) || lowOutStates().contains(this)) {
+        return this.getCommand(container)
+            .onlyWhile(
+                () ->
+                    container.getElevator().getCurrentPosition()
+                        < Constants.SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES);
       }
-    } else if (lowOutStates().contains(currentState)){
-        if (highInStates().contains(this)){
-          return this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe());
+    } else if (lowOutStates().contains(currentState)) {
+      if (highInStates().contains(this)) {
+        return this.getCommand(container)
+            .onlyWhile(() -> !container.getEndEffector().isPivotSafe());
       }
-    } else if (highOutStates().contains(currentState)){
-        if (lowInStates().contains(this)){
-          return this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe()
-          );
+    } else if (highOutStates().contains(currentState)) {
+      if (lowInStates().contains(this)) {
+        return this.getCommand(container)
+            .onlyWhile(() -> !container.getEndEffector().isPivotSafe());
       }
     }
     return this.getCommand(container);
+  }
 
+  public enum TransitionShortcutType {
+    NONE,
+    LOW_IN_TO_HIGH_OUT,
+    LOW_OUT_TO_HIGH_IN,
+    HIGH_OUT_TO_LOW_IN,
+    HIGH_IN_TO_LOW_OUT
+  }
 
-    
+  public Command getAsTransitionCommand(
+      RobotContainer container, TransitionShortcutType shortcutType) {
+    return Commands.select(
+        Map.of(
+            TransitionShortcutType.NONE,
+            this.getCommand(container),
+            // only be in transition if the elevator current position is less than the safe low
+            // amount
+            TransitionShortcutType.LOW_IN_TO_HIGH_OUT,
+            this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe()),
+            // only be in transition if the elevator current position is less than the safe low
+            // amount
+            TransitionShortcutType.LOW_OUT_TO_HIGH_IN,
+            this.getCommand(container)
+                .onlyWhile(
+                    () ->
+                        container.getElevator().getCurrentPosition()
+                            > Constants.SuperstructureConstants
+                                .HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
+            // only be in transition if the elevator current position is less than the safe low
+            // amount
+            TransitionShortcutType.HIGH_OUT_TO_LOW_IN,
+            this.getCommand(container)
+                .onlyWhile(
+                    () ->
+                        container.getElevator().getCurrentPosition()
+                            < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
+            // only be in transition if the elevator current position is less than the safe low
+            // amount
+            TransitionShortcutType.HIGH_IN_TO_LOW_OUT,
+            this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe())),
+        () -> shortcutType);
   }
 
   public boolean isCoralState() {

@@ -34,11 +34,17 @@ public class Superstructure extends SubsystemBase {
     RobotState.setSuperstructureState(getCurrentState());
     Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
     Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
+    Logger.recordOutput(
+        "Superstructure/SecondState",
+        stateMachine.getSecondTargetState() == null
+            ? "null"
+            : stateMachine.getSecondTargetState().toString());
     Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
     Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     Logger.recordOutput("CoralStateTracker/Coral State", CoralStateTracker.getCurrentPosition());
+    Logger.recordOutput("Superstructure/ShortcutType", stateMachine.getShortcutType());
   }
 
   public Command setStateCommand(SuperstructureState state, String name) {

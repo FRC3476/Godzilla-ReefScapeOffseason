@@ -106,11 +106,6 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
-  public Command moveElevatorTransitionCommand(DoubleSupplier heightSupplier) {
-    return Commands.sequence(
-        this.setTargetPositionCommand(heightSupplier), this.waitUntilTransitionPositionCommand());
-  }
-
   public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
     return Commands.sequence(
         this.setTargetPositionCommand(heightSupplier), this.waitUntilTargetPositionCommand());

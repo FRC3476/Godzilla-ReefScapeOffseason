@@ -8,13 +8,9 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import frc.robot.util.Util;
-
-import java.lang.constant.Constable;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
-import com.google.flatbuffers.Constants;
 
 public class EndEffector extends SubsystemBase {
 
@@ -87,25 +83,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
-  public boolean isPivotInTransitionTolerance() {
-    return MathUtil.isNear(
-        pivotSetpoint,
-        inputs.pivotData.pivotPosition(),
-        EndEffectorConstants.PIVOT_TOLERANCE_TRANSITION_ROTATIONS);
-  }
-
-  @AutoLogOutput(key = "EndEffector/Pivot/InTolerance")
   public boolean isPivotInTolerance() {
     return MathUtil.isNear(
         pivotSetpoint,
         inputs.pivotData.pivotPosition(),
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
-  }
-
-  // Tolerance is higher since Transition state
-  public Command moveEndEffectorTransitionCommand(DoubleSupplier rotationsSupplier) {
-    return Commands.sequence(
-        this.rotatePivotCommand(rotationsSupplier), this.waitUntilTransitionPositionCommand());
   }
 
   // Normal tolerance
@@ -121,10 +103,6 @@ public class EndEffector extends SubsystemBase {
             EndEffectorConstants.MIN_ANGLE_ROTATIONS,
             EndEffectorConstants.MAX_ANGLE_ROTATIONS);
     return Commands.runOnce(() -> this.io.setPivotPosition(() -> pivotSetpoint), this);
-  }
-
-  public Command waitUntilTransitionPositionCommand() {
-    return Commands.waitUntil(() -> isPivotInTransitionTolerance());
   }
 
   public Command waitUntilTargetPositionCommand() {
@@ -147,7 +125,10 @@ public class EndEffector extends SubsystemBase {
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
   }
 
-  public boolean isPivotSafe(){
-    return Util.inRange(pivotSetpoint, EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS, EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
+  public boolean isPivotSafe() {
+    return Util.inRange(
+        pivotSetpoint,
+        EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS,
+        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
   }
 }
