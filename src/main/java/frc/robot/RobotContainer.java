@@ -1320,6 +1320,14 @@ public class RobotContainer {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("AS");
+    
+    StreamDeckButton manualOverrideButton = 
+        new StreamDeckButton(3, 0, "Manual Override")
+            .withInactiveBackground(LedState.kOff.toString())
+            .withInactiveForeground(LedState.kWhite.toString())
+            .withActiveBackground(LedState.kRed.toString())
+            .withActiveForeground(LedState.kYellow.toString())
+            .withText("MO");
 
     Command homeElevatorButtonCommand = elevator.homeElevator().withName("homeElevatorButton");
     Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
@@ -1380,6 +1388,7 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
+    customStreamDeckButtonMap.put(manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
 
     streamdeck.configureCustomButtons(customStreamDeckButtonMap);
 
@@ -1539,6 +1548,11 @@ public class RobotContainer {
                                 RobotState.getGlobalPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    streamdeck
+        .button(manualOverrideButton)
+        .onTrue(
+            Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode())
+        );
 
     // manualClimbOffButtonCommand
 
