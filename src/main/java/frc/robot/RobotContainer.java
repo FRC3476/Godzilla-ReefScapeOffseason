@@ -1945,7 +1945,9 @@ public class RobotContainer {
         .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
 
     Trigger hasAlgaeHaptics = new Trigger(() -> RobotState.hasAlgae());
-    Trigger hasCoralHaptics = new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
+    Trigger hasCoralHaptics =
+        new Trigger(
+            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
 
     hasAlgaeHaptics.onTrue(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))

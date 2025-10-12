@@ -273,7 +273,7 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+                stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
             .withName(stateManager.getCurrentTargetState().name() + "_StateMachineInitial");
     command.schedule();
   }
@@ -349,7 +349,7 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+                stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
             .withName(stateManager.getCurrentTargetState().name() + "_StateMachineExecute");
     command.schedule();
   }
