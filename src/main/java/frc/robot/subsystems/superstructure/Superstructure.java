@@ -40,7 +40,6 @@ public class Superstructure extends SubsystemBase {
             ? "null"
             : stateMachine.getSecondTargetState().toString());
     Logger.recordOutput("Superstructure/CurrentTargetState", stateMachine.getCurrentTargetState());
-    Logger.recordOutput("Superstructure/FutureDesiredState", stateMachine.getFutureDesiredState());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     Logger.recordOutput("CoralStateTracker/Coral State", CoralStateTracker.getCurrentPosition());

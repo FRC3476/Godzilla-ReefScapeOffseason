@@ -124,45 +124,6 @@ public enum SuperstructureState {
     return this.commandSupplier.apply(container);
   }
 
-  // we don't know the current state since the command is only telling superstructure where to aim
-  // to
-  // So we need to pass in the current state
-  public Command getAsTransitionCommandWrong(
-      RobotContainer container, SuperstructureState currentState) {
-    if (commandSupplier == null) {
-      return Commands.none();
-    } else if (lowInStates().contains(currentState)) { // low -> high
-      if (highOutStates().contains(this) || highInStates().contains(this)) {
-        return this.getCommand(container)
-            .onlyWhile(
-                () ->
-                    // only be in transition if the elevator current position is less than the safe
-                    // low amount
-                    container.getElevator().getCurrentPosition()
-                        < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES);
-      }
-    } else if (highInStates().contains(currentState)) {
-      if (lowInStates().contains(this) || lowOutStates().contains(this)) {
-        return this.getCommand(container)
-            .onlyWhile(
-                () ->
-                    container.getElevator().getCurrentPosition()
-                        < Constants.SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES);
-      }
-    } else if (lowOutStates().contains(currentState)) {
-      if (highInStates().contains(this)) {
-        return this.getCommand(container)
-            .onlyWhile(() -> !container.getEndEffector().isPivotSafe());
-      }
-    } else if (highOutStates().contains(currentState)) {
-      if (lowInStates().contains(this)) {
-        return this.getCommand(container)
-            .onlyWhile(() -> !container.getEndEffector().isPivotSafe());
-      }
-    }
-    return this.getCommand(container);
-  }
-
   public enum TransitionShortcutType {
     NONE,
     LOW_IN_TO_HIGH_OUT,
@@ -253,7 +214,7 @@ public enum SuperstructureState {
     return EnumSet.of(NONE);
   }
 
-  public Set<SuperstructureState> lowInStates() {
+  private Set<SuperstructureState> lowInStates() {
     return EnumSet.of(
         STOW,
         STOW_CORAL,
@@ -265,7 +226,11 @@ public enum SuperstructureState {
         L1_PIVOT);
   }
 
-  public Set<SuperstructureState> lowOutStates() {
+  public boolean isLowIn() {
+    return lowInStates().contains(this);
+  }
+
+  private Set<SuperstructureState> lowOutStates() {
     return EnumSet.of(
         L2_AIM,
         L3_AIM,
@@ -276,7 +241,11 @@ public enum SuperstructureState {
         PROCESSOR_AIM);
   }
 
-  public Set<SuperstructureState> highOutStates() {
+  public boolean isLowOut() {
+    return lowOutStates().contains(this);
+  }
+
+  private Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
         ALGAE_HIGH_INTAKE,
         L4_FADEAWAY,
@@ -286,7 +255,15 @@ public enum SuperstructureState {
         ALGAE_LOW_INTAKE);
   }
 
-  public Set<SuperstructureState> highInStates() {
+  public boolean isHighOut() {
+    return highOutStates().contains(this);
+  }
+
+  private Set<SuperstructureState> highInStates() {
     return EnumSet.of(BARGE_AIM_CENTER, BARGE_AIM_FORWARD);
+  }
+
+  public boolean isHighIn() {
+    return highInStates().contains(this);
   }
 }

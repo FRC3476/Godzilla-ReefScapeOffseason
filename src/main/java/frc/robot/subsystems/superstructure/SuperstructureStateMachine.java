@@ -83,8 +83,7 @@ public class SuperstructureStateMachine {
 
   // Constants
   private static final double DEFAULT_TRANSITION_COST = 1.0;
-  private static final double FUTURE_STATE_TIMEOUT_SECONDS = 3.0;
-  private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
+=  private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
   private static final String TRANSITION_KEY_SEPARATOR = "->";
   private static final String COMMAND_NAME = "SuperstructureMove";
 
@@ -224,15 +223,6 @@ public class SuperstructureStateMachine {
   }
 
   /**
-   * Gets the future desired state if it hasn't timed out.
-   *
-   * @return The future desired state, or null if none or timed out
-   */
-  public SuperstructureState getFutureDesiredState() {
-    return stateManager.getFutureDesiredState();
-  }
-
-  /**
    * Gets the transition cost between two states.
    *
    * @param from The source state
@@ -340,17 +330,17 @@ public class SuperstructureStateMachine {
 
     SuperstructureState current = stateManager.getCurrentState();
     SuperstructureState secondTarget = stateManager.getSecondTargetState();
-    if (current.lowInStates().contains(current) && current.highOutStates().contains(secondTarget)) {
-      stateManager.setShortcutType(TransitionShortcutType.LOW_IN_TO_HIGH_OUT);
-    } else if (current.lowOutStates().contains(current)
-        && current.highInStates().contains(secondTarget)) {
-      stateManager.setShortcutType(TransitionShortcutType.LOW_OUT_TO_HIGH_IN);
-    }
-    if (current.highInStates().contains(current) && current.lowOutStates().contains(secondTarget)) {
-      stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_LOW_OUT);
-    } else if (current.highOutStates().contains(current)
-        && current.lowInStates().contains(secondTarget)) {
-      stateManager.setShortcutType(TransitionShortcutType.HIGH_OUT_TO_LOW_IN);
+    if (secondTarget != null) {
+      if (current.isLowIn() && secondTarget.isHighOut()) {
+        stateManager.setShortcutType(TransitionShortcutType.LOW_IN_TO_HIGH_OUT);
+      } else if (current.isLowOut() && secondTarget.isHighIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.LOW_OUT_TO_HIGH_IN);
+      }
+      if (current.isHighOut() && secondTarget.isLowOut()) {
+        stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_LOW_OUT);
+      } else if (current.isHighOut() && secondTarget.isLowIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.HIGH_OUT_TO_LOW_IN);
+      }
     }
 
     Command moveCommand =
@@ -360,7 +350,9 @@ public class SuperstructureStateMachine {
 
     Command command =
         Commands.sequence(moveCommand, checkFinishedCommand)
-            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineExecute");
+            .withName(stateManager.getCurrentTargetState().name() +
+            "_StateMachineExecute_withShortcut" +
+            stateManager.getShortcutType().toString());
     command.schedule();
   }
 
@@ -565,14 +557,6 @@ public class SuperstructureStateMachine {
     public void forceSetCurrentTargetState(SuperstructureState state) {
       currentTargetState = state;
       currentTargetStateTime = Timer.getFPGATimestamp();
-    }
-
-    public SuperstructureState getFutureDesiredState() {
-      if (currentTargetState != null
-          && Timer.getFPGATimestamp() - currentTargetStateTime > FUTURE_STATE_TIMEOUT_SECONDS) {
-        currentTargetState = null;
-      }
-      return currentTargetState;
     }
 
     private void validateState(SuperstructureState state, Set<SuperstructureState> validStates) {
