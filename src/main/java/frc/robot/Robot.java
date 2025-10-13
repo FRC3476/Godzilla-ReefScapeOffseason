@@ -1,86 +1,274 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Copyright 2021-2025 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+// import edu.wpi.first.networktables.NetworkTableInstance;
+// import edu.wpi.first.util.datalog.StringLogEntry;
+// import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.generated.TunerConstants;
+import frc.robot.util.LoopTimingLogger;
+import frc.robot.util.MagicVirtualSubsystem;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.util.Arrays;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
- * this project, you must also update the Main.java file in the project.
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the
+ * project.
  */
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+public class Robot extends LoggedRobot {
+  private static final double loopOverrunWarningTimeout = 0.2;
+  private Command autonomousCommand;
+  private RobotContainer robotContainer;
 
-  private final RobotContainer m_robotContainer;
-
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   public Robot() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    // Record metadata
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.recordMetadata("GitDirty", "Unknown");
+        break;
+    }
+
+    // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        String LOG_DIRECTORY = "/home/lvuser/logs";
+        long MIN_FREE_SPACE = 1000000000;
+        var directory = new File(LOG_DIRECTORY);
+        if (!directory.exists()) {
+          directory.mkdir();
+        }
+
+        // ensure that there is enough space on the roboRIO to log data
+        if (directory.getFreeSpace() < MIN_FREE_SPACE) {
+          var files = directory.listFiles();
+          if (files != null) {
+            // Sorting the files by name will ensure that the oldest files are deleted first
+            files = Arrays.stream(files).sorted().toArray(File[]::new);
+
+            long bytesToDelete = MIN_FREE_SPACE - directory.getFreeSpace();
+
+            for (File file : files) {
+              if (file.getName().endsWith(".wpilog")) {
+                try {
+                  bytesToDelete -= Files.size(file.toPath());
+                } catch (IOException e) {
+                  System.out.println("Failed to get size of file " + file.getName());
+                  continue;
+                }
+                if (file.delete()) {
+                  System.out.println("Deleted " + file.getName() + " to free up space");
+                } else {
+                  System.out.println("Failed to delete " + file.getName());
+                }
+                if (bytesToDelete <= 0) {
+                  break;
+                }
+              }
+            }
+          }
+        }
+        Logger.addDataReceiver(new WPILOGWriter(LOG_DIRECTORY));
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case REPLAY:
+        // Replaying a log, set up replay source
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
+
+    // Start AdvantageKit logger
+    Logger.start();
+
+    // Check for valid swerve config
+    var modules =
+        new SwerveModuleConstants[] {
+          TunerConstants.FrontLeft,
+          TunerConstants.FrontRight,
+          TunerConstants.BackLeft,
+          TunerConstants.BackRight
+        };
+    for (var constants : modules) {
+      if (constants.DriveMotorType != DriveMotorArrangement.TalonFX_Integrated
+          || constants.SteerMotorType != SteerMotorArrangement.TalonFX_Integrated) {
+        throw new RuntimeException(
+            "You are using an unsupported swerve configuration, which this template does not support without manual customization. The 2025 release of Phoenix supports some swerve configurations which were not available during 2025 beta testing, preventing any development and support from the AdvantageKit developers.");
+      }
+    }
+
+    // Adjust loop overrun warning timeout
+    try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(loopOverrunWarningTimeout);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
+    }
+    CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
+
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our autonomous chooser on the dashboard.
+    robotContainer = new RobotContainer();
+
+    // configure brown out voltage
+    RobotController.setBrownoutVoltage(6.0);
+
+    // StringLogEntry entry = new StringLogEntry(DataLogManager.getLog(), "/ntlog");
+    // NetworkTableInstance.getDefault()
+    //     .addLogger(
+    //         0,
+    //         100,
+    //         event ->
+    //             entry.append(
+    //                 event.logMessage.filename
+    //                     + ":"
+    //                     + event.logMessage.line
+    //                     + ":"
+    //                     + event.logMessage.message));
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
+  /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+
+    // Start timing measurement for the entire robotPeriodic method
+    LoopTimingLogger.startTiming("RobotPeriodic");
+
+    // Refresh all Phoenix signals
+    // LoopTimingLogger.startTiming("PhoenixRefresh");
+    // PhoenixUtil.refreshAll();
+    // LoopTimingLogger.endTiming("PhoenixRefresh");
+
+    // Optionally switch the thread to high priority to improve loop
+    // timing (see the template project documentation for details)
+    Threads.setCurrentThreadPriority(true, 99);
+
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled commands, running already-scheduled commands, removing
+    // finished or interrupted commands, and running subsystem periodic() methods.
+    // This must be called from the robot's periodic block in order for anything in
+    // the Command-based framework to work.
+    LoopTimingLogger.startTiming("CommandScheduler");
     CommandScheduler.getInstance().run();
+    LoopTimingLogger.endTiming("CommandScheduler");
+
+    // Run all registered MagicVirtualSubsystem periodic methods
+    // This includes RobotState and SimulatedRobotState subsystems
+    LoopTimingLogger.startTiming("VirtualSubsystems");
+    MagicVirtualSubsystem.runPeriodically();
+    LoopTimingLogger.endTiming("VirtualSubsystems");
+
+    // Return to non-RT thread priority (do not modify the first argument)
+    Threads.setCurrentThreadPriority(false, 10);
+
+    // End timing measurement for the entire robotPeriodic method
+    LoopTimingLogger.endTiming("RobotPeriodic");
   }
 
-  /** This function is called once each time the robot enters Disabled mode. */
+  /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {}
 
+  /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    LoopTimingLogger.startTiming("DisabledPeriodic");
+    LoopTimingLogger.endTiming("DisabledPeriodic");
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    LoopTimingLogger.startTiming("AutonomousPeriodic");
 
+    LoopTimingLogger.endTiming("AutonomousPeriodic");
+  }
+
+  /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    LoopTimingLogger.startTiming("TeleopPeriodic");
 
+    LoopTimingLogger.endTiming("TeleopPeriodic");
+  }
+
+  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
@@ -89,7 +277,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    LoopTimingLogger.startTiming("TestPeriodic");
+    // Add any test-specific code here if needed
+    LoopTimingLogger.endTiming("TestPeriodic");
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -97,5 +289,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    LoopTimingLogger.startTiming("SimulationPeriodic");
+
+    LoopTimingLogger.startTiming("VirtualSubsystemsSimulation");
+    MagicVirtualSubsystem.runSimulationPeriodically();
+    LoopTimingLogger.endTiming("VirtualSubsystemsSimulation");
+
+    LoopTimingLogger.endTiming("SimulationPeriodic");
+  }
 }
