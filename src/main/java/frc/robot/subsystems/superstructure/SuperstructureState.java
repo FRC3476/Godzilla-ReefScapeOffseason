@@ -132,6 +132,7 @@ public enum SuperstructureState {
     HIGH_IN_TO_LOW_OUT
   }
 
+  // run the guaranteed safe transition while it's unsafe to skip
   public Command getAsTransitionCommand(
       RobotContainer container, TransitionShortcutType shortcutType) {
     return Commands.select(
@@ -149,7 +150,7 @@ public enum SuperstructureState {
                 .onlyWhile(
                     () ->
                         container.getElevator().getCurrentPosition()
-                            > Constants.SuperstructureConstants
+                            < Constants.SuperstructureConstants
                                 .HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
             // only be in transition if the elevator current position is less than the safe low
             // amount
@@ -158,7 +159,7 @@ public enum SuperstructureState {
                 .onlyWhile(
                     () ->
                         container.getElevator().getCurrentPosition()
-                            < Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
+                            > Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
             // only be in transition if the elevator current position is less than the safe low
             // amount
             TransitionShortcutType.HIGH_IN_TO_LOW_OUT,
@@ -231,14 +232,7 @@ public enum SuperstructureState {
   }
 
   private Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(
-        L2_AIM,
-        L3_AIM,
-        L2_FADEAWAY,
-        L2_AWAY_FROM_REEF,
-        L3_FADEAWAY,
-        L3_AWAY_FROM_REEF,
-        PROCESSOR_AIM);
+    return EnumSet.of(L2_AIM, L2_FADEAWAY, L2_AWAY_FROM_REEF, PROCESSOR_AIM);
   }
 
   public boolean isLowOut() {
@@ -247,6 +241,9 @@ public enum SuperstructureState {
 
   private Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
+        L3_AIM,
+        L3_FADEAWAY,
+        L3_AWAY_FROM_REEF,
         ALGAE_HIGH_INTAKE,
         L4_FADEAWAY,
         L4_AIM,

@@ -76,6 +76,7 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput(
         "EndEffector/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
+    Logger.recordOutput("EndEffector/TargetPos", pivotSetpoint);
   }
 
   public double getCurrentPivotPosition() {
@@ -127,7 +128,7 @@ public class EndEffector extends SubsystemBase {
 
   public boolean isPivotSafe() {
     return Util.inRange(
-        pivotSetpoint,
+        inputs.pivotData.pivotPosition(),
         EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS,
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
   }

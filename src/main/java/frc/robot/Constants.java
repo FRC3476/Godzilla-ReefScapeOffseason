@@ -767,7 +767,7 @@ public final class Constants {
     public static double CLIMB_ENDEFFECTOR_SAFE_ROTATIONS =
         EndEffectorConstants.PIVOT_CLIMB_SAFE_ROTATIONS;
 
-    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES =     ;
+    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 12.9;
     public static double HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 45.7;
 
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
