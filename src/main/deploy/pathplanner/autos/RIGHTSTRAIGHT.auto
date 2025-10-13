@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Path1"
+            "pathName": "RightStraight"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Path2"
+            "name": "SuperStructureStartup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStartup"
           }
         }
       ]

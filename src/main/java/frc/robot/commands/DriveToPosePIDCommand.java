@@ -4,9 +4,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
@@ -44,6 +44,7 @@ public class DriveToPosePIDCommand extends Command {
     this.targetPoseSupplier = targetPoseSupplier;
     xController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
     yController.setTolerance(DriveConstants.AUTO_ALIGN_NORM_TOLERANCE);
+    angleController.setTolerance(Units.degreesToRadians(1.5));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -73,7 +74,7 @@ public class DriveToPosePIDCommand extends Command {
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speeds,
                 FieldUtils.isRedAlliance()
-                    ? RobotState.getGlobalPose().getRotation().plus(Rotation2d.k180deg)
+                    ? RobotState.getGlobalPose().getRotation()
                     : RobotState.getGlobalPose().getRotation())));
   }
 

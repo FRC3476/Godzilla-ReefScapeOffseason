@@ -127,6 +127,10 @@ public class SuperstructureStateMachine {
     precomputeAllPaths();
   }
 
+  public void hardSetIsTransitioning(boolean b) {
+    isTransitioning = b;
+  }
+
   // ==================== PUBLIC API ====================
 
   /**
@@ -173,8 +177,12 @@ public class SuperstructureStateMachine {
    * @throws IllegalArgumentException if the state is not registered
    */
   public void setTargetState(SuperstructureState state) {
-    stateManager.setTargetState(state, registeredStates);
-    continueTransition();
+    if (RobotState.getSuperstructureManualOverrideMode()) {
+      setTargetState(state, true, true);
+    } else {
+      stateManager.setTargetState(state, registeredStates);
+      continueTransition();
+    }
   }
 
   /**
@@ -195,7 +203,7 @@ public class SuperstructureStateMachine {
     stateManager.setTargetState(state, registeredStates);
 
     if (!DriverStation.isAutonomous() && wipeFuture) {
-      stateManager.clearCurrentTargetState();
+      stateManager.forceSetCurrentTargetState(state);
     }
 
     continueTransition();
@@ -229,6 +237,7 @@ public class SuperstructureStateMachine {
    * transition logic and command scheduling.
    */
   public void continueTransition() {
+    Logger.recordOutput("Superstructure/IsTransitioning", isTransitioning);
     if (isTransitioning) {
       return;
     }
@@ -269,7 +278,8 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+                stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineInitial");
     command.schedule();
   }
 
@@ -344,7 +354,8 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+                stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineExecute");
     command.schedule();
   }
 
@@ -474,8 +485,8 @@ public class SuperstructureStateMachine {
       currentTargetStateTime = Timer.getFPGATimestamp();
     }
 
-    public void clearCurrentTargetState() {
-      currentTargetState = null;
+    public void forceSetCurrentTargetState(SuperstructureState state) {
+      currentTargetState = state;
     }
 
     public SuperstructureState getFutureDesiredState() {

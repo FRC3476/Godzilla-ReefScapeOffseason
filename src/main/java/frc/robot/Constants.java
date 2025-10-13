@@ -118,11 +118,11 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
-    public static final double ANGLE_KP = 20.0;
+    public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 30.0;
+    public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
-    public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxYAccelerationMetersPerSecondSquared = 10.0;
     public static final double kDriveMaxAngularRate = 8.2;
@@ -151,7 +151,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.65;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.58;
   }
 
   public static final class AutoConstants {
@@ -227,7 +227,7 @@ public final class Constants {
     public static final int CANRANGE_ID = 34;
 
     // Setpoints
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(1.5);
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
@@ -238,16 +238,19 @@ public final class Constants {
         Units.degreesToRotations(65.7874127); // L1 scoring position
 
     // L1 Blocker Positions
-    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_POSITION = -0.44;
     public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_STALL_VOLTAGE = -4;
+    public static final double L1_BLOCKER_DISENGAGED_STALL_VOLTAGE = 1;
+    public static final double L1_BLOCKER_TORQUE_ENGAGE_AMPS = -20;
+    public static final double L1_BLOCKER_TORQUE_DISENGAGE_AMPS = 10;
 
     // Roller Voltages
-    public static final double ROLLER_SCORING_OUT_VOLTS = 6.0;
+    public static final double ROLLER_SCORING_OUT_VOLTS = -6.0;
 
     public enum IntakeState {
       NONE,
       STOW,
-      INTAKE_L1,
       INTAKE,
       REJECT_CORAL,
       IDLE,
@@ -295,7 +298,7 @@ public final class Constants {
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
-    public static final double lvl1blockerKP = 0.0; // Proportional gain
+    public static final double lvl1blockerKP = 80.0; // Proportional gain
     public static final double lvl1blockerKI = 0.0; // Integral gain
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 
@@ -421,8 +424,7 @@ public final class Constants {
 
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
-    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 0.5;
 
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1
@@ -490,8 +492,8 @@ public final class Constants {
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
 
     // Algae scoring heights
-    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
-    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
+    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161 - 1.5 - 1.5;
+    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558 - 1.5;
 
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
@@ -512,11 +514,11 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
-    public static final double Tunable_PIVOT_kP = 35;
+    public static final double Tunable_PIVOT_kP = 70;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 0.5;
+    public static final double Tunable_PIVOT_kD = 1;
     public static final double Tunable_PIVOT_kG = 0.615;
-    public static final double Tunable_PIVOT_kS = 0.135;
+    public static final double Tunable_PIVOT_kS = 0.35;
 
     public static final double Tunable_PIVOT_Velo = 1000;
     public static final double Tunable_PIVOT_Accel = 12;
@@ -533,12 +535,11 @@ public final class Constants {
     public static final double PIVOT_STM = 4;
     public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 1000.0;
-    public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 40;
+    public static final double ROLLER_STALLED_RPS = 10;
 
     public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
-    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(2.5);
 
     // ========End Effector Constant Positions========
     // Standardized angle constants with RADIAN suffix
@@ -565,6 +566,7 @@ public final class Constants {
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
+    public static final double PIVOT_CLIMB_SAFE_ROTATIONS = Units.degreesToRotations(-82.8);
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -632,18 +634,18 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 1;
-    public static final double ROLLER_SCORING_VOLTS = 12;
-    public static final double ROLLER_SCORING_L1_VOLTS = -6;
-    public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 2;
+    public static final double ROLLER_SCORING_VOLTS = -12;
+    public static final double ROLLER_SCORING_L1_VOLTS = 6;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
-            24); // distance from the center of the robot to the end of the end effector
+            12); // distance from the center of the robot to the end of the end effector
     public static final double MIN_STOW_CLEARANCE_METERS =
         Units.inchesToMeters(
-            24); // area around that point that would hit something on the end effector
+            12); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
@@ -699,7 +701,7 @@ public final class Constants {
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
@@ -711,7 +713,7 @@ public final class Constants {
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
@@ -761,6 +763,10 @@ public final class Constants {
   }
 
   public static class SuperstructureConstants {
+
+    public static double CLIMB_ENDEFFECTOR_SAFE_ROTATIONS =
+        EndEffectorConstants.PIVOT_CLIMB_SAFE_ROTATIONS;
+
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
@@ -772,8 +778,7 @@ public final class Constants {
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.ALGAE_IDLE_ANGLE_ROTATIONS;
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS = 0;
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
@@ -792,7 +797,7 @@ public final class Constants {
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+        EndEffectorConstants.MIN_ANGLE_ROTATIONS + .02;
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static double L2_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =

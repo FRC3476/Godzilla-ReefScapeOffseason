@@ -135,6 +135,10 @@ public class RobotState extends MagicVirtualSubsystem {
     return storedScorePosition;
   }
 
+  public boolean isL1Mode() {
+    return storedScorePosition.getScoreLevel() == ScoreLevel.L1;
+  }
+
   // private SuperstructureState fadeawayState;
 
   public SuperstructureState getSuperstructureScoreAimState() {
@@ -227,6 +231,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static final SendableChooser<Integer> hasAlgaeOverride = new SendableChooser<>();
 
+  private static boolean superstructureManualOverrideMode = false;
+
   public RobotState(Consumer<VisionFieldPoseEstimate> visionEstimateConsumer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
@@ -296,6 +302,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static void offerVisionObservation(PoseObservation observation) {
     RobotState.poseObservations.offer(observation);
+  }
+
+  public static boolean getSuperstructureManualOverrideMode() {
+    return superstructureManualOverrideMode;
+  }
+
+  public static void toggleSuperstructureManualOverrideMode() {
+    superstructureManualOverrideMode = !superstructureManualOverrideMode;
   }
 
   public static Queue<PoseObservation> getVisionObservations() {
@@ -736,10 +750,12 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(
         "StoredSuperstructureState/Score Level", storedScorePosition.getScoreLevel());
+    Logger.recordOutput("isL1Mode", isL1Mode());
     Logger.recordOutput(
         "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
     Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
+    Logger.recordOutput("SuperstructureManualOverride", getSuperstructureManualOverrideMode());
 
     // updateLogger();
 

@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 public enum SuperstructureState {
   NONE(),
+  CLIMB(
+      Constants.SuperstructureConstants.CLIMB_ENDEFFECTOR_SAFE_ROTATIONS,
+      Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS),
   STOW(
       Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.STOW_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -143,6 +146,9 @@ public enum SuperstructureState {
           L2_AIM,
           L3_AIM,
           L4_AIM,
+          L2_FADEAWAY,
+          L3_FADEAWAY,
+          L4_FADEAWAY,
           L2_AWAY_FROM_REEF,
           L3_AWAY_FROM_REEF,
           L4_AWAY_FROM_REEF:
