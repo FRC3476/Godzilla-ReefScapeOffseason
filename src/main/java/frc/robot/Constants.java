@@ -514,14 +514,16 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
-    public static final double Tunable_PIVOT_kP = 70;
+    public static final double Tunable_PIVOT_kP = 60;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 1;
-    public static final double Tunable_PIVOT_kG = 0.615;
+    public static final double Tunable_PIVOT_kD = 3.5;
+    public static final double Tunable_PIVOT_kG = 0.9;
     public static final double Tunable_PIVOT_kS = 0.35;
+    public static final double Tunable_PIVOT_kA = 0.19;
+    public static final double Tunable_PIVOT_kV = 5;
 
     public static final double Tunable_PIVOT_Velo = 1000;
-    public static final double Tunable_PIVOT_Accel = 12;
+    public static final double Tunable_PIVOT_Accel = 9;
     public static final double Tunable_PIVOT_Jerk = 1000;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
@@ -576,6 +578,8 @@ public final class Constants {
                     .withKI(Tunable_PIVOT_kI)
                     .withKD(Tunable_PIVOT_kD)
                     .withKG(Tunable_PIVOT_kG)
+                    .withKA(Tunable_PIVOT_kA)
+                    .withKV(Tunable_PIVOT_kV)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
@@ -767,7 +771,7 @@ public final class Constants {
     public static double CLIMB_ENDEFFECTOR_SAFE_ROTATIONS =
         EndEffectorConstants.PIVOT_CLIMB_SAFE_ROTATIONS;
 
-    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES =     ;
+    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 12.9;
     public static double HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 45.7;
 
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;

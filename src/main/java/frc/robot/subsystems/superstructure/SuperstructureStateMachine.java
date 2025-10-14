@@ -83,7 +83,7 @@ public class SuperstructureStateMachine {
 
   // Constants
   private static final double DEFAULT_TRANSITION_COST = 1.0;
-=  private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
+  private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
   private static final String TRANSITION_KEY_SEPARATOR = "->";
   private static final String COMMAND_NAME = "SuperstructureMove";
 
@@ -350,9 +350,10 @@ public class SuperstructureStateMachine {
 
     Command command =
         Commands.sequence(moveCommand, checkFinishedCommand)
-            .withName(stateManager.getCurrentTargetState().name() +
-            "_StateMachineExecute_withShortcut" +
-            stateManager.getShortcutType().toString());
+            .withName(
+                stateManager.getCurrentTargetState().name()
+                    + "_StateMachineExecute_withShortcut"
+                    + stateManager.getShortcutType().toString());
     command.schedule();
   }
 
