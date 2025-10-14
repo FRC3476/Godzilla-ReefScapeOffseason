@@ -172,7 +172,7 @@ public class RobotState extends MagicVirtualSubsystem {
   public SuperstructureState getFadeawayState() {
     switch (storedScorePosition.getScoreLevel()) {
       case L1:
-        return SuperstructureState.STOW;
+        return SuperstructureState.L1_FADEAWAY;
       case L2:
         return SuperstructureState.L2_FADEAWAY;
       case L3:

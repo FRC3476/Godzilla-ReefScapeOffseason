@@ -120,7 +120,7 @@ public final class Constants {
 
     public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_ACCELERATION = 15.0;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
@@ -151,7 +151,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.58;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.60;
   }
 
   public static final class AutoConstants {
@@ -479,6 +479,7 @@ public final class Constants {
     public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH =
         0; // 8.675; // 14.418111 + 2;
     public static final double ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH = 7.078988 + 1;
+    public static final double ELEVATOR_L1_AGAINST_REEF_FADEAWAY_SETPOINT_INCH = 5;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 24.79; // 30.029785 + 2.5;
@@ -555,6 +556,7 @@ public final class Constants {
     public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
+    public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
     public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
         MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
     public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
@@ -649,7 +651,7 @@ public final class Constants {
             12); // distance from the center of the robot to the end of the end effector
     public static final double MIN_STOW_CLEARANCE_METERS =
         Units.inchesToMeters(
-            12); // area around that point that would hit something on the end effector
+            20); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
@@ -859,6 +861,11 @@ public final class Constants {
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
+
+    public static double L1_FADEAWAY_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L1_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
+    public static double L1_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L1_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;

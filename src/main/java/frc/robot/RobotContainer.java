@@ -1011,7 +1011,8 @@ public class RobotContainer {
                   }
                   return PoseUtils.getPerpendicularOffsetPose(
                       targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
-                }));
+                },
+                true));
 
     // controller
     //     .rightTrigger();
@@ -1091,7 +1092,7 @@ public class RobotContainer {
             // Commands.either(
             //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
             Commands.sequence(
-                // new PathfindToPoseCommand(
+                // new MagicDriveToPoseCommand(
                 //     drive,
                 //     () ->
                 //         PoseUtils.getPerpendicularOffsetPose(
@@ -1372,10 +1373,10 @@ public class RobotContainer {
         ReefFSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
     customStreamDeckButtonMap.put(
         reefRightSideButton,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
     customStreamDeckButtonMap.put(
         reefRightSideButton2,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
     customStreamDeckButtonMap.put(
         reefLeftSideButton,
         () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
@@ -1932,6 +1933,9 @@ public class RobotContainer {
     feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
+
+    //recommended but untested
+    // claw.exhaustedCoral().onTrue(CoralStateTracker.forceSet(CoralPosition.NONE));
 
     //
     Trigger autoStowAlgaeTrigger =

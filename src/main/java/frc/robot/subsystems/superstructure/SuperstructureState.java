@@ -60,6 +60,9 @@ public enum SuperstructureState {
   L4_AWAY_FROM_REEF(
       Constants.SuperstructureConstants.L4_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L1_FADEAWAY(
+      Constants.SuperstructureConstants.L1_FADEAWAY_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L1_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_FADEAWAY(
       Constants.SuperstructureConstants.L2_FADEAWAY_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -176,6 +179,7 @@ public enum SuperstructureState {
           L2_AIM,
           L3_AIM,
           L4_AIM,
+          L1_FADEAWAY,
           L2_FADEAWAY,
           L3_FADEAWAY,
           L4_FADEAWAY,
@@ -224,7 +228,8 @@ public enum SuperstructureState {
         INTAKE_CORAL_L1,
         FEED,
         INTAKE_ALGAE_GROUND,
-        L1_PIVOT);
+        L1_PIVOT,
+        L1_FADEAWAY);
   }
 
   public boolean isLowIn() {
