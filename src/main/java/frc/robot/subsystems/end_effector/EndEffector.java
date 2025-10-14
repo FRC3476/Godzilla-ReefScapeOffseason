@@ -32,6 +32,10 @@ public class EndEffector extends SubsystemBase {
       new LoggedTunableNumber("EndEffector/PivotKG", EndEffectorConstants.Tunable_PIVOT_kG);
   private static final LoggedTunableNumber pivotKS =
       new LoggedTunableNumber("EndEffector/PivotKS", EndEffectorConstants.Tunable_PIVOT_kS);
+  private static final LoggedTunableNumber pivotKV =
+      new LoggedTunableNumber("EndEffector/PivotKV", EndEffectorConstants.Tunable_PIVOT_kV);
+  private static final LoggedTunableNumber pivotKA =
+      new LoggedTunableNumber("EndEffector/PivotKA", EndEffectorConstants.Tunable_PIVOT_kA);
   private static final LoggedTunableNumber pivotVelo =
       new LoggedTunableNumber("EndEffector/PivotVelo", EndEffectorConstants.Tunable_PIVOT_Velo);
   private static final LoggedTunableNumber pivotAccel =
@@ -56,6 +60,8 @@ public class EndEffector extends SubsystemBase {
         || pivotKD.hasChanged(hashCode())
         || pivotKG.hasChanged(hashCode())
         || pivotKS.hasChanged(hashCode())
+        || pivotkV.hasChanged(hashCode())
+        || pivotkA.hasChanged(hashCode())
         || pivotVelo.hasChanged(hashCode())
         || pivotAccel.hasChanged(hashCode())
         || pivotJerk.hasChanged(hashCode())) {
@@ -65,6 +71,8 @@ public class EndEffector extends SubsystemBase {
           pivotKD.get(),
           pivotKG.get(),
           pivotKS.get(),
+          pivotKV.get(),
+          pivotKA.get(),
           pivotVelo.get(),
           pivotAccel.get(),
           pivotJerk.get());

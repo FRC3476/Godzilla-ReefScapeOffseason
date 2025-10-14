@@ -519,6 +519,10 @@ public final class Constants {
     public static final double Tunable_PIVOT_kD = 5;
     public static final double Tunable_PIVOT_kG = 0.9;
     public static final double Tunable_PIVOT_kS = 0.35;
+    public static final double Tunable_PIVOT_kV = 5;
+    public static final double Tunable_PIVOT_kA = 0.19;
+
+
 
     public static final double Tunable_PIVOT_Velo = 1000;
     public static final double Tunable_PIVOT_Accel = 9;
@@ -576,6 +580,9 @@ public final class Constants {
                     .withKI(Tunable_PIVOT_kI)
                     .withKD(Tunable_PIVOT_kD)
                     .withKG(Tunable_PIVOT_kG)
+                    .withKS(Tunable_PIVOT_kS)
+                    .withKV(Tunable_PIVOT_kV)
+                    .withKA(Tunable_PIVOT_kA)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
