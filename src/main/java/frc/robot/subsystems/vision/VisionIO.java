@@ -15,6 +15,8 @@ public interface VisionIO {
       public MegatagPoseEstimate megatag2PoseEstimate;
       public int megatag2Count;
       public int megatagCount;
+      public double megatagDistance;
+      public double megatag2Distance;
       public Pose3d pose3d;
       public double[] standardDeviations =
           new double[12]; // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x,
