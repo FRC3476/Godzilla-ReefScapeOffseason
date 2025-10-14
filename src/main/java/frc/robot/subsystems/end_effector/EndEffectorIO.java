@@ -33,6 +33,8 @@ public interface EndEffectorIO {
       double kD,
       double kG,
       double kS,
+      double kV,
+      double kA,
       double velo,
       double accel,
       double jerk) {}

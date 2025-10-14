@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
+import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -32,6 +33,10 @@ public class EndEffector extends SubsystemBase {
       new LoggedTunableNumber("EndEffector/PivotKG", EndEffectorConstants.Tunable_PIVOT_kG);
   private static final LoggedTunableNumber pivotKS =
       new LoggedTunableNumber("EndEffector/PivotKS", EndEffectorConstants.Tunable_PIVOT_kS);
+  private static final LoggedTunableNumber pivotKV =
+      new LoggedTunableNumber("EndEffector/PivotKV", EndEffectorConstants.Tunable_PIVOT_kV);
+  private static final LoggedTunableNumber pivotKA =
+      new LoggedTunableNumber("EndEffector/PivotKA", EndEffectorConstants.Tunable_PIVOT_kA);
   private static final LoggedTunableNumber pivotVelo =
       new LoggedTunableNumber("EndEffector/PivotVelo", EndEffectorConstants.Tunable_PIVOT_Velo);
   private static final LoggedTunableNumber pivotAccel =
@@ -56,6 +61,8 @@ public class EndEffector extends SubsystemBase {
         || pivotKD.hasChanged(hashCode())
         || pivotKG.hasChanged(hashCode())
         || pivotKS.hasChanged(hashCode())
+        || pivotKV.hasChanged(hashCode())
+        || pivotKA.hasChanged(hashCode())
         || pivotVelo.hasChanged(hashCode())
         || pivotAccel.hasChanged(hashCode())
         || pivotJerk.hasChanged(hashCode())) {
@@ -65,6 +72,8 @@ public class EndEffector extends SubsystemBase {
           pivotKD.get(),
           pivotKG.get(),
           pivotKS.get(),
+          pivotKV.get(),
+          pivotKA.get(),
           pivotVelo.get(),
           pivotAccel.get(),
           pivotJerk.get());
@@ -75,6 +84,7 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput(
         "EndEffector/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
+    Logger.recordOutput("EndEffector/TargetPos", pivotSetpoint);
   }
 
   public double getCurrentPivotPosition() {
@@ -89,6 +99,7 @@ public class EndEffector extends SubsystemBase {
         EndEffectorConstants.PIVOT_TOLERANCE_ROTATIONS);
   }
 
+  // Normal tolerance
   public Command moveEndEffectorCommand(DoubleSupplier rotationsSupplier) {
     return Commands.sequence(
         this.rotatePivotCommand(rotationsSupplier), this.waitUntilTargetPositionCommand());
@@ -121,5 +132,12 @@ public class EndEffector extends SubsystemBase {
 
   public Command setPivotZero() {
     return Commands.runOnce(() -> this.io.setPivotZero(), this);
+  }
+
+  public boolean isPivotSafe() {
+    return Util.inRange(
+        inputs.pivotData.pivotPosition(),
+        EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS,
+        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
   }
 }

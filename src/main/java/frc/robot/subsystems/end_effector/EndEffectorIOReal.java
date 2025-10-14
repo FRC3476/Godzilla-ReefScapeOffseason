@@ -127,6 +127,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
       double kD,
       double kG,
       double kS,
+      double kV,
+      double kA,
       double velo,
       double accel,
       double jerk) {
@@ -137,6 +139,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotConfig.Slot0.kD = kD;
     pivotConfig.Slot0.kG = kG;
     pivotConfig.Slot0.kS = kS;
+    pivotConfig.Slot0.kV = kV;
+    pivotConfig.Slot0.kA = kA;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
     pivotConfig.MotionMagic.MotionMagicAcceleration = accel;
     pivotConfig.MotionMagic.MotionMagicJerk = jerk;

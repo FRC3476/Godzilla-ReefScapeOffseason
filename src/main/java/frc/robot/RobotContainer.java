@@ -675,7 +675,7 @@ public class RobotContainer {
   }
 
   private void buildSuperstructureTab() {
-    superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
+    // superstructure.setStateCommand(SuperstructureState.STOW, "Set STOW");
     // Get the NetworkTable for the Superstructure tab
     NetworkTable superstructureTable =
         NetworkTableInstance.getDefault().getTable("Elastic/Superstructure");

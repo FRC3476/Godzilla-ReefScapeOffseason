@@ -71,7 +71,6 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
 
   private void updatePivotSimStates() {
     double simPositionRads = pivotSim.getAngularPositionRad();
-    Logger.recordOutput("EndEffector/Sim/SimPivotPositionRadians", simPositionRads);
     double rotorPosition =
         Units.radiansToRotations(simPositionRads) / EndEffectorConstants.PIVOT_GEAR_RATIO;
     pivotLastRotations.set(rotorPosition);
@@ -88,10 +87,13 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
 
   private void logSimulationData() {
     // Log pivot simulation data
-    Logger.recordOutput("Intake/Sim/Pivot/PositionRad", pivotSim.getAngularPositionRad());
-    Logger.recordOutput("Intake/Sim/Pivot/VelocityRPS", pivotSim.getAngularVelocityRadPerSec());
-    Logger.recordOutput("Intake/Sim/Pivot/CurrentAmps", pivotSim.getCurrentDrawAmps());
-    Logger.recordOutput("Intake/Sim/Pivot/AppliedVoltage", pivotSimState.getMotorVoltage());
+    Logger.recordOutput(
+        "Endeffector/Sim/Pivot/PositionRot",
+        Units.radiansToRotations(pivotSim.getAngularPositionRad()));
+    Logger.recordOutput(
+        "Endeffector/Sim/Pivot/VelocityRPS", pivotSim.getAngularVelocityRadPerSec());
+    Logger.recordOutput("Endeffector/Sim/Pivot/CurrentAmps", pivotSim.getCurrentDrawAmps());
+    Logger.recordOutput("Endeffector/Sim/Pivot/AppliedVoltage", pivotSimState.getMotorVoltage());
   }
 
   public void close() {
