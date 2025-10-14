@@ -516,13 +516,11 @@ public final class Constants {
 
     public static final double Tunable_PIVOT_kP = 60;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 5;
+    public static final double Tunable_PIVOT_kD = 3.5;
     public static final double Tunable_PIVOT_kG = 0.9;
     public static final double Tunable_PIVOT_kS = 0.35;
-    public static final double Tunable_PIVOT_kV = 5;
     public static final double Tunable_PIVOT_kA = 0.19;
-
-
+    public static final double Tunable_PIVOT_kV = 5;
 
     public static final double Tunable_PIVOT_Velo = 1000;
     public static final double Tunable_PIVOT_Accel = 9;
@@ -580,9 +578,8 @@ public final class Constants {
                     .withKI(Tunable_PIVOT_kI)
                     .withKD(Tunable_PIVOT_kD)
                     .withKG(Tunable_PIVOT_kG)
-                    .withKS(Tunable_PIVOT_kS)
-                    .withKV(Tunable_PIVOT_kV)
                     .withKA(Tunable_PIVOT_kA)
+                    .withKV(Tunable_PIVOT_kV)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
@@ -742,9 +739,13 @@ public final class Constants {
     public static final double kDefaultYawDiffThreshold = 5.0;
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
+    public static final double kTagMinAreaForMultipleTagMegatag = 0.5;
     public static final double kDefaultZThreshold = 0.2;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
+    public static final double kXStdDevCoefficent = 0.5;
+    public static final double kYStdDevCoefficent = 0.5;
+    public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
     public static final double kCameraVerticalFOVDegrees = 55.0;
@@ -773,6 +774,9 @@ public final class Constants {
 
     public static double CLIMB_ENDEFFECTOR_SAFE_ROTATIONS =
         EndEffectorConstants.PIVOT_CLIMB_SAFE_ROTATIONS;
+
+    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 12.9;
+    public static double HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 45.7;
 
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =

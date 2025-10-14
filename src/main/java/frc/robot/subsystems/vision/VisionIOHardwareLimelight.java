@@ -71,6 +71,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
           camera.megatagPoseEstimate = MegatagPoseEstimate.fromLimelight(megatag);
           camera.megatagCount = megatag.tagCount;
           camera.fiducialObservations = FiducialObservation.fromLimelight(megatag.rawFiducials);
+          camera.megatagDistance = megatag.avgTagDist; // have no clue if this value is accurate
         }
         if (robotPose3d != null) {
           camera.pose3d = robotPose3d;
