@@ -738,6 +738,9 @@ public final class Constants {
     public static final double kDefaultZThreshold = 0.2;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
+    public static final double kXStdDevCoefficent = 0.01; // value that 6328 used
+    public static final double kYStdDevCoefficent = 0.01; // value that 6328 used
+    public static final double thetaStdDevCoefficient = 0.03; // value that 6328 used
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
     public static final double kCameraVerticalFOVDegrees = 55.0;

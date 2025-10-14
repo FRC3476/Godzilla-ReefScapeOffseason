@@ -143,6 +143,8 @@ public class Vision extends SubsystemBase {
 
     Logger.recordOutput("Vision/exclusiveTagId", state.getExclusiveTag().orElse(-1));
     Logger.recordOutput("Vision/latencyPeriodicSec", RobotTime.getTimestampSeconds() - startTime);
+
+    
   }
 
   private void logCameraInputs(String prefix, VisionIO.VisionIOInputs.CameraInputs cam) {
@@ -162,6 +164,9 @@ public class Vision extends SubsystemBase {
       Logger.recordOutput(prefix + "/MegatagPoseEstimate", cam.megatagPoseEstimate.fieldToRobot());
       Logger.recordOutput(prefix + "/Quality", cam.megatagPoseEstimate.quality());
       Logger.recordOutput(prefix + "/AvgTagArea", cam.megatagPoseEstimate.avgTagArea());
+      Logger.recordOutput(prefix + "/XStandardDeviations", cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex]);
+      Logger.recordOutput(prefix + "/YStandardDeviations", cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex]);
+      Logger.recordOutput(prefix + "/YawStandardDeviations", cam.standardDeviations[VisionConstants.kMegatag1YawStdDevIndex]);
     }
 
     if (cam.fiducialObservations != null) {
@@ -265,8 +270,29 @@ public class Vision extends SubsystemBase {
                 .minus(robotToTag.getTranslation().rotateBy(priorPose.get().getRotation())),
             priorPose.get().getRotation());
 
-    double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex];
-    double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex];
+    // double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex];
+    // double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex];
+
+    double xStd =
+        // cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex]
+        //     * 
+            VisionConstants
+                .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+            * Math.pow(
+                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+            / Math.pow(
+                cam.megatagCount,
+                2.0); // we are more confident if we have more tags visible so divide
+    double yStd =
+        // cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex]
+        //     * 
+            VisionConstants
+                .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+            * Math.pow(
+                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+            / Math.pow(
+                cam.megatagCount,
+                2.0); // we are more confident if we have more tags visible so divide
     double xyStd = Math.max(xStd, yStd);
 
     return Optional.of(
@@ -340,10 +366,33 @@ public class Vision extends SubsystemBase {
 
     Pose2d estimatePose = poseEstimate.fieldToRobot();
 
-    double scaleFactor = 1.0 / poseEstimate.quality();
-    double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex] * scaleFactor;
-    double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex] * scaleFactor;
-    double rotStd = cam.standardDeviations[VisionConstants.kMegatag1YawStdDevIndex] * scaleFactor;
+    // double scaleFactor = 1.0 / poseEstimate.quality();
+    // double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex] * scaleFactor;
+
+    double xStd =
+        // cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex]
+        //     * 
+            VisionConstants
+                .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+            * Math.pow(
+                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+            / Math.pow(
+                cam.megatagCount,
+                2.0); // we are more confident if we have more tags visible so divide
+    double yStd =
+        cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex]
+            * VisionConstants
+                .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+            * Math.pow(
+                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+            / Math.pow(
+                cam.megatagCount,
+                2.0); // we are more confident if we have more tags visible so divide
+    double rotStd =
+        cam.standardDeviations[VisionConstants.kMegatag1YawStdDevIndex]
+            * VisionConstants.thetaStdDevCoefficient
+            * Math.pow(cam.megatagDistance, 1.2)
+            / Math.pow(cam.megatagCount, 2.0);
 
     double xyStd = Math.max(xStd, yStd);
     Matrix<N3, N1> visionStdDevs = VecBuilder.fill(xyStd, xyStd, rotStd);
