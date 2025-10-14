@@ -60,8 +60,8 @@ public class EndEffector extends SubsystemBase {
         || pivotKD.hasChanged(hashCode())
         || pivotKG.hasChanged(hashCode())
         || pivotKS.hasChanged(hashCode())
-        || pivotkV.hasChanged(hashCode())
-        || pivotkA.hasChanged(hashCode())
+        || pivotKV.hasChanged(hashCode())
+        || pivotKA.hasChanged(hashCode())
         || pivotVelo.hasChanged(hashCode())
         || pivotAccel.hasChanged(hashCode())
         || pivotJerk.hasChanged(hashCode())) {
