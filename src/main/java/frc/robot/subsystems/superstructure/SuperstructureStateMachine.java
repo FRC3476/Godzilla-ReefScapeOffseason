@@ -336,7 +336,7 @@ public class SuperstructureStateMachine {
       } else if (current.isLowOut() && secondTarget.isHighIn()) {
         stateManager.setShortcutType(TransitionShortcutType.LOW_OUT_TO_HIGH_IN);
       }
-      if (current.isHighOut() && secondTarget.isLowOut()) {
+      if (current.isHighIn() && secondTarget.isLowOut()) {
         stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_LOW_OUT);
       } else if (current.isHighOut() && secondTarget.isLowIn()) {
         stateManager.setShortcutType(TransitionShortcutType.HIGH_OUT_TO_LOW_IN);
