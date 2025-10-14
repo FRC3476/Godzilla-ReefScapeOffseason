@@ -514,14 +514,14 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
-    public static final double Tunable_PIVOT_kP = 70;
+    public static final double Tunable_PIVOT_kP = 60;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 1;
-    public static final double Tunable_PIVOT_kG = 0.615;
+    public static final double Tunable_PIVOT_kD = 5;
+    public static final double Tunable_PIVOT_kG = 0.9;
     public static final double Tunable_PIVOT_kS = 0.35;
 
     public static final double Tunable_PIVOT_Velo = 1000;
-    public static final double Tunable_PIVOT_Accel = 12;
+    public static final double Tunable_PIVOT_Accel = 9;
     public static final double Tunable_PIVOT_Jerk = 1000;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
