@@ -128,11 +128,6 @@ public class StreamDeck extends SubsystemBase {
           Optional<BooleanSupplier> selected = configInfo.getActiveSupplier();
           ButtonType type = configInfo.getType();
 
-          if (type == ButtonType.PAGE_SELECTOR) {
-            pageButton = Optional.of(button);
-            pageButtonConfigs = configInfo.getConfigs();
-          }
-
           var table = deckTable.getSubTable("Button/" + button.getIndex());
           maxPage = Math.max(button.getIndex()/32, maxPage);
           List<String> dataToPublish = button.getDataToPublish();
@@ -143,6 +138,13 @@ public class StreamDeck extends SubsystemBase {
                           .getStringTopic(networkTableKeys.get(i))
                           .publish()
                           .set(dataToPublish.get(i)));
+
+          if (type == ButtonType.PAGE_SELECTOR) {
+            assert pageButton.isEmtpy() : "You may not configure multiple page buttons.";
+            pageButton = Optional.of(button);
+            pageButtonConfigs = configInfo.getConfigs();
+            table.getBooleanTopic("IsPageButton").publish().set(true);
+          }
 
           var loggedBoolean = new LoggedNetworkBoolean(dataToPublish.get(0), false);
           var loggedBooleanPrev = new LoggedNetworkBoolean(dataToPublish.get(0) + "Prev", false);
