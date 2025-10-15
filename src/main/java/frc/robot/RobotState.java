@@ -170,18 +170,19 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public SuperstructureState getFadeawayState() {
-    switch (storedScorePosition.getScoreLevel()) {
-      case L1:
+    switch (currentState) {
+      case L1_PIVOT:
         return SuperstructureState.L1_FADEAWAY;
-      case L2:
+      case L2_AIM:
         return SuperstructureState.L2_FADEAWAY;
-      case L3:
+      case L3_AIM:
         return SuperstructureState.L3_FADEAWAY;
-      case L4:
+      case L4_AIM:
         return SuperstructureState.L4_FADEAWAY;
-      case BARGE:
+      case BARGE_AIM_FORWARD:
+      case BARGE_AIM_BACKWARD:
         return SuperstructureState.BARGE_AIM_CENTER;
-      case PROCESSOR:
+      case PROCESSOR_AIM:
         return SuperstructureState.STOW;
       default:
         return SuperstructureState.NONE;
@@ -211,7 +212,7 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static final String logRoot = "RobotState/";
 
-  private static SuperstructureState currenState = SuperstructureState.NONE;
+  private static SuperstructureState currentState = SuperstructureState.NONE;
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
@@ -325,11 +326,11 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public static void setSuperstructureState(SuperstructureState state) {
-    currenState = state;
+    currentState = state;
   }
 
   public static SuperstructureState getSuperstructureState() {
-    return currenState;
+    return currentState;
   }
 
   public static Trigger onTeamSide() {
