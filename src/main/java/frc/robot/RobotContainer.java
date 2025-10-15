@@ -209,7 +209,7 @@ public class RobotContainer {
     // LEFT ALIGN
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
-        new MagicDriveToPoseCommand(
+        new GarageDriveToPoseCommand(
                 drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
@@ -220,7 +220,7 @@ public class RobotContainer {
     // RIGHT ALIGN
     NamedCommands.registerCommand(
         "FinalRightPoleAlign",
-        new MagicDriveToPoseCommand(
+        new GarageDriveToPoseCommand(
                 drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
