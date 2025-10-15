@@ -41,8 +41,10 @@ public class CompTunerConstants {
           .withKP(0.1)
           .withKI(0)
           .withKD(0)
-          .withKS(0.20540)
-          .withKV(0.79055); // withKV(0.124);
+          .withKS(0.0)
+          // .withKS(0.20540)
+          // .withKV(0.79055);
+          .withKV(0.124);
   //   new Slot0Configs().withKP(10.0).withKI(0.0).withKD(0.0).withKS(1.5).withKV(0.0);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;

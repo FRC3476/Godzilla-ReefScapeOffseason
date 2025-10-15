@@ -41,6 +41,7 @@ import frc.robot.RobotState.ReefSide;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
@@ -194,12 +195,15 @@ public class RobotContainer {
         "IntakeStartup", intake.setIntakeStateCommand(IntakeState.IDLE).asProxy());
 
     NamedCommands.registerCommand(
-        "ScoreTargetStartup",
-        new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L1)));
+        "ScoreTargetStartup", // CHANGE TO L4 LATER
+        new InstantCommand(() -> robotState.getStoredScorePosition().setScoreLevel(ScoreLevel.L4)));
 
     // ====================SCORING COMMANDS====================
     NamedCommands.registerCommand(
         "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
+
+    NamedCommands.registerCommand(
+        "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
 
     // LEFT ALIGN
     NamedCommands.registerCommand(
@@ -235,11 +239,11 @@ public class RobotContainer {
         "IntakeEnable", intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
 
     NamedCommands.registerCommand(
-        "DriveToCoral", DriveCommands.driveToCoral(drive, vision).withTimeout(3.0));
+        "DriveToCoral", new DriveToCoralCommand(drive, vision).withTimeout(10.0)); // 3.0
 
     // ====================CORAL TRACKING COMMANDS====================
     NamedCommands.registerCommand(
-        "SeesCoral", new WaitUntilCommand(() -> vision.isCoralDetected()).withTimeout(3.0));
+        "SeesCoral", new WaitUntilCommand(() -> vision.isCoralDetected()).withTimeout(10.0));
     NamedCommands.registerCommand(
         "IsCoralInFeeder",
         new WaitUntilCommand(

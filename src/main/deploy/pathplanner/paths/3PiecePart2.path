@@ -3,38 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.115426136363636,
-        "y": 2.5043323863636364
+        "x": 5.012166286670329,
+        "y": 2.6938289452043365
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.813176136363636,
-        "y": 1.6755823863636363
+        "x": 5.360841783359071,
+        "y": 1.981949806131488
       },
       "isLocked": false,
-      "linkedName": "BP1E"
+      "linkedName": "2PP1E"
     },
     {
       "anchor": {
-        "x": 3.0517499999999997,
-        "y": 1.7629999999999995
+        "x": 2.629594370860927,
+        "y": 1.6714403973509935
       },
       "prevControl": {
-        "x": 4.192209437086092,
-        "y": 1.7412077814569533
+        "x": 4.590894039735099,
+        "y": 2.354263245033112
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BlueProcessorIntake"
+      "linkedName": "2PP2E"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.707021791767555,
+      "rotationDegrees": -125.00000000000001
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 1.35,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -136.9838458994161
+    "rotation": -125.00000000000001
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -62.64790914836393
+    "rotation": -61.79658111966859
   },
   "useDefaultConstraints": true
 }

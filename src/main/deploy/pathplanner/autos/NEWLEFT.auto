@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SuperStructureStartup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeStartup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreTargetStartup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
