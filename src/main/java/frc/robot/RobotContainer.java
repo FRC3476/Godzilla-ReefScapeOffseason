@@ -1934,7 +1934,7 @@ public class RobotContainer {
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
 
-    //recommended but untested
+    // recommended but untested
     // claw.exhaustedCoral().onTrue(CoralStateTracker.forceSet(CoralPosition.NONE));
 
     //
