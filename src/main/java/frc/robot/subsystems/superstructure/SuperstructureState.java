@@ -129,10 +129,10 @@ public enum SuperstructureState {
 
   public enum TransitionShortcutType {
     NONE,
-    LOW_IN_TO_HIGH_OUT,
-    LOW_OUT_TO_HIGH_IN,
-    HIGH_OUT_TO_LOW_IN,
-    HIGH_IN_TO_LOW_OUT
+    LOW_IN_TO_OUT,
+    OUT_TO_HIGH_IN,
+    OUT_TO_LOW_IN,
+    HIGH_IN_TO_OUT
   }
 
   // run the guaranteed safe transition while it's unsafe to skip
@@ -144,11 +144,11 @@ public enum SuperstructureState {
             this.getCommand(container),
             // only be in transition if the elevator current position is less than the safe low
             // amount
-            TransitionShortcutType.LOW_IN_TO_HIGH_OUT,
+            TransitionShortcutType.LOW_IN_TO_OUT,
             this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe()),
             // only be in transition if the elevator current position is less than the safe low
             // amount
-            TransitionShortcutType.LOW_OUT_TO_HIGH_IN,
+            TransitionShortcutType.OUT_TO_HIGH_IN,
             this.getCommand(container)
                 .onlyWhile(
                     () ->
@@ -157,7 +157,7 @@ public enum SuperstructureState {
                                 .HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
             // only be in transition if the elevator current position is less than the safe low
             // amount
-            TransitionShortcutType.HIGH_OUT_TO_LOW_IN,
+            TransitionShortcutType.OUT_TO_LOW_IN,
             this.getCommand(container)
                 .onlyWhile(
                     () ->
@@ -165,7 +165,7 @@ public enum SuperstructureState {
                             > Constants.SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES),
             // only be in transition if the elevator current position is less than the safe low
             // amount
-            TransitionShortcutType.HIGH_IN_TO_LOW_OUT,
+            TransitionShortcutType.HIGH_IN_TO_OUT,
             this.getCommand(container).onlyWhile(() -> !container.getEndEffector().isPivotSafe())),
         () -> shortcutType);
   }
@@ -210,9 +210,9 @@ public enum SuperstructureState {
     } else if (lowInStates().contains(this)) { // low in states
       return Util.mergeSets(lowOutStates(), lowInStates());
     } else if (lowOutStates().contains(this)) { // low out states
-      return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates());
+      return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates(), middleOutStates());
     } else if (highOutStates().contains(this)) { // high out states
-      return Util.mergeSets(lowOutStates(), highInStates(), highOutStates());
+      return Util.mergeSets(lowOutStates(), highInStates(), highOutStates(), middleOutStates());
     } else if (highInStates().contains(this)) { // high in states
       return Util.mergeSets(highOutStates(), highInStates());
     }
@@ -242,6 +242,14 @@ public enum SuperstructureState {
 
   public boolean isLowOut() {
     return lowOutStates().contains(this);
+  }
+
+  private Set<SuperstructureState> middleOutStates() {
+    return EnumSet.of(
+        ALGAE_LOW_INTAKE);
+  }
+  public boolean isMiddleOut() {
+    return middleOutStates().contains(this);
   }
 
   private Set<SuperstructureState> highOutStates() {
