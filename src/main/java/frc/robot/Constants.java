@@ -636,6 +636,7 @@ public final class Constants {
       HOLDING_CORAL,
       SCORING,
       SCORING_L1,
+      SCORING_ALGAE,
       ALGAE
     }
 
@@ -643,6 +644,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -7;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance

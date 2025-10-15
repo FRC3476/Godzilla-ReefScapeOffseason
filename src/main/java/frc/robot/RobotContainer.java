@@ -1099,9 +1099,12 @@ public class RobotContainer {
                 //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
                 // new WaitCommand(0.2)
                 new ConditionalCommand(
-                    claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
-                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                    () -> robotState.isL1Mode()),
+                    new ConditionalCommand(
+                        claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                        () -> robotState.isL1Mode())
+                    , getAutonomousCommand(),
+                     () -> RobotState.getSuperstructureState().isCoralState()),
                 new WaitUntilCommand(
                         () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                     .withTimeout(3),
