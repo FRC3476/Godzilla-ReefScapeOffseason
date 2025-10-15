@@ -789,9 +789,8 @@ public final class Constants {
     public static double STOW_CORAL_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH =
-        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS = 0;
+    public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS = 0.292;
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
