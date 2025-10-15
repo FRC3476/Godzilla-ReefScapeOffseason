@@ -1,6 +1,7 @@
 package frc.robot.util.Controls;
 
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,12 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class StreamDeck extends SubsystemBase {
   private final Map<StreamDeckButton, ButtonRecord> buttonMap = new HashMap<>();
+  NetworkTableInstance nt = NetworkTableInstance.getDefault();
+  NetworkTable deckTable = nt.getTable("StreamDeck");
+  int page = 0;
+  int maxPage = 0;
+  Optional<StreamDeckButton> pageButton;
+  Optional<Map<Integer, StreamDeckButtonConfig>> pageButtonConfigs;
 
   private static record ButtonRecord(
       LoggedNetworkBoolean pressed,
@@ -33,13 +40,32 @@ public class StreamDeck extends SubsystemBase {
         .values()
         .forEach(
             button -> {
-              if (button.type == ButtonType.TOGGLE
-                  && button.pressed.get()
-                  && !button.pressedPrev.get()) {
-                button.toggled.set(!button.toggled.get());
+              switch (button.type) {
+                case TOGGLE:
+                  if (button.pressed.get() && !button.pressedPrev.get()) {
+                    button.toggled.set(!button.toggled.get());
+                  }
+                  break;
+                case PAGE_SELECTOR:
+                  if (button.pressed.get() && !button.pressedPrev.get()) {
+                    page = page==maxPage? 0 : page + 1;
+                    deckTable.getIntegerTopic("Page").publish().set(page);
+                    pageButton.ifPresent(
+                      b ->
+                      pageButtonConfigs.ifPresent(
+                        configMap ->
+                        b.setInactiveConfig(
+                          configMap.getOrDefault(page,configMap.get(0))
+                        )
+                      )
+                    );
+                  }
+                  break;
+                default:
+                  button.activePub.set(button.selected.getAsBoolean());
+                  button.pressedPrev.set(button.pressed.get());
+                  break;
               }
-              button.activePub.set(button.selected.getAsBoolean());
-              button.pressedPrev.set(button.pressed.get());
             });
   }
 
@@ -70,6 +96,14 @@ public class StreamDeck extends SubsystemBase {
         });
   }
 
+  public void conifgurePageButton(StreamDeckButton pageButton) {
+    configureButton(config -> config.addPageButton(pageButton, Optional.empty()));
+  }
+
+  public void conifgurePageButton(StreamDeckButton pageButton, Optional<Map<Integer,StreamDeckButtonConfig>> pageConfigs) {
+    configureButton(config -> config.addPageButton(pageButton, pageConfigs));
+  }
+
   public void clearButtons() {
     for (Map.Entry<StreamDeckButton, ButtonRecord> entry : buttonMap.entrySet()) {
       if (entry.getValue().type  != ButtonType.PAGE_SELECTOR) {
@@ -88,15 +122,19 @@ public class StreamDeck extends SubsystemBase {
     var configuration = new ButtonConfiguration();
     config.accept(configuration);
 
-    var nt = NetworkTableInstance.getDefault();
-    var deckTable = nt.getTable("StreamDeck");
     List<String> networkTableKeys = StreamDeckButton.getNetworkTableKeys();
     configuration.buttonConfigurations.forEach(
         (button, configInfo) -> {
           Optional<BooleanSupplier> selected = configInfo.getActiveSupplier();
           ButtonType type = configInfo.getType();
 
+          if (type == ButtonType.PAGE_SELECTOR) {
+            pageButton = Optional.of(button);
+            pageButtonConfigs = configInfo.getConfigs();
+          }
+
           var table = deckTable.getSubTable("Button/" + button.getIndex());
+          maxPage = Math.max(button.getIndex()/32, maxPage);
           List<String> dataToPublish = button.getDataToPublish();
           IntStream.range(0, Math.min(networkTableKeys.size(), dataToPublish.size()))
               .forEach(
@@ -110,19 +148,28 @@ public class StreamDeck extends SubsystemBase {
           var loggedBooleanPrev = new LoggedNetworkBoolean(dataToPublish.get(0) + "Prev", false);
           var loggedBooleanToggled =
               new LoggedNetworkBoolean(dataToPublish.get(0) + "Toggled", false);
+          BooleanSupplier defaultSelectedBehavior;
+          switch (type) {
+            case TOGGLE :
+              defaultSelectedBehavior = () -> loggedBooleanToggled.get();
+              break;
+            case PAGE_SELECTOR:
+              defaultSelectedBehavior = () -> false;
+            default:
+              defaultSelectedBehavior = loggedBoolean::get;
+              break;
+          }
           buttonMap.put(
               button,
               new ButtonRecord(
                   loggedBoolean,
                   loggedBooleanPrev,
                   loggedBooleanToggled,
-                  selected.orElse(
-                      type == ButtonType.TOGGLE
-                          ? () -> loggedBooleanToggled.get()
-                          : loggedBoolean::get),
+                  selected.orElse(defaultSelectedBehavior),
                   table.getBooleanTopic("Selected").publish(),
                   type));
-        });
+        }
+    );
 
     deckTable.getIntegerTopic("LastModified").publish().set(Logger.getTimestamp());
 
@@ -155,15 +202,24 @@ public class StreamDeck extends SubsystemBase {
     private class ButtonConfigurationInfo {
       private Optional<BooleanSupplier> activeSupplier;
       private ButtonType type;
+      private Optional<Map<Integer,StreamDeckButtonConfig>> configs;
 
       public ButtonConfigurationInfo(Optional<BooleanSupplier> activeSupplier,
       ButtonType type) {
         this.activeSupplier = activeSupplier;
         this.type = type;
+        this.configs = Optional.empty();
+      }
+      public ButtonConfigurationInfo(Optional<BooleanSupplier> activeSupplier,
+      ButtonType type, Optional<Map<Integer,StreamDeckButtonConfig>> configs) {
+        this.activeSupplier = activeSupplier;
+        this.type = type;
+        this.configs = configs;
       }
       public ButtonConfigurationInfo(ButtonType type) {
         this.activeSupplier = Optional.empty();
         this.type = type;
+        this.configs = Optional.empty();
       }
 
       public Optional<BooleanSupplier> getActiveSupplier() {
@@ -171,6 +227,9 @@ public class StreamDeck extends SubsystemBase {
       }
       public ButtonType getType() {
         return type;
+      }
+      public Optional<Map<Integer,StreamDeckButtonConfig>> getConfigs() {
+        return configs;
       }
 
     }
@@ -184,7 +243,6 @@ public class StreamDeck extends SubsystemBase {
       return this;
     }
     
-
     public ButtonConfiguration addToggle(StreamDeckButton button) {
       buttonConfigurations.put(button, new ButtonConfigurationInfo(ButtonType.TOGGLE));
       return this;
@@ -192,6 +250,11 @@ public class StreamDeck extends SubsystemBase {
 
     public ButtonConfiguration add(StreamDeckButton button, BooleanSupplier selected) {
       buttonConfigurations.put(button, new ButtonConfigurationInfo(Optional.of(selected), ButtonType.CUSTOM));
+      return this;
+    }
+
+    public ButtonConfiguration addPageButton(StreamDeckButton pageButton, Optional<Map<Integer,StreamDeckButtonConfig>> pageConfigs) {
+      buttonConfigurations.put(pageButton, new ButtonConfigurationInfo(Optional.of(() -> false), ButtonType.PAGE_SELECTOR, pageConfigs));
       return this;
     }
   }
