@@ -91,8 +91,8 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS),
   CORAL_STUCK_UNDER_FEEDER(
-      Constants.SuperstructureConstants.STOW_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.ENDEFFECTOR_UP_ROTATIONS);
+      Constants.SuperstructureConstants.CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.CORAL_STUCK_UNDER_FEEDER_ENDEFECCTOR_ROTATION_ROTATIONS);
 
   private final double elevatorHeight;
   private final double endEffectorRotation;
@@ -240,7 +240,7 @@ public enum SuperstructureState {
   }
 
   private Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(L2_AIM, L2_FADEAWAY, L2_AWAY_FROM_REEF, PROCESSOR_AIM);
+    return EnumSet.of(L2_AIM, L2_FADEAWAY, L2_AWAY_FROM_REEF, PROCESSOR_AIM, CORAL_STUCK_UNDER_FEEDER);
   }
 
   public boolean isLowOut() {

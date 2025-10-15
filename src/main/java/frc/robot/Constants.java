@@ -785,7 +785,6 @@ public final class Constants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-    public static double ENDEFFECTOR_UP_ROTATIONS = EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
@@ -809,6 +808,9 @@ public final class Constants {
     public static double FEED_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+
+    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFECCTOR_ROTATION_ROTATIONS2 = EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
