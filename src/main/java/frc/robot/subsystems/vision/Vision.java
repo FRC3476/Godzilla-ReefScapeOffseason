@@ -14,6 +14,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
@@ -290,27 +292,37 @@ public class Vision extends SubsystemBase {
                 .minus(robotToTag.getTranslation().rotateBy(priorPose.get().getRotation())),
             priorPose.get().getRotation());
 
-    // double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex];
-    // double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex];
+    double xStd = 0.0;
+    double yStd = 0.0;
 
-    double xStd =
-        // cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex]
-        //     *
-        VisionConstants.kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
-            * Math.pow(
-                cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
-            / Math.pow(
-                cam.megatagCount,
-                2.0); // we are more confident if we have more tags visible so divide
-    double yStd =
-        // cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex]
-        //     *
-        VisionConstants.kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
-            * Math.pow(
-                cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
-            / Math.pow(
-                cam.megatagCount,
-                2.0); // we are more confident if we have more tags visible so divide
+    if (Constants.currentMode == Mode.REAL) {
+
+      xStd =
+          // cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex]
+          //     *
+          VisionConstants
+                  .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+              * Math.pow(
+                  cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
+              / Math.pow(
+                  cam.megatagCount,
+                  2.0); // we are more confident if we have more tags visible so divide
+      yStd =
+          // cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex]
+          //     *
+          VisionConstants
+                  .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+              * Math.pow(
+                  cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
+              / Math.pow(
+                  cam.megatagCount,
+                  2.0); // we are more confident if we have more tags visible so divide
+
+    } else {
+      xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex];
+      yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex];
+    }
+
     double xyStd = Math.max(xStd, yStd);
 
     return Optional.of(

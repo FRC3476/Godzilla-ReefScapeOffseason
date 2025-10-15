@@ -43,6 +43,7 @@ import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
@@ -1001,7 +1002,7 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            new MagicDriveToPoseCommand(
+            new GarageDriveToPoseCommand(
                 drive,
                 () -> {
                   Pose2d targetPose;
@@ -1015,8 +1016,7 @@ public class RobotContainer {
                   }
                   return PoseUtils.getPerpendicularOffsetPose(
                       targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
-                },
-                true));
+                }));
 
     // controller
     //     .rightTrigger();
@@ -1106,9 +1106,9 @@ public class RobotContainer {
                     new ConditionalCommand(
                         claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
                         claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                        () -> robotState.isL1Mode())
-                    , getAutonomousCommand(),
-                     () -> RobotState.getSuperstructureState().isCoralState()),
+                        () -> robotState.isL1Mode()),
+                    claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                    () -> RobotState.getSuperstructureState().isCoralState()),
                 new WaitUntilCommand(
                         () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                     .withTimeout(3),
