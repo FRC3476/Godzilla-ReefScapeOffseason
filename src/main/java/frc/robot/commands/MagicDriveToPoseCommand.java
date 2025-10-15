@@ -67,7 +67,7 @@ public class MagicDriveToPoseCommand extends Command {
     xController.setTolerance(Units.inchesToMeters(0.5));
     yController.setTolerance(Units.inchesToMeters(0.5));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
-    angleController.setTolerance(Units.degreesToRadians(1.5));
+    angleController.setTolerance(Units.degreesToRadians(0.5));
     this.unending = unending;
   }
 

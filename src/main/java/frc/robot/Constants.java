@@ -118,8 +118,8 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.1;
 
-    public static final double ANGLE_KP = 5.0;
-    public static final double ANGLE_KD = 0.4;
+    public static final double ANGLE_KP = 8.0;
+    public static final double ANGLE_KD = 0.1;
     public static final double ANGLE_MAX_ACCELERATION = 20.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
@@ -541,7 +541,7 @@ public final class Constants {
     public static final double ROLLER_STALLED_CURRENT = 40;
     public static final double ROLLER_STALLED_RPS = 10;
 
-    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
+    public static final double CLAW_HOLD_ALGAE_AMPS = 70.0;
     public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(2.5);
 
     // ========End Effector Constant Positions========
@@ -640,7 +640,7 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 2;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;

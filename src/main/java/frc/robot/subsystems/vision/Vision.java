@@ -298,7 +298,7 @@ public class Vision extends SubsystemBase {
         //     *
         VisionConstants.kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
             * Math.pow(
-                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+                cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
             / Math.pow(
                 cam.megatagCount,
                 2.0); // we are more confident if we have more tags visible so divide
@@ -307,7 +307,7 @@ public class Vision extends SubsystemBase {
         //     *
         VisionConstants.kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
             * Math.pow(
-                cam.megatagDistance, 1.2) // we are less confident if we are farther from the tag
+                cam.megatagDistance, 2.0) // we are less confident if we are farther from the tag
             / Math.pow(
                 cam.megatagCount,
                 2.0); // we are more confident if we have more tags visible so divide
