@@ -654,7 +654,8 @@ public final class Constants {
     public static final double reduction = (1 / 23.11);
     public static final double climbMOI = 0.01;
 
-    public static final int ID = 60;
+    public static final int climberID = 60;
+    public static final int rollerID = 0; //TODO set ID
 
     public static final double CLIMB_DEPLOY_POSITION = 65;
     public static final double CLIMB_CLIMB_POSITION = 209;
@@ -675,11 +676,28 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final double ROLLER_HOLDING_CAGE_AMPS = 60.0; //TODO fine-adjust
+    public static final double ROLLER_BACKOUT_VOLTS = 0.5; //TODO fine-adjust
+    public static final double CLIMBROLLER_CURRENT_LIMIT_AMPS = 80.0;
+    public static final double CLIMBROLLER_STALLED_RPS = 60.0; //TODO fine-adjust
+    public static final double CLIMBROLLER_STALLED_CURRENT = 60.0; //TODO fine-adjust
+
+    public static final TalonFXConfiguration CLIMBROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimitEnable(true)
+                    .withStatorCurrentLimit(ClimbConstants.CLIMBROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
-    public static final int ID = 19; // 80 not allowed, max ID is 62
+    public static final int climberID = 19; // 80 not allowed, max climberID is 62
     public static final int kNonCandleLEDCount = 10;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
@@ -725,7 +743,7 @@ public final class Constants {
     public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
         new AprilTagFieldLayout(
             kAprilTagLayout.getTags().stream()
-                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.ID))
+                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.climberID))
                 .toList(),
             kAprilTagLayout.getFieldLength(),
             kAprilTagLayout.getFieldWidth());
