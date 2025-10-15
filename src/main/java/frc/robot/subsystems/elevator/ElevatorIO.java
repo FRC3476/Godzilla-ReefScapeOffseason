@@ -40,7 +40,7 @@ public interface ElevatorIO {
 
   default void setElevatorTargetPosition(DoubleSupplier supplier) {}
 
-  default void setElevatorZero() {}
+  default void setElevatorPosition(double position) {}
 
   default boolean checkMotorsStalled() {
     return false;
