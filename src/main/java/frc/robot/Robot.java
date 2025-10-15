@@ -16,6 +16,9 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+// import edu.wpi.first.networktables.NetworkTableInstance;
+// import edu.wpi.first.util.datalog.StringLogEntry;
+// import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -162,6 +165,19 @@ public class Robot extends LoggedRobot {
 
     // configure brown out voltage
     RobotController.setBrownoutVoltage(6.0);
+
+    // StringLogEntry entry = new StringLogEntry(DataLogManager.getLog(), "/ntlog");
+    // NetworkTableInstance.getDefault()
+    //     .addLogger(
+    //         0,
+    //         100,
+    //         event ->
+    //             entry.append(
+    //                 event.logMessage.filename
+    //                     + ":"
+    //                     + event.logMessage.line
+    //                     + ":"
+    //                     + event.logMessage.message));
   }
 
   /** This function is called periodically during all modes. */
@@ -178,7 +194,7 @@ public class Robot extends LoggedRobot {
 
     // Optionally switch the thread to high priority to improve loop
     // timing (see the template project documentation for details)
-    // Threads.setCurrentThreadPriority(true, 99);
+    Threads.setCurrentThreadPriority(true, 99);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing

@@ -79,7 +79,9 @@ public class Elevator extends SubsystemBase {
           elevatorAccel.get(),
           elevatorJerk.get());
     }
-
+    Logger.recordOutput(
+        "Elevator/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
@@ -100,12 +102,6 @@ public class Elevator extends SubsystemBase {
         setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
-  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
-  public boolean isInToleranceTransition() {
-    return MathUtil.isNear(
-        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
-  }
-
   public double getTargetPosition() {
     return setpoint;
   }
@@ -116,23 +112,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
-    setpoint = heightSupplier.getAsDouble();
-    return Commands.runOnce(
-        () ->
-            this.io.setElevatorTargetPosition(
-                MathUtil.clamp(
-                    heightSupplier.getAsDouble(),
-                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
-                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
-        this);
+    setpoint =
+        MathUtil.clamp(
+            heightSupplier.getAsDouble(),
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    return Commands.runOnce(() -> this.io.setElevatorTargetPosition(setpoint), this);
   }
 
   public Command waitUntilTargetPositionCommand() {
     return Commands.waitUntil(() -> isInToleranceSetpoint());
-  }
-
-  public Command waitUntilTransitionPositionCommand() {
-    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {
@@ -152,18 +141,20 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (isHomingComplete()) {
-      return false;
-    } else if (io.checkMotorsStalled()
-        && getCurrentPosition()
-            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
-                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
-      // false alarm, elevator is stalling at the top
-      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
-      return false;
-    } else {
-      return io.checkMotorsStalled();
-    }
+    return false; // disabling check for Jam since it's untested. At least the homing works now
+
+    // if (isHomingComplete()) {
+    //   return false;
+    // } else if (io.checkMotorsStalled()
+    //     && getCurrentPosition()
+    //         >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+    //             - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+    //   // false alarm, elevator is stalling at the top
+    //   setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    //   return false;
+    // } else {
+    //   return io.checkMotorsStalled();
+    // }
   }
 
   private boolean isHomingComplete() {
@@ -172,6 +163,15 @@ public class Elevator extends SubsystemBase {
         && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
             || !isZeroed)) {
 
+      io.setElevatorZero();
+      isZeroed = true;
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isManualHomingComplete() {
+    if (io.checkMotorsStalled()) {
       io.setElevatorZero();
       isZeroed = true;
       return true;
@@ -200,6 +200,15 @@ public class Elevator extends SubsystemBase {
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
         .withName("HomeElevator");
+  }
+  /** Command to home the elevator by running it slowly downward until it zeros. */
+  public Command manualHomeElevator() {
+    return Commands.run(
+            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+        .until(() -> isManualHomingComplete())
+        .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
+        .finallyDo(() -> this.io.setElevatorVoltage(0.0))
+        .withName("ManualHomeElevator");
   }
 
   public Trigger elevatorObjectTrigger =

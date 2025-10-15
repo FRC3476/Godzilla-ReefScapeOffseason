@@ -71,12 +71,15 @@ public class VisionIOHardwareLimelight implements VisionIO {
           camera.megatagPoseEstimate = MegatagPoseEstimate.fromLimelight(megatag);
           camera.megatagCount = megatag.tagCount;
           camera.fiducialObservations = FiducialObservation.fromLimelight(megatag.rawFiducials);
+          camera.megatagDistance = megatag.avgTagDist; // have no clue if this value is accurate
         }
         if (robotPose3d != null) {
           camera.pose3d = robotPose3d;
         }
 
         camera.standardDeviations = table.getEntry("stddevs").getDoubleArray(DEFAULT_STDDEVS);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        System.err.println("Limelight ArrayIndex error (don't print this): " + e.getMessage());
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }

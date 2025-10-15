@@ -25,8 +25,13 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drive.CompTunerConstants;
+import frc.robot.subsystems.drive.SimTunerConstants;
 import java.util.Arrays;
 
 /**
@@ -64,8 +69,27 @@ public final class Constants {
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
 
+  public static final double kSteerJoystickDeadband = 0.012;
+  public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
+  public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
+  public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
+    public static final boolean useMapleSim = false;
+    public static final double kDriveMaxSpeed = 3.6;
+
+    public static final double DRIVE_BASE_RADIUS =
+        Math.max(
+            Math.max(
+                Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
+                Math.hypot(
+                    TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY)),
+            Math.max(
+                Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
+                Math.hypot(
+                    TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
+
     // Acceleration limits
     // Large numnbers so they don't do anything.
     public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
@@ -88,11 +112,68 @@ public final class Constants {
         3476.0; // Velocity derivative indicating wheels started spinning
     public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
 
-    public static final double AUTO_ALIGN_AXIS_TOLERANCE = 0.013;
-    public static final double AUTO_ALIGN_FEEDFORWARD = 0.15;
-    public static final double AUTO_ALIGN_SPEED_MULTIPLIER = 0.2;
-    public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.02;
-    public static final double AUTO_ALIGN_DEGREE_TOLERANCE = 2;
+    public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
+
+    public static final double DRIVE_TO_POSE_KP = 12.0;
+    public static final double DRIVE_TO_POSE_KI = 0.0;
+    public static final double DRIVE_TO_POSE_KD = 0.1;
+
+    public static final double ANGLE_KP = 8.0;
+    public static final double ANGLE_KD = 0.1;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0;
+
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+    public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kMaxYAccelerationMetersPerSecondSquared = 10.0;
+    public static final double kDriveMaxAngularRate = 8.2;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
+    public static final double kHeadingControllerP = 8.0;
+    public static final double kHeadingControllerI = 0;
+    public static final double kHeadingControllerD = 0;
+    public static final CommandSwerveDrivetrain kDrivetrain =
+        Robot.isSimulation()
+            ? SimTunerConstants.createDrivetrain()
+            : CompTunerConstants.createDrivetrain();
+    public static final double kRobotWeightPounds = 150.0;
+    public static final double kBumperLengthInches = 35.625;
+    public static final double kBumperWidthInches = 35.625;
+    public static final double kWheelCoefficientOfFriction = 1.0;
+    public static final int kDriveMotorCount = 1;
+
+    public static final double kDisabledDriveXStdDev = 1.0;
+    public static final double kDisabledDriveYStdDev = 1.0;
+    public static final double kDisabledDriveRotStdDev = 1.0;
+
+    public static final double kEnabledDriveXStdDev = 0.3;
+    public static final double kEnabledDriveYStdDev = 0.3;
+    public static final double kEnabledDriveRotStdDev = 0.2;
+
+    public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
+    public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
+
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.60;
+  }
+
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3.6;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.74;
+    public static final double kMaxAngularSpeedRadiansPerSecond = 6.5;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 31.538;
+
+    public static final double kPXYController = 5.0;
+    public static final double kPLTEController = 3.0;
+    public static final double kPCTEController = 6.0;
+    public static final double kPThetaController = 5.0;
+
+    public static final double kTranslationKa = 0.0;
+    public static final double kMaxEndPathVelocity = 2.0; // m/s
+
+    public static final double kTriggerTimeBeforeEnd = 0.8; // seconds
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   // ====================Feeder (2_)====================
@@ -146,7 +227,7 @@ public final class Constants {
     public static final int CANRANGE_ID = 34;
 
     // Setpoints
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(1.5);
 
     // Pivot Positions
     public static final double PIVOT_INTAKE_POSITION =
@@ -157,16 +238,19 @@ public final class Constants {
         Units.degreesToRotations(65.7874127); // L1 scoring position
 
     // L1 Blocker Positions
-    public static final double L1_BLOCKER_ENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_POSITION = -0.44;
     public static final double L1_BLOCKER_DISENGAGED_POSITION = 0.0;
+    public static final double L1_BLOCKER_ENGAGED_STALL_VOLTAGE = -4;
+    public static final double L1_BLOCKER_DISENGAGED_STALL_VOLTAGE = 1;
+    public static final double L1_BLOCKER_TORQUE_ENGAGE_AMPS = -20;
+    public static final double L1_BLOCKER_TORQUE_DISENGAGE_AMPS = 10;
 
     // Roller Voltages
-    public static final double ROLLER_SCORING_OUT_VOLTS = 6.0;
+    public static final double ROLLER_SCORING_OUT_VOLTS = -6.0;
 
     public enum IntakeState {
       NONE,
       STOW,
-      INTAKE_L1,
       INTAKE,
       REJECT_CORAL,
       IDLE,
@@ -214,7 +298,7 @@ public final class Constants {
 
     // PID constants
     public static final double lvl1blockerKG = 0.0; // Gravity feedforward
-    public static final double lvl1blockerKP = 0.0; // Proportional gain
+    public static final double lvl1blockerKP = 80.0; // Proportional gain
     public static final double lvl1blockerKI = 0.0; // Integral gain
     public static final double lvl1blockerKD = 0.0; // Derivative gain
 
@@ -340,8 +424,7 @@ public final class Constants {
 
     public static final double CARRIAGE_MASS_KG = 1.97312681; // Mass of elevator carriage
 
-    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 1;
-    public static final double ELEVATOR_TRANSITION_TOLERANCE_INCH = 5;
+    public static final double ELEVATOR_SETPOINT_TOLERANCE_INCH = 0.5;
 
     public static final double ELEVATOR_MOTOR_TO_SENSOR_RATIO =
         1
@@ -351,8 +434,8 @@ public final class Constants {
                 * Math.PI); // Ratio between elevator units (here, inches for real bot) to motor
     // rotations
 
-    public static final double STALLED_CURRENT = 1000;
-    public static final double STALLED_RPS = 0.0;
+    public static final double STALLED_CURRENT = 40;
+    public static final double STALLED_RPS = 2;
     public static final double STALLED_TOLERANCE_INCHES = 2.0;
     public static final double DEJAM_DISTANCE_INCHES = 12.0;
     public static final double DEJAM_DEBOUNCE_SECONDS = 0.1;
@@ -369,7 +452,7 @@ public final class Constants {
             .withFeedback(
                 new FeedbackConfigs()
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ElevatorConstants.ELEVATOR_MOTOR_TO_SENSOR_RATIO))
+                    .withSensorToMechanismRatio(ELEVATOR_MOTOR_TO_SENSOR_RATIO))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_ELEVATOR_Velo)
@@ -386,32 +469,32 @@ public final class Constants {
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
-    public static final double ELEVATOR_MAX_SETPOINT_INCH = 53.4375; // max height
-
-    public static final double ELEVATOR_L2_SETPOINT_INCH = 7.078988;
-    public static final double ELEVATOR_L3_SETPOINT_INCH = 23.003301;
-    public static final double ELEVATOR_L4_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
-    public static final double ELEVATOR_NET_SETPOINT_INCH = 30.0;
-    public static final double ELEVATOR_PROCESSOR_SETPOINT_INCH = ELEVATOR_ZERO_SETPOINT_INCH;
+    public static final double ELEVATOR_MAX_SETPOINT_INCH = 55.5; // max height
 
     // Homing sequence constants
-    public static final double ELEVATOR_HOMING_VOLTAGE = -0.0; // Downward voltage for homing
-    public static final double HOMING_TIMEOUT_SECONDS = 3476.0; // Max time to allow for homing
+    public static final double ELEVATOR_HOMING_VOLTAGE = -1; // Downward voltage for homing
+    public static final double HOMING_TIMEOUT_SECONDS = 6.0; // Max time to allow for homing
 
     // Coral scoring heights
-    public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH = 14.418111 + 2;
+    public static final double ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH =
+        0; // 8.675; // 14.418111 + 2;
+    public static final double ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH = 7.078988 + 1;
+    public static final double ELEVATOR_L1_AGAINST_REEF_FADEAWAY_SETPOINT_INCH = 5;
     public static final double ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
-        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH - 4;
-    public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 30.029785 + 2.5;
+        ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
+    public static final double ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH = 24.79; // 30.029785 + 2.5;
+    public static final double ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH = 23.003301 + 1;
     public static final double ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH - 4;
     public static final double ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
+    public static final double ELEVATOR_L4_AWAY_FROM_REEF_SETPOINT_INCH =
+        ELEVATOR_MAX_SETPOINT_INCH;
     public static final double ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH =
         ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
 
     // Algae scoring heights
-    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161;
-    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558;
+    public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161 - 1.5 - 1.5;
+    public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558 - 1.5;
 
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
@@ -432,14 +515,16 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
-    public static final double Tunable_PIVOT_kP = 35;
+    public static final double Tunable_PIVOT_kP = 60;
     public static final double Tunable_PIVOT_kI = 0;
-    public static final double Tunable_PIVOT_kD = 0.5;
-    public static final double Tunable_PIVOT_kG = 0.615;
-    public static final double Tunable_PIVOT_kS = 0.135;
+    public static final double Tunable_PIVOT_kD = 3.5;
+    public static final double Tunable_PIVOT_kG = 0.9;
+    public static final double Tunable_PIVOT_kS = 0.35;
+    public static final double Tunable_PIVOT_kA = 0.19;
+    public static final double Tunable_PIVOT_kV = 5;
 
     public static final double Tunable_PIVOT_Velo = 1000;
-    public static final double Tunable_PIVOT_Accel = 12;
+    public static final double Tunable_PIVOT_Accel = 9;
     public static final double Tunable_PIVOT_Jerk = 1000;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
@@ -453,29 +538,29 @@ public final class Constants {
     public static final double PIVOT_STM = 4;
     public static final double PIVOT_GEAR_RATIO = PIVOT_RTS * PIVOT_STM;
 
-    public static final double ROLLER_STALLED_CURRENT = 1000.0;
-    public static final double ROLLER_STALLED_RPS = 0.0;
+    public static final double ROLLER_STALLED_CURRENT = 40;
+    public static final double ROLLER_STALLED_RPS = 10;
 
-    public static final double CLAW_HOLD_ALGAE_AMPS = 60.0;
-    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(5);
-    public static final double PIVOT_TOLERANCE_TRANSITION_ROTATIONS = Units.degreesToRotations(10);
+    public static final double CLAW_HOLD_ALGAE_AMPS = 70.0;
+    public static final double PIVOT_TOLERANCE_ROTATIONS = Units.degreesToRotations(2.5);
 
     // ========End Effector Constant Positions========
     // Standardized angle constants with RADIAN suffix
     public static final double MAX_ANGLE_ROTATIONS = Units.degreesToRotations(119.8473749);
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
-    public static final double MAX_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(35); // old value 53.9126895
-    public static final double MIN_SAFE_ANGLE_ROTATIONS =
-        Units.degreesToRotations(-21); // old value -61.1115004
+    public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
+    public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
 
     // Pivot positions in rotations
-    public static final double IDLE_ANGLE_ROTATIONS = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+    public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
     public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
-    public static final double L2_L3_AGAINST_REEF_ANGLE_ROTATIONS =
-        Units.degreesToRotations(-16.3769186);
+    public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
+    public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
+        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
+    public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
+        Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883);
     public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS = Units.degreesToRotations(2);
@@ -483,9 +568,9 @@ public final class Constants {
     public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
         Units.degreesToRotations(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
-    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS =
-        EndEffectorConstants.MAX_ANGLE_ROTATIONS;
+    public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
+    public static final double PIVOT_CLIMB_SAFE_ROTATIONS = Units.degreesToRotations(-82.8);
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -495,6 +580,8 @@ public final class Constants {
                     .withKI(Tunable_PIVOT_kI)
                     .withKD(Tunable_PIVOT_kD)
                     .withKG(Tunable_PIVOT_kG)
+                    .withKA(Tunable_PIVOT_kA)
+                    .withKV(Tunable_PIVOT_kV)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
@@ -553,18 +640,18 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 1;
-    public static final double ROLLER_SCORING_VOLTS = 12;
-    public static final double ROLLER_SCORING_L1_VOLTS = -6;
-    public static final double ROLLER_HOLDING_CORAL_VOLTS = 2;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
+    public static final double ROLLER_SCORING_VOLTS = -12;
+    public static final double ROLLER_SCORING_L1_VOLTS = 6;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
-            24); // distance from the center of the robot to the end of the end effector
+            12); // distance from the center of the robot to the end of the end effector
     public static final double MIN_STOW_CLEARANCE_METERS =
         Units.inchesToMeters(
-            24); // area around that point that would hit something on the end effector
+            20); // area around that point that would hit something on the end effector
   }
 
   // ====================Climb (6_)====================
@@ -575,8 +662,10 @@ public final class Constants {
 
     public static final int ID = 60;
 
-    public static final double CLIMB_DEPLOY_POSITION = 0.0;
-    public static final double CLIMB_CLIMB_POSITION = 0.0;
+    public static final double CLIMB_DEPLOY_POSITION = 65;
+    public static final double CLIMB_CLIMB_POSITION = 209;
+    public static final double CLIMB_DEPLOY_VOLTAGE = 3.5;
+    public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
 
@@ -618,7 +707,7 @@ public final class Constants {
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-151.13);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
@@ -630,7 +719,7 @@ public final class Constants {
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(151.13);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
@@ -652,9 +741,13 @@ public final class Constants {
     public static final double kDefaultYawDiffThreshold = 5.0;
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
+    public static final double kTagMinAreaForMultipleTagMegatag = 0.5;
     public static final double kDefaultZThreshold = 0.2;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
+    public static final double kXStdDevCoefficent = 0.5;
+    public static final double kYStdDevCoefficent = 0.5;
+    public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
     public static final double kCameraVerticalFOVDegrees = 55.0;
@@ -680,6 +773,13 @@ public final class Constants {
   }
 
   public static class SuperstructureConstants {
+
+    public static double CLIMB_ENDEFFECTOR_SAFE_ROTATIONS =
+        EndEffectorConstants.PIVOT_CLIMB_SAFE_ROTATIONS;
+
+    public static double LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 12.9;
+    public static double HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES = 45.7;
+
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
@@ -691,8 +791,7 @@ public final class Constants {
 
     public static double STOW_ALGAE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.ALGAE_IDLE_ANGLE_ROTATIONS;
+    public static double STOW_ALGAE_ENDEFFECTOR_ROTATION_ROTATIONS = 0;
 
     public static double INTAKE_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
@@ -711,27 +810,33 @@ public final class Constants {
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MIN_ANGLE_ROTATIONS;
-
+        EndEffectorConstants.MIN_ANGLE_ROTATIONS + .02;
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
-    // Away from reef 7.078988deg
+    public static double L2_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L2_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
-    // Away from reef 17.7998883deg
+        EndEffectorConstants.L2_AGAINST_REEF_ANGLE_ROTATIONS;
+    public static double L2_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
     public static double L3_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
-    // Away from reef 23.003301deg
+    public static double L3_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L3_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
-    // Away from reef 17.7998883deg
+        EndEffectorConstants.L3_AGAINST_REEF_ANGLE_ROTATIONS;
+    public static double L3_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
     public static double L4_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
-    // Away from reef 53.4375
+    public static double L4_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L4_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
+        EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS;
+    public static double L4_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L4_AWAY_FROM_REEF_ANGLE_ROTATIONS;
 
     public static double L1_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
@@ -742,21 +847,25 @@ public final class Constants {
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 7.078988deg
     public static double L2_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
     public static double L3_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
     // Away from reef 23.003301deg
     public static double L3_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.L2_L3_AGAINST_REEF_ANGLE_ROTATIONS;
+        EndEffectorConstants.L3_AGAINST_REEF_ANGLE_ROTATIONS;
     // Away from reef 17.7998883deg
 
     public static double L4_SCORE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
-    // Away from reef 53.4375
     public static double L4_SCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.L4_AGAINST_REEF_ANGLE_ROTATIONS; // Away from reef (no against)
+
+    public static double L1_FADEAWAY_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L1_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
+    public static double L1_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L1_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
