@@ -783,6 +783,7 @@ public final class Constants {
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+    public static double ENDEFFECTOR_UP_ROTATIONS = EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
