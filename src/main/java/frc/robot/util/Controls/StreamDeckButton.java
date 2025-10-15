@@ -7,14 +7,14 @@ public class StreamDeckButton {
 
   private final int index;
   private final String key;
-  private String active_background = "#000000";
-  private String inactive_background = "#000000";
-  private String active_foreground = "#FFFFFF";
-  private String inactive_foreground = "#FFFFFF";
-  private String active_text = "";
-  private String inactive_text = "";
-  private boolean active_set = false;
-  private boolean inactive_set = false;
+  private String activeBackground = "#000000";
+  private String inactiveBackground = "#000000";
+  private String activeForeground = "#FFFFFF";
+  private String inactiveForeground = "#FFFFFF";
+  private String activeText = "";
+  private String inactiveText = "";
+  private boolean activeSet = false;
+  private boolean inactiveSet = false;
 
   public StreamDeckButton(int row, int col, String key) {
     index = row * 8 + col % 8;
@@ -22,99 +22,99 @@ public class StreamDeckButton {
   }
 
   private void setInactiveIfUnconfigured() {
-    if (!this.inactive_set) {
-      this.inactive_background = this.active_background;
-      this.inactive_foreground = this.active_foreground;
-      this.inactive_text = this.active_text;
+    if (!this.inactiveSet) {
+      this.inactiveBackground = this.activeBackground;
+      this.inactiveForeground = this.activeForeground;
+      this.inactiveText = this.activeText;
     }
   }
 
   private void setActiveIfUnconfigured() {
-    if (!this.active_set) {
-      this.active_background = this.inactive_background;
-      this.active_foreground = this.inactive_foreground;
-      this.active_text = this.inactive_text;
+    if (!this.activeSet) {
+      this.activeBackground = this.inactiveBackground;
+      this.activeForeground = this.inactiveForeground;
+      this.activeText = this.inactiveText;
     }
   }
 
   public StreamDeckButton withActiveConfig(
       String active_background, String active_foreground, String active_text) {
-    this.active_background = active_background;
-    this.active_foreground = active_foreground;
-    this.active_text = active_text;
-    this.active_set = true;
+    this.activeBackground = active_background;
+    this.activeForeground = active_foreground;
+    this.activeText = active_text;
+    this.activeSet = true;
     setInactiveIfUnconfigured();
     return this;
   }
 
   public StreamDeckButton withActiveConfig(StreamDeckButtonConfig streamDeckText) {
-    this.active_background = streamDeckText.getBackground();
-    this.active_foreground = streamDeckText.getForeground();
-    this.active_text = streamDeckText.getText();
-    this.active_set = true;
+    this.activeBackground = streamDeckText.getBackground();
+    this.activeForeground = streamDeckText.getForeground();
+    this.activeText = streamDeckText.getText();
+    this.activeSet = true;
     setInactiveIfUnconfigured();
     return this;
   }
 
   public StreamDeckButton withInactiveConfig(
       String inactive_background, String inactive_foreground, String inactive_text) {
-    this.inactive_background = inactive_background;
-    this.inactive_foreground = inactive_foreground;
-    this.inactive_text = inactive_text;
-    this.inactive_set = true;
+    this.inactiveBackground = inactive_background;
+    this.inactiveForeground = inactive_foreground;
+    this.inactiveText = inactive_text;
+    this.inactiveSet = true;
     setActiveIfUnconfigured();
     return this;
   }
 
   public StreamDeckButton withInactiveConfig(StreamDeckButtonConfig streamDeckText) {
-    this.inactive_background = streamDeckText.getBackground();
-    this.inactive_foreground = streamDeckText.getForeground();
-    this.inactive_text = streamDeckText.getText();
-    this.inactive_set = true;
+    this.inactiveBackground = streamDeckText.getBackground();
+    this.inactiveForeground = streamDeckText.getForeground();
+    this.inactiveText = streamDeckText.getText();
+    this.inactiveSet = true;
     setActiveIfUnconfigured();
     return this;
   }
 
   public StreamDeckButton withActiveBackground(String background) {
-    this.active_background = background;
+    this.activeBackground = background;
     return this;
   }
 
   public StreamDeckButton withInactiveBackground(String background) {
-    this.inactive_background = background;
+    this.inactiveBackground = background;
     return this;
   }
 
   public StreamDeckButton withActiveForeground(String foreground) {
-    this.active_foreground = foreground;
+    this.activeForeground = foreground;
     return this;
   }
 
   public StreamDeckButton withInactiveForeground(String foreground) {
-    this.inactive_foreground = foreground;
+    this.inactiveForeground = foreground;
     return this;
   }
 
   public StreamDeckButton withActiveText(String text) {
-    this.active_text = text;
+    this.activeText = text;
     return this;
   }
 
   public StreamDeckButton withInactiveText(String text) {
-    this.inactive_text = text;
+    this.inactiveText = text;
     return this;
   }
 
   public StreamDeckButton withText(String text) {
-    this.active_text = text;
-    this.inactive_text = text;
+    this.activeText = text;
+    this.inactiveText = text;
     return this;
   }
 
   public int getIndex() {
     return index;
   }
-
+  
   public static List<String> getNetworkTableKeys() {
     List<String> ntKeys = new ArrayList<>();
     ntKeys.add("Key");
@@ -130,12 +130,12 @@ public class StreamDeckButton {
   public List<String> getDataToPublish() {
     List<String> dataToPublish = new ArrayList<>();
     dataToPublish.add("StreamDeckButton/" + key);
-    dataToPublish.add(active_background);
-    dataToPublish.add(inactive_background);
-    dataToPublish.add(active_foreground);
-    dataToPublish.add(inactive_foreground);
-    dataToPublish.add(active_text);
-    dataToPublish.add(inactive_text);
+    dataToPublish.add(activeBackground);
+    dataToPublish.add(inactiveBackground);
+    dataToPublish.add(activeForeground);
+    dataToPublish.add(inactiveForeground);
+    dataToPublish.add(activeText);
+    dataToPublish.add(inactiveText);
     return dataToPublish;
   }
 }
