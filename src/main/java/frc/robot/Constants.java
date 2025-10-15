@@ -650,7 +650,7 @@ public final class Constants {
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
-            12); // distance from the center of the robot to the end of the end effector
+            20); // distance from the center of the robot to the end of the end effector
     public static final double MIN_STOW_CLEARANCE_METERS =
         Units.inchesToMeters(
             20); // area around that point that would hit something on the end effector
