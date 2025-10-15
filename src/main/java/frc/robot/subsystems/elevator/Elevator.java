@@ -160,12 +160,17 @@ public class Elevator extends SubsystemBase {
   private boolean isHomingComplete() {
     // Check if homing is complete using the same logic as checkForJam for bottom detection
     if (io.checkMotorsStalled() && !isZeroed) {
+      // at the bottom hardstop?
       if (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
         io.setElevatorPosition(0.0);
         isZeroed = true;
         return true;
       }
-      if (MathUtil.isNear(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+      // at the top hardstop?
+      if (MathUtil.isNear(
+          ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH,
+          getCurrentPosition(),
+          ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
         io.setElevatorPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
         isZeroed = true;
         return true;
