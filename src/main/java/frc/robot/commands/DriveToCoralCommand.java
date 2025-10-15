@@ -90,6 +90,6 @@ public class DriveToCoralCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return CoralStateTracker.getCurrentPosition() == CoralPosition.NONE;
+    return CoralStateTracker.getCurrentPosition() != CoralPosition.NONE;
   }
 }
