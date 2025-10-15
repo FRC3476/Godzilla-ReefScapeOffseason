@@ -1,6 +1,5 @@
 package frc.robot.util.Controls;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -71,6 +70,20 @@ public class StreamDeck extends SubsystemBase {
         });
   }
 
+  public void clearButtons() {
+    for (Map.Entry<StreamDeckButton, ButtonRecord> entry : buttonMap.entrySet()) {
+      if (entry.getValue().type  != ButtonType.PAGE_SELECTOR) {
+        buttonMap.remove(entry.getKey());
+      }
+    }
+  }
+
+  public void clearAllButtons() {
+    for (Map.Entry<StreamDeckButton, ButtonRecord> entry : buttonMap.entrySet()) {
+      buttonMap.remove(entry.getKey());
+    }
+  }
+
   private StreamDeck configureButton(Consumer<ButtonConfiguration> config) {
     var configuration = new ButtonConfiguration();
     config.accept(configuration);
@@ -79,9 +92,10 @@ public class StreamDeck extends SubsystemBase {
     var deckTable = nt.getTable("StreamDeck");
     List<String> networkTableKeys = StreamDeckButton.getNetworkTableKeys();
     configuration.buttonConfigurations.forEach(
-        (button, pair) -> {
-          Optional<BooleanSupplier> selected = pair.getFirst();
-          ButtonType type = pair.getSecond();
+        (button, configInfo) -> {
+          Optional<BooleanSupplier> selected = configInfo.getActiveSupplier();
+          ButtonType type = configInfo.getType();
+
           var table = deckTable.getSubTable("Button/" + button.getIndex());
           List<String> dataToPublish = button.getDataToPublish();
           IntStream.range(0, Math.min(networkTableKeys.size(), dataToPublish.size()))
@@ -133,27 +147,51 @@ public class StreamDeck extends SubsystemBase {
   public enum ButtonType {
     PRESS,
     TOGGLE,
-    CUSTOM
+    CUSTOM,
+    PAGE_SELECTOR
   }
 
   public class ButtonConfiguration {
-    private final Map<StreamDeckButton, Pair<Optional<BooleanSupplier>, ButtonType>>
+    private class ButtonConfigurationInfo {
+      private Optional<BooleanSupplier> activeSupplier;
+      private ButtonType type;
+
+      public ButtonConfigurationInfo(Optional<BooleanSupplier> activeSupplier,
+      ButtonType type) {
+        this.activeSupplier = activeSupplier;
+        this.type = type;
+      }
+      public ButtonConfigurationInfo(ButtonType type) {
+        this.activeSupplier = Optional.empty();
+        this.type = type;
+      }
+
+      public Optional<BooleanSupplier> getActiveSupplier() {
+        return activeSupplier;
+      }
+      public ButtonType getType() {
+        return type;
+      }
+
+    }
+    private final Map<StreamDeckButton, ButtonConfigurationInfo>
         buttonConfigurations = new HashMap<>();
 
     private ButtonConfiguration() {}
 
     public ButtonConfiguration addDefault(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.PRESS));
+      buttonConfigurations.put(button, new ButtonConfigurationInfo(ButtonType.PRESS));
       return this;
     }
+    
 
     public ButtonConfiguration addToggle(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.TOGGLE));
+      buttonConfigurations.put(button, new ButtonConfigurationInfo(ButtonType.TOGGLE));
       return this;
     }
 
     public ButtonConfiguration add(StreamDeckButton button, BooleanSupplier selected) {
-      buttonConfigurations.put(button, Pair.of(Optional.of(selected), ButtonType.CUSTOM));
+      buttonConfigurations.put(button, new ButtonConfigurationInfo(Optional.of(selected), ButtonType.CUSTOM));
       return this;
     }
   }
