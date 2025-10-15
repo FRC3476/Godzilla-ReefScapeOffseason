@@ -8,7 +8,6 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -81,7 +80,9 @@ public class Claw extends SubsystemBase {
   }
 
   public Trigger exhaustedCoral() {
-    return new Trigger(() -> isClawScoring() && isCoralInClaw() && !firstSensorTriggered && !secondSensorTriggered);
+    return new Trigger(
+        () ->
+            isClawScoring() && isCoralInClaw() && !firstSensorTriggered && !secondSensorTriggered);
   }
 
   public boolean isCoralAtFirstSensor() {
