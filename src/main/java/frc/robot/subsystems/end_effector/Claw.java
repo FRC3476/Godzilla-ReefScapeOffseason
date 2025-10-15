@@ -8,7 +8,6 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -32,6 +31,9 @@ public class Claw extends SubsystemBase {
   private static final LoggedTunableNumber rollerScoringL1Volts =
       new LoggedTunableNumber(
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
+  private static final LoggedTunableNumber rollerScoringAlgaeVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
@@ -131,10 +133,16 @@ public class Claw extends SubsystemBase {
                 this.currentState = ClawState.IDLE;
               }
               break;
+            case SCORING_ALGAE:
+              // Transition to IDLE when coral is out of the end effector
+              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+              //   this.currentState = ClawState.IDLE;
+              // }
+              break;
             case ALGAE:
-              if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
-                this.currentState = ClawState.IDLE;
-              }
+              // if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
+              //   this.currentState = ClawState.IDLE;
+              // }
               break;
             default:
               this.currentState = ClawState.IDLE;
@@ -168,6 +176,9 @@ public class Claw extends SubsystemBase {
               break;
             case SCORING_L1:
               this.io.setRollerVoltage(rollerScoringL1Volts.get());
+              break;
+            case SCORING_ALGAE:
+              this.io.setRollerVoltage(rollerScoringAlgaeVolts.get());
               break;
             case ALGAE:
               this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
