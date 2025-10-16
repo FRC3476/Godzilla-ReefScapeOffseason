@@ -643,7 +643,7 @@ public final class Constants {
     // Roller Voltages
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
-    public static final double ROLLER_SCORING_L1_VOLTS = co
+    public static final double ROLLER_SCORING_L1_VOLTS = 6;
     public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
