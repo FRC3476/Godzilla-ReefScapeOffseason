@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.Constants.ClimbConstants;
 import org.littletonrobotics.junction.Logger;
 
-public class ClawIOSim extends ClawIOReal {
+public class ClimbRollerIOSim extends ClimbRollerIOReal {
   protected DCMotorSim climbRollerSim;
 
   private final TalonFXSimState climbRollerSimState;
@@ -23,7 +23,7 @@ public class ClawIOSim extends ClawIOReal {
 
   protected Notifier simNotifier;
 
-  public ClawIOSim() {
+  public ClimbRollerIOSim() {
 
     climbRollerSim =
         new DCMotorSim(
@@ -78,7 +78,7 @@ public class ClawIOSim extends ClawIOReal {
         Units.radiansToRotations(climbRollerSim.getAngularVelocityRadPerSec())
             / EndEffectorConstants.ALGAE_GEAR_RATIO;
     climbRollerSimState.setRotorVelocity(rotorVel);
-    Logger.recordOutput("Claw/Sim/SimulatorRollerVelocity", rotorVel);
+    Logger.recordOutput("ClimbRoller/Sim/SimulatorRollerVelocity", rotorVel);
   }
 
   private void logSimulationData() {

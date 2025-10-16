@@ -20,12 +20,12 @@ import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class ClimberIOIsReal implements SubsystemBase { 
+public class ClimberIOIsReal implements ClimberIO { 
 
   protected TalonFX climbRollerTalonFX;
 
   private TorqueCurrentFOC roller_c_request =
-      new TorqueCurrentFOC(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
+      new TorqueCurrentFOC(0);
   private VoltageOut roller_m_request = new VoltageOut(0).withEnableFOC(true);
 
   StatusSignal<AngularVelocity> rollerVelocityRPS;
@@ -37,7 +37,7 @@ public class ClimberIOIsReal implements SubsystemBase {
   private final BaseStatusSignal[] signals;
 
   public ClimbRollerIOReal() {
-    climbRollerTalonFX = new TalonFX(ClimbConstants.rollerID, Constants.MISC_CANIVORE); //TODO set roller ID
+    climbRollerTalonFX = new TalonFX(ClimbConstants.rollerID, Constants.DRIVE_CANIVORE); //TODO set roller ID
     PhoenixUtil.tryUntilOk(
         5, () -> climbRollerTalonFX.getConfigurator().apply(ClimbConstants.CLIMBROLLER_TALON_CONFIG));
 
@@ -71,7 +71,7 @@ public class ClimberIOIsReal implements SubsystemBase {
     BaseStatusSignal.refreshAll(signals);
 
     inputs.rollerData =
-        new EE_RollerData(
+        new RollerData(
             BaseStatusSignal.isAllGood(
                 rollerVelocityRPS,
                 rollerAppliedVolts,

@@ -6,10 +6,10 @@ public interface ClimbRollerIO {
 
   @AutoLog
   class ClimbRollerIOInputs {
-    public EE_RollerData rollerData = new EE_RollerData(false, 0, 0, 0, 0, 0);
+    public RollerData rollerData = new EE_RollerData(false, 0, 0, 0, 0, 0);
   }
 
-  record EE_RollerData(
+  record RollerData(
       boolean rollerMotorConnected,
       double rollerVelocityRPS,
       double rollerAppliedVolts,
@@ -17,7 +17,7 @@ public interface ClimbRollerIO {
       double rollerSupplyCurrentAmps,
       double rollerTempCelsius) {}
 
-  default void updateInputs(ClawIOInputs inputs) {}
+  default void updateInputs(ClimbRollerIOInputs inputs) {}
 
   default void setRollerVoltage(double voltage) {}
 
