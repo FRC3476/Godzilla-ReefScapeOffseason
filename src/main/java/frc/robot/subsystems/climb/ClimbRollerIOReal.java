@@ -20,7 +20,7 @@ import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class ClimberRollerIOReal implements ClimbRollerIO { 
+public class ClimbRollerIOReal implements ClimbRollerIO { 
 
   protected TalonFX climbRollerTalonFX;
 
@@ -28,11 +28,11 @@ public class ClimberRollerIOReal implements ClimbRollerIO {
       new TorqueCurrentFOC(0);
   private VoltageOut roller_m_request = new VoltageOut(0).withEnableFOC(true);
 
-  StatusSignal<AngularVelocity> rollerVelocityRPS;
-  StatusSignal<Voltage> rollerAppliedVolts;
-  StatusSignal<Current> rollerStatorCurrentAmps;
-  StatusSignal<Current> rollerSupplyCurrentAmps;
-  StatusSignal<Temperature> rollerTempCelsius;
+  private final StatusSignal<AngularVelocity> rollerVelocityRPS;
+  private final StatusSignal<Voltage> rollerAppliedVolts;
+  private final StatusSignal<Current> rollerStatorCurrentAmps;
+  private final StatusSignal<Current> rollerSupplyCurrentAmps;
+  private final StatusSignal<Temperature> rollerTempCelsius;
 
   private final BaseStatusSignal[] signals;
 
