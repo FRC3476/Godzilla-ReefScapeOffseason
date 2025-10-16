@@ -20,7 +20,7 @@ import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class ClimberIOIsReal implements ClimberIO { 
+public class ClimberRollerIOReal implements ClimbRollerIO { 
 
   protected TalonFX climbRollerTalonFX;
 

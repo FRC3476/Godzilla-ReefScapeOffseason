@@ -6,7 +6,7 @@ public interface ClimbRollerIO {
 
   @AutoLog
   class ClimbRollerIOInputs {
-    public RollerData rollerData = new EE_RollerData(false, 0, 0, 0, 0, 0);
+    public RollerData rollerData = new RollerData(false, 0, 0, 0, 0, 0);
   }
 
   record RollerData(
