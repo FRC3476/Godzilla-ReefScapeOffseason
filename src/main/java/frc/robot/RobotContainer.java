@@ -1939,9 +1939,11 @@ public class RobotContainer {
     CoralStateTracker.IsCoralInEndEffector().onTrue(
         new WaitUntilCommand(
             () -> RobotState.getSuperstructureState() == 
-                SuperstructureState.STOW
+                SuperstructureState.STOW 
+                && robotState.getStoredScorePosition().getScoreLevel() != 
+                    ScoreLevel.L1
         ).andThen(
-            () -> RobotState.setSuperstructureState(/*TODO MAKE STATE */)
+            () -> RobotState.setSuperstructureState(SuperstructureState.PRE_SCORE)
         )
     );
 
