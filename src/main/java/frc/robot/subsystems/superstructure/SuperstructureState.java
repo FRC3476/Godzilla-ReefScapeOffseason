@@ -40,7 +40,7 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_ROTATIONS),
   PRE_SCORE(
-      Constants.SuperstructureConstants.STOW_CORAL_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS),
   L1_PIVOT(
       Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,

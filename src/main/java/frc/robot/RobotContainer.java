@@ -1941,9 +1941,9 @@ public class RobotContainer {
             () -> RobotState.getSuperstructureState() == 
                 SuperstructureState.STOW 
                 && robotState.getStoredScorePosition().getScoreLevel() != 
-                    ScoreLevel.L1
-        ).andThen(
-            () -> RobotState.setSuperstructureState(SuperstructureState.PRE_SCORE)
+                    ScoreLevel.L1)
+                .andThen(superstructure.setStateCommand(SuperstructureState.PRE_SCORE, "PRE_SCORE")
+                .asProxy()
         )
     );
 
