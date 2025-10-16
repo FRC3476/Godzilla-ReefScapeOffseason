@@ -1936,18 +1936,17 @@ public class RobotContainer {
 
     // recommended but untested
     // claw.exhaustedCoral().onTrue(CoralStateTracker.forceSet(CoralPosition.NONE));
-    Trigger autoPreScoreTrigger = new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
-    
-    autoPreScoreTrigger
-        .onTrue(
-            new WaitUntilCommand(
-                    () ->
-                        RobotState.getSuperstructureState() == SuperstructureState.STOW
-                            && robotState.getStoredScorePosition().getScoreLevel() != ScoreLevel.L1)
-                .andThen(
-                    superstructure
-                        .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE")
-                        .asProxy()));
+    Trigger autoPreScoreTrigger =
+        new Trigger(
+            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
+
+    autoPreScoreTrigger.onTrue(
+        new WaitUntilCommand(
+                () ->
+                    RobotState.getSuperstructureState() == SuperstructureState.STOW
+                        && robotState.getStoredScorePosition().getScoreLevel() != ScoreLevel.L1)
+            .andThen(
+                superstructure.setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE").asProxy()));
 
     //
     Trigger autoStowAlgaeTrigger =

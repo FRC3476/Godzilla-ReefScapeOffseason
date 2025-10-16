@@ -3,7 +3,6 @@ package frc.robot.subsystems.superstructure;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralStateTracker {
@@ -72,8 +71,6 @@ public class CoralStateTracker {
     secondEndEffectorTriggered = secondValue;
     recalcState();
   }
-
-  
 
   private static void recalcState() {
     double now = Timer.getFPGATimestamp();
