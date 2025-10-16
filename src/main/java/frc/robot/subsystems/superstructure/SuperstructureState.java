@@ -225,6 +225,7 @@ public enum SuperstructureState {
     return EnumSet.of(NONE);
   }
 
+  //takes in all the states and gets rid of the ones that don't match the filter, then returns the remaining states
   private Set<SuperstructureState> lowInStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
 		.filter(SuperstructureState::isLowInFilter)
