@@ -211,6 +211,8 @@ public enum SuperstructureState {
       return Util.mergeSets(lowOutStates(), lowInStates());
     } else if (lowOutStates().contains(this)) { // low out states
       return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates(), middleOutStates());
+    } else if (middleOutStates().contains(this)){ // Middle out states
+      return Util.mergeSets(lowOutStates(), highOutStates(), middleOutStates());
     } else if (highOutStates().contains(this)) { // high out states
       return Util.mergeSets(lowOutStates(), highInStates(), highOutStates(), middleOutStates());
     } else if (highInStates().contains(this)) { // high in states
@@ -246,7 +248,11 @@ public enum SuperstructureState {
 
   private Set<SuperstructureState> middleOutStates() {
     return EnumSet.of(
-        ALGAE_LOW_INTAKE);
+        ALGAE_LOW_INTAKE,
+        L3_AIM,
+        L3_FADEAWAY,
+        L3_AWAY_FROM_REEF,
+        ALGAE_HIGH_INTAKE);
   }
   public boolean isMiddleOut() {
     return middleOutStates().contains(this);
@@ -254,15 +260,10 @@ public enum SuperstructureState {
 
   private Set<SuperstructureState> highOutStates() {
     return EnumSet.of(
-        L3_AIM,
-        L3_FADEAWAY,
-        L3_AWAY_FROM_REEF,
-        ALGAE_HIGH_INTAKE,
         L4_FADEAWAY,
         L4_AIM,
         L4_AWAY_FROM_REEF,
-        BARGE_AIM_BACKWARD,
-        ALGAE_LOW_INTAKE);
+        BARGE_AIM_BACKWARD);
   }
 
   public boolean isHighOut() {
