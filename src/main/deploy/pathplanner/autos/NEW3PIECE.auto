@@ -30,31 +30,6 @@
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Processor1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimL4"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalLeftPoleAlign"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ConfirmScore"
@@ -83,7 +58,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Processor2"
+                        "pathName": "3PiecePart2"
                       }
                     },
                     {
@@ -124,7 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Processor3"
+                  "pathName": "3PiecePart3"
                 }
               },
               {
@@ -152,7 +127,96 @@
         {
           "type": "named",
           "data": {
-            "name": "FinalLeftPoleAlign"
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "3PiecePart4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SeesCoral"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IsCoralInFeeder"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DriveToCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3PiecePart5"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInEndEffector"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AimL4"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {

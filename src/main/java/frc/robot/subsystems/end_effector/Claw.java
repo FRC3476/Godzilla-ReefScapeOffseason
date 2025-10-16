@@ -3,6 +3,7 @@ package frc.robot.subsystems.end_effector;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
@@ -30,8 +31,13 @@ public class Claw extends SubsystemBase {
   private static final LoggedTunableNumber rollerScoringL1Volts =
       new LoggedTunableNumber(
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
+  private static final LoggedTunableNumber rollerScoringAlgaeVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
+  private boolean firstSensorTriggered;
+  private boolean secondSensorTriggered;
 
   public Claw(ClawIO io) {
     this.io = io;
@@ -43,9 +49,9 @@ public class Claw extends SubsystemBase {
     Logger.processInputs("Claw", inputs);
     Logger.recordOutput("Claw/CurrentState", currentState);
 
-    boolean firstSensorTriggered =
+    firstSensorTriggered =
         inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
-    boolean secondSensorTriggered =
+    secondSensorTriggered =
         inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
@@ -64,12 +70,22 @@ public class Claw extends SubsystemBase {
     io.setRollerVoltage(voltage);
   }
 
-  public boolean isCoralInEndeffector() {
+  public boolean isClawScoring() {
+    return currentState == ClawState.SCORING || currentState == ClawState.SCORING_L1;
+  }
+
+  public boolean isCoralInClaw() {
     // Use CoralStateTracker instead of individual sensor readings
     CoralStateTracker.CoralPosition position = CoralStateTracker.getCurrentPosition();
     return position == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR
         || position == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR
         || position == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR;
+  }
+
+  public Trigger exhaustedCoral() {
+    return new Trigger(
+        () ->
+            isClawScoring() && isCoralInClaw() && !firstSensorTriggered && !secondSensorTriggered);
   }
 
   public boolean isCoralAtFirstSensor() {
@@ -83,7 +99,7 @@ public class Claw extends SubsystemBase {
   }
 
   public boolean hasAlgae() {
-    return io.checkRollerStalled() && !isCoralInEndeffector();
+    return io.checkRollerStalled() && !isCoralInClaw();
   }
 
   public Command clawDefault() {
@@ -117,7 +133,16 @@ public class Claw extends SubsystemBase {
                 this.currentState = ClawState.IDLE;
               }
               break;
+            case SCORING_ALGAE:
+              // Transition to IDLE when coral is out of the end effector
+              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+              //   this.currentState = ClawState.IDLE;
+              // }
+              break;
             case ALGAE:
+              // if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
+              //   this.currentState = ClawState.IDLE;
+              // }
               break;
             default:
               this.currentState = ClawState.IDLE;
@@ -151,6 +176,9 @@ public class Claw extends SubsystemBase {
               break;
             case SCORING_L1:
               this.io.setRollerVoltage(rollerScoringL1Volts.get());
+              break;
+            case SCORING_ALGAE:
+              this.io.setRollerVoltage(rollerScoringAlgaeVolts.get());
               break;
             case ALGAE:
               this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
