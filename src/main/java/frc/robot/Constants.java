@@ -655,7 +655,10 @@ public final class Constants {
     public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
-    public static final int rollerID = 61; //TODO set ID
+    public static final int rollerID = 61;
+
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
     public static final double CLIMB_DEPLOY_POSITION = 65;
     public static final double CLIMB_CLIMB_POSITION = 209;

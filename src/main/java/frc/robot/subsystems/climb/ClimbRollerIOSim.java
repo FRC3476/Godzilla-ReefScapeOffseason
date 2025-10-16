@@ -29,8 +29,8 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 DCMotor.getKrakenX60(1),
-                EndEffectorConstants.ROLLER_MOI,
-                1.0 / EndEffectorConstants.ALGAE_GEAR_RATIO),
+                ClimbConstants.ROLLER_MOI,
+                1.0 / ClimbConstants.ROLLER_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
 
     rollerTalonFX.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
@@ -70,13 +70,13 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
     Logger.recordOutput("ClimbRoller/Sim/SimRollerPositionRadians", simPositionRads);
     // Mutate rotor position
     double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / EndEffectorConstants.ALGAE_GEAR_RATIO; //TODO change
+        Units.radiansToRotations(simPositionRads) / ClimbConstants.ROLLER_GEAR_RATIO; //TODO change
     climbRollerSimState.setRawRotorPosition(rotorPosition);
     Logger.recordOutput("ClimbRoller/Sim/setRollerRawRotorPosition", rotorPosition);
     // Mutate rotor vel
     double rotorVel =
         Units.radiansToRotations(climbRollerSim.getAngularVelocityRadPerSec())
-            / EndEffectorConstants.ALGAE_GEAR_RATIO;
+            / ClimbConstants.ROLLER_GEAR_RATIO;
     climbRollerSimState.setRotorVelocity(rotorVel);
     Logger.recordOutput("ClimbRoller/Sim/SimulatorRollerVelocity", rotorVel);
   }
