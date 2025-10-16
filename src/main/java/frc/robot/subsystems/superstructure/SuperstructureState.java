@@ -201,6 +201,15 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isintakeState() {
+    switch (this) {
+      case INTAKE_CORAL_L1, INTAKE_CORAL:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   // return a set of all the states you can go to from this state
   @SuppressWarnings("unchecked")
   public Set<SuperstructureState> getAllowedDestinationStates() {

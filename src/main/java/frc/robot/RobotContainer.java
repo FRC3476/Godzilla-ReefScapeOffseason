@@ -1936,6 +1936,14 @@ public class RobotContainer {
 
     // recommended but untested
     // claw.exhaustedCoral().onTrue(CoralStateTracker.forceSet(CoralPosition.NONE));
+    CoralStateTracker.IsCoralInEndEffector().onTrue(
+        new WaitUntilCommand(
+            () -> RobotState.getSuperstructureState() == 
+                SuperstructureState.STOW
+        ).andThen(
+            () -> RobotState.setSuperstructureState(/*TODO MAKE STATE */)
+        )
+    );
 
     //
     Trigger autoStowAlgaeTrigger =
