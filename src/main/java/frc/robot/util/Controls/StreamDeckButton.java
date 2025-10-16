@@ -44,7 +44,7 @@ public class StreamDeckButton {
 
   public StreamDeckButton withActiveConfig(
       String active_background, String active_foreground, String active_text) {
-        setActiveConfig(new StreamDeckButtonConfig(active_background, active_foreground, active_text));
+    setActiveConfig(new StreamDeckButtonConfig(active_background, active_foreground, active_text));
     return this;
   }
 
@@ -55,7 +55,8 @@ public class StreamDeckButton {
 
   public StreamDeckButton withInactiveConfig(
       String inactive_background, String inactive_foreground, String inactive_text) {
-        setInactiveConfig(new StreamDeckButtonConfig(inactive_background, inactive_foreground, inactive_text));
+    setInactiveConfig(
+        new StreamDeckButtonConfig(inactive_background, inactive_foreground, inactive_text));
     return this;
   }
 

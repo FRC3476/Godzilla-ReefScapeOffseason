@@ -22,7 +22,7 @@ public class StreamDeck extends SubsystemBase {
   NetworkTableInstance nt = NetworkTableInstance.getDefault();
   NetworkTable deckTable = nt.getTable("StreamDeck");
   int page = 0;
-  int maxPage = 0;
+  int maxPage = 1;
   Optional<StreamDeckButton> pageButton;
   Optional<Map<Integer, StreamDeckButtonConfig>> pageButtonConfigs;
 
@@ -60,10 +60,10 @@ public class StreamDeck extends SubsystemBase {
                   break;
                 default:
                   button.activePub.set(button.selected.getAsBoolean());
-                  button.pressedPrev.set(button.pressed.get());
                   break;
               }
             });
+    buttonMap.values().forEach(button -> button.pressedPrev.set(button.pressed.get()));
   }
 
   public void configureDefaultButtons(Set<StreamDeckButton> buttons) {

@@ -91,6 +91,7 @@ import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -1321,16 +1322,30 @@ public class RobotContainer {
             .withInactiveConfig(yellowOnBlackConfig)
             .withActiveConfig(activeConfig)
             .withText("C");
-    StreamDeckButton setManualScoringButton =
-        new StreamDeckButton(0, 0, "Manual Score")
+    // StreamDeckButton setManualScoringButton =
+    //     new StreamDeckButton(0, 0, "Manual Score")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("MS");
+    // StreamDeckButton setAutoScoringButton =
+    //     new StreamDeckButton(0, 2, "Auto Score")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("AS");
+    StreamDeckButton intakeUpButton =
+        new StreamDeckButton(0, 0, 1, "Intake Up")
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
-            .withText("MS");
-    StreamDeckButton setAutoScoringButton =
-        new StreamDeckButton(0, 2, "Auto Score")
+            .withText("INT Up");
+    StreamDeckButton intakeDownButton =
+        new StreamDeckButton(0, 1, 1, "Intake Down")
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
-            .withText("AS");
+            .withText("INT Down");
+
+    StreamDeckButton pageButton =
+        new StreamDeckButton(0, 0, "Page Button")
+            .withInactiveConfig(LedState.kWhite.toString(), LedState.kOff.toString(), "Pg0");
 
     StreamDeckButton manualOverrideButton =
         new StreamDeckButton(3, 0, "Manual Override")
@@ -1346,6 +1361,10 @@ public class RobotContainer {
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
+    Command intakeUpButtonCommand = intake.pivotManualTestForward().withName("intakeUpButton");
+    Command intakeUpButtonOffCommand = intake.pivotStop().withName("intakeUpButtonOff");
+    Command intakeDownButtonCommand = intake.pivotManualTestReverse().withName("intakeDownButton");
+    Command intakeDownButtonOffCommand = intake.pivotStop().withName("intakeDownButtonOff");
 
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
@@ -1403,13 +1422,24 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
+    // customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
     customStreamDeckButtonMap.put(
         manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
 
     streamdeck.configureCustomButtons(customStreamDeckButtonMap);
 
     streamdeck.configureDefaultButtons(Set.of(zeroGyroButton, zeroGyroButton2));
+
+    streamdeck.conifgurePageButton(
+        pageButton,
+        Optional.of(
+            Map.of(
+                0,
+                    new StreamDeckButtonConfig(
+                        LedState.kWhite.toString(), LedState.kOff.toString(), "Pg0"),
+                1,
+                    new StreamDeckButtonConfig(
+                        LedState.kOff.toString(), LedState.kWhite.toString(), "Pg1"))));
 
     streamdeck
         .button(coralL4Button)
@@ -1532,12 +1562,12 @@ public class RobotContainer {
                     () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
                 .ignoringDisable(true));
     streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
-    streamdeck
-        .button(setManualScoringButton)
-        .onTrue(Commands.runOnce(() -> robotState.setScoringModeManual()));
-    streamdeck
-        .button(setAutoScoringButton)
-        .onTrue(Commands.runOnce(() -> robotState.setScoringModeAuto()));
+    // streamdeck
+    //     .button(setManualScoringButton)
+    //     .onTrue(Commands.runOnce(() -> robotState.setScoringModeManual()));
+    // streamdeck
+    //     .button(setAutoScoringButton)
+    //     .onTrue(Commands.runOnce(() -> robotState.setScoringModeAuto()));
 
     streamdeck
         .button(climbDeployButton)
@@ -1575,6 +1605,10 @@ public class RobotContainer {
     streamdeck
         .button(manualOverrideButton)
         .onTrue(Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode()));
+    streamdeck.button(intakeUpButton).whileTrue(intakeUpButtonCommand);
+    streamdeck.button(intakeUpButton).onFalse(intakeUpButtonOffCommand);
+    streamdeck.button(intakeDownButton).whileTrue(intakeDownButtonCommand);
+    streamdeck.button(intakeDownButton).onFalse(intakeDownButtonOffCommand);
 
     // manualClimbOffButtonCommand
 
@@ -1856,6 +1890,8 @@ public class RobotContainer {
     customStreamDeckButtonMap.put(
         bargeAimBackwardButton,
         () -> superstructure.getCurrentState() == SuperstructureState.BARGE_AIM_BACKWARD);
+    customStreamDeckButtonMap.put(intakeUpButton, intakeUpButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(intakeDownButton, intakeDownButtonCommand::isScheduled);
 
     streamdeck.configureCustomButtons(customStreamDeckButtonMap);
 
