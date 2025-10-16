@@ -13,6 +13,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -34,10 +37,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
 import frc.robot.subsystems.drive.SimTunerConstants;
-
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import java.util.Arrays;
 
 /**
@@ -163,10 +162,8 @@ public final class Constants {
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
     public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
-    	public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY =
-			MetersPerSecond.of(15.0/100);
-	public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY =
-			DegreesPerSecond.of(7.0);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
   }
 
   public static final class AutoConstants {

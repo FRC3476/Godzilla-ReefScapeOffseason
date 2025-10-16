@@ -1,11 +1,5 @@
 package frc.robot.subsystems.superstructure;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -14,6 +8,11 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.RobotContainer;
 import frc.robot.util.Util;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 // This stores what subsystem values are in each state
 
@@ -218,7 +217,7 @@ public enum SuperstructureState {
       return Util.mergeSets(lowOutStates(), lowInStates());
     } else if (lowOutStates().contains(this)) { // low out states
       return Util.mergeSets(lowOutStates(), lowInStates(), highOutStates(), middleOutStates());
-    } else if (middleOutStates().contains(this)){ // Middle out states
+    } else if (middleOutStates().contains(this)) { // Middle out states
       return Util.mergeSets(lowOutStates(), highOutStates(), middleOutStates());
     } else if (highOutStates().contains(this)) { // high out states
       return Util.mergeSets(lowOutStates(), highInStates(), highOutStates(), middleOutStates());
@@ -228,34 +227,36 @@ public enum SuperstructureState {
     return EnumSet.of(NONE);
   }
 
-  //takes in all the states and gets rid of the ones that don't match the filter, then returns the remaining states
+  // takes in all the states and gets rid of the ones that don't match the filter, then returns the
+  // remaining states
   private Set<SuperstructureState> lowInStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
-		.filter(SuperstructureState::isLowInFilter)
-		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+        .filter(SuperstructureState::isLowInFilter)
+        .collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
   }
 
   private Set<SuperstructureState> lowOutStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
-		.filter(SuperstructureState::isLowOutFilter)
-		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));  }
+        .filter(SuperstructureState::isLowOutFilter)
+        .collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+  }
 
   private Set<SuperstructureState> middleOutStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
-		.filter(SuperstructureState::isMiddleOutFilter)
-		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+        .filter(SuperstructureState::isMiddleOutFilter)
+        .collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
   }
 
   private Set<SuperstructureState> highOutStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
-		.filter(SuperstructureState::isHighOutFilter)
-		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+        .filter(SuperstructureState::isHighOutFilter)
+        .collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
   }
 
   private Set<SuperstructureState> highInStates() {
     return EnumSet.allOf(SuperstructureState.class).stream()
-		.filter(SuperstructureState::isHighInFilter)
-		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));  
+        .filter(SuperstructureState::isHighInFilter)
+        .collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
   }
 
   public boolean isLowIn() {
@@ -278,35 +279,34 @@ public enum SuperstructureState {
     return highInStates().contains(this);
   }
 
-  //superstructure filters
-  private boolean isMiddleOutFilter() { //if we're between the safe low and safe high, but endeffector safe
-	  return this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getElevatorHeight() <= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
-	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  // superstructure filters
+  private boolean
+      isMiddleOutFilter() { // if we're between the safe low and safe high, but endeffector safe
+    return this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+        && this.getElevatorHeight() <= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+        && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+        && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
-  private boolean isLowOutFilter() { //if we're below the safe low, but endeffector safe
-	  return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
-	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
-  }
-
-  private boolean isHighOutFilter() {//if we're above the safe low, but endeffector safe
-	  return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
-	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
-  }
-
-  private boolean isHighInFilter(){//if we're above the safe low, and endeffector not safe
-    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
-  }
-
-  private boolean isLowInFilter(){//if we're below the safe low, and endeffector not safe
+  private boolean isLowOutFilter() { // if we're below the safe low, but endeffector safe
     return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
-	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
+        && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+        && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
+  private boolean isHighOutFilter() { // if we're above the safe low, but endeffector safe
+    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+        && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
+        && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
 
+  private boolean isHighInFilter() { // if we're above the safe low, and endeffector not safe
+    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+        && this.getEndEffectorRotation() >= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
+
+  private boolean isLowInFilter() { // if we're below the safe low, and endeffector not safe
+    return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+        && this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
+  }
 }

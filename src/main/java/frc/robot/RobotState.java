@@ -95,6 +95,7 @@ public class RobotState extends MagicVirtualSubsystem {
       this.coralBranch = CoralBranch.NONE;
       this.coralScoreLevel = ScoreLevel.NONE;
       this.algaeIntake = AlgaeIntake.NONE;
+      this.algaeScoreLevel = ScoreLevel.NONE;
     }
 
     public ReefSide getReefSide() {
