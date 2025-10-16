@@ -44,7 +44,6 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
-import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
@@ -201,7 +200,7 @@ public class RobotContainer {
 
     // ====================SCORING COMMANDS====================
     NamedCommands.registerCommand(
-        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
+        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_AIM, "L1 AIM").asProxy());
 
     NamedCommands.registerCommand(
         "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
@@ -692,7 +691,7 @@ public class RobotContainer {
     NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("INTAKE_CORAL");
     NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("INTAKE_CORAL_L1");
     NetworkTableEntry feedEntry = superstructureTable.getEntry("FEED");
-    NetworkTableEntry l1PivotEntry = superstructureTable.getEntry("L1_PIVOT");
+    NetworkTableEntry l1FadeawayEntry = superstructureTable.getEntry("L1_PIVOT");
     NetworkTableEntry l2FadeawayEntry = superstructureTable.getEntry("L2_FADEAWAY");
     NetworkTableEntry l3FadeawayEntry = superstructureTable.getEntry("L3_FADEAWAY");
     NetworkTableEntry l4FadeawayEntry = superstructureTable.getEntry("L4_FADEAWAY");
@@ -717,7 +716,7 @@ public class RobotContainer {
     intakeCoralEntry.setBoolean(false);
     intakeCoralL1Entry.setBoolean(false);
     feedEntry.setBoolean(false);
-    l1PivotEntry.setBoolean(false);
+    l1FadeawayEntry.setBoolean(false);
     l2FadeawayEntry.setBoolean(false);
     l3FadeawayEntry.setBoolean(false);
     l4FadeawayEntry.setBoolean(false);
@@ -742,7 +741,7 @@ public class RobotContainer {
     Trigger intakeCoralTrigger = new Trigger(() -> intakeCoralEntry.getBoolean(false));
     Trigger intakeCoralL1Trigger = new Trigger(() -> intakeCoralL1Entry.getBoolean(false));
     Trigger feedTrigger = new Trigger(() -> feedEntry.getBoolean(false));
-    Trigger l1PivotTrigger = new Trigger(() -> l1PivotEntry.getBoolean(false));
+    Trigger l1FadeawayTrigger = new Trigger(() -> l1FadeawayEntry.getBoolean(false));
     Trigger l2FadeawayTrigger = new Trigger(() -> l2FadeawayEntry.getBoolean(false));
     Trigger l3FadeawayTrigger = new Trigger(() -> l3FadeawayEntry.getBoolean(false));
     Trigger l4FadeawayTrigger = new Trigger(() -> l4FadeawayEntry.getBoolean(false));
@@ -785,10 +784,10 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.FEED, "Set FEED")
             .andThen(() -> feedEntry.setBoolean(false)));
-    l1PivotTrigger.onTrue(
+    l1FadeawayTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_PIVOT")
-            .andThen(() -> l1PivotEntry.setBoolean(false)));
+            .setStateCommand(SuperstructureState.L1_AIM, "Set L1_AIM")
+            .andThen(() -> l1FadeawayEntry.setBoolean(false)));
     l2FadeawayTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L2_FADEAWAY, "Set L2_FADEAWAY")
@@ -803,7 +802,7 @@ public class RobotContainer {
             .andThen(() -> l4FadeawayEntry.setBoolean(false)));
     l1ScoreTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_SCORE")
+            .setStateCommand(SuperstructureState.L1_AIM, "Set L1_SCORE")
             .andThen(() -> l1ScoreEntry.setBoolean(false)));
     l2ScoreTrigger.onTrue(
         superstructure
@@ -1664,11 +1663,11 @@ public class RobotContainer {
     //         .withInactiveConfig(inactiveConfig)
     //         .withActiveConfig(activeConfig)
     //         .withText("feed");
-    StreamDeckButton l1PivotButton =
-        new StreamDeckButton(3, 5, "l1Pivot")
+    StreamDeckButton l1FadeawayButton =
+        new StreamDeckButton(3, 5, "l1Fadeaway")
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
-            .withText("L1 PIV");
+            .withText("L1 F");
     StreamDeckButton l2FadeawayButton =
         new StreamDeckButton(2, 5, "l2Fadeaway")
             .withInactiveConfig(orangeConfig)
@@ -1806,7 +1805,8 @@ public class RobotContainer {
     // customStreamDeckButtonMap.put(feedButton, () -> superstructure.getCurrentState() ==
     // SuperstructureState.FEED);
     customStreamDeckButtonMap.put(
-        l1PivotButton, () -> superstructure.getCurrentState() == SuperstructureState.L1_PIVOT);
+        l1FadeawayButton,
+        () -> superstructure.getCurrentState() == SuperstructureState.L1_FADEAWAY);
     customStreamDeckButtonMap.put(
         l2FadeawayButton,
         () -> superstructure.getCurrentState() == SuperstructureState.L2_FADEAWAY);
@@ -1817,7 +1817,7 @@ public class RobotContainer {
         l4FadeawayButton,
         () -> superstructure.getCurrentState() == SuperstructureState.L4_FADEAWAY);
     customStreamDeckButtonMap.put(
-        l1ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L1_PIVOT);
+        l1ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L1_AIM);
     customStreamDeckButtonMap.put(
         l2ScoreButton, () -> superstructure.getCurrentState() == SuperstructureState.L2_AIM);
     customStreamDeckButtonMap.put(
@@ -1882,8 +1882,8 @@ public class RobotContainer {
     // streamdeck.button(feedButton).onTrue(superstructure.setStateCommand(SuperstructureState.FEED,
     // "Set FEED"));
     streamdeck
-        .button(l1PivotButton)
-        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_PIVOT"));
+        .button(l1FadeawayButton)
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_FADEAWAY, "Set L1_FADEAWAY"));
     streamdeck
         .button(l2FadeawayButton)
         .onTrue(superstructure.setStateCommand(SuperstructureState.L2_FADEAWAY, "Set L2_FADEAWAY"));
@@ -1895,7 +1895,7 @@ public class RobotContainer {
         .onTrue(superstructure.setStateCommand(SuperstructureState.L4_FADEAWAY, "Set L4_FADEAWAY"));
     streamdeck
         .button(l1ScoreButton)
-        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "Set L1_AIM"));
+        .onTrue(superstructure.setStateCommand(SuperstructureState.L1_AIM, "Set L1_AIM"));
     streamdeck
         .button(l2ScoreButton)
         .onTrue(superstructure.setStateCommand(SuperstructureState.L2_AIM, "Set L2_AIM"));

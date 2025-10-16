@@ -39,9 +39,9 @@ public enum SuperstructureState {
   FEED(
       Constants.SuperstructureConstants.FEED_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.FEED_ENDEFFECTOR_ROTATION_ROTATIONS),
-  L1_PIVOT(
-      Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L1_AIM(
+      Constants.SuperstructureConstants.L1_AIM_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L1_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_AIM(
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -175,7 +175,7 @@ public enum SuperstructureState {
       case STOW_CORAL,
           INTAKE_CORAL,
           INTAKE_CORAL_L1,
-          L1_PIVOT,
+          L1_AIM,
           L2_AIM,
           L3_AIM,
           L4_AIM,
@@ -186,6 +186,32 @@ public enum SuperstructureState {
           L2_AWAY_FROM_REEF,
           L3_AWAY_FROM_REEF,
           L4_AWAY_FROM_REEF:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public boolean isUprightScoringState() {
+    switch (this) {
+      case L2_AIM,
+          L3_AIM,
+          L4_AIM,
+          L2_FADEAWAY,
+          L3_FADEAWAY,
+          L4_FADEAWAY,
+          L2_AWAY_FROM_REEF,
+          L3_AWAY_FROM_REEF,
+          L4_AWAY_FROM_REEF:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public boolean isL1ScoringState() {
+    switch (this) {
+      case L1_AIM, L1_FADEAWAY:
         return true;
       default:
         return false;
@@ -228,7 +254,7 @@ public enum SuperstructureState {
         INTAKE_CORAL_L1,
         FEED,
         INTAKE_ALGAE_GROUND,
-        L1_PIVOT,
+        L1_AIM,
         L1_FADEAWAY);
   }
 
