@@ -85,6 +85,37 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DRIVETOCORALTEST2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DRIVETOCORALTEST3"
+                }
+              }
+            ]
+          }
         }
       ]
     }

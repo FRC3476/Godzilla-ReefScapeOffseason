@@ -67,7 +67,7 @@ public class DriveToCoralCommand extends Command {
     double ty = vision.getCoralTy();
     Logger.recordOutput("Commands/" + getName() + "/TY Error", ty);
 
-    double perpendicularSpeed = ty * 0.2;
+    double perpendicularSpeed = ty * 0.1;
 
     if (Math.abs(tx) > 10) {
       perpendicularSpeed = 0;
