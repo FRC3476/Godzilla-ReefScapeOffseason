@@ -27,11 +27,17 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
 import frc.robot.subsystems.drive.SimTunerConstants;
+
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import java.util.Arrays;
 
 /**
@@ -152,6 +158,15 @@ public final class Constants {
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
     public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    	public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY =
+			MetersPerSecond.of(15.0/100);
+	public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY =
+			DegreesPerSecond.of(7.0);
   }
 
   public static final class AutoConstants {

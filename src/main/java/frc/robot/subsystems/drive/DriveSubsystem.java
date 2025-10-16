@@ -11,11 +11,14 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.RobotTime;
@@ -81,6 +84,23 @@ public class DriveSubsystem extends SubsystemBase {
     }
     return input;
   }
+
+  public boolean isRollStable() {
+    return Math.abs(inputs.gyroRoll) < DriveConstants.SCORING_MAX_ROLL_RADIANS &&
+    Math.abs(inputs.gyroRollVelocity) < DriveConstants.SCORING_MAX_ROLL_VELOCITY_RADPERSEC;
+  }
+
+  public boolean isPitchStable() {
+    return Math.abs(inputs.gyroPitch) < DriveConstants.SCORING_MAX_PITCH_RADIANS &&
+    Math.abs(inputs.gyroPitchVelocity) < DriveConstants.SCORING_MAX_PITCH_VELOCITY_RADPERSEC;
+  }
+
+  public boolean isRobotStable() {
+    return isPitchStable() && isRollStable()
+    && Units.MetersPerSecond.of(Math.hypot(inputs.Speeds.vxMetersPerSecond, inputs.Speeds.vyMetersPerSecond)).lte(DriveConstants.SCORING_MAX_LINEAR_VELOCITY)
+    && Units.RadiansPerSecond.of(Math.abs(inputs.Speeds.omegaRadiansPerSecond)).lte(DriveConstants.SCORING_MAX_ANGULAR_VELOCITY);
+  }
+
 
   // private class Controller implements Consumer<PathPlannerTrajectory>, Runnable {
   //   private final PathFollowingController controller;
