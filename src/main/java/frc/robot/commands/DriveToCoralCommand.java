@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,7 +30,10 @@ public class DriveToCoralCommand extends Command {
   private final DriveSubsystem drive;
   private final Vision vision;
 
-  private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+  private final ApplyRobotSpeeds robotSpeeds =
+      new ApplyRobotSpeeds()
+          .withDriveRequestType(DriveRequestType.Velocity)
+          .withDesaturateWheelSpeeds(true);
 
   public DriveToCoralCommand(DriveSubsystem drive, Vision vision) {
     addRequirements(drive, vision);
@@ -63,18 +67,14 @@ public class DriveToCoralCommand extends Command {
     double ty = vision.getCoralTy();
     Logger.recordOutput("Commands/" + getName() + "/TY Error", ty);
 
-    double perpendicularSpeed = ty * 0.1;
+    double perpendicularSpeed = ty * 0.2;
 
     if (Math.abs(tx) > 10) {
       perpendicularSpeed = 0;
     }
     Logger.recordOutput("Commands/" + getName() + "/perpendicularSpeed", perpendicularSpeed);
 
-    double angularSpeed =
-        angleController.getSetpoint().velocity * rot_ffScaler
-            + angleController.calculate(tx, 0)
-            + Math.copySign(1.5, angleController.calculate(tx, 0));
-    angularSpeed = !angleController.atSetpoint() ? angularSpeed : 0;
+    double angularSpeed = angleController.calculate(Units.degreesToRadians(tx), 0.0);
     Logger.recordOutput("Commands/" + getName() + "/angularSpeed", angularSpeed);
 
     ChassisSpeeds speeds = new ChassisSpeeds(perpendicularSpeed, 0.0, angularSpeed);
