@@ -1965,7 +1965,7 @@ public class RobotContainer {
         new WaitUntilCommand(
                 () ->
                     RobotState.getSuperstructureState() == SuperstructureState.STOW
-                        && robotState.getStoredScorePosition().getScoreLevel() != ScoreLevel.L1)
+                        && robotState.getStoredScorePosition().getCoralScoreLevel() != ScoreLevel.L1)
             .andThen(
                 superstructure.setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE").asProxy()));
 
