@@ -112,6 +112,14 @@ public final class Constants {
         3476.0; // Velocity derivative indicating wheels started spinning
     public static final double SLIP_MIN_CURRENT_THRESHOLD = 0.0; // Minimum current threshold
 
+    // Feedforward Characterization Constants
+    public static final double FF_START_DELAY = 2.0; // Seconds - allow modules to orient
+    public static final double FF_RAMP_RATE = 0.1; // Volts per second
+
+    // Wheel Radius Characterization Constants
+    public static final double WHEEL_RADIUS_RAMP_RATE = 0.25; // rad/s per second
+    public static final double WHEEL_RADIUS_MAX_VELOCITY = 1.0; // rad/s
+
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
     public static final double DRIVE_TO_POSE_KP = 5.0;

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
@@ -207,5 +208,46 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
           moduleNames[i] + " Target Drive Velocity",
           driveState.ModuleTargets[i].speedMetersPerSecond);
     }
+  }
+
+  @Override
+  public void runCharacterization(double volts) {
+    // Use ApplyRobotSpeeds with OpenLoopVoltage to drive all modules straight
+    var request =
+        new SwerveRequest.ApplyRobotSpeeds()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+
+    // Calculate speeds that result in 'volts' being applied to each module
+    // Since we want all modules to drive straight, use forward velocity only
+    var speeds = new ChassisSpeeds(volts, 0, 0);
+    setControl(request.withSpeeds(speeds));
+  }
+
+  @Override
+  public double getFFCharacterizationVelocity() {
+    // Return average velocity in rotations per second
+    double sum = 0.0;
+    for (int i = 0; i < 4; i++) {
+      // Get drive motor velocity and convert to RPS
+      var module = getModule(i);
+      sum += module.getDriveMotor().getVelocity().getValueAsDouble();
+    }
+    return sum / 4.0;
+  }
+
+  @Override
+  public double[] getWheelRadiusCharacterizationPositions() {
+    double[] positions = new double[4];
+    for (int i = 0; i < 4; i++) {
+      var module = getModule(i);
+      // Get position in rotations, convert to radians
+      positions[i] = module.getDriveMotor().getPosition().getValueAsDouble() * 2.0 * Math.PI;
+    }
+    return positions;
+  }
+
+  @Override
+  public Rotation2d getRotation() {
+    return getState().Pose.getRotation();
   }
 }

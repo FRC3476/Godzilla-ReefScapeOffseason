@@ -10,6 +10,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -319,5 +320,25 @@ public class DriveSubsystem extends SubsystemBase {
       return ((DriveIOSim) io).getMapleSimDrive();
     }
     return null;
+  }
+
+  /** Runs characterization at the specified voltage */
+  public void runCharacterization(double volts) {
+    io.runCharacterization(volts);
+  }
+
+  /** Returns average FF characterization velocity */
+  public double getFFCharacterizationVelocity() {
+    return io.getFFCharacterizationVelocity();
+  }
+
+  /** Returns wheel radius characterization positions */
+  public double[] getWheelRadiusCharacterizationPositions() {
+    return io.getWheelRadiusCharacterizationPositions();
+  }
+
+  /** Returns current rotation */
+  public Rotation2d getRotation() {
+    return io.getRotation();
   }
 }

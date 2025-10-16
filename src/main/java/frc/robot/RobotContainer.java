@@ -896,11 +896,13 @@ public class RobotContainer {
     Trigger driveToOtherSideTrigger = new Trigger(() -> driveToOtherSideEntry.getBoolean(false));
     Trigger resetPoseToVisionTrigger = new Trigger(() -> resetPoseToVisionEntry.getBoolean(false));
 
-    // driveFeedforwardTrigger.whileTrue(DriveCommands.feedforwardCharacterization(drive));
+    driveFeedforwardTrigger.whileTrue(
+        DriveCommands.feedforwardCharacterization(drive));
+    driveWheelRadiusTrigger.whileTrue(
+        DriveCommands.wheelRadiusCharacterization(drive));
     // driveSlipCurrentTrigger.whileTrue(
     //     Commands.print("running slip current test")
     //         .andThen(DriveCommands.slipCurrentCharacterization(drive)));
-    // driveWheelRadiusTrigger.whileTrue(DriveCommands.wheelRadiusCharacterization(drive));
     // driveStopXTrigger.onTrue(
     //     Commands.runOnce(drive::stopWithX, drive).andThen(() ->
     // driveStopXEntry.setBoolean(false)));

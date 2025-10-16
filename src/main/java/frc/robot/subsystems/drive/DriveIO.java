@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -54,4 +55,22 @@ public interface DriveIO {
   default void updateOperatorPerspective() {}
 
   default void setStateStdDevs(double xStd, double yStd, double rotStd) {}
+
+  /** Runs all modules at the specified voltage for characterization */
+  default void runCharacterization(double volts) {}
+
+  /** Returns average drive velocity in rotations/sec for FF characterization */
+  default double getFFCharacterizationVelocity() {
+    return 0.0;
+  }
+
+  /** Returns wheel positions in radians for all 4 modules [FL, FR, BL, BR] */
+  default double[] getWheelRadiusCharacterizationPositions() {
+    return new double[4];
+  }
+
+  /** Returns current gyro rotation */
+  default Rotation2d getRotation() {
+    return new Rotation2d();
+  }
 }
