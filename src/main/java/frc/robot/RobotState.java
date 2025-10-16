@@ -21,7 +21,6 @@ import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
@@ -417,8 +416,6 @@ public class RobotState extends MagicVirtualSubsystem {
     return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
         && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
   }
-
-
 
   public static final double LOOKBACK_TIME = 1.0;
 

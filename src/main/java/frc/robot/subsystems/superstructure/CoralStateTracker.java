@@ -73,11 +73,7 @@ public class CoralStateTracker {
     recalcState();
   }
 
-  public static Trigger IsCoralInEndEffector() {
-    return new Trigger(
-      () -> getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR
-    );
-  }
+  
 
   private static void recalcState() {
     double now = Timer.getFPGATimestamp();
