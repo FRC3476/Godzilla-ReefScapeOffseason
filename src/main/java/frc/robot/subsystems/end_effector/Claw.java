@@ -33,7 +33,7 @@ public class Claw extends SubsystemBase {
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
       new LoggedTunableNumber(
-          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;

@@ -13,6 +13,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -27,6 +30,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -152,6 +157,13 @@ public final class Constants {
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
     public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
   }
 
   public static final class AutoConstants {
@@ -558,7 +570,7 @@ public final class Constants {
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
     public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
-        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
+        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(7);
     public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
@@ -644,7 +656,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -10;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
