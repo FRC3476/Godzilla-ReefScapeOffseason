@@ -1108,9 +1108,12 @@ public class RobotContainer {
                         () -> robotState.isL1Mode()),
                     claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
                     () -> RobotState.getSuperstructureState().isCoralState()),
-                new WaitUntilCommand(
-                        () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                    .withTimeout(3),
+                new ConditionalCommand(
+                    new WaitUntilCommand(
+                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                        .withTimeout(3),
+                    new WaitCommand(2.0),
+                    () -> RobotState.getSuperstructureState().isCoralState()),
                 superstructure
                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                     .asProxy(),
