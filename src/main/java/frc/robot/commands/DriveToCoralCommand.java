@@ -57,23 +57,23 @@ public class DriveToCoralCommand extends Command {
     Rotation2d desiredTheta =
         robotPose.getRotation().plus(Rotation2d.fromDegrees(vision.getCoralTx()));
 
-    double txError = desiredTheta.minus(robotPose.getRotation()).getDegrees();
-    Logger.recordOutput("Commands/" + getName() + "/TX Error", txError);
+    double tx = vision.getCoralTx();
+    Logger.recordOutput("Commands/" + getName() + "/TX Error", tx);
 
-    double thetaError = robotPose.getRotation().minus(desiredTheta).getRadians();
-    Logger.recordOutput("Commands/" + getName() + "/TY Error", thetaError);
+    double ty = vision.getCoralTy();
+    Logger.recordOutput("Commands/" + getName() + "/TY Error", ty);
 
-    double perpendicularSpeed = 0.3;
+    double perpendicularSpeed = ty * 0.1;
 
-    if (Math.abs(thetaError) > 0.1) {
+    if (Math.abs(tx) > 10) {
       perpendicularSpeed = 0;
     }
     Logger.recordOutput("Commands/" + getName() + "/perpendicularSpeed", perpendicularSpeed);
 
     double angularSpeed =
         angleController.getSetpoint().velocity * rot_ffScaler
-            + angleController.calculate(thetaError, 0)
-            + Math.copySign(1.5, angleController.calculate(thetaError, 0));
+            + angleController.calculate(tx, 0)
+            + Math.copySign(1.5, angleController.calculate(tx, 0));
     angularSpeed = !angleController.atSetpoint() ? angularSpeed : 0;
     Logger.recordOutput("Commands/" + getName() + "/angularSpeed", angularSpeed);
 
