@@ -92,8 +92,8 @@ public final class Constants {
 
     // Acceleration limits
     // Large numnbers so they don't do anything.
-    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
-    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
+    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s/s
+    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s/s
 
     // Dynamic acceleration limit formula weights for: E - elevator.height*b -
     // intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
@@ -682,11 +682,11 @@ public final class Constants {
 
     public static final double ROLLER_HOLDING_CAGE_AMPS = 60.0; //TODO fine-adjust
     public static final double ROLLER_BACKOUT_VOLTS = 0.5; //TODO fine-adjust
-    public static final double CLIMBROLLER_CURRENT_LIMIT_AMPS = 80.0;
-    public static final double CLIMBROLLER_STALLED_RPS = 60.0; //TODO fine-adjust
-    public static final double CLIMBROLLER_STALLED_CURRENT = 60.0; //TODO fine-adjust
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
+    public static final double ROLLER_STALLED_RPS = 10.0; //TODO fine-adjust
+    public static final double ROLLER_STALLED_CURRENT = 30.0; //TODO fine-adjust
 
-    public static final TalonFXConfiguration CLIMBROLLER_TALON_CONFIG =
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
@@ -695,7 +695,7 @@ public final class Constants {
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ClimbConstants.CLIMBROLLER_CURRENT_LIMIT_AMPS));
+                    .withStatorCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================LED (8_)====================

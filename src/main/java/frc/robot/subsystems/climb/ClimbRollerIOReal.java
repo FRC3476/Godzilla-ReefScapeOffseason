@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
@@ -24,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class ClimbRollerIOReal implements ClimbRollerIO { 
 
-  protected TalonFX climbRollerTalonFX;
+  protected TalonFX rollerTalonFX;
 
   private TorqueCurrentFOC roller_c_request =
       new TorqueCurrentFOC(0);
@@ -39,15 +40,15 @@ public class ClimbRollerIOReal implements ClimbRollerIO {
   private final BaseStatusSignal[] signals;
 
   public ClimbRollerIOReal() {
-    climbRollerTalonFX = new TalonFX(ClimbConstants.rollerID, Constants.DRIVE_CANIVORE); //TODO set roller ID
+    rollerTalonFX = new TalonFX(ClimbConstants.rollerID, Constants.DRIVE_CANIVORE); //TODO set roller ID
     PhoenixUtil.tryUntilOk(
-        5, () -> climbRollerTalonFX.getConfigurator().apply(ClimbConstants.CLIMBROLLER_TALON_CONFIG));
+        5, () -> rollerTalonFX.getConfigurator().apply(ClimbConstants.ROLLER_TALON_CONFIG));
 
-    rollerVelocityRPS = climbRollerTalonFX.getRotorVelocity();
-    rollerAppliedVolts = climbRollerTalonFX.getMotorVoltage();
-    rollerStatorCurrentAmps = climbRollerTalonFX.getStatorCurrent();
-    rollerSupplyCurrentAmps = climbRollerTalonFX.getSupplyCurrent();
-    rollerTempCelsius = climbRollerTalonFX.getDeviceTemp();
+    rollerVelocityRPS = rollerTalonFX.getRotorVelocity();
+    rollerAppliedVolts = rollerTalonFX.getMotorVoltage();
+    rollerStatorCurrentAmps = rollerTalonFX.getStatorCurrent();
+    rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
+    rollerTempCelsius = rollerTalonFX.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,

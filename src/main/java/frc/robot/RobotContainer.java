@@ -977,7 +977,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureXboxBindings() {
 
-    // Lock to 0° when button is held
+    // Lock to angle when button is held
     controller
         .b()
         .whileTrue(

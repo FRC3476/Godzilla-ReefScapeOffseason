@@ -15,9 +15,9 @@ import frc.robot.Constants.ClimbConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimbRollerIOSim extends ClimbRollerIOReal {
-  protected DCMotorSim climbRollerSim;
+  protected DCMotorSim rollerSim;
 
-  private final TalonFXSimState climbRollerSimState;
+  private final TalonFXSimState rollerSimState;
 
   protected double lastUpdateTimestamp = 0.0;
 
@@ -25,7 +25,7 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
 
   public ClimbRollerIOSim() {
 
-    climbRollerSim =
+    rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 DCMotor.getKrakenX60(1),
@@ -35,7 +35,7 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
 
     rollerTalonFX.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
 
-    climbRollerSimState = rollerTalonFX.getSimState();
+    rollerSimState = rollerTalonFX.getSimState();
 
     simNotifier =
         new Notifier(
@@ -46,18 +46,18 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
   }
 
   private void updateSimState() {
-    climbRollerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    double rollerVoltage = climbRollerSimState.getMotorVoltage();
-    climbRollerSim.setInputVoltage(rollerVoltage);
+    rollerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    double rollerVoltage = rollerSimState.getMotorVoltage();
+    rollerSim.setInputVoltage(rollerVoltage);
 
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(climbRollerSim.getCurrentDrawAmps()));
+        BatterySim.calculateDefaultBatteryLoadedVoltage(rollerSim.getCurrentDrawAmps()));
 
     double timestamp = Timer.getFPGATimestamp();
     double dt = timestamp - lastUpdateTimestamp;
     lastUpdateTimestamp = timestamp;
 
-    climbRollerSim.update(dt);
+    rollerSim.update(dt);
 
     updateRollerSimStates();
 
@@ -66,26 +66,26 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
 
   private void updateRollerSimStates() {
     // Find current state of sim in radians from 0 point
-    double simPositionRads = climbRollerSim.getAngularPositionRad();
+    double simPositionRads = rollerSim.getAngularPositionRad();
     Logger.recordOutput("ClimbRoller/Sim/SimRollerPositionRadians", simPositionRads);
     // Mutate rotor position
     double rotorPosition =
         Units.radiansToRotations(simPositionRads) / ClimbConstants.ROLLER_GEAR_RATIO; //TODO change
-    climbRollerSimState.setRawRotorPosition(rotorPosition);
+    rollerSimState.setRawRotorPosition(rotorPosition);
     Logger.recordOutput("ClimbRoller/Sim/setRollerRawRotorPosition", rotorPosition);
     // Mutate rotor vel
     double rotorVel =
-        Units.radiansToRotations(climbRollerSim.getAngularVelocityRadPerSec())
+        Units.radiansToRotations(rollerSim.getAngularVelocityRadPerSec())
             / ClimbConstants.ROLLER_GEAR_RATIO;
-    climbRollerSimState.setRotorVelocity(rotorVel);
+    rollerSimState.setRotorVelocity(rotorVel);
     Logger.recordOutput("ClimbRoller/Sim/SimulatorRollerVelocity", rotorVel);
   }
 
   private void logSimulationData() {
-    Logger.recordOutput("CLimbRoller/Sim/PositionRad", climbRollerSim.getAngularPositionRad());
-    Logger.recordOutput("CLimbRoller/Sim/VelocityRPS", climbRollerSim.getAngularVelocityRadPerSec());
-    Logger.recordOutput("CLimbRoller/Sim/CurrentAmps", climbRollerSim.getCurrentDrawAmps());
-    Logger.recordOutput("CLimbRoller/Sim/AppliedVoltage", climbRollerSimState.getMotorVoltage());
+    Logger.recordOutput("CLimbRoller/Sim/PositionRad", rollerSim.getAngularPositionRad());
+    Logger.recordOutput("CLimbRoller/Sim/VelocityRPS", rollerSim.getAngularVelocityRadPerSec());
+    Logger.recordOutput("CLimbRoller/Sim/CurrentAmps", rollerSim.getCurrentDrawAmps());
+    Logger.recordOutput("CLimbRoller/Sim/AppliedVoltage", rollerSimState.getMotorVoltage());
   }
 
   public void close() {
