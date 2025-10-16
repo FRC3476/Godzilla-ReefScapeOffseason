@@ -1,15 +1,19 @@
 package frc.robot.subsystems.superstructure;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.util.Util;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.Constants;
+import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.Constants.SuperstructureConstants;
+import frc.robot.RobotContainer;
+import frc.robot.util.Util;
 
 // This stores what subsystem values are in each state
 
@@ -222,59 +226,83 @@ public enum SuperstructureState {
   }
 
   private Set<SuperstructureState> lowInStates() {
-    return EnumSet.of(
-        STOW,
-        STOW_CORAL,
-        STOW_ALGAE,
-        INTAKE_CORAL,
-        INTAKE_CORAL_L1,
-        FEED,
-        INTAKE_ALGAE_GROUND,
-        L1_PIVOT,
-        L1_FADEAWAY);
+    return EnumSet.allOf(SuperstructureState.class).stream()
+		.filter(SuperstructureState::isLowInFilter)
+		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+  }
+
+  private Set<SuperstructureState> lowOutStates() {
+    return EnumSet.allOf(SuperstructureState.class).stream()
+		.filter(SuperstructureState::isLowOutFilter)
+		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));  }
+
+  private Set<SuperstructureState> middleOutStates() {
+    return EnumSet.allOf(SuperstructureState.class).stream()
+		.filter(SuperstructureState::isMiddleOutFilter)
+		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+  }
+
+  private Set<SuperstructureState> highOutStates() {
+    return EnumSet.allOf(SuperstructureState.class).stream()
+		.filter(SuperstructureState::isHighOutFilter)
+		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));
+  }
+
+  private Set<SuperstructureState> highInStates() {
+    return EnumSet.allOf(SuperstructureState.class).stream()
+		.filter(SuperstructureState::isHighInFilter)
+		.collect(Collectors.toCollection(() -> EnumSet.noneOf(SuperstructureState.class)));  
   }
 
   public boolean isLowIn() {
     return lowInStates().contains(this);
   }
 
-  private Set<SuperstructureState> lowOutStates() {
-    return EnumSet.of(L2_AIM, L2_FADEAWAY, L2_AWAY_FROM_REEF, PROCESSOR_AIM);
-  }
-
   public boolean isLowOut() {
     return lowOutStates().contains(this);
   }
 
-  private Set<SuperstructureState> middleOutStates() {
-    return EnumSet.of(
-        ALGAE_LOW_INTAKE,
-        L3_AIM,
-        L3_FADEAWAY,
-        L3_AWAY_FROM_REEF,
-        ALGAE_HIGH_INTAKE);
-  }
   public boolean isMiddleOut() {
     return middleOutStates().contains(this);
-  }
-
-  private Set<SuperstructureState> highOutStates() {
-    return EnumSet.of(
-        L4_FADEAWAY,
-        L4_AIM,
-        L4_AWAY_FROM_REEF,
-        BARGE_AIM_BACKWARD);
   }
 
   public boolean isHighOut() {
     return highOutStates().contains(this);
   }
 
-  private Set<SuperstructureState> highInStates() {
-    return EnumSet.of(BARGE_AIM_CENTER, BARGE_AIM_FORWARD);
-  }
-
   public boolean isHighIn() {
     return highInStates().contains(this);
   }
+
+  //superstructure filters
+  private boolean isMiddleOutFilter() {
+	  return this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getElevatorHeight() <= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
+	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
+
+  private boolean isLowOutFilter() {
+	  return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
+	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
+
+  private boolean isHighOutFilter() {
+	  return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
+	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
+
+  private boolean isHighInFilter(){
+    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+  }
+
+  private boolean isLowInFilter(){
+    return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
+  }
+
+
 }
