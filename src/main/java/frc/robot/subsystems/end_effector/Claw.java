@@ -8,7 +8,6 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -34,7 +33,7 @@ public class Claw extends SubsystemBase {
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
       new LoggedTunableNumber(
-          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
@@ -141,9 +140,9 @@ public class Claw extends SubsystemBase {
               // }
               break;
             case ALGAE:
-              if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
-                this.currentState = ClawState.IDLE;
-              }
+              // if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
+              //   this.currentState = ClawState.IDLE;
+              // }
               break;
             default:
               this.currentState = ClawState.IDLE;
