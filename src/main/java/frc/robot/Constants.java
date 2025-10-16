@@ -114,13 +114,13 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 12.0;
+    public static final double DRIVE_TO_POSE_KP = 5.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
-    public static final double DRIVE_TO_POSE_KD = 0.1;
+    public static final double DRIVE_TO_POSE_KD = 0.4;
 
-    public static final double ANGLE_KP = 8.0;
-    public static final double ANGLE_KD = 0.1;
-    public static final double ANGLE_MAX_ACCELERATION = 20.0;
+    public static final double ANGLE_KP = 4.5;
+    public static final double ANGLE_KD = 0.4;
+    public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
@@ -151,7 +151,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.60;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
   }
 
   public static final class AutoConstants {
@@ -644,7 +644,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -7;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -10;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
