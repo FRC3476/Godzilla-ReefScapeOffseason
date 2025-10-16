@@ -18,9 +18,9 @@ public class ClimbRoller extends SubsystemBase {
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber(
         "ClimbRoller/Volts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
-  private static final LoggedTunableNumber rollerHoldingCageVolts =
+  private static final LoggedTunableNumber rollerHoldingCageAmps =
       new LoggedTunableNumber(
-        "CLimbRoller/HoldingCageVolts", ClimbConstants.ROLLER_HOLDING_CAGE_AMPS); 
+        "CLimbRoller/HoldingCageAmps", ClimbConstants.ROLLER_HOLDING_CAGE_AMPS); 
   private static final LoggedTunableNumber rollerBackOutvolts =
       new LoggedTunableNumber(
         "ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS); 
@@ -59,6 +59,6 @@ public class ClimbRoller extends SubsystemBase {
 
   public Command holdCage() {
     return Commands.runOnce(
-        () -> this.io.setTorqueCurrent(ClimbConstants.ROLLER_HOLDING_CAGE_AMPS), this); 
+        () -> this.io.setTorqueCurrent(rollerHoldingCageAmps.get()), this); 
   }
 }

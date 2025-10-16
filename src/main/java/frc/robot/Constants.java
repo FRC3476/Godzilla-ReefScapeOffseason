@@ -654,8 +654,8 @@ public final class Constants {
     public static final double reduction = (1 / 23.11);
     public static final double climbMOI = 0.01;
 
-    public static final int climberID = 60;
-    public static final int rollerID = 0; //TODO set ID
+    public static final int ID = 60;
+    public static final int rollerID = 61; //TODO set ID
 
     public static final double CLIMB_DEPLOY_POSITION = 65;
     public static final double CLIMB_CLIMB_POSITION = 209;
@@ -697,7 +697,7 @@ public final class Constants {
 
   // ====================LED (8_)====================
   public static final class LEDConstants {
-    public static final int climberID = 19; // 80 not allowed, max climberID is 62
+    public static final int ID = 19; // 80 not allowed, max ID is 62
     public static final int kNonCandleLEDCount = 10;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
@@ -743,7 +743,7 @@ public final class Constants {
     public static final AprilTagFieldLayout kAprilTagLayoutReefsOnly =
         new AprilTagFieldLayout(
             kAprilTagLayout.getTags().stream()
-                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.climberID))
+                .filter(tag -> Arrays.stream(kAllowedTagIDs).anyMatch(element -> element == tag.ID))
                 .toList(),
             kAprilTagLayout.getFieldLength(),
             kAprilTagLayout.getFieldWidth());
