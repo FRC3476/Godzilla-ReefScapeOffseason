@@ -1,5 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
+import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -21,6 +22,7 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
   protected Notifier simNotifier;
 
   private final TalonFXSimState pivotSimState;
+  private final CANcoderSimState cancoderSimState;
 
   protected double lastUpdateTimestamp = 0.0;
 
@@ -30,15 +32,30 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
   public EndEffectorIOSim() {
     super();
 
+    // DCMotorSim gearing parameter is mechanism-to-motor, so we use PIVOT_GEAR_RATIO directly
     pivotSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1), 0.01, 1.0 / EndEffectorConstants.PIVOT_GEAR_RATIO),
+                DCMotor.getKrakenX60(1), 0.01, EndEffectorConstants.PIVOT_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
 
     pivotTalonFX.getSimState().Orientation = ChassisReference.Clockwise_Positive;
 
     pivotSimState = pivotTalonFX.getSimState();
+
+    // Get CANcoder simulation state to simulate the remote sensor
+    cancoderSimState = pivotCancoder.getSimState();
+    cancoderSimState.Orientation = ChassisReference.CounterClockwise_Positive;
+
+    // Initialize CANcoder absolute position to match starting mechanism position
+    // This is critical for matching real robot behavior where absolute position is used
+    double initialMechanismRot = 0.0; // Assuming mechanism starts at 0
+    double initialAbsolutePosition = initialMechanismRot * EndEffectorConstants.PIVOT_STM;
+    cancoderSimState.setRawPosition(initialAbsolutePosition);
+    cancoderSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    // Initialize timestamp before starting simulation updates
+    lastUpdateTimestamp = Timer.getFPGATimestamp();
 
     simNotifier =
         new Notifier(
@@ -52,6 +69,13 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
     pivotSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     double pivotVoltage = pivotSimState.getMotorVoltage();
+
+    // Log control mode and setpoint for debugging
+    Logger.recordOutput(
+        "EndEffector/Sim/ControlMode", pivotTalonFX.getControlMode().getValue().toString());
+    Logger.recordOutput(
+        "EndEffector/Sim/ClosedLoopReference",
+        pivotTalonFX.getClosedLoopReference().getValueAsDouble());
 
     pivotSim.setInputVoltage(pivotVoltage);
 
@@ -70,19 +94,39 @@ public class EndEffectorIOSim extends EndEffectorIOReal {
   }
 
   private void updatePivotSimStates() {
-    double simPositionRads = pivotSim.getAngularPositionRad();
-    double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / EndEffectorConstants.PIVOT_GEAR_RATIO;
+    // Get mechanism position from simulation (in radians)
+    double mechanismPositionRad = pivotSim.getAngularPositionRad();
+    double mechanismVelocityRadPerSec = pivotSim.getAngularVelocityRadPerSec();
+
+    // Convert mechanism position to rotations
+    double mechanismPositionRot = Units.radiansToRotations(mechanismPositionRad);
+    double mechanismVelocityRPS = Units.radiansToRotations(mechanismVelocityRadPerSec);
+
+    // Calculate rotor position: mechanism * (RTS * STM)
+    // Rotor spins faster than mechanism by the total gear ratio
+    double rotorPosition = mechanismPositionRot / EndEffectorConstants.PIVOT_GEAR_RATIO;
+    double rotorVelocity = mechanismVelocityRPS / EndEffectorConstants.PIVOT_GEAR_RATIO;
+
+    // Store in AtomicReference for thread-safe access
     pivotLastRotations.set(rotorPosition);
+    pivotLastRPS.set(rotorVelocity);
+
+    // Update TalonFX simulation state
     pivotSimState.setRawRotorPosition(rotorPosition);
-    Logger.recordOutput("EndEffector/Sim/setPivotRawRotorPosition", rotorPosition);
-    double rotorVel =
-        Units.radiansToRotations(pivotSim.getAngularVelocityRadPerSec())
-            / EndEffectorConstants.PIVOT_GEAR_RATIO;
-    pivotLastRPS.set(rotorVel);
-    pivotSimState.setRotorVelocity(rotorVel);
-    Logger.recordOutput(
-        "EndEffector/Sim/SimPivotVelocityRadS", pivotSim.getAngularVelocityRadPerSec());
+    pivotSimState.setRotorVelocity(rotorVelocity);
+
+    // Update CANcoder simulation: CANcoder measures mechanism position
+    // CANcoder position = mechanism * STM (sensor-to-mechanism ratio)
+    double cancoderPosition = mechanismPositionRot * EndEffectorConstants.PIVOT_STM;
+    double cancoderVelocity = mechanismVelocityRPS * EndEffectorConstants.PIVOT_STM;
+    cancoderSimState.setRawPosition(cancoderPosition);
+    cancoderSimState.setVelocity(cancoderVelocity);
+
+    // Logging
+    Logger.recordOutput("EndEffector/Sim/MechanismPositionRot", mechanismPositionRot);
+    Logger.recordOutput("EndEffector/Sim/RotorPosition", rotorPosition);
+    Logger.recordOutput("EndEffector/Sim/CANcoderPosition", cancoderPosition);
+    Logger.recordOutput("EndEffector/Sim/SimPivotVelocityRadS", mechanismVelocityRadPerSec);
   }
 
   private void logSimulationData() {
