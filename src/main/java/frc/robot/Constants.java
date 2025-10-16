@@ -558,7 +558,7 @@ public final class Constants {
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
     public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
-        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
+        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(7);
     public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
@@ -644,7 +644,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -10;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -12;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
 
     // Reef Collision Avoidance
