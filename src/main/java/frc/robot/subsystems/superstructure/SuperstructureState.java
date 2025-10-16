@@ -275,31 +275,31 @@ public enum SuperstructureState {
   }
 
   //superstructure filters
-  private boolean isMiddleOutFilter() {
+  private boolean isMiddleOutFilter() { //if we're between the safe low and safe high, but endeffector safe
 	  return this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getElevatorHeight() <= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
 	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
-  private boolean isLowOutFilter() {
+  private boolean isLowOutFilter() { //if we're below the safe low, but endeffector safe
 	  return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
 	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
-  private boolean isHighOutFilter() {
+  private boolean isHighOutFilter() {//if we're above the safe low, but endeffector safe
 	  return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS 
 	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
-  private boolean isHighInFilter(){
+  private boolean isHighInFilter(){//if we're above the safe low, and endeffector not safe
     return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getEndEffectorRotation() >= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
-  private boolean isLowInFilter(){
+  private boolean isLowInFilter(){//if we're below the safe low, and endeffector not safe
     return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
 	  	&& this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
   }
