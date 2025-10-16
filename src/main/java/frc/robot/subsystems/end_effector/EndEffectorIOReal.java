@@ -10,11 +10,14 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
@@ -38,6 +41,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   StatusSignal<Current> pivotSupplyCurrentAmps;
   StatusSignal<Temperature> pivotTempCelsius;
   StatusSignal<Double> pivotSetpoint;
+  StatusSignal<AngularVelocity> pivotVelocityRPS;
   //   StatusSignal<ControlModeValue> pivotControlMode;
 
   public EndEffectorIOReal() {
@@ -56,6 +60,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
     pivotTempCelsius = pivotTalonFX.getDeviceTemp();
     pivotSetpoint = pivotTalonFX.getClosedLoopReference();
+    pivotVelocityRPS = pivotTalonFX.getVelocity();
     // pivotControlMode = pivotTalonFX.getControlMode();
 
     signals =
@@ -180,5 +185,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pivotCancoder.getAbsolutePosition().getValueAsDouble()
             + Math.round(
                 EndEffectorConstants.MIN_ANGLE_ROTATIONS * EndEffectorConstants.PIVOT_STM));
+  }
+
+  @Override
+  public boolean checkMotorsStalled() {
+    return MotorStallDetection.isMotorStalled(
+        pivotTorqueCurrentAmps.getValueAsDouble(),
+        pivotVelocityRPS.getValueAsDouble(),
+        ElevatorConstants.STALLED_CURRENT,
+        ElevatorConstants.STALLED_RPS);
   }
 }

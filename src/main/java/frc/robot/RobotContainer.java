@@ -44,7 +44,6 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
-import frc.robot.commands.MagicDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
@@ -558,6 +557,7 @@ public class RobotContainer {
     Trigger pivotMiddlePosTrigger = new Trigger(() -> pivotMiddlePosEntry.getBoolean(false));
 
     Trigger pivotManualZeroTrigger = new Trigger(() -> pivotManualZeroEntry.getBoolean(false));
+    Trigger dejamEndeffectorTrigger = new Trigger(() -> endEffector.isStalled());
 
     // Configure the while-held behavior
     clawForwardTrigger.whileTrue(claw.rollerFWD());
@@ -615,6 +615,8 @@ public class RobotContainer {
             .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
     pivotManualZeroTrigger.onTrue(
         endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
+
+    dejamEndeffectorTrigger.whileFalse(endEffector.dejamStagedCoral());
   }
 
   private void buildElevatorTab() {
