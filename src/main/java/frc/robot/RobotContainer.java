@@ -1392,7 +1392,7 @@ public class RobotContainer {
             .andThen(climber.climbDeploy())
             .withName("climbDeployButton");
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
-    Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");
+    Command manualClimbButtonCommand = climber.climbOut(12).withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =
         climbRoller.rollerSTOP().withName("climbRollerStopButton");
@@ -2014,7 +2014,7 @@ public class RobotContainer {
     claw.exhaustedCoral().debounce(0.1).onTrue(
         Commands.runOnce(() ->
             CoralStateTracker.forceSet(CoralPosition.NONE)));
-            
+
     Trigger autoPreScoreTrigger =
         new Trigger(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
