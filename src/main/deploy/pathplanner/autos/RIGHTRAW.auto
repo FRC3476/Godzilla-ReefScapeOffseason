@@ -67,6 +67,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInFeeder"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "RightRaw3"
@@ -101,6 +107,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInFeeder"
           }
         },
         {
