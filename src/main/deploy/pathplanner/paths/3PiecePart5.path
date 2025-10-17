@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4697847682123024,
-        "y": 1.5552152317917876
+        "x": 1.848656124740202,
+        "y": 1.5764089407660322
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.195413304690636,
-        "y": 2.410468290042413
+        "x": 2.5286665166641926,
+        "y": 1.955739450341448
       },
       "isLocked": false,
       "linkedName": "3PP4E"
@@ -31,7 +31,32 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Elevator",
+      "waypointRelativePos": 0.33,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IsCoralInEndEffector"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "AimL4"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 1.35,
@@ -48,7 +73,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": -167.77547197160362
   },
   "useDefaultConstraints": true
 }

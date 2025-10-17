@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,7 +30,10 @@ public class DriveToCoralCommand extends Command {
   private final DriveSubsystem drive;
   private final Vision vision;
 
-  private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+  private final ApplyRobotSpeeds robotSpeeds =
+      new ApplyRobotSpeeds()
+          .withDriveRequestType(DriveRequestType.Velocity)
+          .withDesaturateWheelSpeeds(true);
 
   public DriveToCoralCommand(DriveSubsystem drive, Vision vision) {
     addRequirements(drive, vision);
@@ -57,24 +61,20 @@ public class DriveToCoralCommand extends Command {
     Rotation2d desiredTheta =
         robotPose.getRotation().plus(Rotation2d.fromDegrees(vision.getCoralTx()));
 
-    double txError = desiredTheta.minus(robotPose.getRotation()).getDegrees();
-    Logger.recordOutput("Commands/" + getName() + "/TX Error", txError);
+    double tx = vision.getCoralTx();
+    Logger.recordOutput("Commands/" + getName() + "/TX Error", tx);
 
-    double thetaError = robotPose.getRotation().minus(desiredTheta).getRadians();
-    Logger.recordOutput("Commands/" + getName() + "/TY Error", thetaError);
+    double ty = vision.getCoralTy();
+    Logger.recordOutput("Commands/" + getName() + "/TY Error", ty);
 
-    double perpendicularSpeed = 0.3;
+    double perpendicularSpeed = ty * 0.1;
 
-    if (Math.abs(thetaError) > 0.1) {
+    if (Math.abs(tx) > 10) {
       perpendicularSpeed = 0;
     }
     Logger.recordOutput("Commands/" + getName() + "/perpendicularSpeed", perpendicularSpeed);
 
-    double angularSpeed =
-        angleController.getSetpoint().velocity * rot_ffScaler
-            + angleController.calculate(thetaError, 0)
-            + Math.copySign(1.5, angleController.calculate(thetaError, 0));
-    angularSpeed = !angleController.atSetpoint() ? angularSpeed : 0;
+    double angularSpeed = angleController.calculate(Units.degreesToRadians(tx), 0.0);
     Logger.recordOutput("Commands/" + getName() + "/angularSpeed", angularSpeed);
 
     ChassisSpeeds speeds = new ChassisSpeeds(perpendicularSpeed, 0.0, angularSpeed);
@@ -90,6 +90,6 @@ public class DriveToCoralCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return CoralStateTracker.getCurrentPosition() == CoralPosition.NONE;
+    return CoralStateTracker.getCurrentPosition() != CoralPosition.NONE;
   }
 }

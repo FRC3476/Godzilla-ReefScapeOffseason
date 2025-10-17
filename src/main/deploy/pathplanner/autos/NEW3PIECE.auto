@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "3PiecePart1"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "ConfirmScore"
@@ -93,35 +99,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3PiecePart3"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IsCoralInEndEffector"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AimL4"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "3PiecePart3"
           }
         },
         {
@@ -188,35 +168,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3PiecePart5"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IsCoralInEndEffector"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AimL4"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "3PiecePart5"
           }
         },
         {

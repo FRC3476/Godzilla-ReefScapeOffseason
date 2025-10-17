@@ -95,7 +95,10 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.BARGE_AIM_FORWARD_ENDEFFECTOR_ROTATION_ROTATIONS),
   BARGE_AIM_FORWARD(
       Constants.SuperstructureConstants.BARGE_AIM_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS);
+      Constants.SuperstructureConstants.BARGE_AIM_BACKWARD_ENDEFFECTOR_ROTATION_ROTATIONS),
+  CORAL_STUCK_UNDER_FEEDER(
+      Constants.SuperstructureConstants.CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS);
 
   private final double elevatorHeight;
   private final double endEffectorRotation;
