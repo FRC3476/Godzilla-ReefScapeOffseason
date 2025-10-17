@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.61036454649819,
+        "y": 2.8600173447274515
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0879081774069115,
+        "y": 2.0220283294610777
+      },
+      "isLocked": false,
+      "linkedName": "DRIVETOCORALTEST2END"
+    },
+    {
+      "anchor": {
+        "x": 2.7572499907214967,
+        "y": 1.9449514502301064
+      },
+      "prevControl": {
+        "x": 3.5359480335138262,
+        "y": 2.7122289553105086
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 1.35,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -136.2366377170161
+  },
+  "reversed": false,
+  "folder": "XOUTDATEDX",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -121.45621223065427
+  },
+  "useDefaultConstraints": true
+}
