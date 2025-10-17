@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0337350876061033,
-        "y": 1.8159601189800696
+        "x": 3.6074982150733708,
+        "y": 2.1119684554610467
       },
       "isLocked": false,
       "linkedName": "ROBJ2E"
@@ -20,8 +20,8 @@
         "y": 2.2434737325564127
       },
       "prevControl": {
-        "x": 3.259313633619906,
-        "y": 1.3306711439075682
+        "x": 3.1413107958358917,
+        "y": 1.630863038807969
       },
       "nextControl": null,
       "isLocked": false,
@@ -77,7 +77,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
+    "velocity": 0.0,
     "rotation": -119.99999999999999
   },
   "reversed": false,
