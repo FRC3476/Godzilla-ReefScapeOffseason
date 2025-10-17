@@ -582,7 +582,8 @@ public final class Constants {
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
-    public static final double PIVOT_CLIMB_SAFE_ROTATIONS = Units.degreesToRotations(-82.8);
+    public static final double PIVOT_CLIMB_SAFE_ROTATIONS =
+        -.185; // Units.degreesToRotations(-82.8);
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -680,9 +681,9 @@ public final class Constants {
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
-    public static final double CLIMB_DEPLOY_POSITION = 65;
-    public static final double CLIMB_CLIMB_POSITION = 209;
-    public static final double CLIMB_DEPLOY_VOLTAGE = 3.5;
+    public static final double CLIMB_DEPLOY_POSITION = 87.5;
+    public static final double CLIMB_CLIMB_POSITION = 195;
+    public static final double CLIMB_DEPLOY_VOLTAGE = 12;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
@@ -700,11 +701,11 @@ public final class Constants {
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
-    public static final double ROLLER_HOLDING_CAGE_AMPS = 60.0; //TODO fine-adjust
-    public static final double ROLLER_BACKOUT_VOLTS = 0.5; //TODO fine-adjust
+    public static final double ROLLER_HOLD_CAGE_AMPS = -60.0; // TODO fine-adjust
+    public static final double ROLLER_BACKOUT_VOLTS = 0.5; // TODO fine-adjust
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
-    public static final double ROLLER_STALLED_RPS = 10.0; //TODO fine-adjust
-    public static final double ROLLER_STALLED_CURRENT = 30.0; //TODO fine-adjust
+    public static final double ROLLER_STALLED_RPS = 2; // TODO fine-adjust
+    public static final double ROLLER_STALLED_CURRENT = 50.0; // TODO fine-adjust
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()
@@ -842,8 +843,10 @@ public final class Constants {
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS = EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;

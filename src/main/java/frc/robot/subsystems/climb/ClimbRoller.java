@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
-import frc.robot.RobotState;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -17,13 +15,14 @@ public class ClimbRoller extends SubsystemBase {
 
   private static final LoggedTunableNumber rollerVolts =
       new LoggedTunableNumber(
-        "ClimbRoller/Volts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
+          "ClimbRoller/TunableVolts",
+          1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
   private static final LoggedTunableNumber rollerHoldingCageAmps =
-      new LoggedTunableNumber(
-        "CLimbRoller/HoldingCageAmps", ClimbConstants.ROLLER_HOLDING_CAGE_AMPS); 
+      new LoggedTunableNumber("ClimbRoller/HoldingCageAmps", ClimbConstants.ROLLER_HOLD_CAGE_AMPS);
   private static final LoggedTunableNumber rollerBackOutvolts =
-      new LoggedTunableNumber(
-        "ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS); 
+      new LoggedTunableNumber("ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS);
+
+  private boolean climbing = false;
 
   public ClimbRoller(ClimbRollerIO io) {
     this.io = io;
@@ -58,7 +57,14 @@ public class ClimbRoller extends SubsystemBase {
   }
 
   public Command holdCage() {
-    return Commands.runOnce(
-        () -> this.io.setTorqueCurrent(rollerHoldingCageAmps.get()), this); 
+    return Commands.runOnce(() -> this.io.setTorqueCurrent(rollerHoldingCageAmps.get()), this);
+  }
+
+  public void setClimbing(boolean climbing) {
+    this.climbing = climbing;
+  }
+
+  public boolean hasCage() {
+    return io.checkRollerStalled() && climbing;
   }
 }

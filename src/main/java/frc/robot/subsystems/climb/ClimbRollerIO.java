@@ -6,10 +6,10 @@ public interface ClimbRollerIO {
 
   @AutoLog
   class ClimbRollerIOInputs {
-    public RollerData rollerData = new RollerData(false, 0, 0, 0, 0, 0);
+    public ClimbRollerData rollerData = new ClimbRollerData(false, 0, 0, 0, 0, 0);
   }
 
-  record RollerData(
+  record ClimbRollerData(
       boolean rollerMotorConnected,
       double rollerVelocityRPS,
       double rollerAppliedVolts,

@@ -70,7 +70,7 @@ public class ClimbRollerIOSim extends ClimbRollerIOReal {
     Logger.recordOutput("ClimbRoller/Sim/SimRollerPositionRadians", simPositionRads);
     // Mutate rotor position
     double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / ClimbConstants.ROLLER_GEAR_RATIO; //TODO change
+        Units.radiansToRotations(simPositionRads) / ClimbConstants.ROLLER_GEAR_RATIO; // TODO change
     rollerSimState.setRawRotorPosition(rotorPosition);
     Logger.recordOutput("ClimbRoller/Sim/setRollerRawRotorPosition", rotorPosition);
     // Mutate rotor vel
