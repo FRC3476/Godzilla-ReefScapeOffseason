@@ -695,6 +695,7 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+    public static final int CANDI_ID = 62;
   }
 
   // ====================LED (8_)====================

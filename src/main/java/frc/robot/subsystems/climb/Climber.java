@@ -27,9 +27,14 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
+    io.updateClimbReady();
     Logger.processInputs("Climber", inputs);
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+  }
+
+  public boolean isClimbReady() {
+    return io.isClimbReady();
   }
 
   public Command climbVoltOut() {

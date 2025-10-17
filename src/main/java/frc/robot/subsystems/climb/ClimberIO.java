@@ -26,4 +26,10 @@ public interface ClimberIO {
   default boolean checkClimbMotorStalled() {
     return false;
   }
+
+  default void updateClimbReady() {}
+
+  default boolean isClimbReady() {
+    return false;
+  }
 }

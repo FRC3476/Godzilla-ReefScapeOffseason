@@ -2,7 +2,9 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANdiConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -18,6 +20,9 @@ public class ClimberIOReal implements ClimberIO {
 
   // Hardware
   protected final TalonFX talon;
+  protected final CANdi candi;
+
+  private int climbReadyStage = 0;
 
   // Status Signals
   private final StatusSignal<Angle> position;
@@ -34,6 +39,10 @@ public class ClimberIOReal implements ClimberIO {
 
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID, Constants.DRIVE_CANIVORE);
+    candi = new CANdi(ClimbConstants.CANDI_ID, Constants.DRIVE_CANIVORE);
+
+    CANdiConfiguration candiConfigs = new CANdiConfiguration();
+    PhoenixUtil.tryUntilOk(5, () -> candi.getConfigurator().apply(candiConfigs));
 
     PhoenixUtil.tryUntilOk(
         5, () -> talon.getConfigurator().apply(Constants.ClimbConstants.CLIMB_TALON_CONFIG));
@@ -85,5 +94,20 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void setZero() {
     talon.setPosition(0.0);
+  }
+
+  @Override
+  public void updateClimbReady() {
+    if (climbReadyStage == 0 && candi.getS1Closed().getValue()) {
+      climbReadyStage = 1;
+    }
+    if (climbReadyStage == 1 && !candi.getS1Closed().getValue()) {
+      climbReadyStage = 2;
+    }
+  }
+
+  @Override
+  public boolean isClimbReady() {
+    return climbReadyStage == 2;
   }
 }
