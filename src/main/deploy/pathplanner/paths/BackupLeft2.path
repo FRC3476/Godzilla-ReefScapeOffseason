@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.118062792646088,
+        "y": 5.392268910705483
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.143827583470015,
+        "y": 6.802059181063507
+      },
+      "isLocked": false,
+      "linkedName": "BL1E"
+    },
+    {
+      "anchor": {
+        "x": 6.098277646915852,
+        "y": 6.853126030633857
+      },
+      "prevControl": {
+        "x": 5.439416311644427,
+        "y": 5.923924442236595
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 1.25,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 58.73626830562263
+  },
+  "reversed": false,
+  "folder": "ZBackup",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 58.497450654486485
+  },
+  "useDefaultConstraints": true
+}
