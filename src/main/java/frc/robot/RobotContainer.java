@@ -1991,16 +1991,16 @@ public class RobotContainer {
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
 
     hasAlgaeHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.8))
+            .andThen(new WaitCommand(0.8))
             .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
 
     hasAlgaeHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
     hasCoralHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
+        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.8))
+            .andThen(new WaitCommand(0.8))
             .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
 
     hasCoralHaptics.onFalse(
