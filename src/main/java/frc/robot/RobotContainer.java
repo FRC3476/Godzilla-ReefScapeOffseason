@@ -1038,7 +1038,8 @@ public class RobotContainer {
         .leftBumper()
         // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
         // Processor"));
-        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
+        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL))
+        .onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
 
     // Superstructure Stow
     controller
