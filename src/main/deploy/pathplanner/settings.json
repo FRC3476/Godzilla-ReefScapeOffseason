@@ -3,13 +3,14 @@
   "robotLength": 0.9525,
   "holonomicMode": true,
   "pathFolders": [
-    "RIGHTRAW",
+    "ZBackup",
     "RIGHTOBJ",
+    "RIGHTRAW",
     "XOUTDATEDX"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.5,
-  "defaultMaxAccel": 1.35,
+  "defaultMaxAccel": 1.25,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
