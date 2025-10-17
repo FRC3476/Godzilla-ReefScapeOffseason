@@ -508,6 +508,11 @@ public final class Constants {
     public static final double ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH = 30.907161 - 1.5 - 1.5;
     public static final double ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH = 45.325558 - 1.5;
 
+    public static final double ELEVATOR_L2_ALGAE_LOLIPOP_SETPOINT_INCH = 
+        ELEVATOR_L2_ALGAE_AGAINST_REEF_SETPOINT_INCH + 3;
+    public static final double ELEVATOR_L3_ALGAE_LOLIPOP_SETPOINT_INCH = 
+        ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH + 3;
+
     // Barge heights
     public static final double ELEVATOR_BARGE_SETPOINT_INCH = ELEVATOR_MAX_SETPOINT_INCH;
 
@@ -571,13 +576,16 @@ public final class Constants {
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
     public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
         MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(7);
+
+    public static final double ALGAE_LOLIPOP_ANGLE_ROTATIONS = 38.0; 
+    
     public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883);
     public static final double L4_AGAINST_REEF_ANGLE_ROTATIONS = Units.degreesToRotations(2);
     public static final double L4_AWAY_FROM_REEF_ANGLE_ROTATIONS = L4_AGAINST_REEF_ANGLE_ROTATIONS;
-    public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS =
+    public static final double ALGAE_REMOVAL_ANGLE_ROTATIONS = 
         Units.degreesToRotations(-56.8542103);
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
@@ -898,6 +906,14 @@ public final class Constants {
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L4_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+
+    public static double L2_ALGAE_LOLIPOP_ELEVATOR_INCHES = 
+        ElevatorConstants.ELEVATOR_L2_ALGAE_LOLIPOP_SETPOINT_INCH;
+    public static double L3_ALGAE_LOLIPOP_ELEVATOR_INCHES = 
+        ElevatorConstants.ELEVATOR_L3_ALGAE_LOLIPOP_SETPOINT_INCH;
+    
+    public static double ALGAE_LOLIPOP_ENDEFFECTOR_ROTATIONS =
+        EndEffectorConstants.ALGAE_LOLIPOP_ANGLE_ROTATIONS;
 
     public static double ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_ALGAE_AGAINST_REEF_SETPOINT_INCH;

@@ -78,6 +78,14 @@ public enum SuperstructureState {
   L4_FADEAWAY(
       Constants.SuperstructureConstants.L4_FADEAWAY_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS),
+  ALGAE_HIGH_LOLIPOP(
+        Constants.SuperstructureConstants.ALGAE_LOLIPOP_ENDEFFECTOR_ROTATIONS,
+        Constants.SuperstructureConstants.L2_ALGAE_LOLIPOP_ELEVATOR_INCHES
+      ),
+  ALGAE_LOW_LOLIPOP(
+        Constants.SuperstructureConstants.ALGAE_LOLIPOP_ENDEFFECTOR_ROTATIONS,
+        Constants.SuperstructureConstants.L3_ALGAE_LOLIPOP_ELEVATOR_INCHES
+      ),    
   ALGAE_HIGH_INTAKE(
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.ALGAE_HIGH_INTAKE_ENDEFFECTOR_ROTATION_ROTATIONS),
