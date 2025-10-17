@@ -16,22 +16,34 @@
     },
     {
       "anchor": {
-        "x": 5.012166286670329,
-        "y": 2.6938289452043365
+        "x": 5.0445430084161496,
+        "y": 2.6926087976798736
       },
       "prevControl": {
-        "x": 6.523093438988211,
-        "y": 2.4468504683831442
+        "x": 6.555470160734032,
+        "y": 2.4456303208586814
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2PP1E"
+      "linkedName": "3PP1E"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Elevator",
+      "waypointRelativePos": 0.33,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AimL4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 1.35,
