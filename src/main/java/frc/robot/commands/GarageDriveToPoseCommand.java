@@ -26,8 +26,8 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 4),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 4));
+              (Constants.DriveConstants.kDriveMaxSpeed / 6),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 6));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
