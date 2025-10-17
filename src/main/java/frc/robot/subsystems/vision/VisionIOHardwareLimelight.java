@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.VisionConstants;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
 public class VisionIOHardwareLimelight implements VisionIO {
@@ -90,6 +91,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   // object detection methods
 
   @Override
+  @AutoLogOutput(key = "Vision/Coral Detected?")
   public boolean isCoralDetected() {
     return LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
   }
@@ -104,7 +106,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   @Override
   public double getCoralTy() {
     coral_ty =
-        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
+        isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
     return coral_ty;
   }
 }

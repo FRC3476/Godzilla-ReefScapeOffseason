@@ -399,11 +399,11 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(27).withFOVRangeY(27))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(15.75))
-                    .withProximityHysteresis(0.0));
+                    .withProximityThreshold(0.55)
+                    .withProximityHysteresis(0.01));
   }
 
   // ====================Elevator (4_)====================
@@ -729,7 +729,7 @@ public final class Constants {
 
   // ====================Vision Constants====================
   public static class VisionConstants {
-    public static final String DETECTION_LIMELIGHT = "limelight-center";
+    public static final String DETECTION_LIMELIGHT = "limelight-intake";
     public static final AprilTagFieldLayout fieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     public static final AprilTagFieldLayout kAprilTagLayout =

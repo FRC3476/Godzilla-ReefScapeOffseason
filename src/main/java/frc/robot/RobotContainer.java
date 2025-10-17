@@ -237,7 +237,11 @@ public class RobotContainer {
 
     // ====================INTAKE COMMANDS====================
     NamedCommands.registerCommand(
-        "IntakeEnable", intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
+        "IntakeEnable",
+        intake
+            .setIntakeStateCommand(IntakeState.INTAKE)
+            .asProxy()
+            .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()));
 
     NamedCommands.registerCommand(
         "DriveToCoral", new DriveToCoralCommand(drive, vision).withTimeout(10.0)); // 3.0
@@ -1038,7 +1042,8 @@ public class RobotContainer {
         .leftBumper()
         // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
         // Processor"));
-        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
+        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL))
+        .onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
 
     // Superstructure Stow
     controller

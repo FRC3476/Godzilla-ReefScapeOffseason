@@ -26,15 +26,15 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 6),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 6));
+              (Constants.DriveConstants.kDriveMaxSpeed / 2),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 4));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 2));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
@@ -71,8 +71,8 @@ public class GarageDriveToPoseCommand extends Command {
     double translationalSpeed =
         MathUtil.clamp(
             distanceController.calculate(translationalError.getNorm(), 0),
-            -DriveConstants.kDriveMaxSpeed,
-            DriveConstants.kDriveMaxSpeed);
+            -DriveConstants.kDriveMaxSpeed / 2,
+            DriveConstants.kDriveMaxSpeed / 2);
     translationalSpeed = !distanceController.atGoal() ? translationalSpeed : 0;
 
     double anglularVelocity = angleController.calculate(angularError.getRadians(), 0);
