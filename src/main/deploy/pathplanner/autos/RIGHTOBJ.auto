@@ -107,6 +107,24 @@
         {
           "type": "named",
           "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightObj3.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ConfirmScore"
           }
         },
@@ -171,6 +189,24 @@
           "type": "path",
           "data": {
             "pathName": "RightObj5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightObj5.5"
           }
         },
         {

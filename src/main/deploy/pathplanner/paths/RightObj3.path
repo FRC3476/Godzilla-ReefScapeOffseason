@@ -8,32 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.745604233601637,
-        "y": 2.451249120746677
+        "x": 3.0337350876061033,
+        "y": 1.8159601189800696
       },
       "isLocked": false,
       "linkedName": "ROBJ2E"
     },
     {
       "anchor": {
-        "x": 3.887550557670939,
-        "y": 2.636350905867472
+        "x": 3.702034543868765,
+        "y": 2.2434737325564127
       },
       "prevControl": {
-        "x": 3.1550750726734287,
-        "y": 1.6622508175406323
+        "x": 3.259313633619906,
+        "y": 1.3306711439075682
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ROBJ3E"
+      "linkedName": "ROBJ3.5"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.8018867924528321,
-      "rotationDegrees": -119.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -82,7 +77,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.5,
     "rotation": -119.99999999999999
   },
   "reversed": false,
