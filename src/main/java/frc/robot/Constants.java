@@ -596,6 +596,15 @@ public final class Constants {
                     .withKA(Tunable_PIVOT_kA)
                     .withKV(Tunable_PIVOT_kV)
                     .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withSlot1(
+                new Slot1Configs()
+                    .withKP(Tunable_PIVOT_kP * 4)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
+                    .withKA(Tunable_PIVOT_kA)
+                    .withKV(Tunable_PIVOT_kV)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(Tunable_PIVOT_Velo)
@@ -682,7 +691,7 @@ public final class Constants {
     public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
     public static final double CLIMB_DEPLOY_POSITION = 87.5;
-    public static final double CLIMB_CLIMB_POSITION = 195;
+    public static final double CLIMB_CLIMB_POSITION = 215;
     public static final double CLIMB_DEPLOY_VOLTAGE = 12;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;

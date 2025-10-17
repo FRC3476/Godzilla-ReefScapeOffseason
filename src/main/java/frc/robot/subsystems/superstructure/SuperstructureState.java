@@ -112,7 +112,11 @@ public enum SuperstructureState {
         (container) ->
             new ParallelCommandGroup(
                 container.getElevator().moveElevatorCommand(() -> elevatorHeight),
-                container.getEndEffector().moveEndEffectorCommand(() -> endEffectorRotation));
+                container
+                    .getEndEffector()
+                    .moveEndEffectorCommand(
+                        () -> endEffectorRotation,
+                        () -> container.getElevator().getMotorVelocityRPS() > 10 ? 1 : 0));
   }
 
   SuperstructureState() {
@@ -195,6 +199,15 @@ public enum SuperstructureState {
           L2_AWAY_FROM_REEF,
           L3_AWAY_FROM_REEF,
           L4_AWAY_FROM_REEF:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public boolean isFadeawayState() {
+    switch (this) {
+      case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:
         return true;
       default:
         return false;
@@ -285,31 +298,49 @@ public enum SuperstructureState {
   // superstructure filters
   private boolean
       isMiddleOutFilter() { // if we're between the safe low and safe high, but endeffector safe
-    return this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+    return this != NONE
+        && this.getElevatorHeight() >= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getElevatorHeight() <= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
         && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
   private boolean isLowOutFilter() { // if we're below the safe low, but endeffector safe
-    return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+    return this != NONE
+        && this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
         && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
   private boolean isHighOutFilter() { // if we're above the safe low, but endeffector safe
-    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+    return this != NONE
+        && this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getEndEffectorRotation() >= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
         && this.getEndEffectorRotation() <= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
   private boolean isHighInFilter() { // if we're above the safe low, and endeffector not safe
-    return this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+    return this != NONE
+        && this.getElevatorHeight() >= SuperstructureConstants.HIGH_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getEndEffectorRotation() >= EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
   }
 
   private boolean isLowInFilter() { // if we're below the safe low, and endeffector not safe
-    return this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
+    return this != NONE
+        && this.getElevatorHeight() <= SuperstructureConstants.LOW_IN_SAFE_ELEVATOR_HEIGHT_INCHES
         && this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
+  }
+
+  public String printInfo() {
+    return "LOW IN: "
+        + lowInStates().toString()
+        + "LOW OUT: "
+        + lowOutStates().toString()
+        + "MIDDLE OUT: "
+        + middleOutStates().toString()
+        + "HIGH OUT: "
+        + highOutStates().toString()
+        + "HIGH IN: "
+        + highInStates().toString();
   }
 }

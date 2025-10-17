@@ -9,6 +9,7 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -100,18 +101,31 @@ public class EndEffector extends SubsystemBase {
   }
 
   // Normal tolerance
+  public Command moveEndEffectorCommand(
+      DoubleSupplier rotationsSupplier, Supplier<Integer> slotSupplier) {
+    return Commands.sequence(
+        this.rotatePivotCommand(rotationsSupplier, slotSupplier),
+        this.waitUntilTargetPositionCommand());
+  }
+  // Normal tolerance
   public Command moveEndEffectorCommand(DoubleSupplier rotationsSupplier) {
     return Commands.sequence(
         this.rotatePivotCommand(rotationsSupplier), this.waitUntilTargetPositionCommand());
   }
 
-  public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {
+  public Command rotatePivotCommand(
+      DoubleSupplier rotationSupplier, Supplier<Integer> slotSupplier) {
     pivotSetpoint =
         MathUtil.clamp(
             rotationSupplier.getAsDouble(),
             EndEffectorConstants.MIN_ANGLE_ROTATIONS,
             EndEffectorConstants.MAX_ANGLE_ROTATIONS);
-    return Commands.runOnce(() -> this.io.setPivotPosition(() -> pivotSetpoint), this);
+    return Commands.runOnce(
+        () -> this.io.setPivotPosition(() -> pivotSetpoint, slotSupplier), this);
+  }
+
+  public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {
+    return rotatePivotCommand(rotationSupplier, () -> 0);
   }
 
   public Command waitUntilTargetPositionCommand() {
