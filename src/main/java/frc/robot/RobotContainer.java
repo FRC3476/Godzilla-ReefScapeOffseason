@@ -214,7 +214,7 @@ public class RobotContainer {
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
-                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_CORAL))
             .withTimeout(2.0));
 
     // RIGHT ALIGN
@@ -225,7 +225,7 @@ public class RobotContainer {
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),
-                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_CORAL))
             .withTimeout(2.0));
 
     NamedCommands.registerCommand("ConfirmScore", new Score(superstructure, claw, robotState));
@@ -937,7 +937,7 @@ public class RobotContainer {
                   targetPose = FieldUtils.getClosestReefPole().getPose();
               }
               return PoseUtils.getPerpendicularOffsetPose(
-                  targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
+                  targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_CORAL);
             }));
 
     resetPoseToVisionTrigger.onTrue(
@@ -1010,16 +1010,24 @@ public class RobotContainer {
                 drive,
                 () -> {
                   Pose2d targetPose;
-                  switch (robotState.getStoredScorePosition().getCoralBranch()) {
-                    case LEFT:
-                      targetPose = FieldUtils.getClosestReef().leftPole.getPose();
-                    case RIGHT:
-                      targetPose = FieldUtils.getClosestReef().rightPole.getPose();
-                    default:
-                      targetPose = FieldUtils.getClosestReefPole().getPose();
+                  if (RobotState.getSuperstructureState() == SuperstructureState.ALGAE_HIGH_INTAKE
+                      || RobotState.getSuperstructureState()
+                          == SuperstructureState.ALGAE_LOW_INTAKE) {
+                    targetPose = FieldUtils.getClosestReef().tag.pose().toPose2d();
+                    return PoseUtils.getPerpendicularOffsetPose(
+                        targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_ALGAE);
+                  } else {
+                    switch (robotState.getStoredScorePosition().getCoralBranch()) {
+                      case LEFT:
+                        targetPose = FieldUtils.getClosestReef().leftPole.getPose();
+                      case RIGHT:
+                        targetPose = FieldUtils.getClosestReef().rightPole.getPose();
+                      default:
+                        targetPose = FieldUtils.getClosestReefPole().getPose();
+                    }
+                    return PoseUtils.getPerpendicularOffsetPose(
+                        targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_CORAL);
                   }
-                  return PoseUtils.getPerpendicularOffsetPose(
-                      targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
                 }));
 
     // controller

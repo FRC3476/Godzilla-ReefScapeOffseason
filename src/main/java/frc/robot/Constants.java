@@ -156,7 +156,8 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET_CORAL = 0.605;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET_ALGAE = 0.605;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
@@ -821,8 +822,10 @@ public final class Constants {
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS = EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
     public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
