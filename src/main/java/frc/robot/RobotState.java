@@ -230,6 +230,7 @@ public class RobotState extends MagicVirtualSubsystem {
   private static final String logRoot = "RobotState/";
 
   private static SuperstructureState currentState = SuperstructureState.NONE;
+  private static SuperstructureState targetState = SuperstructureState.NONE;
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
@@ -348,6 +349,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static SuperstructureState getSuperstructureState() {
     return currentState;
+  }
+
+  public static void setSuperstructureTargetState(SuperstructureState state) {
+    targetState = state;
+  }
+
+  public static SuperstructureState getSuperstructureTargetState() {
+    return targetState;
   }
 
   public static Trigger onTeamSide() {

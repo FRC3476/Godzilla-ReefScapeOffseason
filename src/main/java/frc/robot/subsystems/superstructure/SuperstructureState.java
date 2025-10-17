@@ -331,7 +331,7 @@ public enum SuperstructureState {
         && this.getEndEffectorRotation() <= EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS;
   }
 
-  public String printInfo() {
+  public String printStateGroupInfo() {
     return "LOW IN: "
         + lowInStates().toString()
         + "LOW OUT: "

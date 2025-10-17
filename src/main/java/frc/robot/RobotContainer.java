@@ -1154,9 +1154,11 @@ public class RobotContainer {
                 new ConditionalCommand(
                         new WaitUntilCommand(() -> RobotState.isSafeToStow())
                             .andThen(
-                                superstructure
-                                    .setStateCommand(SuperstructureState.STOW, "STOW")
-                                    .asProxy()),
+                                new ConditionalCommand(
+                                    superstructure
+                                        .setStateCommand(SuperstructureState.STOW, "STOW"),
+                                    Commands.none(),
+                                    () -> RobotState.getSuperstructureTargetState().isFadeawayState()).asProxy()),
                         Commands.none(),
                         () -> RobotState.getSuperstructureState().isCoralState())
                     .asProxy())
@@ -1624,7 +1626,7 @@ public class RobotContainer {
 
     // Arbitrary triggers + streamdeck confirmation
 
-    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage());
+    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(0.5);
     autoClimbTrigger.onTrue(climber.climbClimb().withName("AutoClimb"));
     streamdeck
         .button(climbDeployButton)
@@ -2009,7 +2011,10 @@ public class RobotContainer {
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
 
     // recommended but untested
-    // claw.exhaustedCoral().onTrue(CoralStateTracker.forceSet(CoralPosition.NONE));
+    claw.exhaustedCoral().debounce(0.1).onTrue(
+        Commands.runOnce(() ->
+            CoralStateTracker.forceSet(CoralPosition.NONE)));
+            
     Trigger autoPreScoreTrigger =
         new Trigger(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
