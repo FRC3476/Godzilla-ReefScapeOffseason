@@ -1,0 +1,90 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5714817880794705,
+        "y": 1.511630794701988
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.399863661329169,
+        "y": 2.562696781911269
+      },
+      "isLocked": false,
+      "linkedName": "ROBJ2E"
+    },
+    {
+      "anchor": {
+        "x": 3.5988091757663807,
+        "y": 2.8082789877833805
+      },
+      "prevControl": {
+        "x": 2.709992655952332,
+        "y": 1.626010333710391
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Elevator",
+      "waypointRelativePos": 0.33,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IsCoralInEndEffector"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "AimL4"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "AimL4",
+      "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AimL4"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 1.35,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": "RIGHTOBJ",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -159.863696571752
+  },
+  "useDefaultConstraints": true
+}
