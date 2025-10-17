@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.094115355317203,
-        "y": 2.6372294393192157
+        "x": 5.097801992196915,
+        "y": 2.6358935719779915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.187917990422184,
-        "y": 2.4054945355015955
+        "x": 5.1916046273018965,
+        "y": 2.4041586681603713
       },
       "isLocked": false,
       "linkedName": "ROBJ1E"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 2.5714817880794705,
-        "y": 1.511630794701988
+        "x": 2.994769018290022,
+        "y": 1.522946756248499
       },
       "prevControl": {
-        "x": 3.9956178089641736,
-        "y": 1.4390722188654597
+        "x": 4.418905039174725,
+        "y": 1.4503881804119707
       },
       "nextControl": null,
       "isLocked": false,
@@ -54,8 +54,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

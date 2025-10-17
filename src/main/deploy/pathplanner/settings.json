@@ -3,14 +3,15 @@
   "robotLength": 0.9525,
   "holonomicMode": true,
   "pathFolders": [
-    "ZBackup",
+    "CONLAND FOLDER",
     "RIGHTOBJ",
     "RIGHTRAW",
-    "XOUTDATEDX"
+    "XOUTDATEDX",
+    "ZBackup"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 2.5,
-  "defaultMaxAccel": 1.25,
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

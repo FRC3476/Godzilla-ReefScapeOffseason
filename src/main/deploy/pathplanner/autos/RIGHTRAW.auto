@@ -114,6 +114,31 @@
           "data": {
             "name": "ConfirmScore"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightRaw6"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              }
+            ]
+          }
         }
       ]
     }

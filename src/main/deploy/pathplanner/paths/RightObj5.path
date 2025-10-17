@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5714817880794705,
-        "y": 1.511630794701988
+        "x": 2.994769018290022,
+        "y": 1.522946756248499
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.399863661329169,
-        "y": 2.562696781911269
+        "x": 3.347671561205612,
+        "y": 2.2757695629587715
       },
       "isLocked": false,
       "linkedName": "ROBJ2E"
@@ -20,15 +20,20 @@
         "y": 2.8082789877833805
       },
       "prevControl": {
-        "x": 2.709992655952332,
-        "y": 1.626010333710391
+        "x": 3.3449992581457777,
+        "y": 2.2918033813177736
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ROBJ5E"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -58,7 +63,7 @@
     },
     {
       "name": "AimL4",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.7,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -69,8 +74,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
