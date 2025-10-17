@@ -20,13 +20,11 @@ public class IntakeIOSim extends IntakeIOReal {
   // Simulation models for each subsystem
   protected DCMotorSim rollerSim;
   protected DCMotorSim pivotSim;
-  protected DCMotorSim blockerSim;
   protected Notifier simNotifier;
 
   // TalonFX simulation states
   private final TalonFXSimState pivotSimState;
   private final TalonFXSimState rollerSimState;
-  private final TalonFXSimState blockerSimState;
 
   // Simulation state tracking
   protected double lastUpdateTimestamp = 0.0;
@@ -54,22 +52,12 @@ public class IntakeIOSim extends IntakeIOReal {
                 1.0 / IntakeConstants.PIVOT_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
 
-    blockerSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1),
-                IntakeConstants.L1_BAR_MOI,
-                1.0 / IntakeConstants.L1_BAR_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
-
     // Set up TalonFX simulation states
     pivotMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
-    rollerMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
-    lvl1blockerMotor.getSimState().Orientation = ChassisReference.Clockwise_Positive;
+    rollerMotor.getSimState().Orientation = ChassisReference.CounterClockwise_Positive;
 
     pivotSimState = pivotMotor.getSimState();
     rollerSimState = rollerMotor.getSimState();
-    blockerSimState = lvl1blockerMotor.getSimState();
 
     // Set up Notifier for periodic simulation updates
     simNotifier =
@@ -84,24 +72,19 @@ public class IntakeIOSim extends IntakeIOReal {
     // Set supply voltage for all motors
     pivotSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     rollerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    blockerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     // Get applied voltages from motors
     double pivotVoltage = pivotSimState.getMotorVoltage();
     double rollerVoltage = rollerSimState.getMotorVoltage();
-    double blockerVoltage = blockerSimState.getMotorVoltage();
 
     // Apply voltages to simulation models
     pivotSim.setInputVoltage(pivotVoltage);
     rollerSim.setInputVoltage(rollerVoltage);
-    blockerSim.setInputVoltage(blockerVoltage);
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(rollerSim.getCurrentDrawAmps()));
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(blockerSim.getCurrentDrawAmps()));
 
     // Update simulation models
     double timestamp = Timer.getFPGATimestamp();
@@ -110,7 +93,6 @@ public class IntakeIOSim extends IntakeIOReal {
 
     pivotSim.update(dt);
     rollerSim.update(dt);
-    blockerSim.update(dt);
 
     // Convert simulation output to motor rotations and update TalonFX simulation states
     updateMotorSimStates();
@@ -122,7 +104,6 @@ public class IntakeIOSim extends IntakeIOReal {
   private void updateMotorSimStates() {
     updatePivotSimStates();
     updateRollerSimStates();
-    updateL1BlockerSimStates();
   }
 
   private void logSimulationData() {
@@ -137,12 +118,6 @@ public class IntakeIOSim extends IntakeIOReal {
     Logger.recordOutput("Intake/Sim/Roller/VelocityRPS", rollerSim.getAngularVelocityRadPerSec());
     Logger.recordOutput("Intake/Sim/Roller/CurrentAmps", rollerSim.getCurrentDrawAmps());
     Logger.recordOutput("Intake/Sim/Roller/AppliedVoltage", rollerSimState.getMotorVoltage());
-
-    // Log blocker simulation data
-    Logger.recordOutput("Intake/Sim/Blocker/PositionRad", blockerSim.getAngularPositionRad());
-    Logger.recordOutput("Intake/Sim/Blocker/VelocityRPS", blockerSim.getAngularVelocityRadPerSec());
-    Logger.recordOutput("Intake/Sim/Blocker/CurrentAmps", blockerSim.getCurrentDrawAmps());
-    Logger.recordOutput("Intake/Sim/Blocker/AppliedVoltage", blockerSimState.getMotorVoltage());
   }
 
   public void updatePivotSimStates() {
@@ -180,23 +155,6 @@ public class IntakeIOSim extends IntakeIOReal {
             / IntakeConstants.ROLLER_GEAR_RATIO;
     rollerSimState.setRotorVelocity(rotorVel);
     Logger.recordOutput("Intake/Sim/SimulatorRollerVelocity", rotorVel);
-  }
-
-  public void updateL1BlockerSimStates() {
-    // Find current state of sim in radians from 0 point
-    double simPositionRads = blockerSim.getAngularPositionRad();
-    Logger.recordOutput("Intake/Sim/SimBlockerPositionRadians", simPositionRads);
-    // Mutate rotor position
-    double rotorPosition =
-        Units.radiansToRotations(simPositionRads) / IntakeConstants.L1_BAR_GEAR_RATIO;
-    blockerSimState.setRawRotorPosition(rotorPosition);
-    Logger.recordOutput("Intake/Sim/setBlockerRawRotorPosition", rotorPosition);
-    // Mutate rotor vel
-    double rotorVel =
-        Units.radiansToRotations(blockerSim.getAngularVelocityRadPerSec())
-            / IntakeConstants.L1_BAR_GEAR_RATIO;
-    blockerSimState.setRotorVelocity(rotorVel);
-    Logger.recordOutput("Intake/Sim/SimulatorBlockerVelocity", rotorVel);
   }
 
   // Clean up resources when simulation ends

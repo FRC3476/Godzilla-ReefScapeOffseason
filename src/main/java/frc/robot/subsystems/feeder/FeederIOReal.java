@@ -20,8 +20,8 @@ import frc.robot.util.PhoenixUtil;
 public class FeederIOReal implements FeederIO {
   private boolean directionReversed = false;
 
-  private final TalonFX rightRoller;
-  private final TalonFX leftRoller;
+  protected final TalonFX rightRoller;
+  protected final TalonFX leftRoller;
 
   private final CANrange canRange;
 
@@ -117,25 +117,27 @@ public class FeederIOReal implements FeederIO {
     leftRoller.optimizeBusUtilization();
     canRange.optimizeBusUtilization();
 
-    PhoenixUtil.registerSignals(
-        true,
-        rightRollerVoltage,
-        rightRollerSupplyCurrent,
-        rightRollerStatorCurrent,
-        rightRollerTemperature,
-        rightRollerVelocityRPS,
-        leftRollerVoltage,
-        leftRollerSupplyCurrent,
-        leftRollerStatorCurrent,
-        leftRollerTemperature,
-        leftRollerVelocityRPS,
-        canRangeTripped,
-        canRangeSignalStrength,
-        canRangeDistance);
+    signals =
+        new BaseStatusSignal[] {
+          rightRollerVoltage,
+          rightRollerSupplyCurrent,
+          rightRollerStatorCurrent,
+          rightRollerTemperature,
+          rightRollerVelocityRPS,
+          leftRollerVoltage,
+          leftRollerSupplyCurrent,
+          leftRollerStatorCurrent,
+          leftRollerTemperature,
+          leftRollerVelocityRPS,
+          canRangeTripped,
+          canRangeSignalStrength,
+          canRangeDistance
+        };
   }
 
   public void updateInputs(FeederIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+
     inputs.rightRollerData =
         new F_RollerData(
             BaseStatusSignal.isAllGood(
@@ -191,26 +193,14 @@ public class FeederIOReal implements FeederIO {
   @Override
   public boolean checkMotorsStalled() {
     return MotorStallDetection.isMotorStalled(
-            rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
+            rightRollerStatorCurrent.getValueAsDouble(),
+            rightRollerVelocityRPS.getValueAsDouble(),
+            FeederConstants.STALLED_CURRENT,
+            FeederConstants.STALLED_RPS)
         || MotorStallDetection.isMotorStalled(
-            leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS);
-  }
-
-  public double whichMotorStalled() {
-
-    if (MotorStallDetection.isMotorStalled(
-            rightRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
-        && leftRoller.getVelocity().getValueAsDouble()
-            > rightRoller.getVelocity().getValueAsDouble()) {
-      return -1;
-    }
-    if (MotorStallDetection.isMotorStalled(
-            leftRoller, FeederConstants.STALLED_CURRENT, FeederConstants.STALLED_RPS)
-        && leftRoller.getVelocity().getValueAsDouble()
-            < rightRoller.getVelocity().getValueAsDouble()) {
-      return 1;
-    }
-
-    return 0;
+            leftRollerStatorCurrent.getValueAsDouble(),
+            leftRollerVelocityRPS.getValueAsDouble(),
+            FeederConstants.STALLED_CURRENT,
+            FeederConstants.STALLED_RPS);
   }
 }

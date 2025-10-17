@@ -3,8 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.RobotState;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
 public class VisionIOHardwareLimelight implements VisionIO {
@@ -12,7 +12,6 @@ public class VisionIOHardwareLimelight implements VisionIO {
       NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightATableName);
   NetworkTable tableB =
       NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightBTableName);
-  RobotState robotState;
   AtomicReference<VisionIOInputs> latestInputs = new AtomicReference<>(new VisionIOInputs());
   int imuMode = 1;
 
@@ -23,8 +22,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       new double[VisionConstants.kExpectedStdDevArrayLength];
 
   /** Creates a new Limelight vision IO instance. */
-  public VisionIOHardwareLimelight(RobotState robotState) {
-    this.robotState = robotState;
+  public VisionIOHardwareLimelight() {
     setLLSettings();
   }
 
@@ -54,7 +52,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   }
 
   @Override
-  public void readInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs) {
     readCameraData(tableA, inputs.cameraA, VisionConstants.kLimelightATableName);
     readCameraData(tableB, inputs.cameraB, VisionConstants.kLimelightBTableName);
     latestInputs.set(inputs);
@@ -74,12 +72,15 @@ public class VisionIOHardwareLimelight implements VisionIO {
           camera.megatagPoseEstimate = MegatagPoseEstimate.fromLimelight(megatag);
           camera.megatagCount = megatag.tagCount;
           camera.fiducialObservations = FiducialObservation.fromLimelight(megatag.rawFiducials);
+          camera.megatagDistance = megatag.avgTagDist; // have no clue if this value is accurate
         }
         if (robotPose3d != null) {
           camera.pose3d = robotPose3d;
         }
 
         camera.standardDeviations = table.getEntry("stddevs").getDoubleArray(DEFAULT_STDDEVS);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        System.err.println("Limelight ArrayIndex error (don't print this): " + e.getMessage());
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }
@@ -90,6 +91,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   // object detection methods
 
   @Override
+  @AutoLogOutput(key = "Vision/Coral Detected?")
   public boolean isCoralDetected() {
     return LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
   }
@@ -104,7 +106,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   @Override
   public double getCoralTy() {
     coral_ty =
-        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
+        isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
     return coral_ty;
   }
 }

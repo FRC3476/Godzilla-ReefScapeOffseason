@@ -13,13 +13,15 @@ public interface ClimberIO {
       double positionRads,
       double velocityRadsPerSec,
       double appliedVoltage,
-      double torqueCurrentAmps,
-      double supplyVolts,
+      double supplyCurrentAmps,
+      double statorCurrentAmps,
       double tempCelsius) {}
 
   default void runVolts(double volts) {}
 
   default void updateInputs(ClimberIOInputs inputs) {}
+
+  default void setZero() {}
 
   default boolean checkClimbMotorStalled() {
     return false;

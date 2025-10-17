@@ -18,7 +18,6 @@ public class ElevatorIOSim extends ElevatorIOReal {
   protected Notifier simNotifier;
   private final TalonFXSimState rightSimState;
   private final TalonFXSimState leftSimState;
-  private final TalonFXSimState extraSimState;
   protected double lastUpdateTimestamp = 0.0;
 
   public ElevatorIOSim() {
@@ -27,7 +26,7 @@ public class ElevatorIOSim extends ElevatorIOReal {
     // Initialize ElevatorSim with appropriate parameters
     elevatorSim =
         new ElevatorSim(
-            DCMotor.getFalcon500(3), // Three Falcon 500 motors
+            DCMotor.getFalcon500(2), // Three Falcon 500 motors
             1.0 / ElevatorConstants.kGearing,
             ElevatorConstants.CARRIAGE_MASS_KG,
             ElevatorConstants.DRUM_RADIUS_METERS,
@@ -40,11 +39,9 @@ public class ElevatorIOSim extends ElevatorIOReal {
     // Access the simulation state of the TalonFX motors
     rightSimState = rightTalon.getSimState();
     leftSimState = leftTalon.getSimState();
-    extraSimState = extraTalon.getSimState();
 
-    rightSimState.Orientation = ChassisReference.Clockwise_Positive;
+    rightSimState.Orientation = ChassisReference.CounterClockwise_Positive;
     leftSimState.Orientation = ChassisReference.CounterClockwise_Positive;
-    extraSimState.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Set up a Notifier to periodically update the simulation
     /* Run simulation at a faster rate so PID gains behave more reasonably */
@@ -88,8 +85,6 @@ public class ElevatorIOSim extends ElevatorIOReal {
     rightSimState.setRotorVelocity(velocityRPS);
     leftSimState.setRawRotorPosition(positionRotations);
     leftSimState.setRotorVelocity(velocityRPS);
-    extraSimState.setRawRotorPosition(positionRotations);
-    extraSimState.setRotorVelocity(velocityRPS);
 
     // Log simulation data for debugging and visualization
     Logger.recordOutput("Elevator/Sim/PositionMeters", positionMeters);
@@ -100,7 +95,6 @@ public class ElevatorIOSim extends ElevatorIOReal {
     Logger.recordOutput("Elevator/Sim/VelocityRPS", velocityRPS);
     Logger.recordOutput("Elevator/Sim/RightMotorVoltage", rightSimState.getMotorVoltage());
     Logger.recordOutput("Elevator/Sim/LeftMotorVoltage", leftSimState.getMotorVoltage());
-    Logger.recordOutput("Elevator/Sim/ExtraMotorVoltage", extraSimState.getMotorVoltage());
   }
 
   // Clean up resources when simulation ends

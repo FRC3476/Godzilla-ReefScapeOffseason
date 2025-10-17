@@ -43,6 +43,30 @@ public class FieldUtils {
     return closestReef;
   }
 
+  public static ReefPole getClosestReefPole() {
+    List<ReefFace> reefTags =
+        FieldUtils.isBlueAlliance() ? FieldConstants.blueReefTags : FieldConstants.redReefTags;
+    Translation2d robotTranslation = RobotState.getGlobalPose().getTranslation();
+
+    // Collect all reef poles from all reef faces
+    List<ReefPole> allReefPoles =
+        reefTags.stream()
+            .flatMap(reefFace -> List.of(reefFace.leftPole, reefFace.rightPole).stream())
+            .toList();
+
+    ReefPole closestReefPole =
+        allReefPoles.stream()
+            .reduce(
+                (ReefPole pole1, ReefPole pole2) ->
+                    robotTranslation.getDistance(pole1.getPose().getTranslation())
+                            < robotTranslation.getDistance(pole2.getPose().getTranslation())
+                        ? pole1
+                        : pole2)
+            .get();
+
+    return closestReefPole;
+  }
+
   public static AprilTagStruct getClosestHPSTag() {
     List<AprilTagStruct> hpsTags =
         FieldUtils.isBlueAlliance() ? FieldConstants.blueHPSTags : FieldConstants.redHPSTags;
