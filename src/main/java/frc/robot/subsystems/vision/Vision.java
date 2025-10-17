@@ -67,7 +67,7 @@ public class Vision extends SubsystemBase {
     Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
     Pose2d poseB = b.getVisionRobotPoseMeters();
 
-    // Inverse‑variance weighting
+    // Inverse-variance weighting
     var varianceA = a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
     var varianceB = b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
 
@@ -256,7 +256,7 @@ public class Vision extends SubsystemBase {
       return Optional.empty();
     }
 
-    // Reject if the robot is yawing rapidly (time‑sync unreliable)
+    // Reject if the robot is yawing rapidly (time-sync unreliable)
     final double kHighYawLookbackS = 0.3;
     final double kHighYawVelocityRadS = 5.0;
 

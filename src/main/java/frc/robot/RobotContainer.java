@@ -47,6 +47,10 @@ import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.commands.test.CleaningTest;
+import frc.robot.subsystems.climb.ClimbRoller;
+import frc.robot.subsystems.climb.ClimbRollerIO;
+import frc.robot.subsystems.climb.ClimbRollerIOReal;
+import frc.robot.subsystems.climb.ClimbRollerIOSim;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.ClimberIO;
 import frc.robot.subsystems.climb.ClimberIOReal;
@@ -111,6 +115,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Superstructure superstructure;
   private final Climber climber;
+  private final ClimbRoller climbRoller;
   private final Feeder feeder;
   private final Vision vision;
 
@@ -143,6 +148,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
+        climbRoller = new ClimbRoller(new ClimbRollerIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         drive =
             new DriveSubsystem(
@@ -162,6 +168,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
+        climbRoller = new ClimbRoller(new ClimbRollerIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
         drive =
             new DriveSubsystem(
@@ -181,6 +188,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
+        climbRoller = new ClimbRoller(new ClimbRollerIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
         break;
@@ -953,22 +961,41 @@ public class RobotContainer {
 
     NetworkTableEntry climberOutEntry = climberTable.getEntry("Climber Out (While Held)");
     NetworkTableEntry climberDeployEntry = climberTable.getEntry("Climber Deploy (When Pressed)");
+    NetworkTableEntry climberFullDeployEntry =
+        climberTable.getEntry("Climber Full Deploy (When Pressed)");
     NetworkTableEntry climberClimbEntry = climberTable.getEntry("Climber Climb (When Pressed)");
+    NetworkTableEntry climbRollerEntry = climberTable.getEntry("Run Climb Rollers (When Pressed)");
 
     climberOutEntry.setBoolean(false);
     climberDeployEntry.setBoolean(false);
+    climberFullDeployEntry.setBoolean(false);
     climberClimbEntry.setBoolean(false);
+    climbRollerEntry.setBoolean(false);
 
     Trigger climberOutTrigger = new Trigger(() -> climberOutEntry.getBoolean(false));
     Trigger climberDeployTrigger = new Trigger(() -> climberDeployEntry.getBoolean(false));
+    Trigger climberFullDeployTrigger = new Trigger(() -> climberFullDeployEntry.getBoolean(false));
     Trigger climberClimbTrigger = new Trigger(() -> climberClimbEntry.getBoolean(false));
+    Trigger climbRollerTrigger = new Trigger(() -> climbRollerEntry.getBoolean(false));
 
     climberOutTrigger.whileTrue(climber.climbVoltOut());
     climberOutTrigger.onFalse(climber.climbSTOP());
     climberDeployTrigger.onTrue(
         climber.climbDeploy().andThen(() -> climberDeployEntry.setBoolean(false)));
+    climberFullDeployTrigger.onTrue(
+        Commands.runOnce(() -> climbRoller.setClimbing(true))
+            .andThen(
+                climbRoller
+                    .holdCage()
+                    .alongWith(intake.setIntakeStateCommand(IntakeState.IDLE))
+                    .alongWith(superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")))
+            .andThen(new WaitCommand(0.25))
+            .andThen(climber.climbDeploy())
+            .withName("climbDeployButton"));
     climberClimbTrigger.onTrue(
         climber.climbClimb().andThen(() -> climberClimbEntry.setBoolean(false)));
+    climbRollerTrigger.onTrue(climbRoller.holdCage());
+    climbRollerTrigger.onFalse(climbRoller.rollerSTOP());
   }
 
   private void buildTestTab() {
@@ -986,7 +1013,7 @@ public class RobotContainer {
   /** Use this method to define your button->command mappings. */
   private void configureXboxBindings() {
 
-    // Lock to 0° when button is held
+    // Lock to angle when button is held
     controller
         .b()
         .whileTrue(
@@ -1306,6 +1333,11 @@ public class RobotContainer {
             .withInactiveConfig(yellowConfig)
             .withActiveConfig(activeConfig)
             .withText("C");
+    StreamDeckButton climbRollerStopButton =
+        new StreamDeckButton(1, 4, "Climb Roller Stop")
+            .withInactiveConfig(redConfig)
+            .withActiveConfig(activeConfig)
+            .withText("CR0");
     StreamDeckButton climbDeployButton2 =
         new StreamDeckButton(1, 5, "Climb Deploy 2")
             .withInactiveConfig(yellowConfig)
@@ -1347,11 +1379,21 @@ public class RobotContainer {
 
     Command homeElevatorButtonCommand =
         elevator.manualHomeElevator().withName("homeElevatorButton");
-    Command climbDelpoyButtonCommand = climber.climbDeploy().withName("climbDeployButton");
+    Command climbDeployButtonCommand =
+        Commands.runOnce(() -> climbRoller.setClimbing(true))
+            .andThen(
+                climbRoller
+                    .holdCage()
+                    .alongWith(intake.setIntakeStateCommand(IntakeState.IDLE))
+                    .alongWith(superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")))
+            .andThen(new WaitCommand(0.25))
+            .andThen(climber.climbDeploy())
+            .withName("climbDeployButton");
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbVoltOut().withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
-
+    Command climbRollerStopButtonCommand =
+        climbRoller.rollerSTOP().withName("climbRollerStopButton");
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
     customStreamDeckButtonMap.put(
@@ -1403,8 +1445,9 @@ public class RobotContainer {
         reefLeftSideButton2,
         () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
     customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(climbDeployButton, climbDelpoyButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(climbDeployButton2, climbDelpoyButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbDeployButton, climbDeployButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbDeployButton2, climbDeployButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbRollerStopButton, climbRollerStopButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
@@ -1547,10 +1590,7 @@ public class RobotContainer {
     streamdeck
         .button(climbDeployButton)
         .and(streamdeck.button(climbDeployButton2))
-        .onTrue(
-            Commands.parallel(
-                climbDelpoyButtonCommand,
-                superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")));
+        .onTrue(climbDeployButtonCommand);
     streamdeck
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
@@ -1566,6 +1606,7 @@ public class RobotContainer {
     streamdeck.button(climbClimbButton).onFalse(manualClimbOffButtonCommand);
     streamdeck.button(climbClimbButton2).onFalse(manualClimbOffButtonCommand);
     streamdeck.button(manualClimbButton).onFalse(manualClimbOffButtonCommand);
+    streamdeck.button(climbRollerStopButton).onTrue(climbRollerStopButtonCommand);
     streamdeck
         .button(zeroGyroButton)
         .and(streamdeck.button(zeroGyroButton2))
@@ -1581,8 +1622,15 @@ public class RobotContainer {
         .button(manualOverrideButton)
         .onTrue(Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode()));
 
-    // manualClimbOffButtonCommand
+    // Arbitrary triggers + streamdeck confirmation
 
+    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage());
+    autoClimbTrigger.onTrue(climber.climbClimb().withName("AutoClimb"));
+    streamdeck
+        .button(climbDeployButton)
+        .and(streamdeck.button(climbDeployButton2))
+        .and(autoClimbTrigger)
+        .onTrue(climber.climbClimb().withName("AutoClimb"));
   }
 
   private void configureTestingStreamDeckBindings() {
