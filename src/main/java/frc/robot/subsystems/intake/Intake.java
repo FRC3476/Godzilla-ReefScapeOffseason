@@ -179,6 +179,8 @@ public class Intake extends SubsystemBase {
                 this.currentState = IntakeState.IDLE;
               }
               break;
+            case REJECT_INTAKE_CORAL:
+              break;
             case SCORING:
               break;
             case SCORING_PREP:
@@ -214,6 +216,8 @@ public class Intake extends SubsystemBase {
               this.io.setRollerVoltage(-rollerIntakeVolts.get());
               feeder.setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
               break;
+            case REJECT_INTAKE_CORAL:
+              this.io.setRollerVoltage(-rollerIntakeVolts.get());
             case HAND_OFF:
               this.io.setRollerVoltage(0);
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
@@ -291,4 +295,28 @@ public class Intake extends SubsystemBase {
   public Command feederSTOP() {
     return Commands.runOnce(() -> feeder.setRollerVoltage(0));
   }
+
+  public Trigger rejectCoralIntake =
+      new Trigger(
+          () -> {
+            switch (CoralStateTracker.getCurrentPosition()) {
+              case AT_FRONT_FEEDER, AT_BACK_FEEDER:
+                return isCoralInIntake();
+
+              default:
+                return false;
+            }
+          });
+
+  public Trigger rejectCoralIntakeAndFeeder =
+      new Trigger(
+          () -> {
+            switch (CoralStateTracker.getCurrentPosition()) {
+              case STAGED_IN_END_EFFECTOR, AT_FIRST_END_EFFECTOR, AT_SECOND_END_EFFECTOR:
+                return isCoralInIntake();
+
+              default:
+                return false;
+            }
+          });
 }
