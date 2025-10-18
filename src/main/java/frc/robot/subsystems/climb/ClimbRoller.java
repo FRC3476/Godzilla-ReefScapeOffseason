@@ -53,7 +53,7 @@ public class ClimbRoller extends SubsystemBase {
   }
 
   public Command rollerSTOP() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
+    return Commands.run(() -> this.io.setRollerVoltage(0), this);
   }
 
   public Command holdCage() {

@@ -1148,6 +1148,7 @@ public class RobotContainer {
         .onTrue(
             superstructure
                 .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
                 .asProxy());
 
     // controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
@@ -2165,5 +2166,17 @@ public class RobotContainer {
 
   public Feeder getFeeder() {
     return feeder;
+  }
+
+  public Climber getClimber() {
+    return climber;
+  }
+
+  public ClimbRoller getClimbRoller() {
+    return climbRoller;
+  }
+
+  public DriveSubsystem getDrive() {
+    return drive;
   }
 }
