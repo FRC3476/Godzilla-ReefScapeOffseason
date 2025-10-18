@@ -87,6 +87,15 @@ public class FieldUtils {
     return closestTag;
   }
 
+  public static boolean isOnAllianceSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    if (FieldUtils.isBlueAlliance()) {
+      return robotX < FieldConstants.halfFieldLength;
+    } else {
+      return robotX > FieldConstants.halfFieldLength;
+    }
+  }
+
   public static AprilTagStruct getBargeTag() {
     return FieldUtils.isBlueAlliance() ? FieldConstants.blueBarge : FieldConstants.redBarge;
   }

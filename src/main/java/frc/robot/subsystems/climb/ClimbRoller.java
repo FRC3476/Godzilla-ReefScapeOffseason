@@ -64,6 +64,10 @@ public class ClimbRoller extends SubsystemBase {
     this.climbing = climbing;
   }
 
+  public boolean getClimbing() {
+    return climbing;
+  }
+
   public boolean hasCage() {
     return io.checkRollerStalled() && climbing;
   }
