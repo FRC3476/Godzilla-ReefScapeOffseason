@@ -106,6 +106,16 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command StopDriveTrain(DriveSubsystem driveSubsystem) {
+    return Commands.run(
+        () ->
+            driveSubsystem.setControl(
+                new SwerveRequest.FieldCentric()
+                    .withVelocityX(0.0)
+                    .withVelocityY(0.0)
+                    .withRotationalRate(0.0)));
+  }
+
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
