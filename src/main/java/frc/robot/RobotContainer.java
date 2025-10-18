@@ -194,7 +194,7 @@ public class RobotContainer {
         break;
     }
 
-    // ====================LOADING COMMANDS====================
+    // ====================AUTO STARTUP COMMANDS====================
     NamedCommands.registerCommand(
         "SuperStructureStartup",
         superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy());
@@ -203,18 +203,17 @@ public class RobotContainer {
         "IntakeStartup", intake.setIntakeStateCommand(IntakeState.IDLE).asProxy());
 
     NamedCommands.registerCommand(
-        "ScoreTargetStartup", // CHANGE TO L4 LATER
+        "ScoreTargetStartup", // SET AS L4
         new InstantCommand(
             () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L4)));
 
-    // ====================SCORING COMMANDS====================
-    NamedCommands.registerCommand(
-        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
-
+    // ====================AUTO SCORING COMMANDS====================
     NamedCommands.registerCommand(
         "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
 
-    // LEFT ALIGN
+    NamedCommands.registerCommand(
+        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
+
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
         new GarageDriveToPoseCommand(
@@ -223,9 +222,8 @@ public class RobotContainer {
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-            .withTimeout(2.0));
+            .withTimeout(2.0)); // Gets X seconds to perform action
 
-    // RIGHT ALIGN
     NamedCommands.registerCommand(
         "FinalRightPoleAlign",
         new GarageDriveToPoseCommand(
@@ -243,7 +241,7 @@ public class RobotContainer {
         new WaitUntilCommand(() -> RobotState.isSafeToStow())
             .andThen(superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy()));
 
-    // ====================INTAKE COMMANDS====================
+    // ====================AUTO INTAKE COMMANDS====================
     NamedCommands.registerCommand(
         "IntakeEnable",
         intake
@@ -252,15 +250,21 @@ public class RobotContainer {
             .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()));
 
     NamedCommands.registerCommand(
-        "DriveToCoral", new DriveToCoralCommand(drive, vision).withTimeout(10.0)); // 3.0
+        "DriveToCoral",
+        new DriveToCoralCommand(drive, vision)
+            .withTimeout(10.0)); // Gets X seconds to perform action
 
-    // ====================CORAL TRACKING COMMANDS====================
+    // ====================AUTO CORAL TRACKER COMMANDS====================
     NamedCommands.registerCommand(
-        "SeesCoral", new WaitUntilCommand(() -> vision.isCoralDetected()).withTimeout(10.0));
+        "SeesCoral",
+        new WaitUntilCommand(() -> vision.isCoralDetected())
+            .withTimeout(10.0)); // Gets X seconds to perform action
+
     NamedCommands.registerCommand(
         "IsCoralInFeeder",
         new WaitUntilCommand(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER));
+
     NamedCommands.registerCommand(
         "IsCoralInEndEffector",
         new WaitUntilCommand(
