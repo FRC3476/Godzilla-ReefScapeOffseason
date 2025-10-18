@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
@@ -77,12 +76,6 @@ public class IntakeIOReal implements IntakeIO {
 
     PhoenixUtil.tryUntilOk(
         5, () -> canRange.getConfigurator().apply(IntakeConstants.CANRANGE_CONFIG));
-
-    // Configure CANRange
-    var canRangeConfig = new CANrangeConfiguration();
-    canRangeConfig.ProximityParams.ProximityThreshold = 0.05; // 5cm detection threshold
-    canRangeConfig.ProximityParams.ProximityHysteresis = 0.01; // 1cm hysteresis
-    PhoenixUtil.tryUntilOk(5, () -> canRange.getConfigurator().apply(canRangeConfig));
 
     // Initialize status signals
     pivotVoltage = pivotMotor.getMotorVoltage();

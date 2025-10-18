@@ -274,7 +274,15 @@ public class CoralStateTracker {
     return new Trigger(() -> getCurrentPosition() == CoralPosition.AT_FRONT_FEEDER);
   }
 
+  public static Trigger isAtIntakeTrigger() {
+    return new Trigger(() -> getCurrentPosition() == CoralPosition.AT_INTAKE);
+  }
+
   public static Trigger isStuckAtFrontFeederTrigger() {
     return isAtFrontFeederTrigger().debounce(0.5);
+  }
+
+  public static Trigger isStuckAtIntakeTrigger() {
+    return isAtIntakeTrigger().debounce(0.5);
   }
 }
