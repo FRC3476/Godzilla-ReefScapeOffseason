@@ -1155,10 +1155,13 @@ public class RobotContainer {
                         new WaitUntilCommand(() -> RobotState.isSafeToStow())
                             .andThen(
                                 new ConditionalCommand(
-                                    superstructure
-                                        .setStateCommand(SuperstructureState.STOW, "STOW"),
-                                    Commands.none(),
-                                    () -> RobotState.getSuperstructureTargetState().isFadeawayState()).asProxy()),
+                                        superstructure.setStateCommand(
+                                            SuperstructureState.STOW, "STOW"),
+                                        Commands.none(),
+                                        () ->
+                                            RobotState.getSuperstructureTargetState()
+                                                .isFadeawayState())
+                                    .asProxy()),
                         Commands.none(),
                         () -> RobotState.getSuperstructureState().isCoralState())
                     .asProxy())
@@ -2011,9 +2014,9 @@ public class RobotContainer {
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
 
     // recommended but untested
-    claw.exhaustedCoral().debounce(0.1).onTrue(
-        Commands.runOnce(() ->
-            CoralStateTracker.forceSet(CoralPosition.NONE)));
+    claw.exhaustedCoral()
+        .debounce(0.1)
+        .onTrue(Commands.runOnce(() -> CoralStateTracker.forceSet(CoralPosition.NONE)));
 
     Trigger autoPreScoreTrigger =
         new Trigger(

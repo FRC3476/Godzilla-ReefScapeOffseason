@@ -211,8 +211,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
@@ -292,9 +292,9 @@ public final class Constants {
     public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
     public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
-    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double L1_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
     public static final double Tuneable_pivotKP = 50; // Proportional gain
@@ -476,8 +476,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
@@ -541,7 +541,7 @@ public final class Constants {
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -622,8 +622,8 @@ public final class Constants {
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
     public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
         new CANcoderConfiguration()
@@ -640,8 +640,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
@@ -724,8 +724,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================LED (8_)====================
