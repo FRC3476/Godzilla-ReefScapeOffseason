@@ -119,7 +119,7 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 5.0;
+    public static final double DRIVE_TO_POSE_KP = 6.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.4;
 
@@ -156,7 +156,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.615;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
@@ -664,7 +664,7 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 12;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 10;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
     public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
