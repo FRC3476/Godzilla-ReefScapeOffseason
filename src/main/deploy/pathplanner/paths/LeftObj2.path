@@ -3,51 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.087555114454817,
-        "y": 2.6657215784977053
+        "x": 5.094753244407335,
+        "y": 5.401303319762522
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.181357749559798,
-        "y": 2.433986674680085
+        "x": 5.10410444284834,
+        "y": 5.129437211684695
       },
       "isLocked": false,
-      "linkedName": "ROBJ1E"
+      "linkedName": "LOBJ1E"
     },
     {
       "anchor": {
-        "x": 4.882404593787114,
-        "y": 1.6911281268557001
+        "x": 4.489197019867549,
+        "y": 6.5456332781456945
       },
       "prevControl": {
-        "x": 5.29688798770534,
-        "y": 2.006896839064615
+        "x": 5.057067419139313,
+        "y": 6.366277610571146
       },
       "nextControl": {
-        "x": 4.441432413204547,
-        "y": 1.3551792815565176
+        "x": 3.9188728771516534,
+        "y": 6.72576393380563
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.994769018290022,
-        "y": 1.522946756248499
+        "x": 2.607802152317881,
+        "y": 6.5456332781456945
       },
       "prevControl": {
-        "x": 4.418905039174725,
-        "y": 1.4503881804119707
+        "x": 3.018349339416934,
+        "y": 6.156653674424127
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ROBJ2E"
+      "linkedName": "LOBJ2E"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.339714745706736,
-      "rotationDegrees": -171.317644010864
+      "rotationDegrees": 149.18557706638595
     }
   ],
   "constraintZones": [],
@@ -63,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -159.863696571752
+    "rotation": 147.5
   },
   "reversed": false,
-  "folder": "RIGHTOBJ",
+  "folder": "LEFTOBJ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

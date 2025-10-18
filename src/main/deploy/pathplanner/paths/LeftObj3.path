@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.61036454649819,
-        "y": 2.8600173447274515
+        "x": 2.607802152317881,
+        "y": 6.5456332781456945
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0879081774069115,
-        "y": 2.0220283294610777
+        "x": 2.8859244728774387,
+        "y": 6.414210808442885
       },
       "isLocked": false,
-      "linkedName": "DRIVETOCORALTEST2END"
+      "linkedName": "LOBJ2E"
     },
     {
       "anchor": {
-        "x": 2.7572499907214967,
-        "y": 1.9449514502301064
+        "x": 3.693059124656608,
+        "y": 5.6837361783598785
       },
       "prevControl": {
-        "x": 3.5359480335138262,
-        "y": 2.7122289553105086
+        "x": 3.528210207963258,
+        "y": 5.871685199812582
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LOBJ3E"
     }
   ],
   "rotationTargets": [],
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -136.2366377170161
+    "velocity": 0.0,
+    "rotation": 121.08061376283045
   },
   "reversed": false,
-  "folder": "XOUTDATEDX",
+  "folder": "LEFTOBJ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -121.45621223065427
+    "rotation": 147.5
   },
   "useDefaultConstraints": true
 }

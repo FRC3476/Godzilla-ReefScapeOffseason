@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RIghtObj1"
+            "pathName": "LeftObj1"
           }
         },
         {
@@ -64,7 +64,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "RightObj2"
+                        "pathName": "LeftObj2"
                       }
                     },
                     {
@@ -134,7 +134,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "RightObj3"
+                        "pathName": "LeftObj3"
                       }
                     }
                   ]
@@ -146,7 +146,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightObj3.5"
+            "pathName": "LeftObj3.5"
           }
         },
         {
@@ -178,7 +178,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "RightObj4"
+                        "pathName": "LeftObj4"
                       }
                     },
                     {
@@ -248,7 +248,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "RightObj5"
+                        "pathName": "LeftObj5"
                       }
                     }
                   ]
@@ -260,7 +260,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightObj5.5"
+            "pathName": "LeftObj5.5"
           }
         },
         {
@@ -272,7 +272,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightObj6"
+            "pathName": "LeftObj6"
           }
         },
         {
