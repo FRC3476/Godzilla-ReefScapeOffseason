@@ -124,7 +124,8 @@ public class Intake extends SubsystemBase {
     return coralInIntakeTrigger()
         .and(
             () ->
-                (CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.AT_FEEDER
+                (CoralStateTracker.getCurrentPosition()
+                        == CoralStateTracker.CoralPosition.AT_BACK_FEEDER
                     || CoralStateTracker.getCurrentPosition()
                         == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR
                     || CoralStateTracker.getCurrentPosition()
@@ -159,10 +160,10 @@ public class Intake extends SubsystemBase {
               break;
             case INTAKE:
               // Check if coral is detected in feeder and automatically transition to IDLE
-              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
                   && RobotState.getSuperstructureState().isHandoffState()) {
                 this.currentState = IntakeState.HAND_OFF;
-              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
                   || CoralStateTracker.getCurrentPosition()
                       == CoralPosition.STAGED_IN_END_EFFECTOR) {
                 this.currentState = IntakeState.IDLE;
@@ -183,7 +184,8 @@ public class Intake extends SubsystemBase {
             case SCORING_PREP:
               break;
             case IDLE:
-              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER
+              if ((CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
+                      || CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FRONT_FEEDER)
                   && RobotState.getSuperstructureState().isHandoffState()) {
                 this.currentState = IntakeState.HAND_OFF;
               }

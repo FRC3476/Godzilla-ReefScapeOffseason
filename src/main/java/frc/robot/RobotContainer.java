@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -263,7 +264,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IsCoralInFeeder",
         new WaitUntilCommand(
-            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FEEDER));
+            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER));
 
     NamedCommands.registerCommand(
         "IsCoralInEndEffector",
@@ -1006,12 +1007,23 @@ public class RobotContainer {
     NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Elastic/Test");
 
     NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
+    NetworkTableEntry dejamEntry = testTable.getEntry("Dejam Mode");
 
     cleaningEntry.setBoolean(false);
+    dejamEntry.setBoolean(false);
 
     Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
+    Trigger dejamTrigger = new Trigger(() -> dejamEntry.getBoolean(false));
 
     cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
+
+    Command dejamCommand =
+        intake
+            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
+            .andThen(new WaitCommand(0.2))
+            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE));
+
+    dejamTrigger.onTrue(dejamCommand);
   }
 
   /** Use this method to define your button->command mappings. */
@@ -1034,24 +1046,34 @@ public class RobotContainer {
                 () -> FieldUtils.isRedAlliance() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg));
 
     // // Auto Align
+
     controller
         .a()
         .whileTrue(
-            new GarageDriveToPoseCommand(
-                drive,
-                () -> {
-                  Pose2d targetPose;
-                  switch (robotState.getStoredScorePosition().getCoralBranch()) {
-                    case LEFT:
-                      targetPose = FieldUtils.getClosestReef().leftPole.getPose();
-                    case RIGHT:
-                      targetPose = FieldUtils.getClosestReef().rightPole.getPose();
-                    default:
-                      targetPose = FieldUtils.getClosestReefPole().getPose();
-                  }
-                  return PoseUtils.getPerpendicularOffsetPose(
-                      targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
-                }));
+            new SelectCommand<>(
+                Map.of(
+                    CoralBranch.NONE,
+                        new GarageDriveToPoseCommand(
+                            drive,
+                            () ->
+                                PoseUtils.getPerpendicularOffsetPose(
+                                    FieldUtils.getClosestReefPole().getPose(),
+                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                    CoralBranch.LEFT,
+                        new GarageDriveToPoseCommand(
+                            drive,
+                            () ->
+                                PoseUtils.getPerpendicularOffsetPose(
+                                    FieldUtils.getClosestReef().leftPole.getPose(),
+                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                    CoralBranch.RIGHT,
+                        new GarageDriveToPoseCommand(
+                            drive,
+                            () ->
+                                PoseUtils.getPerpendicularOffsetPose(
+                                    FieldUtils.getClosestReef().rightPole.getPose(),
+                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
+                () -> robotState.getStoredScorePosition().getCoralBranch()));
 
     // controller
     //     .rightTrigger();
@@ -1393,8 +1415,11 @@ public class RobotContainer {
             .andThen(
                 climbRoller
                     .holdCage()
-                    .alongWith(intake.setIntakeStateCommand(IntakeState.IDLE))
-                    .alongWith(superstructure.setStateCommand(SuperstructureState.CLIMB, "Climb")))
+                    .alongWith(intake.setIntakeStateCommand(IntakeState.IDLE).asProxy())
+                    .alongWith(
+                        superstructure
+                            .setStateCommand(SuperstructureState.CLIMB, "Climb")
+                            .asProxy()))
             .andThen(new WaitCommand(0.25))
             .andThen(climber.climbDeploy())
             .withName("climbDeployButton");
@@ -2013,7 +2038,7 @@ public class RobotContainer {
   }
 
   private void configureArbitraryTriggers() {
-    feeder.dejamTrigger.onTrue(intake.dejamFeeder());
+    // feeder.dejamTrigger.onTrue(intake.dejamFeeder());
     elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
     intake.rejectCoralTrigger().whileTrue(intake.rejectCoralCommand());
 
@@ -2024,15 +2049,29 @@ public class RobotContainer {
 
     Trigger autoPreScoreTrigger =
         new Trigger(
-            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
+            () ->
+                CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR
+                    && RobotState.getSuperstructureState() == SuperstructureState.STOW
+                    && RobotState.getSuperstructureTargetState() == SuperstructureState.STOW);
 
     autoPreScoreTrigger.onTrue(
         Commands.either(
-            superstructure.setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE").asProxy(),
             Commands.none(),
-            () ->
-                RobotState.getSuperstructureState() == SuperstructureState.STOW
-                    && robotState.getStoredScorePosition().getCoralScoreLevel() != ScoreLevel.L1));
+            Commands.either(
+                superstructure
+                    .setStateCommand(SuperstructureState.L1_PIVOT, "PRE_SCORE_L1")
+                    .asProxy(),
+                Commands.either(
+                    superstructure
+                        .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
+                        .asProxy(),
+                    superstructure
+                        .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3_OR_L4")
+                        .asProxy(),
+                    () ->
+                        robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L2),
+                () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1),
+            () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.NONE));
 
     //
     Trigger autoStowAlgaeTrigger =
@@ -2066,6 +2105,14 @@ public class RobotContainer {
 
     hasCoralHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
+
+    Command dejamCommand =
+        intake
+            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
+            .andThen(new WaitCommand(0.2))
+            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE));
+
+    CoralStateTracker.isStuckAtFrontFeederTrigger().onTrue(dejamCommand);
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(

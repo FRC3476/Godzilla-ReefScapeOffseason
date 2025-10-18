@@ -156,7 +156,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.615;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
@@ -193,6 +193,7 @@ public final class Constants {
     public static final int RIGHT_ID = 20;
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
+    public static final int FRONT_CANRANGE_ID = 23;
 
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
