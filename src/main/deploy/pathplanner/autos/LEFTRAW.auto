@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RIghtRaw1"
+            "pathName": "LeftRaw1E"
           }
         },
         {
@@ -78,7 +78,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightRaw2"
+                  "pathName": "LeftRaw2E"
                 }
               }
             ]
@@ -99,7 +99,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightRaw3"
+            "pathName": "LeftRaw3E"
           }
         },
         {
@@ -133,7 +133,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightRaw4"
+                  "pathName": "LeftRaw4E"
                 }
               }
             ]
@@ -154,7 +154,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightRaw5"
+            "pathName": "LeftRaw5E"
           }
         },
         {
@@ -172,7 +172,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightRaw6"
+            "pathName": "LeftRaw6E"
           }
         },
         {

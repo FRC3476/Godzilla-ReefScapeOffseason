@@ -254,6 +254,10 @@ public class RobotContainer {
         new DriveToCoralCommand(drive, vision)
             .withTimeout(10.0)); // Gets X seconds to perform action
 
+    NamedCommands.registerCommand(
+        "isSuperStructureAtL4",
+        new WaitUntilCommand(
+            () -> RobotState.getSuperstructureState() == SuperstructureState.L4_AIM));
     // ====================AUTO CORAL TRACKER COMMANDS====================
     NamedCommands.registerCommand(
         "SeesCoral",
@@ -2166,5 +2170,9 @@ public class RobotContainer {
 
   public DriveSubsystem getDrive() {
     return drive;
+  }
+
+  public Superstructure getSuperStructure() {
+    return superstructure;
   }
 }

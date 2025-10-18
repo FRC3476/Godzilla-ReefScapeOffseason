@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.078230430540017,
-        "y": 1.7149388214666912
+        "x": 2.8360522127495567,
+        "y": 1.9300293789357057
       },
       "isLocked": false,
       "linkedName": "ROBJ5E"
     },
     {
       "anchor": {
-        "x": 2.994769018290022,
-        "y": 1.522946756248499
+        "x": 2.6424715909090906,
+        "y": 1.8162926136363637
       },
       "prevControl": {
-        "x": 3.447018520996694,
-        "y": 2.53853790562717
+        "x": 3.5015983247227713,
+        "y": 2.6774888585363943
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ROBJ2E"
+      "linkedName": "INTAKERIGHTOBJ"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -159.863696571752
+    "rotation": -131.76029970389777
   },
   "reversed": false,
   "folder": "RIGHTOBJ",

@@ -25,14 +25,32 @@
                 "data": {
                   "name": "ScoreTargetStartup"
                 }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.25
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "RIghtObj1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -144,9 +162,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RightObj3.5"
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -258,9 +276,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RightObj5.5"
+            "name": "FinalLeftPoleAlign"
           }
         },
         {

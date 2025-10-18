@@ -25,8 +25,20 @@
                 "data": {
                   "name": "ScoreTargetStartup"
                 }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.25
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
           }
         },
         {
@@ -38,7 +50,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ConfirmScore"
+            "name": "FinalRightPoleAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -144,9 +162,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LeftObj3.5"
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -258,9 +276,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LeftObj5.5"
+            "name": "FinalRightPoleAlign"
           }
         },
         {

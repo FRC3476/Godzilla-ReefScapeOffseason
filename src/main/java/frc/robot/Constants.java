@@ -787,12 +787,12 @@ public final class Constants {
     public static final double kDefaultYawDiffThreshold = 5.0;
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
-    public static final double kTagMinAreaForMultipleTagMegatag = 0.5;
+    public static final double kTagMinAreaForMultipleTagMegatag = 0.4;
     public static final double kDefaultZThreshold = 0.2;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
-    public static final double kXStdDevCoefficent = 0.5;
-    public static final double kYStdDevCoefficent = 0.5;
+    public static final double kXStdDevCoefficent = 0.3;
+    public static final double kYStdDevCoefficent = 0.3;
     public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;

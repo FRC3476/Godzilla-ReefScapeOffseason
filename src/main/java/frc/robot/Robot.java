@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoopTimingLogger;
 import frc.robot.util.MagicVirtualSubsystem;
 import java.io.File;
@@ -261,6 +262,11 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    SuperstructureState state = RobotState.getSuperstructureTargetState();
+    robotContainer.getSuperStructure().clearCommandsIfManualOverride().schedule();
+
+    robotContainer.getSuperStructure().setStateCommand(state, "Auto End Reset").schedule();
   }
 
   /** This function is called periodically during operator control. */

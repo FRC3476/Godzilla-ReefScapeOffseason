@@ -12,7 +12,7 @@
         "y": 5.129437211684695
       },
       "isLocked": false,
-      "linkedName": "LOBJ1E"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -41,13 +41,13 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LOBJ2E"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.339714745706736,
-      "rotationDegrees": 149.18557706638595
+      "rotationDegrees": 149.18557706638597
     }
   ],
   "constraintZones": [],

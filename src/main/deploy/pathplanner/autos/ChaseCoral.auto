@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "ChaseCoralPath"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "SuperStructureStartup"
@@ -31,7 +37,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

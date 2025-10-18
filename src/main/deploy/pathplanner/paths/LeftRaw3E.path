@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.109744318181819,
-        "y": 6.17387784090909
+        "x": 1.896130743099732,
+        "y": 7.045197867344473
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.15247159090909,
-        "y": 6.16390625
+        "x": 2.93096926798339,
+        "y": 6.765440670936867
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LR2E"
     },
     {
       "anchor": {
-        "x": 5.213062561594113,
-        "y": 5.709782845560087
+        "x": 3.4594701511854216,
+        "y": 5.54224404874975
       },
       "prevControl": {
-        "x": 6.2287049039480085,
-        "y": 5.9660830270815275
+        "x": 2.8797830647572606,
+        "y": 6.462233297129687
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": 59.99999999999999
+    "rotation": 119.24172341899765
   },
   "reversed": false,
-  "folder": "LEFTOBJ",
+  "folder": "LEFTRAW",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 126.9964983266407
   },
   "useDefaultConstraints": true
 }

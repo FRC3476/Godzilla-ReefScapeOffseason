@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.994769018290022,
-        "y": 1.522946756248499
+        "x": 2.6424715909090906,
+        "y": 1.8162926136363637
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0887743277068562,
-        "y": 1.7545995175129514
+        "x": 2.8238741851545512,
+        "y": 1.9883190616059034
       },
       "isLocked": false,
-      "linkedName": "ROBJ2E"
+      "linkedName": "INTAKERIGHTOBJ"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 2.3968951710772695
       },
       "prevControl": {
-        "x": 3.301151835020635,
-        "y": 2.1725990527240295
+        "x": 3.2201947493187753,
+        "y": 2.236031540202796
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0.5,
     "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "RIGHTOBJ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -159.863696571752
+    "rotation": -131.76029970389777
   },
   "useDefaultConstraints": true
 }
