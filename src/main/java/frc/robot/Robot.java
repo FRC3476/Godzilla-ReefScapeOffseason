@@ -25,7 +25,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LoopTimingLogger;
 import frc.robot.util.MagicVirtualSubsystem;
@@ -271,7 +274,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
+    // Cancels all running commands at the end of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -280,11 +283,48 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     LoopTimingLogger.startTiming("TestPeriodic");
     // Add any test-specific code here if needed
-    robotContainer.getClaw().setRollerVoltage(1);
-    robotContainer.getIntake().setRollerVoltage(1);
-    robotContainer.getFeeder().setRollerVoltage(1);
+    Commands.run(() -> robotContainer.getClaw().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    Commands.run(() -> robotContainer.getIntake().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    Commands.run(() -> robotContainer.getFeeder().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+
+    robotContainer
+        .getElevator()
+        .elevatorSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getClimber()
+        .climbSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getClimbRoller()
+        .rollerSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getEndEffector()
+        .pivotSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+
+    DriveCommands.StopDriveTrain(robotContainer.getDrive())
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
 
     LoopTimingLogger.endTiming("TestPeriodic");
+  }
+
+  @Override
+  public void testExit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called once when the robot is first started up. */
