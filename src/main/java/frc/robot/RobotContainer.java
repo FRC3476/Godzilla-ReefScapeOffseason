@@ -2111,6 +2111,9 @@ public class RobotContainer {
     CoralStateTracker.isStuckAtFrontFeederTrigger().onTrue(dejamCommand);
 
     CoralStateTracker.isStuckAtIntakeTrigger().onTrue(dejamCommand);
+    Trigger losesCoral =
+        new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
+    losesCoral.onTrue(Commands.runOnce(() -> RobotState.setLedState(LedState.kOff)));
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(

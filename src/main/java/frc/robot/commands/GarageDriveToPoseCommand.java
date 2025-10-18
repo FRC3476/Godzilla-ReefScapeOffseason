@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.led.LedState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -111,9 +112,13 @@ public class GarageDriveToPoseCommand extends Command {
     drive.setControl(robotSpeeds.withSpeeds(new ChassisSpeeds()));
     distanceController.reset(0);
     angleController.reset(0);
+    if (!interrupt) {
+      RobotState.setLedState(LedState.kCOOrange);
+    }
   }
 
   public Trigger atSetpoint() {
+
     return new Trigger(() -> distanceController.atSetpoint() && angleController.atSetpoint());
   }
 
