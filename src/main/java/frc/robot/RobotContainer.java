@@ -2110,15 +2110,8 @@ public class RobotContainer {
         intake
             .setIntakeStateCommand(IntakeState.REJECT_CORAL)
             .asProxy()
-            .andThen(new WaitCommand(0.1))
+            .andThen(new WaitCommand(0.1)) // PREVIOUSLY 0.2
             .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
-
-    // Command SHORTdejamCommand =
-    //         intake
-    //             .setIntakeStateCommand(IntakeState.REJECT_CORAL)
-    //             .asProxy()
-    //             .andThen(new WaitCommand(0.1))
-    //             .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
 
     CoralStateTracker.isStuckAtFrontFeederTrigger().onTrue(dejamCommand);
 
