@@ -2109,8 +2109,9 @@ public class RobotContainer {
     Command dejamCommand =
         intake
             .setIntakeStateCommand(IntakeState.REJECT_CORAL)
+            .asProxy()
             .andThen(new WaitCommand(0.2))
-            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE));
+            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
 
     CoralStateTracker.isStuckAtFrontFeederTrigger().onTrue(dejamCommand);
 
