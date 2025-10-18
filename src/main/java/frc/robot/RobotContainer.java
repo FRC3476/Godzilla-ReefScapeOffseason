@@ -79,6 +79,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.LedIO;
+import frc.robot.subsystems.led.LedIOHardware;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -118,6 +121,7 @@ public class RobotContainer {
   private final ClimbRoller climbRoller;
   private final Feeder feeder;
   private final Vision vision;
+  private final Led led;
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
       new Consumer<VisionFieldPoseEstimate>() {
@@ -150,6 +154,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOReal());
         climbRoller = new ClimbRoller(new ClimbRollerIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
+        led = new Led(new LedIOHardware());
         drive =
             new DriveSubsystem(
                 new DriveIOHardware(
@@ -170,6 +175,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         climbRoller = new ClimbRoller(new ClimbRollerIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
+        led = new Led(new LedIO() {});
         drive =
             new DriveSubsystem(
                 new DriveIOSim(
@@ -191,6 +197,7 @@ public class RobotContainer {
         climbRoller = new ClimbRoller(new ClimbRollerIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
+        led = new Led(new LedIO() {});
         break;
     }
 
@@ -2113,7 +2120,11 @@ public class RobotContainer {
     CoralStateTracker.isStuckAtIntakeTrigger().onTrue(dejamCommand);
     Trigger losesCoral =
         new Trigger(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
-    losesCoral.onTrue(Commands.runOnce(() -> RobotState.setLedState(LedState.kOff)));
+    losesCoral.onTrue(Commands.runOnce(() -> led.commandSolidColor(LedState.kOff)));
+
+    Trigger coralInEndeffector = new Trigger(() -> claw.isCoralInClaw());
+
+    coralInEndeffector.onTrue(led.commandSolidColor(LedState.kCOTeal));
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(
