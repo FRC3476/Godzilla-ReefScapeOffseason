@@ -156,6 +156,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET_ALGAE = 0.465;
     public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.615;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);

@@ -38,6 +38,12 @@
         {
           "type": "named",
           "data": {
+            "name": "FinalLeftPoleAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ConfirmScore"
           }
         },
@@ -67,9 +73,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "RightRaw3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -104,9 +128,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "RightRaw5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {

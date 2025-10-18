@@ -1046,35 +1046,42 @@ public class RobotContainer {
                         * Constants.DriveConstants.kDriveMaxSpeed,
                 () -> FieldUtils.isRedAlliance() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg));
 
-    // // Auto Align
-
+    // // Auto Align ... WE WANT THE BARGE TO BE IN THE MIDDLE FOR AUTO ALIGN
     controller
         .a()
         .whileTrue(
-            new SelectCommand<>(
-                Map.of(
-                    CoralBranch.NONE,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReefPole().getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.LEFT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().leftPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.RIGHT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().rightPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                () -> robotState.getStoredScorePosition().getCoralBranch()));
+            Commands.either(
+                new GarageDriveToPoseCommand(
+                    drive,
+                    () ->
+                        PoseUtils.getPerpendicularOffsetPose(
+                            FieldUtils.getClosestReef().getPose(),
+                            DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET_ALGAE)),
+                new SelectCommand<>(
+                    Map.of(
+                        CoralBranch.NONE,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReefPole().getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                        CoralBranch.LEFT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().leftPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                        CoralBranch.RIGHT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().rightPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
+                    () -> robotState.getStoredScorePosition().getCoralBranch()),
+                () -> RobotState.getSuperstructureTargetState().isAlgaeReefIntake()));
 
     // controller
     //     .rightTrigger();

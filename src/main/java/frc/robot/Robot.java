@@ -288,6 +288,7 @@ public class Robot extends LoggedRobot {
         .schedule();
     Commands.run(() -> robotContainer.getIntake().setRollerVoltage(1))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .asProxy()
         .schedule();
     Commands.run(() -> robotContainer.getFeeder().setRollerVoltage(1))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
