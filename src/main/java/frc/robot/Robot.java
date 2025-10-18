@@ -280,6 +280,10 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     LoopTimingLogger.startTiming("TestPeriodic");
     // Add any test-specific code here if needed
+    robotContainer.getClaw().setRollerVoltage(1);
+    robotContainer.getIntake().setRollerVoltage(1);
+    robotContainer.getFeeder().setRollerVoltage(1);
+
     LoopTimingLogger.endTiming("TestPeriodic");
   }
 

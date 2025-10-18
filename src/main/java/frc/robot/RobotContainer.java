@@ -47,7 +47,6 @@ import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
-import frc.robot.commands.test.CleaningTest;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.ClimbRollerIO;
 import frc.robot.subsystems.climb.ClimbRollerIOReal;
@@ -1006,16 +1005,11 @@ public class RobotContainer {
   private void buildTestTab() {
     NetworkTable testTable = NetworkTableInstance.getDefault().getTable("Elastic/Test");
 
-    NetworkTableEntry cleaningEntry = testTable.getEntry("Cleaning Mode");
     NetworkTableEntry dejamEntry = testTable.getEntry("Dejam Mode");
 
-    cleaningEntry.setBoolean(false);
     dejamEntry.setBoolean(false);
 
-    Trigger cleaningTrigger = new Trigger(() -> cleaningEntry.getBoolean(false));
     Trigger dejamTrigger = new Trigger(() -> dejamEntry.getBoolean(false));
-
-    cleaningTrigger.onTrue(new CleaningTest(intake, claw, feeder));
 
     Command dejamCommand =
         intake
@@ -2151,5 +2145,13 @@ public class RobotContainer {
 
   public Intake getIntake() {
     return intake;
+  }
+
+  public Claw getClaw() {
+    return claw;
+  }
+
+  public Feeder getFeeder() {
+    return feeder;
   }
 }
