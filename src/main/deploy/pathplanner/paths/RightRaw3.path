@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.848656124740202,
-        "y": 1.5764089407660322
+        "x": 1.8354409926901143,
+        "y": 0.9994453755250083
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5286665166641926,
-        "y": 1.955739450341448
+        "x": 3.6779562784728084,
+        "y": 2.4803432654168054
       },
       "isLocked": false,
-      "linkedName": "3PP4E"
+      "linkedName": "RR2E"
     },
     {
       "anchor": {
-        "x": 3.605837675596999,
-        "y": 2.8916520462429762
+        "x": 3.8821561362561767,
+        "y": 2.642364412542171
       },
       "prevControl": {
-        "x": 2.810492485324869,
-        "y": 1.9552693378500123
+        "x": 2.3314429181879763,
+        "y": 1.2647177036780224
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "RR3E"
     }
   ],
   "rotationTargets": [],
@@ -55,11 +55,22 @@
           ]
         }
       }
+    },
+    {
+      "name": "AimL4",
+      "waypointRelativePos": 0.66,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AimL4"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.35,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,13 +78,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -122.17432562352381
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": null,
+  "folder": "RIGHTRAW",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -167.77547197160362
+    "rotation": -125.00000000000001
   },
   "useDefaultConstraints": true
 }

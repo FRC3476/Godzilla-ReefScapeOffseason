@@ -30,18 +30,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "3PiecePart1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ConfirmScore"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -64,7 +52,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "3PiecePart2"
+                        "pathName": "CoralDrive1"
                       }
                     },
                     {
@@ -101,7 +89,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3PiecePart3"
+            "pathName": "CoralDrive2"
           }
         },
         {
@@ -121,62 +109,12 @@
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "IntakeEnable"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "3PiecePart4"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "SeesCoral"
-                      }
-                    }
-                  ]
+                  "pathName": "CoralDrive3"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "IsCoralInFeeder"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "DriveToCoral"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "3PiecePart5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ConfirmScore"
           }
         }
       ]
