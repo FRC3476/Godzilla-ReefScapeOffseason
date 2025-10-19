@@ -2116,13 +2116,15 @@ public class RobotContainer {
 
     CoralStateTracker.isStuckAtIntakeTrigger().onTrue(dejamCommand);
 
-    intake.rejectCoralIntake.onTrue(intake.setIntakeStateCommand(IntakeState.REJECT_INTAKE_CORAL));
+    intake.rejectCoralIntakeTrigger.onTrue(
+        intake.setIntakeStateCommand(IntakeState.REJECT_INTAKE_CORAL));
 
-    intake.rejectCoralIntake.onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
+    intake.rejectCoralIntakeTrigger.onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
 
-    intake.rejectCoralIntakeAndFeeder.onTrue(
+    intake.rejectCoralIntakeAndFeederTrigger.onTrue(
         intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
-    intake.rejectCoralIntakeAndFeeder.onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
+    intake.rejectCoralIntakeAndFeederTrigger.onFalse(
+        intake.setIntakeStateCommand(IntakeState.IDLE));
 
     // RobotState.finishedBargeScoringForward()
     //     .onTrue(

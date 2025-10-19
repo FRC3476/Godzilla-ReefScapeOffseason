@@ -296,27 +296,29 @@ public class Intake extends SubsystemBase {
     return Commands.runOnce(() -> feeder.setRollerVoltage(0));
   }
 
-  public Trigger rejectCoralIntake =
+  public Trigger rejectCoralIntakeTrigger =
       new Trigger(
-          () -> {
-            switch (CoralStateTracker.getCurrentPosition()) {
-              case AT_FRONT_FEEDER, AT_BACK_FEEDER:
-                return isCoralInIntake();
+              () -> {
+                switch (CoralStateTracker.getCurrentPosition()) {
+                  case AT_FRONT_FEEDER, AT_BACK_FEEDER:
+                    return isCoralInIntake();
 
-              default:
-                return false;
-            }
-          });
+                  default:
+                    return false;
+                }
+              })
+          .debounce(0.1);
 
-  public Trigger rejectCoralIntakeAndFeeder =
+  public Trigger rejectCoralIntakeAndFeederTrigger =
       new Trigger(
-          () -> {
-            switch (CoralStateTracker.getCurrentPosition()) {
-              case STAGED_IN_END_EFFECTOR, AT_FIRST_END_EFFECTOR, AT_SECOND_END_EFFECTOR:
-                return isCoralInIntake();
+              () -> {
+                switch (CoralStateTracker.getCurrentPosition()) {
+                  case STAGED_IN_END_EFFECTOR, AT_FIRST_END_EFFECTOR, AT_SECOND_END_EFFECTOR:
+                    return isCoralInIntake();
 
-              default:
-                return false;
-            }
-          });
+                  default:
+                    return false;
+                }
+              })
+          .debounce(0.1);
 }
