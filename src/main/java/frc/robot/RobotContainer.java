@@ -1126,7 +1126,11 @@ public class RobotContainer {
             intake
                 .setIntakeStateCommand(IntakeState.INTAKE)
                 .asProxy()
-                .alongWith(claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy()));
+                .alongWith(
+                    Commands.either(
+                        Commands.none(),
+                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                        () -> RobotState.hasAlgae())));
 
     // ALGAE DESCORE PREP
     controller
@@ -1170,7 +1174,9 @@ public class RobotContainer {
                         claw.setClawStateCommand(ClawState.SCORING).asProxy(),
                         () -> robotState.isL1Mode()),
                     claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
-                    () -> RobotState.getSuperstructureState().isCoralState()),
+                    () ->
+                        RobotState.getSuperstructureState() != null
+                            && RobotState.getSuperstructureState().isCoralState()),
                 new ConditionalCommand(
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
@@ -1180,7 +1186,10 @@ public class RobotContainer {
                 superstructure
                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                     .asProxy(),
-                claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                Commands.either(
+                    claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                    claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                    () -> CoralStateTracker.hasCoral()),
                 new ConditionalCommand(
                         new WaitUntilCommand(() -> RobotState.isSafeToStow())
                             .andThen(
@@ -1695,7 +1704,7 @@ public class RobotContainer {
 
     // Arbitrary triggers + streamdeck confirmation
 
-    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(0.5);
+    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(1);
     autoClimbTrigger.onTrue(climber.climbClimb().withName("AutoClimb"));
     streamdeck
         .button(climbDeployButton)
@@ -2100,6 +2109,17 @@ public class RobotContainer {
         .debounce(0.1)
         .onTrue(Commands.runOnce(() -> CoralStateTracker.forceSet(CoralPosition.NONE)));
 
+    Trigger exhaustedAlgaeTrigger =
+        new Trigger(() -> claw.getClawState() == ClawState.SCORING_ALGAE && !RobotState.hasAlgae());
+
+    exhaustedAlgaeTrigger
+        .debounce(0.5)
+        .onTrue(
+            Commands.either(
+                claw.setClawStateCommand(ClawState.INTAKING_CORAL),
+                claw.setClawStateCommand(ClawState.IDLE),
+                () -> CoralStateTracker.hasCoral()));
+
     Trigger autoPreScoreTrigger =
         new Trigger(
             () ->
@@ -2107,24 +2127,28 @@ public class RobotContainer {
                     && RobotState.getSuperstructureState() == SuperstructureState.STOW
                     && RobotState.getSuperstructureTargetState() == SuperstructureState.STOW);
 
-    autoPreScoreTrigger.onTrue(
-        Commands.either(
-            Commands.none(),
+    autoPreScoreTrigger
+        .debounce(0.25)
+        .onTrue(
             Commands.either(
-                superstructure
-                    .setStateCommand(SuperstructureState.L1_PIVOT, "PRE_SCORE_L1")
-                    .asProxy(),
+                Commands.none(),
                 Commands.either(
                     superstructure
-                        .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
+                        .setStateCommand(SuperstructureState.L1_PIVOT, "PRE_SCORE_L1")
                         .asProxy(),
-                    superstructure
-                        .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3_OR_L4")
-                        .asProxy(),
+                    Commands.either(
+                        superstructure
+                            .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
+                            .asProxy(),
+                        superstructure
+                            .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3_OR_L4")
+                            .asProxy(),
+                        () ->
+                            robotState.getStoredScorePosition().getCoralScoreLevel()
+                                == ScoreLevel.L2),
                     () ->
-                        robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L2),
-                () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1),
-            () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.NONE));
+                        robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1),
+                () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.NONE));
 
     //
     Trigger autoStowAlgaeTrigger =
