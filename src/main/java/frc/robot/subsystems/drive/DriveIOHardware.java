@@ -107,15 +107,17 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
   }
 
   public void addVisionMeasurement(VisionFieldPoseEstimate visionFieldPoseEstimate) {
-    if (visionFieldPoseEstimate.getVisionMeasurementStdDevs() == null) {
-      this.addVisionMeasurement(
-          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
-          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()));
-    } else {
-      this.addVisionMeasurement(
-          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
-          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()),
-          visionFieldPoseEstimate.getVisionMeasurementStdDevs());
+    if (DriverStation.isEnabled()) {
+      if (visionFieldPoseEstimate.getVisionMeasurementStdDevs() == null) {
+        this.addVisionMeasurement(
+            visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+            Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()));
+      } else {
+        this.addVisionMeasurement(
+            visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+            Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()),
+            visionFieldPoseEstimate.getVisionMeasurementStdDevs());
+      }
     }
   }
 
