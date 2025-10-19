@@ -1029,14 +1029,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.driveAtAngle(
                 drive,
-                () ->
-                    -controller.getLeftY()
-                        * Math.abs(controller.getLeftY())
-                        * Constants.DriveConstants.kDriveMaxSpeed,
-                () ->
-                    -controller.getLeftX()
-                        * Math.abs(controller.getLeftX())
-                        * Constants.DriveConstants.kDriveMaxSpeed,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
                 () -> {
                   if (climbRoller.getClimbing()) {
                     return FieldUtils.isRedAlliance()
