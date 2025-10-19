@@ -168,7 +168,7 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     // configure brown out voltage
-    RobotController.setBrownoutVoltage(6.0);
+    RobotController.setBrownoutVoltage(6.5);
 
     // StringLogEntry entry = new StringLogEntry(DataLogManager.getLog(), "/ntlog");
     // NetworkTableInstance.getDefault()
@@ -298,6 +298,9 @@ public class Robot extends LoggedRobot {
     Commands.run(() -> robotContainer.getFeeder().setRollerVoltage(1))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .schedule();
+    Commands.run(() -> robotContainer.getClimbRoller().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
 
     robotContainer
         .getElevator()
@@ -310,13 +313,13 @@ public class Robot extends LoggedRobot {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .schedule();
     robotContainer
-        .getClimbRoller()
-        .rollerSTOP()
+        .getEndEffector()
+        .pivotSTOP()
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .schedule();
     robotContainer
-        .getEndEffector()
-        .pivotSTOP()
+        .getIntake()
+        .pivotStop()
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .schedule();
 
