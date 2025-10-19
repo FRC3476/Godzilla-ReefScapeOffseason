@@ -50,12 +50,6 @@
         {
           "type": "named",
           "data": {
-            "name": "FinalLeftPoleAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ConfirmScore"
           }
         },
@@ -105,12 +99,6 @@
         {
           "type": "named",
           "data": {
-            "name": "FinalRightPoleAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ConfirmScore"
           }
         },
@@ -155,12 +143,6 @@
           "type": "path",
           "data": {
             "pathName": "LeftRaw5E"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalLeftPoleAlign"
           }
         },
         {

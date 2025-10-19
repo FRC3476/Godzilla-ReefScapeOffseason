@@ -6,9 +6,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -51,6 +53,8 @@ public class GarageDriveToPoseCommand extends Command {
 
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
+    distanceController.setTolerance(Units.inchesToMeters(0.5));
+    angleController.setTolerance(Units.degreesToRadians(0.5));
   }
 
   public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
@@ -63,7 +67,16 @@ public class GarageDriveToPoseCommand extends Command {
   // https://github.com/Mechanical-Advantage/RobotCode2024/blob/main/src/main/java/org/littletonrobotics/frc2024/subsystems/drive/controllers/AutoAlignController.java#L135
   @Override
   public void execute() {
-    Pose2d robot = RobotState.getGlobalPose();
+
+    Pose2d robotPoseOriginal = RobotState.getGlobalPose();
+    Logger.recordOutput("Align Offset Inches", Constants.kAlignOffset);
+    Logger.recordOutput("Align OffsetFB Inches", Constants.kAlignOffsetFB);
+    Pose2d robot =
+        robotPoseOriginal.plus(
+            new Transform2d(
+                Units.inchesToMeters(Constants.kAlignOffsetFB),
+                Units.inchesToMeters(Constants.kAlignOffset),
+                Rotation2d.kZero));
     Pose2d target = targetPoseSupplier.get();
 
     double currentDistance = robot.getTranslation().getDistance(target.getTranslation());
