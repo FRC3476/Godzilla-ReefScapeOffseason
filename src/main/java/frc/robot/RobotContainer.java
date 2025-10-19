@@ -1032,15 +1032,21 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.driveAtAngle(
                 drive,
-                () ->
-                    -controller.getLeftY()
-                        * Math.abs(controller.getLeftY())
-                        * Constants.DriveConstants.kDriveMaxSpeed,
-                () ->
-                    -controller.getLeftX()
-                        * Math.abs(controller.getLeftX())
-                        * Constants.DriveConstants.kDriveMaxSpeed,
-                () -> FieldUtils.isRedAlliance() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg));
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> {
+                  if (climbRoller.getClimbing()) {
+                    return FieldUtils.isRedAlliance()
+                        ? Rotation2d.kCCW_90deg
+                        : Rotation2d.kCW_90deg;
+                  } else if (RobotState.hasAlgae()) {
+                    return RobotState.getGlobalPose().getRotation().getCos() < 0
+                        ? Rotation2d.k180deg
+                        : Rotation2d.kZero;
+                  } else {
+                    return FieldUtils.getClosestReef().getPose().getRotation();
+                  }
+                }));
 
     // // Auto Align
 
