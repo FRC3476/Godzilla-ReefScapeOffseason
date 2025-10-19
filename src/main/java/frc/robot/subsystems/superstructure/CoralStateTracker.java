@@ -285,4 +285,19 @@ public class CoralStateTracker {
   public static Trigger isStuckAtIntakeTrigger() {
     return isAtIntakeTrigger().debounce(0.5);
   }
+
+  public static boolean hasCoral() {
+    switch (currentPosition) {
+      case AT_INTAKE,
+          GOING_TO_FEEDER,
+          AT_FRONT_FEEDER,
+          AT_BACK_FEEDER,
+          AT_FIRST_END_EFFECTOR,
+          AT_SECOND_END_EFFECTOR,
+          STAGED_IN_END_EFFECTOR:
+        return true;
+      default:
+        return false;
+    }
+  }
 }
