@@ -267,6 +267,8 @@ public final class Constants {
       INTAKE,
       REJECT_CORAL,
       REJECT_INTAKE_CORAL,
+      REJECT_INTAKE_CORAL_STAGED,
+      REJECT_INTAKE_CORAL_HANDOFF,
       IDLE,
       HAND_OFF,
       SCORING,

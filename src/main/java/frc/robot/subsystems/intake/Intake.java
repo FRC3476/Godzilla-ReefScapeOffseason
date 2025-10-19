@@ -180,6 +180,28 @@ public class Intake extends SubsystemBase {
               }
               break;
             case REJECT_INTAKE_CORAL:
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
+                  && RobotState.getSuperstructureState().isHandoffState()) {
+                this.currentState = IntakeState.REJECT_INTAKE_CORAL_HANDOFF;
+              } else if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
+                  || CoralStateTracker.getCurrentPosition()
+                      == CoralPosition.STAGED_IN_END_EFFECTOR) {
+                this.currentState = IntakeState.REJECT_INTAKE_CORAL_STAGED;
+              }
+              break;
+            case REJECT_INTAKE_CORAL_STAGED:
+              if ((CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER
+                      || CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FRONT_FEEDER)
+                  && RobotState.getSuperstructureState().isHandoffState()) {
+                this.currentState = IntakeState.REJECT_INTAKE_CORAL_HANDOFF;
+              }
+
+            case REJECT_INTAKE_CORAL_HANDOFF:
+              if (CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR
+                  || CoralStateTracker.getCurrentPosition()
+                      == CoralPosition.AT_SECOND_END_EFFECTOR) {
+                this.currentState = IntakeState.REJECT_CORAL;
+              }
               break;
             case SCORING:
               break;
@@ -218,6 +240,15 @@ public class Intake extends SubsystemBase {
               break;
             case REJECT_INTAKE_CORAL:
               this.io.setRollerVoltage(-rollerIntakeVolts.get());
+              break;
+            case REJECT_INTAKE_CORAL_STAGED:
+              this.io.setRollerVoltage(-rollerIntakeVolts.get());
+              feeder.setRollerVoltage(0);
+              break;
+            case REJECT_INTAKE_CORAL_HANDOFF:
+              this.io.setRollerVoltage(-rollerIntakeVolts.get());
+              feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
+              break;
             case HAND_OFF:
               this.io.setRollerVoltage(0);
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
