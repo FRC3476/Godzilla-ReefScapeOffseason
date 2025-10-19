@@ -154,11 +154,20 @@ public class DriveCommands {
                   .withHeadingPID(DriveConstants.ANGLE_KP, 0.0, DriveConstants.ANGLE_KD)
                   .withDesaturateWheelSpeeds(true);
 
+          Rotation2d rotTarget = Rotation2d.kZero;
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            if (alliance.get() == Alliance.Red) {
+              rotTarget = Rotation2d.kPi;
+            }
+          }
+
           drive.setControl(
               facingAngle
                   .withVelocityX(xJoy * Constants.DriveConstants.kDriveMaxSpeed)
                   .withVelocityY(yJoy * Constants.DriveConstants.kDriveMaxSpeed)
-                  .withTargetDirection(rotationSupplier.get().rotateBy(Rotation2d.kPi)));
+                  .withTargetDirection(rotationSupplier.get().rotateBy(rotTarget)));
         },
         drive);
   }
