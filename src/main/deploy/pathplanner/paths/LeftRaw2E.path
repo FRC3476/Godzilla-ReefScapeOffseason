@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.067145640179005,
-        "y": 5.420905974369341
+        "x": 5.105083090661098,
+        "y": 5.404760641195473
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.64430838420688,
-        "y": 6.886344437514217
+        "x": 4.682245834688973,
+        "y": 6.870199104340349
       },
       "isLocked": false,
-      "linkedName": "LeftRaw1E"
+      "linkedName": "LR1E"
     },
     {
       "anchor": {
@@ -30,16 +30,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5849056603773582,
-      "rotationDegrees": 167.23271519689254
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 126.5
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,10 +50,10 @@
     "rotation": 126.5
   },
   "reversed": false,
-  "folder": null,
+  "folder": "LEFTRAW",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 62.76437951554022
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

@@ -25,12 +25,6 @@
                 "data": {
                   "name": "ScoreTargetStartup"
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.25
-                }
               }
             ]
           }
@@ -85,6 +79,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AimL4"
@@ -134,6 +134,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AimL4"
@@ -152,15 +158,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "LeftRaw6E"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw6E"
+                }
+              },
               {
                 "type": "named",
                 "data": {

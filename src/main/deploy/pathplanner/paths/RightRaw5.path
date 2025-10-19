@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8354409926901143,
-        "y": 0.9994453755250083
+        "x": 1.8021688039488835,
+        "y": 0.9567900707850014
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1601798177344573,
-        "y": 2.3294770175212065
+        "x": 3.5987871634008264,
+        "y": 2.4510265853628077
       },
       "isLocked": false,
       "linkedName": "RR2E"
     },
     {
       "anchor": {
-        "x": 3.4302272727272727,
-        "y": 2.5342471590909086
+        "x": 3.883697135629626,
+        "y": 2.6449849898215505
       },
       "prevControl": {
-        "x": 2.1003705761738463,
-        "y": 1.2778370814767108
+        "x": 1.917646956447977,
+        "y": 1.0820111703393152
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

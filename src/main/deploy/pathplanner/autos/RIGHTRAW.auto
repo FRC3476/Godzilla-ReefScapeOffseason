@@ -25,12 +25,6 @@
                 "data": {
                   "name": "ScoreTargetStartup"
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.25
-                }
               }
             ]
           }
@@ -45,12 +39,6 @@
           "type": "path",
           "data": {
             "pathName": "RIghtRaw1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -91,6 +79,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AimL4"
@@ -100,12 +94,6 @@
           "type": "path",
           "data": {
             "pathName": "RightRaw3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -146,6 +134,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "AimL4"
@@ -160,25 +154,19 @@
         {
           "type": "named",
           "data": {
-            "name": "FinalLeftPoleAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ConfirmScore"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightRaw6"
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightRaw6"
+                }
+              },
               {
                 "type": "named",
                 "data": {
