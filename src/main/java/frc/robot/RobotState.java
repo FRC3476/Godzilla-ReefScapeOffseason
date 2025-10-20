@@ -170,7 +170,7 @@ public class RobotState extends MagicVirtualSubsystem {
       switch (storedScorePosition.getCoralScoreLevel()) {
         case L1:
           // fadeawayState = SuperstructureState.NONE;
-          return SuperstructureState.L1_PIVOT;
+          return SuperstructureState.L1_AIM;
         case L2:
           // fadeawayState = SuperstructureState.L2_FADEAWAY;
           return SuperstructureState.L2_AIM;
@@ -188,7 +188,7 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public SuperstructureState getFadeawayState() {
     switch (currentState) {
-      case L1_PIVOT:
+      case L1_AIM:
         return SuperstructureState.L1_FADEAWAY;
       case L2_AIM:
         return SuperstructureState.L2_FADEAWAY;

@@ -265,6 +265,20 @@ public class CoralStateTracker {
     return currentPosition;
   }
 
+  /**
+   * Returns true if coral is in the end effector: AT_FIRST_END_EFFECTOR, AT_SECOND_END_EFFECTOR,
+   * STAGED_IN_END_EFFECTOR
+   */
+  public static boolean IsCoralInEndEffector() {
+    if (CoralStateTracker.getCurrentPosition() == CoralPosition.AT_FIRST_END_EFFECTOR
+        || CoralStateTracker.getCurrentPosition() == CoralPosition.AT_SECOND_END_EFFECTOR
+        || CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public static void forceSet(CoralPosition newState) {
     currentPosition = newState;
     lastTransitionTime = Timer.getFPGATimestamp();

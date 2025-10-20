@@ -864,9 +864,9 @@ public final class Constants {
     public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
 
-    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
+    public static double L1_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
+    public static double L1_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS + .02;
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
