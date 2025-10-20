@@ -141,7 +141,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command pivotSTOP() {
-    return Commands.runOnce(() -> this.io.setPivotVoltage(0), this);
+    return Commands.run(() -> this.io.setPivotVoltage(0), this);
   }
 
   public Command setPivotZero() {

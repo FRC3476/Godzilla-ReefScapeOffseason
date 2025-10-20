@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.led.LedState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,18 +27,20 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 2),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
+              (Constants.DriveConstants.kDriveMaxSpeed / 3),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 3));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 2));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 3));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
+
+  private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
 
   private final ApplyRobotSpeeds robotSpeeds =
       new ApplyRobotSpeeds()
@@ -64,18 +67,25 @@ public class GarageDriveToPoseCommand extends Command {
     Pose2d robot = RobotState.getGlobalPose();
     Pose2d target = targetPoseSupplier.get();
 
+    double currentDistance = robot.getTranslation().getDistance(target.getTranslation());
+    double ffScaler =
+        MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
+
     Translation2d translationalError = robot.getTranslation().minus(target.getTranslation());
     Rotation2d angularError = robot.getRotation().minus(target.getRotation());
 
     // Magnitude of translational velocity, meaning that x & y are controlled together
     double translationalSpeed =
-        MathUtil.clamp(
-            distanceController.calculate(translationalError.getNorm(), 0),
-            -DriveConstants.kDriveMaxSpeed / 2,
-            DriveConstants.kDriveMaxSpeed / 2);
+        distanceController.getSetpoint().velocity * ffScaler
+            + MathUtil.clamp(
+                distanceController.calculate(translationalError.getNorm(), 0),
+                -DriveConstants.kDriveMaxSpeed / 3,
+                DriveConstants.kDriveMaxSpeed / 3);
     translationalSpeed = !distanceController.atGoal() ? translationalSpeed : 0;
 
-    double anglularVelocity = angleController.calculate(angularError.getRadians(), 0);
+    double anglularVelocity =
+        angleController.getSetpoint().velocity * ffScaler
+            + angleController.calculate(angularError.getRadians(), 0);
     anglularVelocity = !angleController.atGoal() ? anglularVelocity : 0;
 
     Translation2d velocity = new Translation2d(translationalSpeed, translationalError.getAngle());
@@ -102,9 +112,13 @@ public class GarageDriveToPoseCommand extends Command {
     drive.setControl(robotSpeeds.withSpeeds(new ChassisSpeeds()));
     distanceController.reset(0);
     angleController.reset(0);
+    if (!interrupt) {
+      RobotState.setLedState(LedState.kCOOrange);
+    }
   }
 
   public Trigger atSetpoint() {
+
     return new Trigger(() -> distanceController.atSetpoint() && angleController.atSetpoint());
   }
 

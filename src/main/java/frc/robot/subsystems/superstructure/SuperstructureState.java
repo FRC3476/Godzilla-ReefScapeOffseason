@@ -205,6 +205,15 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isAlgaeReefIntake() {
+    switch (this) {
+      case ALGAE_LOW_INTAKE, ALGAE_HIGH_INTAKE:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public boolean isFadeawayState() {
     switch (this) {
       case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:

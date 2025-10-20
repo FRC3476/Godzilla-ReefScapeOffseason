@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3PiecePart1"
+            "pathName": "RIghtObj1"
           }
         },
         {
@@ -64,7 +64,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "3PiecePart2"
+                        "pathName": "RightObj2"
                       }
                     },
                     {
@@ -86,13 +86,58 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "DriveToCoral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "DriveToCoral"
+                  "name": "IsCoralInFeeder"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInEndEffector"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AimL4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "isSuperStructureAtL4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightObj3"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -101,7 +146,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3PiecePart3"
+            "pathName": "RightObj3.5"
           }
         },
         {
@@ -133,7 +178,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "3PiecePart4"
+                        "pathName": "RightObj4"
                       }
                     },
                     {
@@ -155,13 +200,58 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "DriveToCoral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "DriveToCoral"
+                  "name": "IsCoralInFeeder"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInEndEffector"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AimL4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "isSuperStructureAtL4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightObj5"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -170,13 +260,38 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3PiecePart5"
+            "pathName": "RightObj5.5"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightObj6"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              }
+            ]
           }
         }
       ]

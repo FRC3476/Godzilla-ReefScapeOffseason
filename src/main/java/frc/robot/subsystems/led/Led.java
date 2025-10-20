@@ -15,20 +15,18 @@ import org.littletonrobotics.junction.Logger;
 
 public class Led extends SubsystemBase {
   private final LedIO io;
-  private final RobotState state;
 
   public record PercentageSetpoint(double pct, LedState color) {}
 
-  public Led(final LedIO io, RobotState state) {
+  public Led(final LedIO io) {
     this.io = io;
-    this.state = state;
   }
 
   @Override
   public void periodic() {
     super.periodic();
 
-    state.setLedState(getCurrentState());
+    RobotState.setLedState(getCurrentState());
     Logger.recordOutput(
         "LED/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
