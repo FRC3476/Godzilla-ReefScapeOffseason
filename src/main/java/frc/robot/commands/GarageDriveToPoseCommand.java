@@ -6,9 +6,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,18 +28,20 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 4),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 4));
+              (Constants.DriveConstants.kDriveMaxSpeed / 3),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 3));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 4));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 3));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
+
+  private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
 
   private final ApplyRobotSpeeds robotSpeeds =
       new ApplyRobotSpeeds()
@@ -49,6 +53,8 @@ public class GarageDriveToPoseCommand extends Command {
 
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
+    distanceController.setTolerance(Units.inchesToMeters(0.5));
+    angleController.setTolerance(Units.degreesToRadians(0.5));
   }
 
   public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
@@ -61,21 +67,37 @@ public class GarageDriveToPoseCommand extends Command {
   // https://github.com/Mechanical-Advantage/RobotCode2024/blob/main/src/main/java/org/littletonrobotics/frc2024/subsystems/drive/controllers/AutoAlignController.java#L135
   @Override
   public void execute() {
-    Pose2d robot = RobotState.getGlobalPose();
+
+    Pose2d robotPoseOriginal = RobotState.getGlobalPose();
+    Logger.recordOutput("Align Offset Inches", Constants.kAlignOffset);
+    Logger.recordOutput("Align OffsetFB Inches", Constants.kAlignOffsetFB);
+    Pose2d robot =
+        robotPoseOriginal.plus(
+            new Transform2d(
+                Units.inchesToMeters(Constants.kAlignOffsetFB),
+                Units.inchesToMeters(Constants.kAlignOffset),
+                Rotation2d.kZero));
     Pose2d target = targetPoseSupplier.get();
+
+    double currentDistance = robot.getTranslation().getDistance(target.getTranslation());
+    double ffScaler =
+        MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
 
     Translation2d translationalError = robot.getTranslation().minus(target.getTranslation());
     Rotation2d angularError = robot.getRotation().minus(target.getRotation());
 
     // Magnitude of translational velocity, meaning that x & y are controlled together
     double translationalSpeed =
-        MathUtil.clamp(
-            distanceController.calculate(translationalError.getNorm(), 0),
-            -DriveConstants.kDriveMaxSpeed,
-            DriveConstants.kDriveMaxSpeed);
+        distanceController.getSetpoint().velocity * ffScaler
+            + MathUtil.clamp(
+                distanceController.calculate(translationalError.getNorm(), 0),
+                -DriveConstants.kDriveMaxSpeed / 3,
+                DriveConstants.kDriveMaxSpeed / 3);
     translationalSpeed = !distanceController.atGoal() ? translationalSpeed : 0;
 
-    double anglularVelocity = angleController.calculate(angularError.getRadians(), 0);
+    double anglularVelocity =
+        angleController.getSetpoint().velocity * ffScaler
+            + angleController.calculate(angularError.getRadians(), 0);
     anglularVelocity = !angleController.atGoal() ? anglularVelocity : 0;
 
     Translation2d velocity = new Translation2d(translationalSpeed, translationalError.getAngle());

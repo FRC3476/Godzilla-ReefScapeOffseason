@@ -15,6 +15,10 @@ public class ReefFace {
     this.rightPole = new ReefPole(tag, FieldConstants.tagToReef);
   }
 
+  public Pose2d getPose() {
+    return tag.pose().toPose2d();
+  }
+
   public double getPerpendicularError(Pose2d robotPose) {
     return PoseUtils.getPerpendicularError(robotPose, tag.pose().toPose2d());
   }

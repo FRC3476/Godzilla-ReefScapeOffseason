@@ -8,6 +8,7 @@ public interface FeederIO {
     public F_RollerData rightRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
     public F_RollerData leftRollerData = new F_RollerData(false, 0, 0, 0, 0, 0);
     public F_CanRangeData canRangeData = new F_CanRangeData(false, false, 0, 0);
+    public FRONT_CanRangeData frontCanRangeData = new FRONT_CanRangeData(false, false, 0, 0);
   }
 
   /** roller-related telemetry. */
@@ -20,6 +21,9 @@ public interface FeederIO {
       double velocityRPS) {}
 
   record F_CanRangeData(
+      boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
+
+  record FRONT_CanRangeData(
       boolean isSensorConnected, boolean tripped, double signalStrength, double distanceMeters) {}
 
   default void updateInputs(FeederIOInputs inputs) {}

@@ -25,6 +25,7 @@ public class Superstructure extends SubsystemBase {
     this.elevator = elevator;
     this.stateMachine = new SuperstructureStateMachine(container);
     Logger.recordOutput("Superstructure/SubsystemOnline", true);
+    System.out.println(SuperstructureState.NONE.printStateGroupInfo());
   }
 
   @Override
@@ -32,6 +33,7 @@ public class Superstructure extends SubsystemBase {
     double timestamp = RobotTime.getTimestampSeconds();
     stateMachine.continueTransition();
     RobotState.setSuperstructureState(getCurrentState());
+    RobotState.setSuperstructureTargetState(stateMachine.getTargetState());
     Logger.recordOutput("Superstructure/CurrentState", stateMachine.getCurrentState());
     Logger.recordOutput("Superstructure/TargetState", stateMachine.getTargetState());
     Logger.recordOutput(

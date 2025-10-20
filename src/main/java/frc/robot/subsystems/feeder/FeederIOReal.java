@@ -23,6 +23,7 @@ public class FeederIOReal implements FeederIO {
   protected final TalonFX leftRoller;
 
   private final CANrange canRange;
+  private final CANrange frontCanRange;
 
   // Right roller status signals
   private final StatusSignal<Voltage> rightRollerVoltage;
@@ -43,6 +44,10 @@ public class FeederIOReal implements FeederIO {
   private final StatusSignal<Double> canRangeSignalStrength;
   private final StatusSignal<Distance> canRangeDistance;
 
+  private final StatusSignal<Boolean> frontCanRangeTripped;
+  private final StatusSignal<Double> frontCanRangeSignalStrength;
+  private final StatusSignal<Distance> frontCanRangeDistance;
+
   private final BaseStatusSignal[] signals;
 
   public FeederIOReal() {
@@ -50,12 +55,15 @@ public class FeederIOReal implements FeederIO {
     rightRoller = new TalonFX(FeederConstants.RIGHT_ID, Constants.MISC_CANIVORE);
     leftRoller = new TalonFX(FeederConstants.LEFT_ID, Constants.MISC_CANIVORE);
     canRange = new CANrange(FeederConstants.CANRANGE_ID, Constants.MISC_CANIVORE);
+    frontCanRange = new CANrange(FeederConstants.FRONT_CANRANGE_ID, Constants.MISC_CANIVORE);
 
     // Apply configs
     PhoenixUtil.tryUntilOk(
         5, () -> rightRoller.getConfigurator().apply(FeederConstants.ROLLER_TALON_CONFIG));
     PhoenixUtil.tryUntilOk(
         5, () -> canRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5, () -> frontCanRange.getConfigurator().apply(FeederConstants.CANRANGE_CONFIG));
 
     // Set up left roller to follow right roller
     leftRoller.setControl(new Follower(FeederConstants.RIGHT_ID, true));
@@ -77,6 +85,10 @@ public class FeederIOReal implements FeederIO {
     canRangeSignalStrength = canRange.getSignalStrength();
     canRangeDistance = canRange.getDistance();
 
+    frontCanRangeTripped = frontCanRange.getIsDetected();
+    frontCanRangeSignalStrength = frontCanRange.getSignalStrength();
+    frontCanRangeDistance = frontCanRange.getDistance();
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         rightRollerVoltage,
@@ -91,11 +103,15 @@ public class FeederIOReal implements FeederIO {
         leftRollerVelocityRPS,
         canRangeTripped,
         canRangeSignalStrength,
-        canRangeDistance);
+        canRangeDistance,
+        frontCanRangeTripped,
+        frontCanRangeSignalStrength,
+        frontCanRangeDistance);
 
     rightRoller.optimizeBusUtilization();
     leftRoller.optimizeBusUtilization();
     canRange.optimizeBusUtilization();
+    frontCanRange.optimizeBusUtilization();
 
     signals =
         new BaseStatusSignal[] {
@@ -111,7 +127,10 @@ public class FeederIOReal implements FeederIO {
           leftRollerVelocityRPS,
           canRangeTripped,
           canRangeSignalStrength,
-          canRangeDistance
+          canRangeDistance,
+          frontCanRangeTripped,
+          frontCanRangeSignalStrength,
+          frontCanRangeDistance
         };
   }
 
@@ -152,6 +171,14 @@ public class FeederIOReal implements FeederIO {
             canRangeTripped.getValue(),
             canRangeSignalStrength.getValueAsDouble(),
             canRangeDistance.getValueAsDouble());
+
+    inputs.frontCanRangeData =
+        new FRONT_CanRangeData(
+            BaseStatusSignal.isAllGood(
+                frontCanRangeTripped, frontCanRangeDistance, frontCanRangeSignalStrength),
+            frontCanRangeTripped.getValue(),
+            frontCanRangeSignalStrength.getValueAsDouble(),
+            frontCanRangeDistance.getValueAsDouble());
   }
 
   @Override

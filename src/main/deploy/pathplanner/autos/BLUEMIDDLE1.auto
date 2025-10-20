@@ -30,22 +30,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimL4"
-                }
-              }
-            ]
+            "pathName": "BLUEMIDDLE1"
           }
         },
         {
@@ -61,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left2"
+                  "pathName": "BLUEMIDDLE2"
                 }
               },
               {
@@ -71,6 +58,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BLUEMIDDLE3"
           }
         }
       ]

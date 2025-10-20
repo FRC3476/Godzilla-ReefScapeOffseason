@@ -86,14 +86,16 @@ public class RobotState extends MagicVirtualSubsystem {
   class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
-    private ScoreLevel scoreLevel;
+    private ScoreLevel coralScoreLevel;
+    private ScoreLevel algaeScoreLevel;
     private AlgaeIntake algaeIntake;
 
     public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
-      this.scoreLevel = ScoreLevel.NONE;
+      this.coralScoreLevel = ScoreLevel.NONE;
       this.algaeIntake = AlgaeIntake.NONE;
+      this.algaeScoreLevel = ScoreLevel.NONE;
     }
 
     public ReefSide getReefSide() {
@@ -104,8 +106,12 @@ public class RobotState extends MagicVirtualSubsystem {
       return coralBranch;
     }
 
-    public ScoreLevel getScoreLevel() {
-      return scoreLevel;
+    public ScoreLevel getCoralScoreLevel() {
+      return coralScoreLevel;
+    }
+
+    public ScoreLevel getAlgaeScoreLevel() {
+      return algaeScoreLevel;
     }
 
     public AlgaeIntake getAlgaeIntake() {
@@ -120,8 +126,12 @@ public class RobotState extends MagicVirtualSubsystem {
       this.coralBranch = coralBranch;
     }
 
-    public void setScoreLevel(ScoreLevel scoreLevel) {
-      this.scoreLevel = scoreLevel;
+    public void setCoralScoreLevel(ScoreLevel scoreLevel) {
+      this.coralScoreLevel = scoreLevel;
+    }
+
+    public void setAlgaeScoreLevel(ScoreLevel scoreLevel) {
+      this.algaeScoreLevel = scoreLevel;
     }
 
     public void setAlgaeIntake(AlgaeIntake algaeIntake) {
@@ -136,36 +146,43 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public boolean isL1Mode() {
-    return storedScorePosition.getScoreLevel() == ScoreLevel.L1;
+    return storedScorePosition.getCoralScoreLevel() == ScoreLevel.L1;
   }
 
   // private SuperstructureState fadeawayState;
 
   public SuperstructureState getSuperstructureScoreAimState() {
-    switch (storedScorePosition.getScoreLevel()) {
-      case L1:
-        // fadeawayState = SuperstructureState.NONE;
-        return SuperstructureState.L1_AIM;
-      case L2:
-        // fadeawayState = SuperstructureState.L2_FADEAWAY;
-        return SuperstructureState.L2_AIM;
-      case L3:
-        // fadeawayState = SuperstructureState.L3_FADEAWAY;
-        return SuperstructureState.L3_AIM;
-      case L4:
-        // fadeawayState = SuperstructureState.L4_FADEAWAY;
-        return SuperstructureState.L4_AIM;
-      case BARGE:
-        // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
-        if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
-          return SuperstructureState.BARGE_AIM_FORWARD;
-        }
-        return SuperstructureState.BARGE_AIM_BACKWARD;
-      case PROCESSOR:
-        // fadeawayState = SuperstructureState.NONE;
-        return SuperstructureState.PROCESSOR_AIM;
-      default:
-        return SuperstructureState.NONE;
+    if (hasAlgae()) {
+      switch (storedScorePosition.getAlgaeScoreLevel()) {
+        case BARGE:
+          // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
+          if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
+            return SuperstructureState.BARGE_AIM_FORWARD;
+          }
+          return SuperstructureState.BARGE_AIM_BACKWARD;
+        case PROCESSOR:
+          // fadeawayState = SuperstructureState.NONE;
+          return SuperstructureState.PROCESSOR_AIM;
+        default:
+          return SuperstructureState.NONE;
+      }
+    } else {
+      switch (storedScorePosition.getCoralScoreLevel()) {
+        case L1:
+          // fadeawayState = SuperstructureState.NONE;
+          return SuperstructureState.L1_AIM;
+        case L2:
+          // fadeawayState = SuperstructureState.L2_FADEAWAY;
+          return SuperstructureState.L2_AIM;
+        case L3:
+          // fadeawayState = SuperstructureState.L3_FADEAWAY;
+          return SuperstructureState.L3_AIM;
+        case L4:
+          // fadeawayState = SuperstructureState.L4_FADEAWAY;
+          return SuperstructureState.L4_AIM;
+        default:
+          return SuperstructureState.NONE;
+      }
     }
   }
 
@@ -213,6 +230,7 @@ public class RobotState extends MagicVirtualSubsystem {
   private static final String logRoot = "RobotState/";
 
   private static SuperstructureState currentState = SuperstructureState.NONE;
+  private static SuperstructureState targetState = SuperstructureState.NONE;
 
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
@@ -296,6 +314,27 @@ public class RobotState extends MagicVirtualSubsystem {
     }
   }
 
+  public void offsetRight() {
+    Constants.kAlignOffset += 1.0;
+  }
+
+  public void offsetLeft() {
+    Constants.kAlignOffset -= 1.0;
+  }
+
+  public void offsetForward() {
+    Constants.kAlignOffsetFB += 1.0;
+  }
+
+  public void offsetBackward() {
+    Constants.kAlignOffsetFB -= 1.0;
+  }
+
+  public void offsetZero() {
+    Constants.kAlignOffset = 0;
+    Constants.kAlignOffsetFB = 0;
+  }
+
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
 
@@ -331,6 +370,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static SuperstructureState getSuperstructureState() {
     return currentState;
+  }
+
+  public static void setSuperstructureTargetState(SuperstructureState state) {
+    targetState = state;
+  }
+
+  public static SuperstructureState getSuperstructureTargetState() {
+    return targetState;
   }
 
   public static Trigger onTeamSide() {
@@ -750,7 +797,9 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(
-        "StoredSuperstructureState/Score Level", storedScorePosition.getScoreLevel());
+        "StoredSuperstructureState/Coral Score Level", storedScorePosition.getCoralScoreLevel());
+    Logger.recordOutput(
+        "StoredSuperstructureState/Algae Score Level", storedScorePosition.getAlgaeScoreLevel());
     Logger.recordOutput("isL1Mode", isL1Mode());
     Logger.recordOutput(
         "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());

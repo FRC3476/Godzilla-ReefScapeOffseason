@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.8776457208473967,
+        "y": 5.405539643316661
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3750779428360747,
+        "y": 5.824301682410495
+      },
+      "isLocked": false,
+      "linkedName": "LRaw5E"
+    },
+    {
+      "anchor": {
+        "x": 1.8445247129678528,
+        "y": 7.094916823350621
+      },
+      "prevControl": {
+        "x": 3.5990860927670303,
+        "y": 5.686093313224934
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LEFTINTAKE"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 126.5
+  },
+  "reversed": false,
+  "folder": "LEFTRAW",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

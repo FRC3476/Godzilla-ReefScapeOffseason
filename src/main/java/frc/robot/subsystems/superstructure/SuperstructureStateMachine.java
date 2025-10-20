@@ -331,15 +331,15 @@ public class SuperstructureStateMachine {
     SuperstructureState current = stateManager.getCurrentState();
     SuperstructureState secondTarget = stateManager.getSecondTargetState();
     if (secondTarget != null) {
-      if (current.isLowIn() && secondTarget.isHighOut()) {
-        stateManager.setShortcutType(TransitionShortcutType.LOW_IN_TO_HIGH_OUT);
-      } else if (current.isLowOut() && secondTarget.isHighIn()) {
-        stateManager.setShortcutType(TransitionShortcutType.LOW_OUT_TO_HIGH_IN);
+      if (current.isLowIn() && (secondTarget.isHighOut() || secondTarget.isMiddleOut())) {
+        stateManager.setShortcutType(TransitionShortcutType.LOW_IN_TO_OUT);
+      } else if ((current.isLowOut() || secondTarget.isMiddleOut()) && secondTarget.isHighIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.OUT_TO_HIGH_IN);
       }
-      if (current.isHighIn() && secondTarget.isLowOut()) {
-        stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_LOW_OUT);
-      } else if (current.isHighOut() && secondTarget.isLowIn()) {
-        stateManager.setShortcutType(TransitionShortcutType.HIGH_OUT_TO_LOW_IN);
+      if (current.isHighIn() && (secondTarget.isLowOut() || secondTarget.isMiddleOut())) {
+        stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_OUT);
+      } else if ((current.isHighOut() || secondTarget.isMiddleOut()) && secondTarget.isLowIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.OUT_TO_LOW_IN);
       }
     }
 
