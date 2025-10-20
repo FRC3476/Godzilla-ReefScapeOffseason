@@ -823,19 +823,19 @@ public class RobotContainer {
     l1AimTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L1_AIM, "Set L1_AIM")
-            .andThen(() -> l1ScoreEntry.setBoolean(false)));
+            .andThen(() -> l1AimEntry.setBoolean(false)));
     l2AimTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L2_AIM, "Set L2_AIM")
-            .andThen(() -> l2ScoreEntry.setBoolean(false)));
+            .andThen(() -> l2AimEntry.setBoolean(false)));
     l3AimTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L3_AIM, "Set L3_AIM")
-            .andThen(() -> l3ScoreEntry.setBoolean(false)));
+            .andThen(() -> l3AimEntry.setBoolean(false)));
     l4AimTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L4_AIM, "Set L4_AIM")
-            .andThen(() -> l4ScoreEntry.setBoolean(false)));
+            .andThen(() -> l4AimEntry.setBoolean(false)));
     l2AwayFromReefTrigger.onTrue(
         superstructure
             .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_AWAY_FROM_REEF")
