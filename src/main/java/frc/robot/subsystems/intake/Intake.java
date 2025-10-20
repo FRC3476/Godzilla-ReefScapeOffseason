@@ -116,28 +116,6 @@ public class Intake extends SubsystemBase {
     return io.checkRollerStalled() || feeder.checkForJam();
   }
 
-  public Trigger coralInIntakeTrigger() {
-    return new Trigger(this::isCoralInIntake);
-  }
-
-  public Trigger rejectCoralTrigger() {
-    return coralInIntakeTrigger()
-        .and(
-            () ->
-                (CoralStateTracker.getCurrentPosition()
-                        == CoralStateTracker.CoralPosition.AT_BACK_FEEDER
-                    || CoralStateTracker.getCurrentPosition()
-                        == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR
-                    || CoralStateTracker.getCurrentPosition()
-                        == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR
-                    || CoralStateTracker.getCurrentPosition()
-                        == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR));
-  }
-
-  public Command rejectCoralCommand() {
-    return Commands.run(() -> this.io.setRollerVoltage(-rollerRejectVolts.get()), this);
-  }
-
   public Command intakeFWD() {
     return Commands.runOnce(() -> this.io.setRollerVoltage(rollerIntakeVolts.get()), this);
   }
