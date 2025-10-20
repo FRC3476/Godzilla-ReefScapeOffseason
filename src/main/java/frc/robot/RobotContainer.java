@@ -211,7 +211,7 @@ public class RobotContainer {
         "AimL4", superstructure.setStateCommand(SuperstructureState.L4_AIM, "L4 AIM").asProxy());
 
     NamedCommands.registerCommand(
-        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_PIVOT, "L1 AIM").asProxy());
+        "AimL1", superstructure.setStateCommand(SuperstructureState.L1_AIM, "L1 AIM").asProxy());
 
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
@@ -711,14 +711,14 @@ public class RobotContainer {
     NetworkTableEntry intakeCoralEntry = superstructureTable.getEntry("INTAKE_CORAL");
     NetworkTableEntry intakeCoralL1Entry = superstructureTable.getEntry("INTAKE_CORAL_L1");
     NetworkTableEntry feedEntry = superstructureTable.getEntry("FEED");
-    NetworkTableEntry l1FadeawayEntry = superstructureTable.getEntry("L1_PIVOT");
+    NetworkTableEntry l1FadeawayEntry = superstructureTable.getEntry("L1_FADEAWAY");
     NetworkTableEntry l2FadeawayEntry = superstructureTable.getEntry("L2_FADEAWAY");
     NetworkTableEntry l3FadeawayEntry = superstructureTable.getEntry("L3_FADEAWAY");
     NetworkTableEntry l4FadeawayEntry = superstructureTable.getEntry("L4_FADEAWAY");
-    NetworkTableEntry l1ScoreEntry = superstructureTable.getEntry("L1_SCORE");
-    NetworkTableEntry l2ScoreEntry = superstructureTable.getEntry("L2_SCORE");
-    NetworkTableEntry l3ScoreEntry = superstructureTable.getEntry("L3_SCORE");
-    NetworkTableEntry l4ScoreEntry = superstructureTable.getEntry("L4_SCORE");
+    NetworkTableEntry l1AimEntry = superstructureTable.getEntry("L1_AIM");
+    NetworkTableEntry l2AimEntry = superstructureTable.getEntry("L2_AIM");
+    NetworkTableEntry l3AimEntry = superstructureTable.getEntry("L3_AIM");
+    NetworkTableEntry l4AimEntry = superstructureTable.getEntry("L4_AIM");
     NetworkTableEntry l2AwayFromReefEntry = superstructureTable.getEntry("L2_AWAY_FROM_REEF");
     NetworkTableEntry l3AwayFromReefEntry = superstructureTable.getEntry("L3_AWAY_FROM_REEF");
     NetworkTableEntry l4AwayFromReefEntry = superstructureTable.getEntry("L4_AWAY_FROM_REEF");
@@ -740,10 +740,10 @@ public class RobotContainer {
     l2FadeawayEntry.setBoolean(false);
     l3FadeawayEntry.setBoolean(false);
     l4FadeawayEntry.setBoolean(false);
-    l1ScoreEntry.setBoolean(false);
-    l2ScoreEntry.setBoolean(false);
-    l3ScoreEntry.setBoolean(false);
-    l4ScoreEntry.setBoolean(false);
+    l1AimEntry.setBoolean(false);
+    l2AimEntry.setBoolean(false);
+    l3AimEntry.setBoolean(false);
+    l4AimEntry.setBoolean(false);
     l2AwayFromReefEntry.setBoolean(false);
     l3AwayFromReefEntry.setBoolean(false);
     l4AwayFromReefEntry.setBoolean(false);
@@ -765,10 +765,10 @@ public class RobotContainer {
     Trigger l2FadeawayTrigger = new Trigger(() -> l2FadeawayEntry.getBoolean(false));
     Trigger l3FadeawayTrigger = new Trigger(() -> l3FadeawayEntry.getBoolean(false));
     Trigger l4FadeawayTrigger = new Trigger(() -> l4FadeawayEntry.getBoolean(false));
-    Trigger l1ScoreTrigger = new Trigger(() -> l1ScoreEntry.getBoolean(false));
-    Trigger l2ScoreTrigger = new Trigger(() -> l2ScoreEntry.getBoolean(false));
-    Trigger l3ScoreTrigger = new Trigger(() -> l3ScoreEntry.getBoolean(false));
-    Trigger l4ScoreTrigger = new Trigger(() -> l4ScoreEntry.getBoolean(false));
+    Trigger l1AimTrigger = new Trigger(() -> l1AimEntry.getBoolean(false));
+    Trigger l2AimTrigger = new Trigger(() -> l2AimEntry.getBoolean(false));
+    Trigger l3AimTrigger = new Trigger(() -> l3AimEntry.getBoolean(false));
+    Trigger l4AimTrigger = new Trigger(() -> l4AimEntry.getBoolean(false));
     Trigger l2AwayFromReefTrigger = new Trigger(() -> l2AwayFromReefEntry.getBoolean(false));
     Trigger l3AwayFromReefTrigger = new Trigger(() -> l3AwayFromReefEntry.getBoolean(false));
     Trigger l4AwayFromReefTrigger = new Trigger(() -> l4AwayFromReefEntry.getBoolean(false));
@@ -806,7 +806,7 @@ public class RobotContainer {
             .andThen(() -> feedEntry.setBoolean(false)));
     l1FadeawayTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L1_AIM, "Set L1_AIM")
+            .setStateCommand(SuperstructureState.L1_FADEAWAY, "Set L1_FADEAWAY")
             .andThen(() -> l1FadeawayEntry.setBoolean(false)));
     l2FadeawayTrigger.onTrue(
         superstructure
@@ -820,33 +820,33 @@ public class RobotContainer {
         superstructure
             .setStateCommand(SuperstructureState.L4_FADEAWAY, "Set L4_FADEAWAY")
             .andThen(() -> l4FadeawayEntry.setBoolean(false)));
-    l1ScoreTrigger.onTrue(
+    l1AimTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L1_AIM, "Set L1_SCORE")
+            .setStateCommand(SuperstructureState.L1_AIM, "Set L1_AIM")
             .andThen(() -> l1ScoreEntry.setBoolean(false)));
-    l2ScoreTrigger.onTrue(
+    l2AimTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L2_AIM, "Set L2_SCORE")
+            .setStateCommand(SuperstructureState.L2_AIM, "Set L2_AIM")
             .andThen(() -> l2ScoreEntry.setBoolean(false)));
-    l3ScoreTrigger.onTrue(
+    l3AimTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L3_AIM, "Set L3_SCORE")
+            .setStateCommand(SuperstructureState.L3_AIM, "Set L3_AIM")
             .andThen(() -> l3ScoreEntry.setBoolean(false)));
-    l4ScoreTrigger.onTrue(
+    l4AimTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L4_AIM, "Set L4_SCORE")
+            .setStateCommand(SuperstructureState.L4_AIM, "Set L4_AIM")
             .andThen(() -> l4ScoreEntry.setBoolean(false)));
     l2AwayFromReefTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_SCORE")
+            .setStateCommand(SuperstructureState.L2_AWAY_FROM_REEF, "Set L2_AWAY_FROM_REEF")
             .andThen(() -> l2AwayFromReefEntry.setBoolean(false)));
     l3AwayFromReefTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L3_AWAY_FROM_REEF, "Set L3_SCORE")
+            .setStateCommand(SuperstructureState.L3_AWAY_FROM_REEF, "Set L3_AWAY_FROM_REEF")
             .andThen(() -> l3AwayFromReefEntry.setBoolean(false)));
     l4AwayFromReefTrigger.onTrue(
         superstructure
-            .setStateCommand(SuperstructureState.L4_AWAY_FROM_REEF, "Set L4_SCORE")
+            .setStateCommand(SuperstructureState.L4_AWAY_FROM_REEF, "Set L4_AWAY_FROM_REEF")
             .andThen(() -> l4AwayFromReefEntry.setBoolean(false)));
     algaeHighIntakeTrigger.onTrue(
         superstructure
@@ -2134,7 +2134,7 @@ public class RobotContainer {
                 Commands.none(),
                 Commands.either(
                     superstructure
-                        .setStateCommand(SuperstructureState.L1_PIVOT, "PRE_SCORE_L1")
+                        .setStateCommand(SuperstructureState.L1_AIM, "PRE_SCORE_L1")
                         .asProxy(),
                     Commands.either(
                         superstructure

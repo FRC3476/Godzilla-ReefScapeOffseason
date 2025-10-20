@@ -46,8 +46,8 @@ public enum SuperstructureState {
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS),
   L1_AIM(
-      Constants.SuperstructureConstants.L1_PIVOT_ELEVATOR_HEIGHT_INCH,
-      Constants.SuperstructureConstants.L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS),
+      Constants.SuperstructureConstants.L1_AIM_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L1_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_AIM(
       Constants.SuperstructureConstants.L2_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
