@@ -191,6 +191,10 @@ public class Claw extends SubsystemBase {
         this);
   }
 
+  public ClawState getClawState() {
+    return currentState;
+  }
+
   public Command setClawStateCommand(ClawState state) {
     return Commands.runOnce(() -> currentState = state);
   }

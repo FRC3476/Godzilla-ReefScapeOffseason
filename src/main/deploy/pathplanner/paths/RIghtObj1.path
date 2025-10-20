@@ -3,61 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.126055463576158,
-        "y": 2.405111754966888
+        "x": 7.069857954545454,
+        "y": 1.9060369318181825
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.782201986754966,
-        "y": 2.5794495033112583
+        "x": 6.6909375,
+        "y": 1.9459232954545451
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.0445430084161496,
-        "y": 2.6926087976798736
+        "x": 5.215879760673886,
+        "y": 2.3262770388876346
       },
       "prevControl": {
-        "x": 6.555470160734032,
-        "y": 2.4456303208586814
+        "x": 6.282102272727273,
+        "y": 1.7365198863636362
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3PP1E"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Elevator",
-      "waypointRelativePos": 0.33,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AimL4"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.35,
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -61.79658111966859
+    "velocity": 0.5,
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": null,
+  "folder": "RIGHTOBJ",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

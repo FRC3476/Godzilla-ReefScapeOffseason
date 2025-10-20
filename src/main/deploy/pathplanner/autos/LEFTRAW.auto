@@ -30,66 +30,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StowRobotState"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeEnable"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "DRIVETOCORALTEST"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "SeesCoral"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "IsCoralInFeeder"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "DriveToCoral"
-                }
-              }
-            ]
+            "name": "AimL4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "DRIVETOCORALTEST2"
+            "pathName": "LeftRaw1E"
           }
         },
         {
@@ -109,9 +58,125 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "DRIVETOCORALTEST3"
+                  "pathName": "LeftRaw2E"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftRaw3E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw4E"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftRaw5E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw6E"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
                 }
               }
             ]

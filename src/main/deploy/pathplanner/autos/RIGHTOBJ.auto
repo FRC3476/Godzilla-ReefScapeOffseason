@@ -25,14 +25,32 @@
                 "data": {
                   "name": "ScoreTargetStartup"
                 }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.25
+                }
               }
             ]
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "3PiecePart1"
+            "pathName": "RIghtObj1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -64,7 +82,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "3PiecePart2"
+                        "pathName": "RightObj2"
                       }
                     },
                     {
@@ -86,22 +104,67 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "DriveToCoral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "DriveToCoral"
+                  "name": "IsCoralInFeeder"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3PiecePart3"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInEndEffector"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AimL4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "isSuperStructureAtL4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightObj3"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -133,7 +196,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "3PiecePart4"
+                        "pathName": "RightObj4"
                       }
                     },
                     {
@@ -155,28 +218,98 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "DriveToCoral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "DriveToCoral"
+                  "name": "IsCoralInFeeder"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "3PiecePart5"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInEndEffector"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "AimL4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "isSuperStructureAtL4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightObj5"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightObj6"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
+                }
+              }
+            ]
           }
         }
       ]

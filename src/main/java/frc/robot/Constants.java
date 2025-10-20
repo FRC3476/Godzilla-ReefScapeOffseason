@@ -79,6 +79,9 @@ public final class Constants {
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
 
+  public static double kAlignOffset = 0.0;
+  public static double kAlignOffsetFB = 0.0;
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
@@ -119,11 +122,11 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 5.0;
+    public static final double DRIVE_TO_POSE_KP = 6.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.4;
 
-    public static final double ANGLE_KP = 4.5;
+    public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
     public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
@@ -156,7 +159,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
@@ -193,6 +196,7 @@ public final class Constants {
     public static final int RIGHT_ID = 20;
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
+    public static final int FRONT_CANRANGE_ID = 23;
 
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
@@ -211,8 +215,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
@@ -265,6 +269,9 @@ public final class Constants {
       STOW,
       INTAKE,
       REJECT_CORAL,
+      REJECT_INTAKE_CORAL,
+      REJECT_INTAKE_CORAL_STAGED,
+      REJECT_INTAKE_CORAL_HANDOFF,
       IDLE,
       HAND_OFF,
       SCORING,
@@ -292,9 +299,9 @@ public final class Constants {
     public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
     public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
-    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double L1_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
     public static final double Tuneable_pivotKP = 50; // Proportional gain
@@ -476,8 +483,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
@@ -541,7 +548,7 @@ public final class Constants {
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -622,8 +629,8 @@ public final class Constants {
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
     public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
         new CANcoderConfiguration()
@@ -640,8 +647,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
@@ -663,11 +670,11 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 7;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
     public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
-    public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 3;
 
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
@@ -724,8 +731,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================LED (8_)====================
@@ -786,12 +793,12 @@ public final class Constants {
     public static final double kDefaultYawDiffThreshold = 5.0;
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
-    public static final double kTagMinAreaForMultipleTagMegatag = 0.5;
+    public static final double kTagMinAreaForMultipleTagMegatag = 0.4;
     public static final double kDefaultZThreshold = 0.2;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
-    public static final double kXStdDevCoefficent = 0.5;
-    public static final double kYStdDevCoefficent = 0.5;
+    public static final double kXStdDevCoefficent = 0.3;
+    public static final double kYStdDevCoefficent = 0.3;
     public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;

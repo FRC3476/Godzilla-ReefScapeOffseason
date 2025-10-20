@@ -314,6 +314,27 @@ public class RobotState extends MagicVirtualSubsystem {
     }
   }
 
+  public void offsetRight() {
+    Constants.kAlignOffset += 1.0;
+  }
+
+  public void offsetLeft() {
+    Constants.kAlignOffset -= 1.0;
+  }
+
+  public void offsetForward() {
+    Constants.kAlignOffsetFB += 1.0;
+  }
+
+  public void offsetBackward() {
+    Constants.kAlignOffsetFB -= 1.0;
+  }
+
+  public void offsetZero() {
+    Constants.kAlignOffset = 0;
+    Constants.kAlignOffsetFB = 0;
+  }
+
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
 

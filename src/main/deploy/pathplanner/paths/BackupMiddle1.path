@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.848656124740202,
-        "y": 1.5764089407660322
+        "x": 7.082471026490066,
+        "y": 4.046792218543046
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5286665166641926,
-        "y": 1.955739450341448
+        "x": 6.3476282789118414,
+        "y": 3.918546876565038
       },
       "isLocked": false,
-      "linkedName": "3PP4E"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.605837675596999,
-        "y": 2.8916520462429762
+        "x": 5.989,
+        "y": 3.8571894112073877
       },
       "prevControl": {
-        "x": 2.810492485324869,
-        "y": 1.9552693378500123
+        "x": 6.414564617140388,
+        "y": 3.9319759918379495
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BM1E"
     }
   ],
   "rotationTargets": [],
@@ -37,29 +37,16 @@
       "waypointRelativePos": 0.33,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "IsCoralInEndEffector"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "AimL4"
-              }
-            }
-          ]
+          "name": "AimL4"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.35,
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -122.17432562352381
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "ZBackup",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -167.77547197160362
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
