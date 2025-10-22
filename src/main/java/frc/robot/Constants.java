@@ -534,6 +534,8 @@ public final class Constants {
 
     public static final double ROLLER_MOI = 0.001;
 
+    public static final double DEJAM_VOLTAGE = 0.0;
+
     public static final double Tunable_PIVOT_kP = 60;
     public static final double Tunable_PIVOT_kI = 0;
     public static final double Tunable_PIVOT_kD = 3.5;

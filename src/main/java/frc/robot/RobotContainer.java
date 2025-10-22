@@ -577,6 +577,7 @@ public class RobotContainer {
     Trigger pivotMiddlePosTrigger = new Trigger(() -> pivotMiddlePosEntry.getBoolean(false));
 
     Trigger pivotManualZeroTrigger = new Trigger(() -> pivotManualZeroEntry.getBoolean(false));
+    Trigger dejamEndeffectorTrigger = new Trigger(() -> endEffector.isStalled());
 
     // Configure the while-held behavior
     clawForwardTrigger.whileTrue(claw.rollerFWD());
@@ -634,6 +635,8 @@ public class RobotContainer {
             .andThen(() -> pivotMiddlePosEntry.setBoolean(false)));
     pivotManualZeroTrigger.onTrue(
         endEffector.setPivotZero().andThen(() -> pivotManualZeroEntry.setBoolean(false)));
+
+    dejamEndeffectorTrigger.whileFalse(endEffector.dejamStagedCoral());
   }
 
   private void buildElevatorTab() {

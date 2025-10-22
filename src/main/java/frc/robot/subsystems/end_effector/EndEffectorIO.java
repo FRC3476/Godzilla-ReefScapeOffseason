@@ -41,4 +41,8 @@ public interface EndEffectorIO {
       double jerk) {}
 
   default void setPivotZero() {}
+
+  default boolean checkMotorsStalled() {
+    return false;
+  }
 }

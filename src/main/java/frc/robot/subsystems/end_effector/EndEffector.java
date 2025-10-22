@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import frc.robot.util.Util;
@@ -153,5 +155,21 @@ public class EndEffector extends SubsystemBase {
         inputs.pivotData.pivotPosition(),
         EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS,
         EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS);
+  }
+
+  public boolean isStalled() {
+    return io.checkMotorsStalled();
+  }
+
+  /**
+   * The end effector wheels could shift the coral until the CoralState.CoralPosition is
+   * AT_SECOND_END_EFFECTOR.
+   */
+  public Command dejamStagedCoral() {
+    return Commands.runOnce(() -> this.io.setPivotVoltage(EndEffectorConstants.DEJAM_VOLTAGE), this)
+        .until(
+            () ->
+                CoralStateTracker.getCurrentPosition() == CoralPosition.AT_SECOND_END_EFFECTOR
+                    || CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
   }
 }
