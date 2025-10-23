@@ -160,6 +160,8 @@ public final class Constants {
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
     public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
+    public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .83;
+    public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .125;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
