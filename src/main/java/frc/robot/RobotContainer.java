@@ -1082,6 +1082,15 @@ public class RobotContainer {
     controller
         .start()
         .whileTrue(
+            // new ParallelDriveCommand(
+            //     drive,
+            //     () ->
+            //         new Pose2d(
+            //             FieldConstants.halfFieldLength
+            //                 + DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
+            //             0,
+            //             Rotation2d.k180deg),
+            //     () -> -controller.getLeftX())
             Commands.defer(
                 () -> {
                   Rotation2d targetRotation =
@@ -1094,7 +1103,11 @@ public class RobotContainer {
                         () ->
                             new Pose2d(
                                 FieldConstants.halfFieldLength
-                                    + DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
+                                    + (FieldUtils.facingBarge()
+                                        ? DriveConstants
+                                            .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                        : DriveConstants
+                                            .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
                                 0,
                                 targetRotation),
                         () -> -controller.getLeftX());
@@ -1104,7 +1117,11 @@ public class RobotContainer {
                         () ->
                             new Pose2d(
                                 FieldConstants.halfFieldLength
-                                    - DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
+                                    - (FieldUtils.facingBarge()
+                                        ? DriveConstants
+                                            .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                        : DriveConstants
+                                            .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
                                 0,
                                 targetRotation),
                         () -> -controller.getLeftX());

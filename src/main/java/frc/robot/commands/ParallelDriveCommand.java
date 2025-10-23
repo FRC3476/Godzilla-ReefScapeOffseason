@@ -18,6 +18,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.util.MathHelpers;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -86,18 +87,26 @@ public class ParallelDriveCommand extends Command {
                 Rotation2d.kZero));
     Pose2d target = targetPoseSupplier.get();
 
-    double currentDistance = robot.getTranslation().getDistance(target.getTranslation());
+    Translation2d targetToRobot = robot.getTranslation().minus(target.getTranslation());
+    Translation2d targetRoationUnitVector =
+        new Translation2d(
+            target.getRotation().rotateBy(Rotation2d.kCW_90deg).getSin(),
+            target.getRotation().rotateBy(Rotation2d.kCW_90deg).getCos());
+    double distanceToTargetInRotationDirection =
+        -MathHelpers.dotProduct(targetToRobot, targetRoationUnitVector);
+
+    double currentDistance = distanceToTargetInRotationDirection;
     double ffScaler =
         MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
 
-    Translation2d translationalError = robot.getTranslation().minus(target.getTranslation());
+    double perpendicularError = distanceToTargetInRotationDirection;
     Rotation2d angularError = robot.getRotation().minus(target.getRotation());
 
     // Magnitude of translational velocity, meaning that x & y are controlled together
     double perpendicularSpeed =
         perpendicularController.getSetpoint().velocity * ffScaler
             + MathUtil.clamp(
-                perpendicularController.calculate(translationalError.getNorm(), 0),
+                perpendicularController.calculate(perpendicularError, 0),
                 -DriveConstants.kDriveMaxSpeed / 3,
                 DriveConstants.kDriveMaxSpeed / 3);
     perpendicularSpeed = !perpendicularController.atGoal() ? perpendicularSpeed : 0;
@@ -123,7 +132,7 @@ public class ParallelDriveCommand extends Command {
 
     Logger.recordOutput("Commands/" + getName() + "/Robot", robot);
     Logger.recordOutput("Commands/" + getName() + "/Target", target);
-    Logger.recordOutput("Commands/" + getName() + "/Error/Perpendicular", translationalError);
+    Logger.recordOutput("Commands/" + getName() + "/Error/Perpendicular", perpendicularError);
     Logger.recordOutput("Commands/" + getName() + "/Error/Angular", angularError);
     Logger.recordOutput(
         "Commands/" + getName() + "/AtGoal/Perpendicular", perpendicularController.atGoal());

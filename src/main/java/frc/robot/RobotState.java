@@ -156,7 +156,7 @@ public class RobotState extends MagicVirtualSubsystem {
       switch (storedScorePosition.getAlgaeScoreLevel()) {
         case BARGE:
           // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
-          if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
+          if (FieldUtils.facingBarge()) {
             return SuperstructureState.BARGE_AIM_FORWARD;
           }
           return SuperstructureState.BARGE_AIM_BACKWARD;
