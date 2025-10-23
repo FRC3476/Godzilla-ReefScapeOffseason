@@ -230,6 +230,7 @@ public enum SuperstructureState {
         return false;
     }
   }
+
   public boolean isFadeawayState() {
     switch (this) {
       case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:

@@ -44,6 +44,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.climb.ClimbRoller;
@@ -1077,6 +1078,39 @@ public class RobotContainer {
                                     FieldUtils.getClosestReef().rightPole.getPose(),
                                     DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
                 () -> robotState.getStoredScorePosition().getCoralBranch()));
+
+    controller
+        .start()
+        .whileTrue(
+            Commands.defer(
+                () -> {
+                  Rotation2d targetRotation =
+                      RobotState.getGlobalPose().getRotation().getCos() > 0
+                          ? Rotation2d.kZero
+                          : Rotation2d.k180deg;
+                  if (FieldUtils.isOnRedSide()) {
+                    return new ParallelDriveCommand(
+                        drive,
+                        () ->
+                            new Pose2d(
+                                FieldConstants.halfFieldLength
+                                    + DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
+                                0,
+                                targetRotation),
+                        () -> -controller.getLeftX());
+                  } else {
+                    return new ParallelDriveCommand(
+                        drive,
+                        () ->
+                            new Pose2d(
+                                FieldConstants.halfFieldLength
+                                    - DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
+                                0,
+                                targetRotation),
+                        () -> -controller.getLeftX());
+                  }
+                },
+                Set.of(drive)));
 
     // controller
     //     .rightTrigger();

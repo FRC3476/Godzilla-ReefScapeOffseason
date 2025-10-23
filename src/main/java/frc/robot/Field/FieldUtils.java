@@ -96,6 +96,16 @@ public class FieldUtils {
     }
   }
 
+  public static boolean isOnRedSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX > FieldConstants.halfFieldLength;
+  }
+
+  public static boolean isOnBlueSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX < FieldConstants.halfFieldLength;
+  }
+
   public static AprilTagStruct getBargeTag() {
     return FieldUtils.isBlueAlliance() ? FieldConstants.blueBarge : FieldConstants.redBarge;
   }
