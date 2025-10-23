@@ -1,3 +1,95 @@
+package frc.robot.humanControls;
+
+import java.util.Map;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
+import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.RobotContainer;
+import frc.robot.RobotState;
+import frc.robot.Field.FieldConstants;
+import frc.robot.Field.FieldUtils;
+import frc.robot.RobotState.AlgaeIntake;
+import frc.robot.RobotState.CoralBranch;
+import frc.robot.RobotState.ScoreLevel;
+import frc.robot.RobotState.ScorePosition;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToCoralCommand;
+import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.PathfindToPoseCommand;
+import frc.robot.commands.Score;
+import frc.robot.subsystems.climb.ClimbRoller;
+import frc.robot.subsystems.climb.ClimbRollerIO;
+import frc.robot.subsystems.climb.ClimbRollerIOReal;
+import frc.robot.subsystems.climb.ClimbRollerIOSim;
+import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimberIO;
+import frc.robot.subsystems.climb.ClimberIOReal;
+import frc.robot.subsystems.climb.ClimberIOSim;
+import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveIOHardware;
+import frc.robot.subsystems.drive.DriveIOSim;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOReal;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawIO;
+import frc.robot.subsystems.end_effector.ClawIOReal;
+import frc.robot.subsystems.end_effector.ClawIOSim;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.end_effector.EndEffectorIO;
+import frc.robot.subsystems.end_effector.EndEffectorIOReal;
+import frc.robot.subsystems.end_effector.EndEffectorIOSim;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOReal;
+import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.LedState;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
+import frc.robot.subsystems.vision.VisionIOSimPhoton;
+import frc.robot.util.Controls.StreamDeck;
+import frc.robot.util.Controls.StreamDeckButton;
+import frc.robot.util.Controls.StreamDeckButtonConfig;
+import frc.robot.util.PoseUtils;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 public class DriverControls {
     private final RobotContainer container;
     private final DriveSubsystem drive;
@@ -23,174 +115,219 @@ public class DriverControls {
       /** Use this method to define your button->command mappings. */
     private void configureXboxBindings() {
 
-    // // Auto Align
+        controller
+            .b()
+            .whileTrue(
+                DriveCommands.driveAtAngle(
+                    drive,
+                    () -> -controller.getLeftY(),
+                    () -> -controller.getLeftX(),
+                    () -> {
+                    if (climbRoller.getClimbing()) {
+                        return FieldUtils.isRedAlliance()
+                            ? Rotation2d.kCCW_90deg
+                            : Rotation2d.kCW_90deg;
+                    } else if (RobotState.hasAlgae()) {
+                        return RobotState.getGlobalPose().getRotation().getCos() < 0
+                            ? Rotation2d.k180deg
+                            : Rotation2d.kZero;
+                    } else {
+                        return FieldUtils.getClosestReef().getPose().getRotation();
+                    }
+                    }));
 
-    controller
-        .a()
-        .whileTrue(
-            new SelectCommand<>(
-                Map.of(
-                    CoralBranch.NONE,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReefPole().getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.LEFT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().leftPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.RIGHT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().rightPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                () -> robotState.getStoredScorePosition().getCoralBranch()));
-    
-    // Lock to angle when button is held
-    controller
-        .b()
-        .whileTrue(
-            DriveCommands.driveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> {
-                  if (climbRoller.getClimbing()) {
-                    return FieldUtils.isRedAlliance()
-                        ? Rotation2d.kCCW_90deg
-                        : Rotation2d.kCW_90deg;
-                  } else if (RobotState.hasAlgae()) {
-                    return RobotState.getGlobalPose().getRotation().getCos() < 0
-                        ? Rotation2d.k180deg
-                        : Rotation2d.kZero;
-                  } else {
-                    return FieldUtils.getClosestReef().getPose().getRotation();
-                  }
-                }));
+        // // Auto Align
+              Command autodriveCommand =
+                    new SelectCommand<>(
+                        // Maps selector values to commands
+                        Map.ofEntries(
+                            Map.entry(CoralBranch.NONE,
+                                new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReefPole().getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                            ),
+                            Map.entry(CoralBranch.LEFT,
+                                new GarageDriveToPoseCommand(
+                                    drive,
+                                    () ->
+                                        PoseUtils.getPerpendicularOffsetPose(
+                                            FieldUtils.getClosestReef().leftPole.getPose(),
+                                            DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                            ),
+                            Map.entry(CoralBranch.RIGHT,
+                                new GarageDriveToPoseCommand(
+                                    drive,
+                                    () ->
+                                        PoseUtils.getPerpendicularOffsetPose(
+                                            FieldUtils.getClosestReef().rightPole.getPose(),
+                                            DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                            )),
+                            () -> robotState.getStoredScorePosition().getCoralBranch());
 
-    // ALGAE DESCORE PREP
-    controller
-        .x()
-        .onTrue(
-            superstructure
-                .setStateCommand(
-                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
-                .asProxy()
-                .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
-                .asProxy());
-
-    // Score position Aim
-    controller
-        .y()
-        .onTrue(
-            superstructure
-                .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
-                .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
-
-    // Ground algae intake
-    controller
-        .rightBumper()
-        .onTrue(
-            Commands.parallel(
-                superstructure.setStateCommand(
-                    SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
-                claw.setClawStateCommand(ClawState.ALGAE)));
-
-    // Processor Aim thingy
-    controller
-        .leftBumper()
-        .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL))
-        .onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
-
-    // Intake ground coral
-    controller
-        .leftTrigger(0.2)
-        .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.INTAKE)
-                .asProxy()
-                .alongWith(
-                    Commands.either(
-                        Commands.none(),
-                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
-                        () -> RobotState.hasAlgae())));
-                .asProxy());
-
-    // Manual spit out game piece
-    controller
-        .rightTrigger(0.2)
-        .onTrue(
-            Commands.sequence(
-                new ConditionalCommand(
-                    new ConditionalCommand(
-                        claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
-                        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                        () -> robotState.isL1Mode()),
-                    claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
-                    () ->
-                        RobotState.getSuperstructureState() != null
-                            && RobotState.getSuperstructureState().isCoralState()),
-                new ConditionalCommand(
-                    new WaitUntilCommand(
-                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                        .withTimeout(3),
-                    new WaitCommand(2.0),
-                    () -> RobotState.getSuperstructureState().isCoralState()),
-                superstructure
-                    .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
-                    .asProxy(),
-                Commands.either(
-                    claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
-                    claw.setClawStateCommand(ClawState.IDLE).asProxy(),
-                    () -> CoralStateTracker.hasCoral()),
-                new ConditionalCommand(
-                        new WaitUntilCommand(() -> RobotState.isSafeToStow())
-                            .andThen(
-                                new ConditionalCommand(
-                                        superstructure.setStateCommand(
-                                            SuperstructureState.STOW, "STOW"),
-                                        Commands.none(),
-                                        () ->
-                                            RobotState.getSuperstructureTargetState()
-                                                .isFadeawayState())
-                                    .asProxy()),
-                        Commands.none(),
-                        () -> RobotState.getSuperstructureState().isCoralState())
-                    .asProxy())
+        controller
+            .a()
+            .onTrue(
+                new SelectCommand<>(
+                    // Maps selector values to commands
+                    Map.ofEntries(
+                        Map.entry(CoralBranch.NONE,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () -> PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReefPole().getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                        ),
+                        Map.entry(CoralBranch.LEFT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () -> PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().leftPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                        ),
+                        Map.entry(CoralBranch.RIGHT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () -> PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().rightPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+                        )
+                    ),
+                    () -> robotState.getStoredScorePosition().getCoralBranch()
+                )
             );
 
-            
-    // Superstructure Stow
-    controller
-        .povLeft()
-        .onTrue(
-            Commands.either(
-                superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae"),
-                superstructure.setStateCommand(SuperstructureState.STOW, "Stow"),
-                () -> RobotState.hasAlgae()));
+        // Ground algae intake
+        controller
+            .rightBumper()
+            .onTrue(
+                Commands.parallel(
+                    superstructure.setStateCommand(
+                        SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
+                    claw.setClawStateCommand(ClawState.ALGAE)));
 
-    // Intake Stow
-    controller
-        .povRight()
-        .onTrue(
-            intake
-                .setIntakeStateCommand(IntakeState.STOW)
-                .asProxy()
-                .alongWith(claw.setClawStateCommand(ClawState.IDLE).asProxy()));
+        // Processor Aim thingy
+        controller
+            .leftBumper()
+            // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
+            // Processor"));
+            .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL))
+            .onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
 
-    controller.povUp().onTrue(Commands.none());
-    controller.povDown().onTrue(Commands.none());
-    controller.back().onTrue(Commands.none());
-    controller.start().onTrue(Commands.none());
-    controller.leftStick().onTrue(Commands.none());
-    controller.rightStick().onTrue(Commands.none());
+        // Superstructure Stow
+        controller
+            .povLeft()
+            .onTrue(
+                Commands.either(
+                    superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae"),
+                    superstructure.setStateCommand(SuperstructureState.STOW, "Stow"),
+                    () -> RobotState.hasAlgae()));
+
+        // Intake Stow
+        controller
+            .povRight()
+            .onTrue(
+                intake
+                    .setIntakeStateCommand(IntakeState.STOW)
+                    .asProxy()
+                    .alongWith(claw.setClawStateCommand(ClawState.IDLE).asProxy()));
+
+        // Intake ground coral
+        controller
+            .leftTrigger(0.2)
+            .onTrue(
+                intake
+                    .setIntakeStateCommand(IntakeState.INTAKE)
+                    .asProxy()
+                    .alongWith(
+                        Commands.either(
+                            Commands.none(),
+                            claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                            () -> RobotState.hasAlgae())));
+
+        // ALGAE DESCORE PREP
+        controller
+            .x()
+            .onTrue(
+                superstructure
+                    .setStateCommand(
+                        () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
+                    .asProxy()
+                    .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
+                    .asProxy());
+
+        // Score position Aim
+        controller
+            .y()
+            .onTrue(
+                superstructure
+                    .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                    .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
+                    .asProxy());
+
+        // controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
+        // controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
+        // controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
+        // Manual spit out game piece
+        controller
+            .rightTrigger(0.2) // check
+            .onTrue(
+                // Commands.either(
+                //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
+                Commands.sequence(
+                    // new MagicDriveToPoseCommand(
+                    //     drive,
+                    //     () ->
+                    //         PoseUtils.getPerpendicularOffsetPose(
+                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                    // new WaitCommand(0.2)
+                    new ConditionalCommand(
+                        new ConditionalCommand(
+                            claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                            () -> robotState.isL1Mode()),
+                        claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                        () ->
+                            RobotState.getSuperstructureState() != null
+                                && RobotState.getSuperstructureState().isCoralState()),
+                    new ConditionalCommand(
+                        new WaitUntilCommand(
+                                () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                            .withTimeout(3),
+                        new WaitCommand(2.0),
+                        () -> RobotState.getSuperstructureState().isCoralState()),
+                    superstructure
+                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                        .asProxy(),
+                    Commands.either(
+                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                        claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                        () -> CoralStateTracker.hasCoral()),
+                    new ConditionalCommand(
+                            new WaitUntilCommand(() -> RobotState.isSafeToStow())
+                                .andThen(
+                                    new ConditionalCommand(
+                                            superstructure.setStateCommand(
+                                                SuperstructureState.STOW, "STOW"),
+                                            Commands.none(),
+                                            () ->
+                                                RobotState.getSuperstructureTargetState()
+                                                    .isFadeawayState())
+                                        .asProxy()),
+                            Commands.none(),
+                            () -> RobotState.getSuperstructureState().isCoralState())
+                        .asProxy())
+                // () -> robotState.isL1Mode())
+                // .asProxy()
+                );
+        controller.povUp().onTrue(Commands.none());
+        controller.povDown().onTrue(Commands.none());
+        controller.back().onTrue(Commands.none());
+        controller.start().onTrue(Commands.none());
+        controller.leftStick().onTrue(Commands.none());
+        controller.rightStick().onTrue(Commands.none());
   }
 
 }

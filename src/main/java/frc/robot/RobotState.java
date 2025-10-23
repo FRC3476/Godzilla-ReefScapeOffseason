@@ -83,7 +83,7 @@ public class RobotState extends MagicVirtualSubsystem {
     AUTO
   }
 
-  class ScorePosition {
+  public class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel coralScoreLevel;
