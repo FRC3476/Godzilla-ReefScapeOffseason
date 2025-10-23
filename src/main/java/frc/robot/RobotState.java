@@ -207,22 +207,22 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   // public Pose2d getScoringPose(){
-  //   switch (getStoredScorePosition().getReefSide()){
-  //     case A:
-  //       return FieldConstants.
-  //     case B:
-  //       return
-  //     case C:
-  //       return
-  //     case D:
-  //       return
-  //     case E:
-  //       return
-  //     case F:
-  //       return
-  //     default:
-  //       return
-  //   }
+  // switch (getStoredScorePosition().getReefSide()){
+  // case A:
+  // return FieldConstants.
+  // case B:
+  // return
+  // case C:
+  // return
+  // case D:
+  // return
+  // case E:
+  // return
+  // case F:
+  // return
+  // default:
+  // return
+  // }
   // }
 
   private CoralScoringMode scoringMode;
@@ -335,8 +335,8 @@ public class RobotState extends MagicVirtualSubsystem {
     Constants.kAlignOffsetFB = 0;
   }
 
-  private static List<TargetAngleTracker> autoAlignmentTrackers =
-      List.of(RobotState.hpsTracker, RobotState.reefTracker);
+  private static List<TargetAngleTracker> autoAlignmentTrackers = List.of(RobotState.hpsTracker,
+      RobotState.reefTracker);
 
   private static LedState ledState = LedState.kCOOrange;
 
@@ -382,10 +382,9 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static Trigger onTeamSide() {
     return new Trigger(
-        () ->
-            FieldUtils.getAlliance() == Alliance.Blue
-                ? getGlobalPose().getX() < FieldConstants.fieldLength / 2.0
-                : getGlobalPose().getX() > FieldConstants.fieldLength / 2.0);
+        () -> FieldUtils.getAlliance() == Alliance.Blue
+            ? getGlobalPose().getX() < FieldConstants.fieldLength / 2.0
+            : getGlobalPose().getX() > FieldConstants.fieldLength / 2.0);
   }
 
   public static Rotation2d getRotationToClosestReef() {
@@ -406,10 +405,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static Trigger humanPlayerShouldThrow() {
     return new Trigger(
-        () ->
-            PoseUtils.getPerpendicularError(
-                    RobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d())
-                < 0.5);
+        () -> PoseUtils.getPerpendicularError(
+            RobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d()) < 0.5);
   }
 
   public static Trigger finishedBargeScoringForward() {
@@ -445,22 +442,19 @@ public class RobotState extends MagicVirtualSubsystem {
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
   public static boolean isSafeToStow() {
     // imaginary position of end effector if extended as far as possible
-    Pose2d clearancePose =
-        getGlobalPose()
-            .plus(
-                new Transform2d(
-                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
-                    Rotation2d.kZero));
-    double distanceToLeft =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().leftPole.getPose())
-            .getTranslation()
-            .getNorm();
-    double distanceToRight =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().rightPole.getPose())
-            .getTranslation()
-            .getNorm();
+    Pose2d clearancePose = getGlobalPose()
+        .plus(
+            new Transform2d(
+                new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                Rotation2d.kZero));
+    double distanceToLeft = clearancePose
+        .minus(FieldUtils.getClosestReef().leftPole.getPose())
+        .getTranslation()
+        .getNorm();
+    double distanceToRight = clearancePose
+        .minus(FieldUtils.getClosestReef().rightPole.getPose())
+        .getTranslation()
+        .getNorm();
     return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
         && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
   }
@@ -471,42 +465,42 @@ public class RobotState extends MagicVirtualSubsystem {
 
   // Kinematic Frames
   // Robot's pose in field coordinates over time
-  private final ConcurrentTimeInterpolatableBuffer<Pose2d> fieldToRobot =
-      ConcurrentTimeInterpolatableBuffer.createBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Pose2d> fieldToRobot = ConcurrentTimeInterpolatableBuffer
+      .createBuffer(LOOKBACK_TIME);
   // Current robot-relative chassis speeds (measured from encoders)
-  private final AtomicReference<ChassisSpeeds> measuredRobotRelativeChassisSpeeds =
-      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> measuredRobotRelativeChassisSpeeds = new AtomicReference<>(
+      new ChassisSpeeds());
   // Current field-relative chassis speeds (measured from encoders)
-  private final AtomicReference<ChassisSpeeds> measuredFieldRelativeChassisSpeeds =
-      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> measuredFieldRelativeChassisSpeeds = new AtomicReference<>(
+      new ChassisSpeeds());
   // Desired robot-relative chassis speeds (set by control systems)
-  private final AtomicReference<ChassisSpeeds> desiredRobotRelativeChassisSpeeds =
-      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> desiredRobotRelativeChassisSpeeds = new AtomicReference<>(
+      new ChassisSpeeds());
   // Desired field-relative chassis speeds (set by control systems)
-  private final AtomicReference<ChassisSpeeds> desiredFieldRelativeChassisSpeeds =
-      new AtomicReference<>(new ChassisSpeeds());
-  private final AtomicReference<ChassisSpeeds> fusedFieldRelativeChassisSpeeds =
-      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> desiredFieldRelativeChassisSpeeds = new AtomicReference<>(
+      new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> fusedFieldRelativeChassisSpeeds = new AtomicReference<>(
+      new ChassisSpeeds());
 
   private final AtomicInteger iteration = new AtomicInteger(0);
 
   private double lastUsedMegatagTimestamp = 0;
   private Pose2d lastUsedMegatagPose = Pose2d.kZero;
-  private final ConcurrentTimeInterpolatableBuffer<Double> driveYawAngularVelocity =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
-  private final ConcurrentTimeInterpolatableBuffer<Double> driveRollAngularVelocity =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
-  private final ConcurrentTimeInterpolatableBuffer<Double> drivePitchAngularVelocity =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> driveYawAngularVelocity = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> driveRollAngularVelocity = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> drivePitchAngularVelocity = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
 
-  private final ConcurrentTimeInterpolatableBuffer<Double> drivePitchRads =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
-  private final ConcurrentTimeInterpolatableBuffer<Double> driveRollRads =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
-  private final ConcurrentTimeInterpolatableBuffer<Double> accelX =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
-  private final ConcurrentTimeInterpolatableBuffer<Double> accelY =
-      ConcurrentTimeInterpolatableBuffer.createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> drivePitchRads = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> driveRollRads = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> accelX = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
+  private final ConcurrentTimeInterpolatableBuffer<Double> accelY = ConcurrentTimeInterpolatableBuffer
+      .createDoubleBuffer(LOOKBACK_TIME);
 
   private final AtomicBoolean enablePathCancel = new AtomicBoolean(false);
 
@@ -591,8 +585,7 @@ public class RobotState extends MagicVirtualSubsystem {
    */
   public Pose2d getPredictedFieldToRobot(double lookaheadTimeS) {
     var maybeFieldToRobot = getLatestFieldToRobot();
-    Pose2d fieldToRobot =
-        maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
+    Pose2d fieldToRobot = maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
     var delta = getLatestRobotRelativeChassisSpeed();
     delta = delta.times(lookaheadTimeS);
     return fieldToRobot.exp(
@@ -600,13 +593,13 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   /**
-   * Like getPredictedFieldToRobot but caps negative velocities to zero. Used for non-holonomic path
+   * Like getPredictedFieldToRobot but caps negative velocities to zero. Used for
+   * non-holonomic path
    * planning.
    */
   public Pose2d getPredictedCappedFieldToRobot(double lookaheadTimeS) {
     var maybeFieldToRobot = getLatestFieldToRobot();
-    Pose2d fieldToRobot =
-        maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
+    Pose2d fieldToRobot = maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
     var delta = getLatestRobotRelativeChassisSpeed();
     delta = delta.times(lookaheadTimeS);
     return fieldToRobot.exp(
@@ -659,14 +652,18 @@ public class RobotState extends MagicVirtualSubsystem {
     var submap = buffer.getInternalBuffer().subMap(minTime, maxTime).values();
     var max = submap.stream().max(Double::compare);
     var min = submap.stream().min(Double::compare);
-    if (max.isEmpty() || min.isEmpty()) return Optional.empty();
-    if (Math.abs(max.get()) >= Math.abs(min.get())) return max;
-    else return min;
+    if (max.isEmpty() || min.isEmpty())
+      return Optional.empty();
+    if (Math.abs(max.get()) >= Math.abs(min.get()))
+      return max;
+    else
+      return min;
   }
 
   public Optional<Double> getMaxAbsDriveYawAngularVelocityInRange(double minTime, double maxTime) {
     // Gyro yaw rate not set in sim.
-    if (Robot.isReal()) return getMaxAbsValueInRange(driveYawAngularVelocity, minTime, maxTime);
+    if (Robot.isReal())
+      return getMaxAbsValueInRange(driveYawAngularVelocity, minTime, maxTime);
     return Optional.of(measuredRobotRelativeChassisSpeeds.get().omegaRadiansPerSecond);
   }
 
@@ -746,10 +743,13 @@ public class RobotState extends MagicVirtualSubsystem {
         "RobotState/FusedChassisSpeedFieldFrame", getLatestFusedFieldRelativeChassisSpeed());
 
     // // Add mechanism logging
-    // Logger.recordOutput("RobotState/ElevatorHeightMeters", getElevatorHeightMeters());
+    // Logger.recordOutput("RobotState/ElevatorHeightMeters",
+    // getElevatorHeightMeters());
     // Logger.recordOutput("RobotState/WristRadians", getWristRadians());
-    // Logger.recordOutput("RobotState/IntakeRollerRotations", getIntakeRollerRotations());
-    // Logger.recordOutput("RobotState/CoralRollerRotations", getClawRollerRotations());
+    // Logger.recordOutput("RobotState/IntakeRollerRotations",
+    // getIntakeRollerRotations());
+    // Logger.recordOutput("RobotState/CoralRollerRotations",
+    // getClawRollerRotations());
 
     // Add LED state logging
     LedState currentLEDState = getLedState();
@@ -759,8 +759,7 @@ public class RobotState extends MagicVirtualSubsystem {
             "R:%d G:%d B:%d", currentLEDState.red, currentLEDState.green, currentLEDState.blue));
   }
 
-  private final AtomicReference<Optional<Integer>> exclusiveTag =
-      new AtomicReference<>(Optional.empty());
+  private final AtomicReference<Optional<Integer>> exclusiveTag = new AtomicReference<>(Optional.empty());
 
   public void setExclusiveTag(int id) {
     exclusiveTag.set(Optional.of(id));
@@ -852,5 +851,6 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }

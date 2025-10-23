@@ -1210,51 +1210,58 @@ public class RobotContainer {
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            // Commands.either(
-            //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
-            Commands.sequence(
-                // new MagicDriveToPoseCommand(
-                //     drive,
-                //     () ->
-                //         PoseUtils.getPerpendicularOffsetPose(
-                //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                // new WaitCommand(0.2)
-                new ConditionalCommand(
+            Commands.either(
+                // Commands.either(
+                //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
+                Commands.sequence(
+                    // new MagicDriveToPoseCommand(
+                    //     drive,
+                    //     () ->
+                    //         PoseUtils.getPerpendicularOffsetPose(
+                    //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
+                    // new WaitCommand(0.2)
+                    new WaitUntilCommand(drive::isRobotStable),
                     new ConditionalCommand(
-                        claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
-                        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                        () -> robotState.isL1Mode()),
-                    claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
-                    () ->
-                        RobotState.getSuperstructureState() != null
-                            && RobotState.getSuperstructureState().isCoralState()),
-                new ConditionalCommand(
-                    new WaitUntilCommand(
-                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                        .withTimeout(3),
-                    new WaitCommand(2.0),
-                    () -> RobotState.getSuperstructureState().isCoralState()),
-                superstructure
-                    .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
-                    .asProxy(),
-                Commands.either(
-                    claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
-                    claw.setClawStateCommand(ClawState.IDLE).asProxy(),
-                    () -> CoralStateTracker.hasCoral()),
-                new ConditionalCommand(
-                        new WaitUntilCommand(() -> RobotState.isSafeToStow())
-                            .andThen(
-                                new ConditionalCommand(
-                                        superstructure.setStateCommand(
-                                            SuperstructureState.STOW, "STOW"),
-                                        Commands.none(),
-                                        () ->
-                                            RobotState.getSuperstructureTargetState()
-                                                .isFadeawayState())
-                                    .asProxy()),
-                        Commands.none(),
-                        () -> RobotState.getSuperstructureState().isCoralState())
-                    .asProxy())
+                        new ConditionalCommand(
+                            claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                            () -> robotState.isL1Mode()),
+                        claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                        () ->
+                            RobotState.getSuperstructureState() != null
+                                && RobotState.getSuperstructureState().isCoralState()),
+                    new ConditionalCommand(
+                        new WaitUntilCommand(
+                                () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                            .withTimeout(3),
+                        new WaitCommand(2.0),
+                        () -> RobotState.getSuperstructureState().isCoralState()),
+                    superstructure
+                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                        .asProxy(),
+                    Commands.either(
+                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                        claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                        () -> CoralStateTracker.hasCoral()),
+                    new ConditionalCommand(
+                            new WaitUntilCommand(() -> RobotState.isSafeToStow())
+                                .andThen(
+                                    new ConditionalCommand(
+                                            superstructure.setStateCommand(
+                                                SuperstructureState.STOW, "STOW"),
+                                            Commands.none(),
+                                            () ->
+                                                RobotState.getSuperstructureTargetState()
+                                                    .isFadeawayState())
+                                        .asProxy()),
+                            Commands.none(),
+                            () -> RobotState.getSuperstructureState().isCoralState())
+                        .asProxy()),
+                Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
+                    .andThen(new WaitCommand(0.25))
+                    .andThen(
+                        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))),
+                drive::isRobotStable)
             // () -> robotState.isL1Mode())
             // .asProxy()
             );
