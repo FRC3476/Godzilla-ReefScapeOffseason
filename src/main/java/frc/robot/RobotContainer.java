@@ -131,6 +131,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final StreamDeck streamdeck = new StreamDeck();
+  private DriverControls driverControls;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -321,7 +322,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    configureXboxBindings();
+    driverControls = new DriverControls(this, controller, robotState);
     // configureTestingStreamDeckBindings();
     configureDriveStreamDeckBindings();
   }
