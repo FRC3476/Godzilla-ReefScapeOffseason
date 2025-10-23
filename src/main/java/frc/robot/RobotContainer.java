@@ -1054,86 +1054,69 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            new SelectCommand<>(
-                Map.of(
-                    CoralBranch.NONE,
-                        new GarageDriveToPoseCommand(
+            Commands.either(
+                Commands.defer(
+                    () -> {
+                      Rotation2d targetRotation =
+                          RobotState.getGlobalPose().getRotation().getCos() > 0
+                              ? Rotation2d.kZero
+                              : Rotation2d.k180deg;
+                      if (FieldUtils.isOnRedSide()) {
+                        return new ParallelDriveCommand(
                             drive,
                             () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReefPole().getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.LEFT,
-                        new GarageDriveToPoseCommand(
+                                new Pose2d(
+                                    FieldConstants.halfFieldLength
+                                        + (FieldUtils.facingBarge()
+                                            ? DriveConstants
+                                                .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                            : DriveConstants
+                                                .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
+                                    0,
+                                    targetRotation),
+                            () -> -controller.getLeftX());
+                      } else {
+                        return new ParallelDriveCommand(
                             drive,
                             () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().leftPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                    CoralBranch.RIGHT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().rightPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                () -> robotState.getStoredScorePosition().getCoralBranch()));
-
-    controller
-        .start()
-        .whileTrue(
-            // new ParallelDriveCommand(
-            //     drive,
-            //     () ->
-            //         new Pose2d(
-            //             FieldConstants.halfFieldLength
-            //                 + DriveConstants.AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET,
-            //             0,
-            //             Rotation2d.k180deg),
-            //     () -> -controller.getLeftX())
-            Commands.defer(
-                () -> {
-                  Rotation2d targetRotation =
-                      RobotState.getGlobalPose().getRotation().getCos() > 0
-                          ? Rotation2d.kZero
-                          : Rotation2d.k180deg;
-                  if (FieldUtils.isOnRedSide()) {
-                    return new ParallelDriveCommand(
-                        drive,
-                        () ->
-                            new Pose2d(
-                                FieldConstants.halfFieldLength
-                                    + (FieldUtils.facingBarge()
-                                        ? DriveConstants
-                                            .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
-                                        : DriveConstants
-                                            .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
-                                0,
-                                targetRotation),
-                        () -> -controller.getLeftX());
-                  } else {
-                    return new ParallelDriveCommand(
-                        drive,
-                        () ->
-                            new Pose2d(
-                                FieldConstants.halfFieldLength
-                                    - (FieldUtils.facingBarge()
-                                        ? DriveConstants
-                                            .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
-                                        : DriveConstants
-                                            .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
-                                0,
-                                targetRotation),
-                        () -> -controller.getLeftX());
-                  }
-                },
-                Set.of(drive)));
-
-    // controller
-    //     .rightTrigger();
-    //     // .onTrue(
-    //         // DriveCommands.
-    //     // );
+                                new Pose2d(
+                                    FieldConstants.halfFieldLength
+                                        - (FieldUtils.facingBarge()
+                                            ? DriveConstants
+                                                .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                            : DriveConstants
+                                                .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
+                                    0,
+                                    targetRotation),
+                            () -> -controller.getLeftX());
+                      }
+                    },
+                    Set.of(drive)),
+                new SelectCommand<>(
+                    Map.of(
+                        CoralBranch.NONE,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReefPole().getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                        CoralBranch.LEFT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().leftPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                        CoralBranch.RIGHT,
+                            new GarageDriveToPoseCommand(
+                                drive,
+                                () ->
+                                    PoseUtils.getPerpendicularOffsetPose(
+                                        FieldUtils.getClosestReef().rightPole.getPose(),
+                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
+                    () -> robotState.getStoredScorePosition().getCoralBranch()),
+                () -> RobotState.hasAlgae()));
 
     // Ground algae intake
     controller
