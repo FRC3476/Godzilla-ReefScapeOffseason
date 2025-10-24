@@ -87,6 +87,32 @@ public class FieldUtils {
     return closestTag;
   }
 
+  public static boolean isOnAllianceSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    if (FieldUtils.isBlueAlliance()) {
+      return robotX < FieldConstants.halfFieldLength;
+    } else {
+      return robotX > FieldConstants.halfFieldLength;
+    }
+  }
+
+  public static boolean isOnRedSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX > FieldConstants.halfFieldLength;
+  }
+
+  public static boolean isOnBlueSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX < FieldConstants.halfFieldLength;
+  }
+
+  public static boolean facingBarge() {
+    return (FieldUtils.isOnAllianceSide() ? 1 : -1)
+            * (FieldUtils.isRedAlliance() ? -1 : 1)
+            * RobotState.getGlobalPose().getRotation().getCos()
+        > 0;
+  }
+
   public static AprilTagStruct getBargeTag() {
     return FieldUtils.isBlueAlliance() ? FieldConstants.blueBarge : FieldConstants.redBarge;
   }

@@ -107,15 +107,17 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
   }
 
   public void addVisionMeasurement(VisionFieldPoseEstimate visionFieldPoseEstimate) {
-    if (visionFieldPoseEstimate.getVisionMeasurementStdDevs() == null) {
-      this.addVisionMeasurement(
-          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
-          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()));
-    } else {
-      this.addVisionMeasurement(
-          visionFieldPoseEstimate.getVisionRobotPoseMeters(),
-          Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()),
-          visionFieldPoseEstimate.getVisionMeasurementStdDevs());
+    if (DriverStation.isEnabled()) {
+      if (visionFieldPoseEstimate.getVisionMeasurementStdDevs() == null) {
+        this.addVisionMeasurement(
+            visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+            Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()));
+      } else {
+        this.addVisionMeasurement(
+            visionFieldPoseEstimate.getVisionRobotPoseMeters(),
+            Utils.fpgaToCurrentTime(visionFieldPoseEstimate.getTimestampSeconds()),
+            visionFieldPoseEstimate.getVisionMeasurementStdDevs());
+      }
     }
   }
 
@@ -161,7 +163,9 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
 
     double timestamp = RobotTime.getTimestampSeconds();
     double rollRadsPerS = Units.degreesToRadians(angularRollVelocity.getValueAsDouble());
+    inputs.gyroRollVelocity = rollRadsPerS;
     double pitchRadsPerS = Units.degreesToRadians(angularPitchVelocity.getValueAsDouble());
+    inputs.gyroPitchVelocity = pitchRadsPerS;
     double yawRadsPerS = Units.degreesToRadians(angularYawVelocity.getValueAsDouble());
     // Trust gyro rate more than odometry.
     var fusedFieldRelativeChassisSpeeds =
@@ -171,7 +175,9 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             yawRadsPerS);
 
     double pitchRads = Units.degreesToRadians(pitch.getValueAsDouble());
+    inputs.gyroPitch = pitchRads;
     double rollRads = Units.degreesToRadians(roll.getValueAsDouble());
+    inputs.gyroRoll = rollRads;
     double accelX = accelerationX.getValueAsDouble();
     double accelY = accelerationY.getValueAsDouble();
     robotState_.addDriveMotionMeasurements(

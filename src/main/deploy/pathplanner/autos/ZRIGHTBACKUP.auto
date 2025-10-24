@@ -30,16 +30,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Middle1"
-                }
-              }
-            ]
+            "pathName": "BackupRight1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
           }
         },
         {
@@ -49,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Middle2"
+                  "pathName": "BackupRight2"
                 }
               },
               {

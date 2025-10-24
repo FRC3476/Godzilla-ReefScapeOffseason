@@ -33,7 +33,7 @@ public class Claw extends SubsystemBase {
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
       new LoggedTunableNumber(
-          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
@@ -191,8 +191,28 @@ public class Claw extends SubsystemBase {
         this);
   }
 
+  public ClawState getClawState() {
+    return currentState;
+  }
+
   public Command setClawStateCommand(ClawState state) {
-    return Commands.runOnce(() -> currentState = state);
+    return Commands.runOnce(() -> currentState = state)
+        .onlyIf(
+            () -> {
+              boolean allowStateChange = true;
+
+              if (state == ClawState.SCORING
+                  && !RobotState.getSuperstructureState().isUprightScoringState()) {
+                allowStateChange = false;
+              }
+
+              if (state == ClawState.SCORING_L1
+                  && !RobotState.getSuperstructureState().isL1ScoringState()) {
+                allowStateChange = false;
+              }
+
+              return allowStateChange;
+            });
   }
 
   public Command rollerFWD() {

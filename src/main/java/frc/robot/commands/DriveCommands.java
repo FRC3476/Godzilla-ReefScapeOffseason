@@ -14,6 +14,7 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -106,6 +107,16 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command StopDriveTrain(DriveSubsystem driveSubsystem) {
+    return Commands.run(
+        () ->
+            driveSubsystem.setControl(
+                new SwerveRequest.FieldCentric()
+                    .withVelocityX(0.0)
+                    .withVelocityY(0.0)
+                    .withRotationalRate(0.0)));
+  }
+
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
@@ -117,28 +128,46 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       Supplier<Rotation2d> rotationSupplier) {
 
-    // Create PID controller
-    ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            DriveConstants.ANGLE_KP,
-            0.0,
-            DriveConstants.ANGLE_KD,
-            new TrapezoidProfile.Constraints(
-                DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveRequest.FieldCentricFacingAngle facingAngle =
-        new SwerveRequest.FieldCentricFacingAngle()
-            .withHeadingPID(DriveConstants.ANGLE_KP, 0.0, DriveConstants.ANGLE_KD);
-
     // Construct command
     return Commands.run(
         () -> {
+          double xJoy = xSupplier.getAsDouble();
+          double yJoy = ySupplier.getAsDouble();
+          xJoy = Util.handleDeadband(xJoy, 0.05);
+          yJoy = Util.handleDeadband(yJoy, 0.05);
+          xJoy = Math.copySign(xJoy * xJoy, xJoy);
+          yJoy = Math.copySign(yJoy * yJoy, yJoy);
+
+          // Create PID controller
+          ProfiledPIDController angleController =
+              new ProfiledPIDController(
+                  DriveConstants.ANGLE_KP,
+                  0.0,
+                  DriveConstants.ANGLE_KD,
+                  new TrapezoidProfile.Constraints(
+                      DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
+          angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+          SwerveRequest.FieldCentricFacingAngle facingAngle =
+              new SwerveRequest.FieldCentricFacingAngle()
+                  .withDriveRequestType(DriveRequestType.Velocity)
+                  .withHeadingPID(DriveConstants.ANGLE_KP, 0.0, DriveConstants.ANGLE_KD)
+                  .withDesaturateWheelSpeeds(true);
+
+          Rotation2d rotTarget = Rotation2d.kZero;
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            if (alliance.get() == Alliance.Red) {
+              rotTarget = Rotation2d.kPi;
+            }
+          }
+
           drive.setControl(
               facingAngle
-                  .withVelocityX(xSupplier.getAsDouble() * Constants.DriveConstants.kDriveMaxSpeed)
-                  .withVelocityY(ySupplier.getAsDouble() * Constants.DriveConstants.kDriveMaxSpeed)
-                  .withTargetDirection(rotationSupplier.get()));
+                  .withVelocityX(xJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withVelocityY(yJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withTargetDirection(rotationSupplier.get().rotateBy(rotTarget)));
         },
         drive);
   }

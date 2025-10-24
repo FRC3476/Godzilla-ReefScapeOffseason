@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4697847682123024,
-        "y": 1.5552152317917876
+        "x": 3.5914399426093904,
+        "y": 5.2374685302263515
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.195413304690636,
-        "y": 2.410468290042413
+        "x": 2.3870556055684338,
+        "y": 6.4493942108991416
       },
       "isLocked": false,
-      "linkedName": "3PP4E"
+      "linkedName": "LRaw3E"
     },
     {
       "anchor": {
-        "x": 3.605837675596999,
-        "y": 2.8916520462429762
+        "x": 1.8445247129678528,
+        "y": 7.094916823350621
       },
       "prevControl": {
-        "x": 2.810492485324869,
-        "y": 1.9552693378500123
+        "x": 3.366366107637008,
+        "y": 5.5677260450136465
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LEFTINTAKE"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.35,
+    "maxVelocity": 1.75,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -122.17432562352381
+    "rotation": 126.5
   },
   "reversed": false,
-  "folder": null,
+  "folder": "LEFTRAW",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }
