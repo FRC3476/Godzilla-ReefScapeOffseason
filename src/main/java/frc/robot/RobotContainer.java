@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
@@ -1038,8 +1039,8 @@ public class RobotContainer {
                 () -> {
                   if (climbRoller.getClimbing()) {
                     return FieldUtils.isRedAlliance()
-                        ? Rotation2d.kCCW_90deg
-                        : Rotation2d.kCW_90deg;
+                        ? Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
+                        : Rotation2d.fromDegrees(-ClimbConstants.CLIMB_ANGLE_SNAP);
                   } else if (RobotState.hasAlgae()) {
                     return RobotState.getGlobalPose().getRotation().getCos() < 0
                         ? Rotation2d.k180deg

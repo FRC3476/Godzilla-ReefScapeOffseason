@@ -705,6 +705,7 @@ public final class Constants {
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
+    public static final double CLIMB_ANGLE_SNAP = 109.69;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
