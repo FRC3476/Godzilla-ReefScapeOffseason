@@ -163,12 +163,14 @@ public final class Constants {
     public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
     public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
-    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
-    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
-    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
-    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
-    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
-    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5 * 2);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5 * 2);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10 * 2);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC =
+        Units.degreesToRadians(10 * 2);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY =
+        MetersPerSecond.of(15.0 / 100 * 2);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0 * 2);
   }
 
   public static final class AutoConstants {
@@ -801,6 +803,7 @@ public final class Constants {
     public static final double kMinAmbiguityToFlip = 0.08;
     public static final double kXStdDevCoefficent = 0.3;
     public static final double kYStdDevCoefficent = 0.3;
+
     public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
