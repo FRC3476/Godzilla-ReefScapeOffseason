@@ -574,7 +574,7 @@ public final class Constants {
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.141337890625;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;

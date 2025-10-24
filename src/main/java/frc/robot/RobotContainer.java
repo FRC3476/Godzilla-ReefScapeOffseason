@@ -1184,7 +1184,10 @@ public class RobotContainer {
                     //         PoseUtils.getPerpendicularOffsetPose(
                     //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
                     // new WaitCommand(0.2)
-                    new WaitUntilCommand(drive::isRobotStable),
+                    new WaitUntilCommand(
+                        () ->
+                            drive.isRobotStable()
+                                || RobotState.getSuperstructureState().isNonL4ScoringState()),
                     new ConditionalCommand(
                         new ConditionalCommand(
                             claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
