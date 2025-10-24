@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -1092,30 +1091,12 @@ public class RobotContainer {
                       }
                     },
                     Set.of(drive)),
-                new SelectCommand<>(
-                    Map.of(
-                        CoralBranch.NONE,
-                            new GarageDriveToPoseCommand(
-                                drive,
-                                () ->
-                                    PoseUtils.getPerpendicularOffsetPose(
-                                        FieldUtils.getClosestReefPole().getPose(),
-                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                        CoralBranch.LEFT,
-                            new GarageDriveToPoseCommand(
-                                drive,
-                                () ->
-                                    PoseUtils.getPerpendicularOffsetPose(
-                                        FieldUtils.getClosestReef().leftPole.getPose(),
-                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
-                        CoralBranch.RIGHT,
-                            new GarageDriveToPoseCommand(
-                                drive,
-                                () ->
-                                    PoseUtils.getPerpendicularOffsetPose(
-                                        FieldUtils.getClosestReef().rightPole.getPose(),
-                                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                    () -> robotState.getStoredScorePosition().getCoralBranch()),
+                new GarageDriveToPoseCommand(
+                    drive,
+                    () ->
+                        PoseUtils.getPerpendicularOffsetPose(
+                            FieldUtils.getChosenReefPole(() -> controller.getLeftX()).getPose(),
+                            DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
                 () -> RobotState.hasAlgae()));
 
     // Ground algae intake
