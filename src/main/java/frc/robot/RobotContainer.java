@@ -127,7 +127,7 @@ public class RobotContainer {
         }
       };
 
-  private final RobotState robotState = new RobotState(visionEstimateConsumer);
+  private final RobotState robotState = new RobotState(visionEstimateConsumer, this);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -238,7 +238,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "StowRobotState",
-        new WaitUntilCommand(() -> RobotState.isSafeToStow())
+        new WaitUntilCommand(() -> robotState.isSafeToStow())
             .andThen(superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy()));
 
     // ====================AUTO INTAKE COMMANDS====================
@@ -1227,7 +1227,7 @@ public class RobotContainer {
                         claw.setClawStateCommand(ClawState.IDLE).asProxy(),
                         () -> CoralStateTracker.hasCoral()),
                     new ConditionalCommand(
-                            new WaitUntilCommand(() -> RobotState.isSafeToStow())
+                            new WaitUntilCommand(() -> robotState.isSafeToStow())
                                 .andThen(
                                     new ConditionalCommand(
                                             superstructure.setStateCommand(
