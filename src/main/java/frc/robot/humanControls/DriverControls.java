@@ -1,21 +1,27 @@
 package frc.robot.humanControls;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.ParallelDriveCommand;
+import frc.robot.commands.Rumble;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
@@ -26,6 +32,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.PoseUtils;
 import java.util.Map;
+import java.util.Set;
 
 public class DriverControls {
   private final RobotContainer container;
@@ -51,8 +58,9 @@ public class DriverControls {
   }
 
   /** Use this method to define your button->command mappings. */
-  private void configureXboxBindings() {
+    private void configureXboxBindings() {
 
+    // Lock to angle when button is held
     controller
         .b()
         .whileTrue(
@@ -63,8 +71,9 @@ public class DriverControls {
                 () -> {
                   if (climbRoller.getClimbing()) {
                     return FieldUtils.isRedAlliance()
-                        ? Rotation2d.kCCW_90deg
-                        : Rotation2d.kCW_90deg;
+                        ? Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
+                        : Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
+                            .plus(Rotation2d.k180deg);
                   } else if (RobotState.hasAlgae()) {
                     return RobotState.getGlobalPose().getRotation().getCos() < 0
                         ? Rotation2d.k180deg
@@ -74,52 +83,71 @@ public class DriverControls {
                   }
                 }));
 
+    // // Auto Align
     controller
         .a()
         .whileTrue(
-            new SelectCommand<>(
-                // Maps selector values to commands
-                Map.ofEntries(
-                    Map.entry(
-                        CoralBranch.NONE,
-                        new GarageDriveToPoseCommand(
+            Commands.either(
+                Commands.defer(
+                    () -> {
+                      Rotation2d targetRotation =
+                          RobotState.getGlobalPose().getRotation().getCos() > 0
+                              ? Rotation2d.kZero
+                              : Rotation2d.k180deg;
+                      if (FieldUtils.isOnRedSide()) {
+                        return new ParallelDriveCommand(
                             drive,
                             () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReefPole().getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                    Map.entry(
-                        CoralBranch.LEFT,
-                        new GarageDriveToPoseCommand(
+                                new Pose2d(
+                                    FieldConstants.halfFieldLength
+                                        + (FieldUtils.facingBarge()
+                                            ? DriveConstants
+                                                .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                            : DriveConstants
+                                                .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
+                                    0,
+                                    targetRotation),
+                            () -> -controller.getLeftX());
+                      } else {
+                        return new ParallelDriveCommand(
                             drive,
                             () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().leftPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                    Map.entry(
-                        CoralBranch.RIGHT,
-                        new GarageDriveToPoseCommand(
-                            drive,
-                            () ->
-                                PoseUtils.getPerpendicularOffsetPose(
-                                    FieldUtils.getClosestReef().rightPole.getPose(),
-                                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)))),
-                () -> robotState.getStoredScorePosition().getCoralBranch()));
+                                new Pose2d(
+                                    FieldConstants.halfFieldLength
+                                        - (FieldUtils.facingBarge()
+                                            ? DriveConstants
+                                                .AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET
+                                            : DriveConstants
+                                                .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
+                                    0,
+                                    targetRotation),
+                            () -> -controller.getLeftX());
+                      }
+                    },
+                    Set.of(drive)),
+                new GarageDriveToPoseCommand(
+                    drive,
+                    () ->
+                        PoseUtils.getPerpendicularOffsetPose(
+                            FieldUtils.getChosenReefPole(() -> controller.getLeftX()).getPose(),
+                            DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
+                () -> RobotState.hasAlgae()));
 
     // Ground algae intake
     controller
         .rightBumper()
         .onTrue(
-            Commands.parallel(
-                superstructure.setStateCommand(
-                    SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
-                claw.setClawStateCommand(ClawState.ALGAE)));
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                Commands.sequence(
+                    superstructure.setStateCommand(
+                        SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
+                    new WaitCommand(0.05),
+                    claw.setClawStateCommand(ClawState.ALGAE)),
+                claw::isCoralInClaw));
 
-    // Processor Aim thingy
     controller
         .leftBumper()
-        // .onTrue(superstructure.setStateCommand(SuperstructureState.PROCESSOR_AIM, "Aim
-        // Processor"));
         .whileTrue(intake.setIntakeStateCommand(IntakeState.REJECT_CORAL))
         .onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
 
@@ -158,12 +186,16 @@ public class DriverControls {
     controller
         .x()
         .onTrue(
-            superstructure
-                .setStateCommand(
-                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
-                .asProxy()
-                .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
-                .asProxy());
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                superstructure
+                    .setStateCommand(
+                        () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
+                    .asProxy()
+                    .andThen(new WaitCommand(0.05))
+                    .andThen(claw.setClawStateCommand(ClawState.ALGAE))
+                    .asProxy(),
+                claw::isCoralInClaw));
 
     // Score position Aim
     controller
@@ -174,66 +206,54 @@ public class DriverControls {
                 .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
                 .asProxy());
 
-    // controller.back().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING_PREP).asProxy());
-    // controller.start().onTrue(intake.setIntakeStateCommand(IntakeState.SCORING).asProxy());
-    // controller.povUp().onTrue(intake.setIntakeStateCommand(IntakeState.INTAKE_L1).asProxy());
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
         .onTrue(
-            // Commands.either(
-            //         intake.setIntakeStateCommand(IntakeState.SCORING).asProxy(),
-            Commands.sequence(
-                // new MagicDriveToPoseCommand(
-                //     drive,
-                //     () ->
-                //         PoseUtils.getPerpendicularOffsetPose(
-                //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
-                // new WaitCommand(0.2)
-                new ConditionalCommand(
+            Commands.either(
+                Commands.sequence(
                     new ConditionalCommand(
-                        claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
-                        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                        () -> robotState.isL1Mode()),
-                    claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
-                    () ->
-                        RobotState.getSuperstructureState() != null
-                            && RobotState.getSuperstructureState().isCoralState()),
-                new ConditionalCommand(
-                    new WaitUntilCommand(
-                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                        .withTimeout(3),
-                    new WaitCommand(2.0),
-                    () -> RobotState.getSuperstructureState().isCoralState()),
-                superstructure
-                    .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
-                    .asProxy(),
-                Commands.either(
-                    claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
-                    claw.setClawStateCommand(ClawState.IDLE).asProxy(),
-                    () -> CoralStateTracker.hasCoral()),
-                new ConditionalCommand(
-                        new WaitUntilCommand(() -> RobotState.isSafeToStow())
-                            .andThen(
-                                new ConditionalCommand(
-                                        superstructure.setStateCommand(
-                                            SuperstructureState.STOW, "STOW"),
-                                        Commands.none(),
-                                        () ->
-                                            RobotState.getSuperstructureTargetState()
-                                                .isFadeawayState())
-                                    .asProxy()),
-                        Commands.none(),
-                        () -> RobotState.getSuperstructureState().isCoralState())
-                    .asProxy())
-            // () -> robotState.isL1Mode())
-            // .asProxy()
+                        new ConditionalCommand(
+                            claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                            () -> robotState.isL1Mode()),
+                        claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                        () ->
+                            RobotState.getSuperstructureState() != null
+                                && RobotState.getSuperstructureState().isCoralState()),
+                    new ConditionalCommand(
+                        new WaitUntilCommand(
+                                () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                            .withTimeout(3),
+                        new WaitCommand(2.0),
+                        () -> RobotState.getSuperstructureState().isCoralState()),
+                    superstructure
+                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                        .asProxy(),
+                    Commands.either(
+                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                        claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                        () -> CoralStateTracker.hasCoral()),
+                    new ConditionalCommand(
+                            new WaitUntilCommand(() -> robotState.isSafeToStow())
+                                .andThen(
+                                    new ConditionalCommand(
+                                            superstructure.setStateCommand(
+                                                SuperstructureState.STOW, "STOW"),
+                                            Commands.none(),
+                                            () ->
+                                                RobotState.getSuperstructureTargetState()
+                                                    .isFadeawayState())
+                                        .asProxy()),
+                            Commands.none(),
+                            () -> RobotState.getSuperstructureState().isCoralState())
+                        .asProxy()),
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                () ->
+                    drive.isRobotStable()
+                        && RobotState.getSuperstructureTargetState().isScoringState())
             );
-    controller.povUp().onTrue(Commands.none());
-    controller.povDown().onTrue(Commands.none());
-    controller.back().onTrue(Commands.none());
-    controller.start().onTrue(Commands.none());
-    controller.leftStick().onTrue(Commands.none());
-    controller.rightStick().onTrue(Commands.none());
   }
+
+
 }

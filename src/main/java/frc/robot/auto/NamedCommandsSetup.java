@@ -75,7 +75,7 @@ public class NamedCommandsSetup {
 
     NamedCommands.registerCommand(
         "StowRobotState",
-        new WaitUntilCommand(() -> RobotState.isSafeToStow())
+        new WaitUntilCommand(() -> robotState.isSafeToStow())
             .andThen(superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy()));
 
     // ====================AUTO INTAKE COMMANDS====================

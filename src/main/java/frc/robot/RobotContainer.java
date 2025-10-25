@@ -14,14 +14,38 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.arbitraryTriggers.ArbitraryTriggers;
 import frc.robot.auto.AutoChooserSetup;
 import frc.robot.auto.NamedCommandsSetup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimbConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
+import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
+import frc.robot.Field.FieldUtils;
+import frc.robot.RobotState.AlgaeIntake;
+import frc.robot.RobotState.CoralBranch;
+import frc.robot.RobotState.ScoreLevel;
+import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveCommands;
 import frc.robot.humanControls.DriverControls;
 import frc.robot.humanControls.ElasticTabs;
 import frc.robot.humanControls.OperatorControls;
+import frc.robot.commands.DriveToCoralCommand;
+import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.ParallelDriveCommand;
+import frc.robot.commands.PathfindToPoseCommand;
+import frc.robot.commands.Rumble;
+import frc.robot.commands.Score;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.ClimbRollerIO;
 import frc.robot.subsystems.climb.ClimbRollerIOReal;
@@ -90,7 +114,7 @@ public class RobotContainer {
         }
       };
 
-  private final RobotState robotState = new RobotState(visionEstimateConsumer);
+  private final RobotState robotState = new RobotState(visionEstimateConsumer, this);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);

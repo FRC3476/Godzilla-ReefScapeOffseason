@@ -293,7 +293,7 @@ public class CoralStateTracker {
   }
 
   public static Trigger isStuckAtFrontFeederTrigger() {
-    return isAtFrontFeederTrigger().debounce(0.5);
+    return isAtFrontFeederTrigger().debounce(0.25);
   }
 
   public static Trigger isStuckAtIntakeTrigger() {

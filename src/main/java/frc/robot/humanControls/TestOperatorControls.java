@@ -403,4 +403,5 @@ public class TestOperatorControls {
             superstructure.setStateCommand(
                 SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD"));
   }
+
 }

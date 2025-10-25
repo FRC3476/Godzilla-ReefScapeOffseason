@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Field.FieldConstants.AprilTagStruct;
 import frc.robot.RobotState;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 public class FieldUtils {
   public static Alliance getAlliance() {
@@ -67,6 +68,39 @@ public class FieldUtils {
     return closestReefPole;
   }
 
+  public static ReefPole getChosenReefPole(DoubleSupplier sideSelect) {
+    List<ReefFace> reefTags =
+        FieldUtils.isBlueAlliance() ? FieldConstants.blueReefTags : FieldConstants.redReefTags;
+    Translation2d robotTranslation = RobotState.getGlobalPose().getTranslation();
+
+    // Collect all reef poles from all reef faces
+    List<ReefPole> allReefPoles =
+        reefTags.stream()
+            .flatMap(reefFace -> List.of(reefFace.leftPole, reefFace.rightPole).stream())
+            .toList();
+
+    ReefPole closestReefPole =
+        allReefPoles.stream()
+            .reduce(
+                (ReefPole pole1, ReefPole pole2) ->
+                    robotTranslation.getDistance(pole1.getPose().getTranslation())
+                            < robotTranslation.getDistance(pole2.getPose().getTranslation())
+                        ? pole1
+                        : pole2)
+            .get();
+
+    ReefPole chosenReefPole;
+
+    if (sideSelect.getAsDouble() < -0.5) {
+      chosenReefPole = getClosestReef().leftPole;
+    } else if (sideSelect.getAsDouble() > 0.5) chosenReefPole = getClosestReef().rightPole;
+    else {
+      chosenReefPole = closestReefPole;
+    }
+
+    return chosenReefPole;
+  }
+
   public static AprilTagStruct getClosestHPSTag() {
     List<AprilTagStruct> hpsTags =
         FieldUtils.isBlueAlliance() ? FieldConstants.blueHPSTags : FieldConstants.redHPSTags;
@@ -94,6 +128,23 @@ public class FieldUtils {
     } else {
       return robotX > FieldConstants.halfFieldLength;
     }
+  }
+
+  public static boolean isOnRedSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX > FieldConstants.halfFieldLength;
+  }
+
+  public static boolean isOnBlueSide() {
+    double robotX = RobotState.getGlobalPose().getTranslation().getX();
+    return robotX < FieldConstants.halfFieldLength;
+  }
+
+  public static boolean facingBarge() {
+    return (FieldUtils.isOnAllianceSide() ? 1 : -1)
+            * (FieldUtils.isRedAlliance() ? -1 : 1)
+            * RobotState.getGlobalPose().getRotation().getCos()
+        > 0;
   }
 
   public static AprilTagStruct getBargeTag() {

@@ -156,7 +156,7 @@ public class RobotState extends MagicVirtualSubsystem {
       switch (storedScorePosition.getAlgaeScoreLevel()) {
         case BARGE:
           // fadeawayState = SuperstructureState.BARGE_AIM_CENTER;
-          if ((FieldUtils.isRedAlliance() ? -1 : 1) * globalPose.getRotation().getCos() > 0) {
+          if (FieldUtils.facingBarge()) {
             return SuperstructureState.BARGE_AIM_FORWARD;
           }
           return SuperstructureState.BARGE_AIM_BACKWARD;
@@ -207,22 +207,22 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   // public Pose2d getScoringPose(){
-  //   switch (getStoredScorePosition().getReefSide()){
-  //     case A:
-  //       return FieldConstants.
-  //     case B:
-  //       return
-  //     case C:
-  //       return
-  //     case D:
-  //       return
-  //     case E:
-  //       return
-  //     case F:
-  //       return
-  //     default:
-  //       return
-  //   }
+  // switch (getStoredScorePosition().getReefSide()){
+  // case A:
+  // return FieldConstants.
+  // case B:
+  // return
+  // case C:
+  // return
+  // case D:
+  // return
+  // case E:
+  // return
+  // case F:
+  // return
+  // default:
+  // return
+  // }
   // }
 
   private CoralScoringMode scoringMode;
@@ -235,6 +235,8 @@ public class RobotState extends MagicVirtualSubsystem {
   private static final Queue<PoseObservation> poseObservations = new LinkedBlockingQueue<>(20);
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer;
+
+  private final RobotContainer robotContainer;
 
   private static Pose2d globalPose = Pose2d.kZero;
 
@@ -252,8 +254,10 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static boolean superstructureManualOverrideMode = false;
 
-  public RobotState(Consumer<VisionFieldPoseEstimate> visionEstimateConsumer) {
+  public RobotState(
+      Consumer<VisionFieldPoseEstimate> visionEstimateConsumer, RobotContainer robotContainer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
+    this.robotContainer = robotContainer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
 
@@ -443,7 +447,7 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
-  public static boolean isSafeToStow() {
+  public boolean isSafeToStow() {
     // imaginary position of end effector if extended as far as possible
     Pose2d clearancePose =
         getGlobalPose()
@@ -461,8 +465,9 @@ public class RobotState extends MagicVirtualSubsystem {
             .minus(FieldUtils.getClosestReef().rightPole.getPose())
             .getTranslation()
             .getNorm();
-    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
-        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
+    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+            && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS)
+        || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
   }
 
   public static final double LOOKBACK_TIME = 1.0;
@@ -746,10 +751,13 @@ public class RobotState extends MagicVirtualSubsystem {
         "RobotState/FusedChassisSpeedFieldFrame", getLatestFusedFieldRelativeChassisSpeed());
 
     // // Add mechanism logging
-    // Logger.recordOutput("RobotState/ElevatorHeightMeters", getElevatorHeightMeters());
+    // Logger.recordOutput("RobotState/ElevatorHeightMeters",
+    // getElevatorHeightMeters());
     // Logger.recordOutput("RobotState/WristRadians", getWristRadians());
-    // Logger.recordOutput("RobotState/IntakeRollerRotations", getIntakeRollerRotations());
-    // Logger.recordOutput("RobotState/CoralRollerRotations", getClawRollerRotations());
+    // Logger.recordOutput("RobotState/IntakeRollerRotations",
+    // getIntakeRollerRotations());
+    // Logger.recordOutput("RobotState/CoralRollerRotations",
+    // getClawRollerRotations());
 
     // Add LED state logging
     LedState currentLEDState = getLedState();

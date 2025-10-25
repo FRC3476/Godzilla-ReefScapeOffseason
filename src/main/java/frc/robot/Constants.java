@@ -85,7 +85,7 @@ public final class Constants {
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
-    public static final double kDriveMaxSpeed = 3.6;
+    public static final double kDriveMaxSpeed = 3.65;
 
     public static final double DRIVE_BASE_RADIUS =
         Math.max(
@@ -160,6 +160,8 @@ public final class Constants {
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
     public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
+    public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
+    public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
     public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
     public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
@@ -572,7 +574,7 @@ public final class Constants {
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625 - 0.01;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
@@ -673,7 +675,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 7;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -5;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 3;
 
     // Reef Collision Avoidance
@@ -703,6 +705,7 @@ public final class Constants {
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
+    public static final double CLIMB_ANGLE_SNAP = 109.69;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
