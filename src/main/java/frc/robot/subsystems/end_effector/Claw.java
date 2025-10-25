@@ -157,7 +157,12 @@ public class Claw extends SubsystemBase {
               this.io.setRollerVoltage(0);
               break;
             case INTAKING_CORAL:
-              this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.io.setRollerVoltage(0);
+
+              } else {
+                this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+              }
               break;
             case HOLDING_CORAL:
               // move coral forward if at first sensor, backward if at second sensor, do nothing if
