@@ -85,7 +85,7 @@ public final class Constants {
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
-    public static final double kDriveMaxSpeed = 3.6;
+    public static final double kDriveMaxSpeed = 3.65;
 
     public static final double DRIVE_BASE_RADIUS =
         Math.max(
