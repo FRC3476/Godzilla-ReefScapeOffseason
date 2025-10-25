@@ -231,6 +231,10 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isCoralScoringState() {
+    return isUprightScoringState() || isL1ScoringState();
+  }
+
   public boolean isAlgaeScoringState() {
     switch (this) {
       case PROCESSOR_AIM, BARGE_AIM_BACKWARD, BARGE_AIM_FORWARD:
@@ -241,7 +245,7 @@ public enum SuperstructureState {
   }
 
   public boolean isScoringState() {
-    return isUprightScoringState() || isL1ScoringState() || isAlgaeScoringState();
+    return isCoralScoringState() || isAlgaeScoringState();
   }
 
   public boolean isFadeawayState() {

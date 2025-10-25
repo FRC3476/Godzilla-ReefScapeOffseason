@@ -1,4 +1,4 @@
-package frc.robot.util.Controls;
+package frc.robot.util.Controls.StreamDeck;
 
 import java.util.ArrayList;
 import java.util.List;
