@@ -248,7 +248,8 @@ public class DriverControls {
                 new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
                 () ->
                     (drive.isRobotStable()
-                            && RobotState.getSuperstructureTargetState().isCoralScoringState())
+                            && RobotState.getSuperstructureTargetState() == SuperstructureState.L4_AIM)
+                        || (RobotState.getSuperstructureTargetState().isScoringState() && RobotState.getSuperstructureTargetState() != SuperstructureState.L4_AIM)
                         || RobotState.getSuperstructureTargetState().isAlgaeScoringState()));
   }
 }
