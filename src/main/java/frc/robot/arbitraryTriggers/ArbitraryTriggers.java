@@ -11,6 +11,7 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.commands.Rumble;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.intake.Intake;
@@ -107,18 +108,12 @@ public class ArbitraryTriggers {
         new Trigger(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
 
-    hasAlgaeHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+    hasAlgaeHaptics.onTrue(new Rumble(controller, 0.5, 0.5, RumbleType.kBothRumble));
 
     hasAlgaeHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
-    hasCoralHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+    hasCoralHaptics.onTrue(new Rumble(controller, 0.5, 0.5, RumbleType.kBothRumble));
 
     hasCoralHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));

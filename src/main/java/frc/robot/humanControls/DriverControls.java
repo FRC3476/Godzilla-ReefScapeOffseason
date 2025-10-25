@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,7 +16,6 @@ import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.RobotState.CoralBranch;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.ParallelDriveCommand;
@@ -31,7 +29,6 @@ import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.PoseUtils;
-import java.util.Map;
 import java.util.Set;
 
 public class DriverControls {
@@ -58,7 +55,7 @@ public class DriverControls {
   }
 
   /** Use this method to define your button->command mappings. */
-    private void configureXboxBindings() {
+  private void configureXboxBindings() {
 
     // Lock to angle when button is held
     controller
@@ -251,9 +248,6 @@ public class DriverControls {
                 new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
                 () ->
                     drive.isRobotStable()
-                        && RobotState.getSuperstructureTargetState().isScoringState())
-            );
+                        && RobotState.getSuperstructureTargetState().isScoringState()));
   }
-
-
 }
