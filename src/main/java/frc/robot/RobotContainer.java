@@ -1040,7 +1040,7 @@ public class RobotContainer {
                   if (climbRoller.getClimbing()) {
                     return FieldUtils.isRedAlliance()
                         ? Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
-                        : Rotation2d.fromDegrees(-ClimbConstants.CLIMB_ANGLE_SNAP);
+                        : Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP).plus(Rotation2d.k180deg);
                   } else if (RobotState.hasAlgae()) {
                     return RobotState.getGlobalPose().getRotation().getCos() < 0
                         ? Rotation2d.k180deg
