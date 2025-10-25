@@ -31,6 +31,12 @@
                 "data": {
                   "waitTime": 0.25
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RIghtObj1"
+                }
               }
             ]
           }
@@ -39,12 +45,6 @@
           "type": "named",
           "data": {
             "name": "AimL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RIghtObj1"
           }
         },
         {

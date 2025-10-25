@@ -13,6 +13,7 @@ import frc.robot.RobotState.AlgaeIntake;
 import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
+import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
@@ -39,6 +41,7 @@ public class OperatorControls {
   private final StreamDeck streamdeck;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;
+  private final Vision vision;
 
   public OperatorControls(RobotContainer container, StreamDeck streamdeck, RobotState robotState) {
     this.container = container;
@@ -50,6 +53,7 @@ public class OperatorControls {
     intake = container.getIntake();
     climber = container.getClimber();
     climbRoller = container.getClimbRoller();
+    vision = container.getVision();
     configureDriveStreamDeckBindings();
   }
 
@@ -242,6 +246,11 @@ public class OperatorControls {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("AS0");
+    StreamDeckButton driveToCoralButton =
+        new StreamDeckButton(3, 1, "Drive to Coral")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("DTC");
 
     StreamDeckButton manualOverrideButton =
         new StreamDeckButton(3, 0, "Manual Override")
@@ -271,6 +280,8 @@ public class OperatorControls {
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =
         climbRoller.rollerSTOP().withName("climbRollerStopButton");
+    Command driveToCoralButtonCommand = new DriveToCoralCommand(drive, vision);
+
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
     customStreamDeckButtonMap.put(
@@ -328,6 +339,7 @@ public class OperatorControls {
     customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(driveToCoralButton, driveToCoralButtonCommand::isScheduled);
     // customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
     customStreamDeckButtonMap.put(
         manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
@@ -532,5 +544,6 @@ public class OperatorControls {
     streamdeck
         .button(autoScoreZeroButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetZero()).asProxy());
+    streamdeck.button(driveToCoralButton).whileTrue(driveToCoralButtonCommand);
   }
 }
