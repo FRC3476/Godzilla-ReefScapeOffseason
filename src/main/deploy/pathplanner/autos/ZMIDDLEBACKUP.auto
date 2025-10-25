@@ -5,40 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "SuperStructureStartup"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeStartup"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreTargetStartup"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimL1"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "StraightMove1"
+                  "name": "SuperStructureStartup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeStartup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreTargetStartup"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BackupMiddle1"
           }
         },
         {
@@ -54,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StraightMove2"
+                  "pathName": "BackupMiddle2"
                 }
               },
               {

@@ -106,6 +106,10 @@ public class Elevator extends SubsystemBase {
     return setpoint;
   }
 
+  public double getMotorVelocityRPS() {
+    return inputs.rightMotorData.velocityRPS();
+  }
+
   public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
     return Commands.sequence(
         this.setTargetPositionCommand(heightSupplier), this.waitUntilTargetPositionCommand());

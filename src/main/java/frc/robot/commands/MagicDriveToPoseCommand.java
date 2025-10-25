@@ -2,7 +2,8 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,30 +28,33 @@ public class MagicDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
+              (Constants.DriveConstants.kDriveMaxSpeed / 2),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
           DriveConstants.DRIVE_TO_POSE_KP,
           DriveConstants.DRIVE_TO_POSE_KI,
-          DriveConstants.DRIVE_TO_POSE_KD,
+          0.3,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
+              (Constants.DriveConstants.kDriveMaxSpeed / 2),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
-          0.0,
+          DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 2));
 
   private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
 
   private final Supplier<Pose2d> targetPoseSupplier;
   private final DriveSubsystem drive;
 
-  private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+  private final ApplyRobotSpeeds robotSpeeds =
+      new ApplyRobotSpeeds()
+          .withDriveRequestType(DriveRequestType.Velocity)
+          .withDesaturateWheelSpeeds(true);
 
   private final boolean unending;
 
@@ -67,7 +71,7 @@ public class MagicDriveToPoseCommand extends Command {
     xController.setTolerance(Units.inchesToMeters(0.5));
     yController.setTolerance(Units.inchesToMeters(0.5));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
-    angleController.setTolerance(Units.degreesToRadians(0.5));
+    angleController.setTolerance(Units.degreesToRadians(1.5));
     this.unending = unending;
   }
 
@@ -88,13 +92,13 @@ public class MagicDriveToPoseCommand extends Command {
     Pose2d targetPose =
         originalPose2d.rotateAround(originalPose2d.getTranslation(), Rotation2d.kPi);
 
-    double currentDistance = robotPose.getTranslation().getDistance(targetPose.getTranslation());
-    double ffScaler =
-        MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
+    // double currentDistance = robotPose.getTranslation().getDistance(targetPose.getTranslation());
+    // double ffScaler =
+    //     MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
 
     double currentDegrees =
         Math.abs(robotPose.getRotation().minus(targetPose.getRotation()).getDegrees());
-    double rot_ffScaler = MathUtil.clamp(currentDegrees / 10, 0.0, 10.0);
+    double rot_ffScaler = MathUtil.clamp(currentDegrees / 10, 0.0, 1.0);
 
     Logger.recordOutput("Commands/" + getName() + "/targetPose", targetPose);
 
@@ -109,21 +113,11 @@ public class MagicDriveToPoseCommand extends Command {
     double thetaError = robotPose.getRotation().minus(desiredTheta).getRadians();
     Logger.recordOutput("Commands/" + getName() + "/ThetaError", thetaError);
 
-    double parallelSpeed =
-        xController.getSetpoint().velocity * ffScaler
-            + xController.calculate(-parallelError, 0)
-            + Math.copySign(
-                CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.02,
-                xController.calculate(-parallelError, 0));
+    double parallelSpeed = xController.calculate(-parallelError, 0);
     parallelSpeed = !xController.atSetpoint() ? parallelSpeed : 0;
     Logger.recordOutput("Commands/" + getName() + "/parallelSpeed", parallelSpeed);
 
-    double perpendicularSpeed =
-        yController.getSetpoint().velocity * ffScaler
-            + yController.calculate(-perpendicularError, 0)
-            + Math.copySign(
-                CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.02,
-                xController.calculate(-parallelError, 0));
+    double perpendicularSpeed = yController.calculate(-perpendicularError, 0);
 
     if (Math.abs(thetaError) < 0.1) {
       perpendicularSpeed = !yController.atSetpoint() ? perpendicularSpeed : 0;
@@ -132,19 +126,18 @@ public class MagicDriveToPoseCommand extends Command {
     }
     Logger.recordOutput("Commands/" + getName() + "/perpendicularSpeed", perpendicularSpeed);
 
-    double angularSpeed =
-        angleController.getSetpoint().velocity * rot_ffScaler
-            + angleController.calculate(thetaError, 0)
-            + Math.copySign(1.5, angleController.calculate(thetaError, 0));
-    angularSpeed = !angleController.atSetpoint() ? angularSpeed : 0;
+    double angularSpeed = +angleController.calculate(thetaError, 0);
+
     Logger.recordOutput("Commands/" + getName() + "/angularSpeed", angularSpeed);
 
     double desiredTranslationSpeed = Math.hypot(perpendicularSpeed, parallelSpeed);
     double allowableTranslationSpeed =
         MathUtil.clamp(
             desiredTranslationSpeed, 0.0, CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-    perpendicularSpeed = perpendicularSpeed * allowableTranslationSpeed / desiredTranslationSpeed;
-    parallelSpeed = parallelSpeed * allowableTranslationSpeed / desiredTranslationSpeed;
+
+    // perpendicularSpeed = perpendicularSpeed * allowableTranslationSpeed /
+    // desiredTranslationSpeed;
+    // parallelSpeed = parallelSpeed * allowableTranslationSpeed / desiredTranslationSpeed;
 
     ChassisSpeeds speeds = new ChassisSpeeds(perpendicularSpeed, parallelSpeed, angularSpeed);
 

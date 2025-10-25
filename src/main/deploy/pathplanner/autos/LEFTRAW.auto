@@ -30,28 +30,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Processor1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimL4"
-                }
-              }
-            ]
+            "name": "AimL4"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "FinalLeftPoleAlign"
+            "pathName": "LeftRaw1E"
           }
         },
         {
@@ -77,44 +64,97 @@
                 }
               },
               {
-                "type": "race",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Processor2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "SeesCoral"
-                      }
-                    }
-                  ]
+                  "pathName": "LeftRaw2E"
                 }
               }
             ]
           }
         },
         {
-          "type": "race",
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftRaw3E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
+          }
+        },
+        {
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "StowRobotState"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "DriveToCoral"
+                  "name": "IntakeEnable"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw4E"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftRaw5E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ConfirmScore"
           }
         },
         {
@@ -124,41 +164,22 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Processor3"
+                  "pathName": "LeftRaw6E"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IsCoralInEndEffector"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "AimL4"
-                      }
-                    }
-                  ]
+                  "name": "StowRobotState"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeEnable"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FinalLeftPoleAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ConfirmScore"
           }
         }
       ]

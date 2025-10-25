@@ -37,19 +37,20 @@ public class CompTunerConstants {
 
   // all the units are in revolutions of the wheel per second
   private static final Slot0Configs driveGains =
-      new Slot0Configs()
-          .withKP(0.1)
-          .withKI(0)
-          .withKD(0)
-          .withKS(0.20540)
-          .withKV(0.79055); // withKV(0.124);
-  //   new Slot0Configs().withKP(10.0).withKI(0.0).withKD(0.0).withKS(1.5).withKV(0.0);
+      //   private static final Slot0Configs driveGains =
+      //       new Slot0Configs()
+      //           .withKP(0.1)
+      //           .withKI(0)
+      //           .withKD(0)
+      //           .withKS(0.20540)
+      //           .withKV(0.79055); // withKV(0.124);
+      new Slot0Configs().withKP(10.0).withKI(0.0).withKD(0.0).withKS(1.5).withKV(0.0);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
   private static final double kCoupleRatio = 3.5714285714285716;
 
-  private static final double kDriveGearRatio = 6.746031746031747;
+  private static final double kDriveGearRatio = (50 * 19 * 45) / (14 * 25 * 15);
   private static final double kSteerGearRatio = 21.428571428571427;
   private static final Distance kWheelRadius = Inches.of(1.944);
 
@@ -78,7 +79,8 @@ public class CompTunerConstants {
   private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
   // The closed-loop output type to use for the drive motors;
   // This affects the PID/FF gains for the drive motors
-  private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+  private static final ClosedLoopOutputType kDriveClosedLoopOutput =
+      ClosedLoopOutputType.TorqueCurrentFOC;
 
   // The type of motor used for the drive motor
   private static final DriveMotorArrangement kDriveMotorType =
@@ -93,7 +95,7 @@ public class CompTunerConstants {
 
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
-  private static final Current kSlipCurrent = Amps.of(90);
+  private static final Current kSlipCurrent = Amps.of(120);
   // private static final Current kSlipCurrent = Amps.of(62.0); // Intake up worst case
 
   // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
@@ -316,9 +318,9 @@ public class CompTunerConstants {
      * @param odometryUpdateFrequency The frequency to run the odometry loop. If unspecified or set
      *     to 0 Hz, this is 250 Hz on CAN FD, and 100 Hz on CAN 2.0.
      * @param odometryStandardDeviation The standard deviation for odometry calculation in the form
-     *     [x, y, theta]ᵀ, with units in meters and radians
-     * @param visionStandardDeviation The standard deviation for vision calculation in the form [x,
-     *     y, theta]ᵀ, with units in meters and radians
+     *     transpose([x, y, theta]), with units in meters and radians
+     * @param visionStandardDeviation The standard deviation for vision calculation in the form
+     *     transpose([x, y, theta]), with units in meters and radians
      * @param modules Constants for each specific module
      */
     public TunerSwerveDrivetrain(

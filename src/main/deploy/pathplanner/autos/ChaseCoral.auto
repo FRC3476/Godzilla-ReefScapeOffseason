@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStraight"
+            "pathName": "ChaseCoralPath"
           }
         },
         {
@@ -21,11 +21,23 @@
           "data": {
             "name": "IntakeStartup"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeEnable"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DriveToCoral"
+          }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

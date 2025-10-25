@@ -21,6 +21,8 @@ public class FieldConstants {
   /** Used for calculating HPS zoning */
   public static final double halfFieldWidth = fieldWidth / 2;
 
+  public static final double halfFieldLength = fieldLength / 2;
+
   /*
    * April Tag Lookup
    */
