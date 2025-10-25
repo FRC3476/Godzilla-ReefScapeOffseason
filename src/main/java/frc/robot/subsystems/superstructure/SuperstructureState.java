@@ -231,15 +231,6 @@ public enum SuperstructureState {
     }
   }
 
-  public boolean isBelowHorizontal() {
-    switch (this) {
-      case L1_AIM, L1_FADEAWAY, ALGAE_LOW_INTAKE, PROCESSOR_AIM, STOW_ALGAE:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   public boolean isFadeawayState() {
     switch (this) {
       case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:
