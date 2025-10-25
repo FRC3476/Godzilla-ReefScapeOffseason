@@ -46,6 +46,7 @@ import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.PathfindToPoseCommand;
+import frc.robot.commands.Rumble;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.ClimbRollerIO;
@@ -1039,7 +1040,8 @@ public class RobotContainer {
                   if (climbRoller.getClimbing()) {
                     return FieldUtils.isRedAlliance()
                         ? Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
-                        : Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP).plus(Rotation2d.k180deg);
+                        : Rotation2d.fromDegrees(ClimbConstants.CLIMB_ANGLE_SNAP)
+                            .plus(Rotation2d.k180deg);
                   } else if (RobotState.hasAlgae()) {
                     return RobotState.getGlobalPose().getRotation().getCos() < 0
                         ? Rotation2d.k180deg
@@ -1104,10 +1106,14 @@ public class RobotContainer {
     controller
         .rightBumper()
         .onTrue(
-            Commands.parallel(
-                superstructure.setStateCommand(
-                    SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
-                claw.setClawStateCommand(ClawState.ALGAE)));
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                Commands.sequence(
+                    superstructure.setStateCommand(
+                        SuperstructureState.INTAKE_ALGAE_GROUND, "GROUND ALGAE"),
+                    new WaitCommand(0.05),
+                    claw.setClawStateCommand(ClawState.ALGAE)),
+                claw::isCoralInClaw));
 
     // Processor Aim thingy
     controller
@@ -1152,12 +1158,16 @@ public class RobotContainer {
     controller
         .x()
         .onTrue(
-            superstructure
-                .setStateCommand(
-                    () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
-                .asProxy()
-                .alongWith(claw.setClawStateCommand(ClawState.ALGAE))
-                .asProxy());
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                superstructure
+                    .setStateCommand(
+                        () -> robotState.getAlgaeDescoreSuperstructureState(), "Algae Descore Aim")
+                    .asProxy()
+                    .andThen(new WaitCommand(0.05))
+                    .andThen(claw.setClawStateCommand(ClawState.ALGAE))
+                    .asProxy(),
+                claw::isCoralInClaw));
 
     // Score position Aim
     controller
@@ -1185,7 +1195,6 @@ public class RobotContainer {
                     //         PoseUtils.getPerpendicularOffsetPose(
                     //             FieldUtils.getClosestReefPole().getPose(), 0.7)),
                     // new WaitCommand(0.2)
-                    new WaitUntilCommand(drive::isRobotStable),
                     new ConditionalCommand(
                         new ConditionalCommand(
                             claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
@@ -1222,11 +1231,10 @@ public class RobotContainer {
                             Commands.none(),
                             () -> RobotState.getSuperstructureState().isCoralState())
                         .asProxy()),
-                Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-                    .andThen(new WaitCommand(0.25))
-                    .andThen(
-                        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))),
-                drive::isRobotStable)
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                () ->
+                    drive.isRobotStable()
+                        && RobotState.getSuperstructureTargetState().isScoringState())
             // () -> robotState.isL1Mode())
             // .asProxy()
             );
@@ -2190,18 +2198,12 @@ public class RobotContainer {
         new Trigger(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
 
-    hasAlgaeHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+    hasAlgaeHaptics.onTrue(new Rumble(controller, 0.5, 0.5, RumbleType.kBothRumble));
 
     hasAlgaeHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
 
-    hasCoralHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
+    hasCoralHaptics.onTrue(new Rumble(controller, 0.5, 0.5, RumbleType.kBothRumble));
 
     hasCoralHaptics.onFalse(
         Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
