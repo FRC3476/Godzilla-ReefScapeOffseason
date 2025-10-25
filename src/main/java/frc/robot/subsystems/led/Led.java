@@ -1,14 +1,10 @@
 package frc.robot.subsystems.led;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -16,6 +12,19 @@ import org.littletonrobotics.junction.Logger;
 public class Led extends SubsystemBase {
   private final LedIO io;
   private final RobotState state;
+
+  private static final LoggedTunableNumber orangeR =
+      new LoggedTunableNumber("LED/Orange R", LedState.kCOOrangeLed.red);
+  private static final LoggedTunableNumber orangeG =
+      new LoggedTunableNumber("LED/Orange G", LedState.kCOOrangeLed.green); // Placeholder value
+  private static final LoggedTunableNumber orangeB =
+      new LoggedTunableNumber("LED/Orange B", LedState.kCOOrangeLed.blue);
+  private static final LoggedTunableNumber tealR =
+      new LoggedTunableNumber("LED/Teal R", LedState.kCOTealLed.red);
+  private static final LoggedTunableNumber tealG =
+      new LoggedTunableNumber("LED/Teal G", LedState.kCOTealLed.green); // Placeholder value
+  private static final LoggedTunableNumber tealB =
+      new LoggedTunableNumber("LED/Teal B", LedState.kCOTealLed.blue);
 
   public record PercentageSetpoint(double pct, LedState color) {}
 
@@ -28,7 +37,7 @@ public class Led extends SubsystemBase {
   public void periodic() {
     super.periodic();
 
-    state.setLedState(getCurrentState());
+    RobotState.setLedState(getCurrentState());
     Logger.recordOutput(
         "LED/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
@@ -47,6 +56,18 @@ public class Led extends SubsystemBase {
     return run(() -> setSolidColor(state.get())).ignoringDisable(true).withName("LED Solid Color");
   }
 
+  public Command commandOff() {
+    return commandSolidColor(LedState.kOff);
+  }
+
+  public Command commandSetTeal() {
+    return commandSolidColor(LedState.kCOTealLed);
+  }
+
+  public Command commandSetOrange() {
+    return commandSolidColor(LedState.kCOOrangeLed);
+  }
+
   public Command commandSolidPattern(LedState[] states) {
     return run(() -> setSolidPattern(states)).ignoringDisable(true).withName("LED Solid Pattern");
   }
@@ -61,54 +82,16 @@ public class Led extends SubsystemBase {
         .ignoringDisable(true);
   }
 
-  public Command commandBlinkingState(
-      LedState stateOne, LedState stateTwo, double durationOne, double durationTwo) {
-    return new SequentialCommandGroup(
-            Commands.runOnce(() -> setSolidColor(stateOne)),
-            new WaitCommand(durationOne),
-            Commands.runOnce(() -> setSolidColor(stateTwo)),
-            new WaitCommand(durationTwo))
-        .repeatedly()
-        .ignoringDisable(true)
-        .withName("Blinking LED command");
+  public Command commandBlinkingState(LedState state, double duration) {
+    return this.runOnce(() -> this.io.blink(state, duration));
   }
 
-  public Command commandBlinkingStateWithoutScheduler(
-      LedState stateOne, LedState stateTwo, double durationOne, double durationTwo) {
-    var state =
-        new Object() {
-          public boolean color1 = true;
-          public double timestamp = Timer.getFPGATimestamp();
-        };
-    return Commands.runOnce(
-            () -> {
-              state.color1 = true;
-              state.timestamp = Timer.getFPGATimestamp();
-            })
-        .andThen(
-            commandSolidColor(
-                () -> {
-                  if (state.color1 && state.timestamp + durationOne <= Timer.getFPGATimestamp()) {
-                    state.color1 = false;
-                    state.timestamp = Timer.getFPGATimestamp();
-                  } else if (!state.color1
-                      && state.timestamp + durationTwo <= Timer.getFPGATimestamp()) {
-                    state.color1 = true;
-                    state.timestamp = Timer.getFPGATimestamp();
-                  }
-
-                  if (state.color1) {
-                    return stateOne;
-                  } else {
-                    return stateTwo;
-                  }
-                }))
-        .ignoringDisable(true)
-        .withName("Blinking LED command");
+  public Command commandFire() {
+    return this.runOnce(() -> this.io.fire()).ignoringDisable(true).withName("LED Fire");
   }
 
-  public Command commandBlinkingState(LedState stateOne, LedState stateTwo, double duration) {
-    return commandBlinkingState(stateOne, stateTwo, duration, duration).ignoringDisable(true);
+  public Command commandRainbow() {
+    return this.runOnce(() -> this.io.rainbow()).ignoringDisable(true).withName("LED Rainbow");
   }
 
   private void setSolidColor(LedState state) {
@@ -119,23 +102,27 @@ public class Led extends SubsystemBase {
     io.writePixels(states);
   }
 
-  private void setPercentageFull(double percentageFull, LedState state) {
-    LedState[] pixels = new LedState[Constants.LEDConstants.kMaxLEDCount / 2];
-    for (int i = 0; i < pixels.length; i++) {
-      if (i < pixels.length * MathUtil.clamp(percentageFull, 0.0, 1.0)) {
-        pixels[i] = state;
-      }
-    }
+  // private void setPercentageFull(double percentageFull, LedState state) {
+  //   LedState[] pixels = new LedState[Constants.LedConstants.kMaxLEDCount / 2];
+  //   for (int i = 0; i < pixels.length; i++) {
+  //     if (i < pixels.length * MathUtil.clamp(percentageFull, 0.0, 1.0)) {
+  //       pixels[i] = state;
+  //     }
+  //   }
+  // }
+
+  private void setPercentageFull(double percent, LedState state) {
+    this.io.percentageFull(percent, state);
   }
 
   @SuppressWarnings("unused")
   private LedState[] mirror(LedState[] pixels) {
-    LedState[] fullPixels = new LedState[Constants.LEDConstants.kMaxLEDCount];
+    LedState[] fullPixels = new LedState[Constants.LedConstants.kMaxLEDCount];
 
-    for (int i = Constants.LEDConstants.kCandleLEDCount;
+    for (int i = Constants.LedConstants.kCandleLEDCount;
         i
-            < Constants.LEDConstants.kCandleLEDCount
-                + (Constants.LEDConstants.kNonCandleLEDCount / 2);
+            < Constants.LedConstants.kCandleLEDCount
+                + (Constants.LedConstants.kNonCandleLEDCount / 2);
         i++) {
       fullPixels[fullPixels.length - i - 2] = pixels[i];
       fullPixels[i] = pixels[i];

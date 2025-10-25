@@ -54,6 +54,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.LedIO;
+import frc.robot.subsystems.led.LedIOReal;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
@@ -81,6 +84,7 @@ public class RobotContainer {
   private final ClimbRoller climbRoller;
   private final Feeder feeder;
   private final Vision vision;
+  private final Led led;
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
       new Consumer<VisionFieldPoseEstimate>() {
@@ -116,6 +120,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOReal());
         climbRoller = new ClimbRoller(new ClimbRollerIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
+        led = new Led(new LedIOReal(), robotState);
         drive =
             new DriveSubsystem(
                 new DriveIOHardware(
@@ -136,6 +141,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         climbRoller = new ClimbRoller(new ClimbRollerIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
+        led = new Led(new LedIO() {}, robotState);
         drive =
             new DriveSubsystem(
                 new DriveIOSim(
@@ -157,6 +163,7 @@ public class RobotContainer {
         climbRoller = new ClimbRoller(new ClimbRollerIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
+        led = new Led(new LedIO() {}, robotState);
         break;
     }
 
@@ -246,5 +253,9 @@ public class RobotContainer {
 
   public Vision getVision() {
     return vision;
+  }
+
+  public Led getLed() {
+    return led;
   }
 }

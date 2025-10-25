@@ -50,4 +50,8 @@ public class ElasticButton {
   public void setupOnPressCommand(Command command) {
     trigger.onTrue(command.andThen(() -> entry.setBoolean(false)));
   }
+
+  public void setupOnPressCommandIgnoringDisabled(Command command) {
+    trigger.onTrue(command.andThen(() -> entry.setBoolean(false)).ignoringDisable(true));
+  }
 }

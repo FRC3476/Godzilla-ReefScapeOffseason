@@ -739,9 +739,9 @@ public final class Constants {
   }
 
   // ====================LED (8_)====================
-  public static final class LEDConstants {
+  public static final class LedConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
-    public static final int kNonCandleLEDCount = 10;
+    public static final int kNonCandleLEDCount = 392;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
     public static final double kLowBatteryThresholdVolts = 12.3;

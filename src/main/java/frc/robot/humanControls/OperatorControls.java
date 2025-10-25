@@ -55,13 +55,14 @@ public class OperatorControls {
 
   private void configureDriveStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOOrangePure.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOTealPure.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig tealOnWhiteConfig =
-        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOTeal.toString(), "");
+        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOTealPure.toString(), "");
     StreamDeckButtonConfig orangeOnWhiteConfig =
-        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOOrange.toString(), "");
+        new StreamDeckButtonConfig(
+            LedState.kWhite.toString(), LedState.kCOOrangePure.toString(), "");
     StreamDeckButtonConfig redConfig =
         new StreamDeckButtonConfig(LedState.kRed.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig yellowConfig =
