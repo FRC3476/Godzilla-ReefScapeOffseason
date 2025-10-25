@@ -1,4 +1,4 @@
-package frc.robot.util.Controls;
+package frc.robot.util.Controls.StreamDeck;
 
 public class StreamDeckButtonConfig {
   private String foreground;
