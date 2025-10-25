@@ -13,10 +13,11 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.arbitraryTriggers.ArbitraryTriggers;
+import frc.robot.auto.AutoChooserSetup;
+import frc.robot.auto.NamedCommandsSetup;
 import frc.robot.commands.DriveCommands;
 import frc.robot.humanControls.DriverControls;
 import frc.robot.humanControls.ElasticTabs;
@@ -61,7 +62,6 @@ import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
 import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import java.util.function.Consumer;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -95,13 +95,12 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final StreamDeck streamdeck = new StreamDeck();
-  private DriverControls driverControls;
-  private OperatorControls operatorControls;
-  private ElasticTabs elasticTabs;
-  private ArbitraryTriggers arbitraryTriggers;
-
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  // private DriverControls driverControls;
+  // private OperatorControls operatorControls;
+  // private ElasticTabs elasticTabs;
+  // private ArbitraryTriggers arbitraryTriggers;
+  // private NamedCommandsSetup namedCommands;
+  private AutoChooserSetup autoChooserSetup;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -163,47 +162,29 @@ public class RobotContainer {
 
     // ============================================================================================================================================
 
+    // Setup named commands for auto
+    // namedCommands = new NamedCommandsSetup(this, robotState);
+    new NamedCommandsSetup(this, robotState);
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up SysId routines
-    // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive Slip Current Characterization (Wall Test)",
-    //     DriveCommands.slipCurrentCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Forward)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Reverse)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    // autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+    autoChooserSetup = new AutoChooserSetup();
 
     // Configure default commands for subsystems
     RegisterDefaultCommands();
 
     // Build elastic tabs for testing
-    elasticTabs = new ElasticTabs(this, robotState);
+    new ElasticTabs(this, robotState);
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure arbitrary triggers
-    arbitraryTriggers = new ArbitraryTriggers(this, controller, robotState);
+    new ArbitraryTriggers(this, controller, robotState);
   }
 
   private void configureButtonBindings() {
-    driverControls = new DriverControls(this, controller, robotState);
-    operatorControls = new OperatorControls(this, streamdeck, robotState);
-    // operatorControls = new TestOperatorControls(this, streamdeck, robotState);
+    new DriverControls(this, controller, robotState);
+    new OperatorControls(this, streamdeck, robotState);
+    // new TestOperatorControls(this, streamdeck, robotState);
   }
 
   private void RegisterDefaultCommands() {
@@ -214,8 +195,6 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX() * Math.abs(controller.getRightX())));
-    // elevator.setDefaultCommand(defaultElevatorCommand());
-    // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
     intake.setDefaultCommand(intake.intakeDefault());
   }
@@ -226,7 +205,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooserSetup.getAutonomousCommand();
   }
 
   public Elevator getElevator() {

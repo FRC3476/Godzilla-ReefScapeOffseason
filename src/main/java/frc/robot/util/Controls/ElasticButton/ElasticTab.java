@@ -2,10 +2,11 @@ package frc.robot.util.Controls.ElasticButton;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ElasticTab {
-  private Map<String, ElasticButton> buttons;
+  private Map<String, ElasticButton> buttons = new HashMap<>();
   private String key;
   private NetworkTable table;
 
@@ -13,20 +14,6 @@ public class ElasticTab {
     this.key = key;
     table = NetworkTableInstance.getDefault().getTable("Elastic/" + key);
   }
-
-  // public ElasticTab(String key, Set<Pair<String,Boolean>> buttonKeyDefaultPair) {
-  //     for (Pair<String,Boolean> p:buttonKeyDefaultPair) {
-  //         buttons.put(p.getFirst(), new ElasticButton(this, p.getFirst(), p.getSecond()));
-  //     }
-  // }
-
-  // public static ElasticTab Default(String key, Set<String> buttonKeys) {
-  //     Set<Pair<String,Boolean>> keyDefaultPair = new HashSet<>();
-  //     for (String k:buttonKeys) {
-  //         keyDefaultPair.add(new Pair<String,Boolean>(k, false));
-  //     }
-  //     return new ElasticTab(key, keyDefaultPair);
-  // }
 
   public ElasticButton addButton(String key) {
     ElasticButton button = new ElasticButton(this, key, false);

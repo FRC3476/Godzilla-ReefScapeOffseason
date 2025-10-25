@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.auto;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -10,6 +10,9 @@ import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.commands.DriveToCoralCommand;
+import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.Score;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.intake.Intake;

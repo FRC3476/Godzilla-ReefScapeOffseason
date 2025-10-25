@@ -1,7 +1,6 @@
 package frc.robot.humanControls;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
@@ -75,40 +74,9 @@ public class DriverControls {
                   }
                 }));
 
-    // // Auto Align
-    Command autodriveCommand =
-        new SelectCommand<>(
-            // Maps selector values to commands
-            Map.ofEntries(
-                Map.entry(
-                    CoralBranch.NONE,
-                    new GarageDriveToPoseCommand(
-                        drive,
-                        () ->
-                            PoseUtils.getPerpendicularOffsetPose(
-                                FieldUtils.getClosestReefPole().getPose(),
-                                DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                Map.entry(
-                    CoralBranch.LEFT,
-                    new GarageDriveToPoseCommand(
-                        drive,
-                        () ->
-                            PoseUtils.getPerpendicularOffsetPose(
-                                FieldUtils.getClosestReef().leftPole.getPose(),
-                                DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))),
-                Map.entry(
-                    CoralBranch.RIGHT,
-                    new GarageDriveToPoseCommand(
-                        drive,
-                        () ->
-                            PoseUtils.getPerpendicularOffsetPose(
-                                FieldUtils.getClosestReef().rightPole.getPose(),
-                                DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)))),
-            () -> robotState.getStoredScorePosition().getCoralBranch());
-
     controller
         .a()
-        .onTrue(
+        .whileTrue(
             new SelectCommand<>(
                 // Maps selector values to commands
                 Map.ofEntries(
