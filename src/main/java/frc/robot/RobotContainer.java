@@ -14,31 +14,10 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.EndEffectorConstants.ClawState;
-import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.Field.FieldConstants;
-import frc.robot.Field.FieldUtils;
-import frc.robot.RobotState.ScoreLevel;
+import frc.robot.arbitraryTriggers.ArbitraryTriggers;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToCoralCommand;
-import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.GarageDriveToPoseCommand;
-import frc.robot.commands.PathfindToPoseCommand;
-import frc.robot.commands.Score;
 import frc.robot.humanControls.DriverControls;
 import frc.robot.humanControls.ElasticTabs;
 import frc.robot.humanControls.OperatorControls;
@@ -74,18 +53,13 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
 import frc.robot.subsystems.vision.VisionIOSimPhoton;
-import frc.robot.util.PoseUtils;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
-
 import java.util.function.Consumer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -124,6 +98,7 @@ public class RobotContainer {
   private DriverControls driverControls;
   private OperatorControls operatorControls;
   private ElasticTabs elasticTabs;
+  private ArbitraryTriggers arbitraryTriggers;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -186,8 +161,6 @@ public class RobotContainer {
         break;
     }
 
-    
-
     // ============================================================================================================================================
 
     // Set up auto routines
@@ -224,7 +197,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure arbitrary triggers
-    configureArbitraryTriggers();
+    arbitraryTriggers = new ArbitraryTriggers(this, controller, robotState);
   }
 
   private void configureButtonBindings() {
@@ -245,119 +218,6 @@ public class RobotContainer {
     // endEffector.setDefaultCommand(defaultEndEffectorCommand());
     claw.setDefaultCommand(claw.clawDefault());
     intake.setDefaultCommand(intake.intakeDefault());
-  }
-
-  
-  private void configureArbitraryTriggers() {
-    // feeder.dejamTrigger.onTrue(intake.dejamFeeder());
-    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
-
-    // recommended but untested
-    claw.exhaustedCoral()
-        .debounce(0.1)
-        .onTrue(Commands.runOnce(() -> CoralStateTracker.forceSet(CoralPosition.NONE)));
-
-    Trigger exhaustedAlgaeTrigger =
-        new Trigger(() -> claw.getClawState() == ClawState.SCORING_ALGAE && !RobotState.hasAlgae());
-
-    exhaustedAlgaeTrigger
-        .debounce(0.5)
-        .onTrue(
-            Commands.either(
-                claw.setClawStateCommand(ClawState.INTAKING_CORAL),
-                claw.setClawStateCommand(ClawState.IDLE),
-                () -> CoralStateTracker.hasCoral()));
-
-    Trigger autoPreScoreTrigger =
-        new Trigger(
-            () ->
-                CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR
-                    && RobotState.getSuperstructureState() == SuperstructureState.STOW
-                    && RobotState.getSuperstructureTargetState() == SuperstructureState.STOW);
-
-    autoPreScoreTrigger
-        .debounce(0.25)
-        .onTrue(
-            Commands.either(
-                Commands.none(),
-                Commands.either(
-                    superstructure
-                        .setStateCommand(SuperstructureState.L1_AIM, "PRE_SCORE_L1")
-                        .asProxy(),
-                    Commands.either(
-                        superstructure
-                            .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
-                            .asProxy(),
-                        superstructure
-                            .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3_OR_L4")
-                            .asProxy(),
-                        () ->
-                            robotState.getStoredScorePosition().getCoralScoreLevel()
-                                == ScoreLevel.L2),
-                    () ->
-                        robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1),
-                () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.NONE));
-
-    //
-    Trigger autoStowAlgaeTrigger =
-        new Trigger(
-            () ->
-                RobotState.hasAlgae()
-                    && RobotState.getSuperstructureState()
-                        == SuperstructureState.INTAKE_ALGAE_GROUND);
-
-    autoStowAlgaeTrigger
-        .debounce(0.2)
-        .onTrue(superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Auto Stow Algae"));
-
-    Trigger hasAlgaeHaptics = new Trigger(() -> RobotState.hasAlgae());
-    Trigger hasCoralHaptics =
-        new Trigger(
-            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR);
-
-    hasAlgaeHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
-
-    hasAlgaeHaptics.onFalse(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
-
-    hasCoralHaptics.onTrue(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.5))
-            .andThen(new WaitCommand(0.5))
-            .andThen(Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0))));
-
-    hasCoralHaptics.onFalse(
-        Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 0.0)));
-
-    Command dejamCommand =
-        intake
-            .setIntakeStateCommand(IntakeState.REJECT_CORAL)
-            .asProxy()
-            .andThen(new WaitCommand(0.1)) // PREVIOUSLY 0.2
-            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
-
-    Command intakeDejamCommand =
-        intake
-            .setIntakeStateCommand(IntakeState.IDLE)
-            .asProxy()
-            .andThen(new WaitCommand(0.1)) // PREVIOUSLY 0.2
-            .andThen(intake.setIntakeStateCommand(IntakeState.INTAKE).asProxy());
-
-    CoralStateTracker.isStuckAtFrontFeederTrigger().onTrue(dejamCommand);
-
-    CoralStateTracker.isStuckAtIntakeTrigger().onTrue(intakeDejamCommand);
-
-    intake.rejectCoralIntakeTrigger.onTrue(
-        intake.setIntakeStateCommand(IntakeState.REJECT_INTAKE_CORAL));
-
-    intake.rejectCoralIntakeTrigger.onFalse(intake.setIntakeStateCommand(IntakeState.IDLE));
-
-    intake.rejectCoralIntakeAndFeederTrigger.onTrue(
-        intake.setIntakeStateCommand(IntakeState.REJECT_CORAL));
-    intake.rejectCoralIntakeAndFeederTrigger.onFalse(
-        intake.setIntakeStateCommand(IntakeState.IDLE));
   }
 
   /**

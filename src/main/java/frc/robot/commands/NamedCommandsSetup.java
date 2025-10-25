@@ -1,36 +1,34 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotContainer;
-import frc.robot.RobotState;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.RobotState.ScoreLevel;
 import frc.robot.Field.FieldUtils;
+import frc.robot.RobotContainer;
+import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreLevel;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
+import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PoseUtils;
 
 public class NamedCommandsSetup {
-    public NamedCommandsSetup(RobotContainer container, RobotState robotState) {
-        Superstructure superstructure = container.getSuperStructure();
-        Intake intake = container.getIntake();
-        Claw claw = container.getClaw();
-        Vision vision = container.getVision();
-        DriveSubsystem drive = container.getDrive();
-        
+  public NamedCommandsSetup(RobotContainer container, RobotState robotState) {
+    Superstructure superstructure = container.getSuperStructure();
+    Intake intake = container.getIntake();
+    Claw claw = container.getClaw();
+    Vision vision = container.getVision();
+    DriveSubsystem drive = container.getDrive();
 
-        // ====================AUTO STARTUP COMMANDS====================
+    // ====================AUTO STARTUP COMMANDS====================
     NamedCommands.registerCommand(
         "SuperStructureStartup",
         superstructure.setStateCommand(SuperstructureState.STOW, "STOW").asProxy());
@@ -115,5 +113,5 @@ public class NamedCommandsSetup {
     // Pose2d(6.043, 4.060, Rotation2d.k180deg)));
     // NamedCommands.registerCommand("DriveStraightBlue", new DriveToPosePIDCommand(PEND, PEND,
     // PEND));
-    }
+  }
 }

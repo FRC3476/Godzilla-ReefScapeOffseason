@@ -1,7 +1,5 @@
 package frc.robot.humanControls;
 
-import java.util.Map;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,27 +12,28 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
-
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 public class TestOperatorControls {
-    private final RobotContainer container;
-    private final Superstructure superstructure;
-    private final Intake intake;
-    private final StreamDeck streamdeck;
-    private final RobotState robotState;
+  private final RobotContainer container;
+  private final Superstructure superstructure;
+  private final Intake intake;
+  private final StreamDeck streamdeck;
+  private final RobotState robotState;
 
-    public TestOperatorControls(RobotContainer container, StreamDeck streamdeck, RobotState robotState) {
-        this.container = container;
-        this.streamdeck = streamdeck;
-        this.robotState = robotState;
-        superstructure = container.getSuperStructure();
-        intake = container.getIntake();
-        configureTestingStreamDeckBindings();
-    }
+  public TestOperatorControls(
+      RobotContainer container, StreamDeck streamdeck, RobotState robotState) {
+    this.container = container;
+    this.streamdeck = streamdeck;
+    this.robotState = robotState;
+    superstructure = container.getSuperStructure();
+    intake = container.getIntake();
+    configureTestingStreamDeckBindings();
+  }
 
-    private void configureTestingStreamDeckBindings() {
+  private void configureTestingStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
         new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
@@ -404,5 +403,4 @@ public class TestOperatorControls {
             superstructure.setStateCommand(
                 SuperstructureState.BARGE_AIM_BACKWARD, "Set BARGE_AIM_BACKWARD"));
   }
-
 }
