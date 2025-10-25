@@ -574,7 +574,7 @@ public final class Constants {
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625 - 0.01;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
@@ -675,7 +675,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_CORAL_VOLTS = 7;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -8;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -5;
     public static final double ROLLER_HOLDING_CORAL_VOLTS = 3;
 
     // Reef Collision Avoidance
