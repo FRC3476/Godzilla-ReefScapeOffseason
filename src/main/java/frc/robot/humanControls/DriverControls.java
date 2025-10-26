@@ -222,7 +222,7 @@ public class DriverControls {
                         new WaitUntilCommand(
                                 () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                             .withTimeout(3),
-                        new WaitCommand(1.0),
+                        new WaitCommand(0.5),
                         () -> RobotState.getSuperstructureState().isCoralState()),
                     superstructure
                         .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
@@ -248,8 +248,11 @@ public class DriverControls {
                 new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
                 () ->
                     (drive.isRobotStable()
-                            && RobotState.getSuperstructureTargetState() == SuperstructureState.L4_AIM)
-                        || (RobotState.getSuperstructureTargetState().isScoringState() && RobotState.getSuperstructureTargetState() != SuperstructureState.L4_AIM)
+                            && RobotState.getSuperstructureTargetState()
+                                == SuperstructureState.L4_AIM)
+                        || (RobotState.getSuperstructureTargetState().isScoringState()
+                            && RobotState.getSuperstructureTargetState()
+                                != SuperstructureState.L4_AIM)
                         || RobotState.getSuperstructureTargetState().isAlgaeScoringState()));
   }
 }

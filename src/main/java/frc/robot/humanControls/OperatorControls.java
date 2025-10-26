@@ -529,12 +529,14 @@ public class OperatorControls {
         .and(autoClimbTrigger)
         .onTrue(climber.climbClimb().withName("AutoClimb"));
 
+    // left and right are swapped on purpose to match the operator's POV
     streamdeck
         .button(autoScoreLeftButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetLeft()).asProxy());
+        .onTrue(Commands.runOnce(() -> robotState.offsetRight()).asProxy());
     streamdeck
         .button(autoScoreRightButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetRight()).asProxy());
+        .onTrue(Commands.runOnce(() -> robotState.offsetLeft()).asProxy());
+
     streamdeck
         .button(autoScoreForwardButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetForward()).asProxy());
