@@ -46,7 +46,8 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    io.setElevatorZero();
+    io.setElevatorPosition(0.0);
+    isZeroed = true;
     System.out.println("====================Elevator Subsystem Online====================");
   }
 
@@ -55,7 +56,7 @@ public class Elevator extends SubsystemBase {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
-
+    autoHome();
     Logger.recordOutput("Elevator/TargetPosition", setpoint);
     // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
@@ -163,20 +164,48 @@ public class Elevator extends SubsystemBase {
 
   private boolean isHomingComplete() {
     // Check if homing is complete using the same logic as checkForJam for bottom detection
-    if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
-            || !isZeroed)) {
-
-      io.setElevatorZero();
-      isZeroed = true;
-      return true;
+    if (io.checkMotorsStalled() && !isZeroed) {
+      // at the bottom hardstop?
+      if (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(0.0);
+        isZeroed = true;
+        return true;
+      }
+      // at the top hardstop?
+      if (MathUtil.isNear(
+          ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH,
+          getCurrentPosition(),
+          ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+        isZeroed = true;
+        return true;
+      }
     }
     return false;
   }
 
+  private void autoHome() {
+    // Check if homing is complete using the same logic as checkForJam for bottom detection
+    if (io.checkMotorsStalled()) {
+      // at the bottom hardstop?
+      if (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(0.0);
+        isZeroed = true;
+      }
+      // at the top hardstop?
+      if (MathUtil.isNear(
+          ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH,
+          getCurrentPosition(),
+          ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+        isZeroed = true;
+      }
+    }
+  }
+
   private boolean isManualHomingComplete() {
     if (io.checkMotorsStalled()) {
-      io.setElevatorZero();
+      io.setElevatorPosition(0.0);
       isZeroed = true;
       return true;
     }
@@ -185,7 +214,7 @@ public class Elevator extends SubsystemBase {
 
   public Command manualSetElevatorZero() {
     isZeroed = true;
-    return Commands.runOnce(() -> io.setElevatorZero(), this);
+    return Commands.runOnce(() -> io.setElevatorPosition(0.0), this);
   }
 
   public Command dejamElevator() {
