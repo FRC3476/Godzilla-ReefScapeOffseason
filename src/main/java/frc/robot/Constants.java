@@ -825,6 +825,13 @@ public final class Constants {
     // Validation constants
     public static final int kMinFiducialCount = 1;
     public static final int kExpectedStdDevArrayLength = 12;
+
+    // Coral Position Constants
+    public static final double kIntakeCameraHeight = Units.inchesToMeters(36.916501);
+    public static final double kIntakeCameraPitchDegrees = 62.5;
+    public static final double kIntakeCameraOffset = Units.inchesToMeters(-1.852118);
+    public static final double kIntakeCameraHorizontalFOVDegrees = 62.5;
+    public static final double kIntakeCameraVerticalFOVDegrees = 48.9;
   }
 
   public static class SuperstructureConstants {

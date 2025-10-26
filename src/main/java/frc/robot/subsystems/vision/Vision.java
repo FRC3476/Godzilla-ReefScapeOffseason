@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,6 +20,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -45,6 +48,54 @@ public class Vision extends SubsystemBase {
 
   public double getCoralTy() {
     return io.getCoralTy();
+  }
+
+  public double getCoralTxNc() {
+    return io.getCoralTxNc();
+  }
+
+  public double getCoralTyNc() {
+    return io.getCoralTyNc();
+  }
+
+  public Transform2d getCoralPositionRelativeToRobot() {
+    double dy =
+        VisionConstants.kIntakeCameraHeight
+            * Math.tan(
+                Units.degreesToRadians(
+                    VisionConstants.kIntakeCameraPitchDegrees
+                        + getCoralTyNc()));
+
+    double d0 = Math.sqrt(Math.pow(dy, 2) + Math.pow(VisionConstants.kIntakeCameraHeight, 2));
+
+    double dx = d0 * Math.tan(Units.degreesToRadians(getCoralTxNc()));
+
+    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, dx, Rotation2d.kZero);
+  }
+
+  public Transform2d getCoralPositionRelativeToRobot(Pair<Double, Double> TNCs) {
+    double dy =
+        VisionConstants.kIntakeCameraHeight
+            * Math.tan(
+                Units.degreesToRadians(
+                    VisionConstants.kIntakeCameraPitchDegrees
+                        + TNCs.getSecond()));
+
+    double d0 = Math.sqrt(Math.pow(dy, 2) + Math.pow(VisionConstants.kIntakeCameraHeight, 2));
+
+    double dx = d0 * Math.tan(Units.degreesToRadians(TNCs.getFirst()));
+
+    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, dx, Rotation2d.kZero);
+  }
+
+
+  public Pose2d getCoralPose() {
+    return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot());
+  }
+
+  
+  public Pose2d getCoralPose(Pair<Double, Double> TNCs) {
+    return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot(TNCs));
   }
 
   /** Fuses two vision pose estimates using inverse-variance weighting. */
@@ -145,6 +196,16 @@ public class Vision extends SubsystemBase {
         });
 
     Logger.recordOutput("Vision/exclusiveTagId", state.getExclusiveTag().orElse(-1));
+
+    Logger.recordOutput("Vision/objectDetection/isCoralDetected", isCoralDetected());
+    if (isCoralDetected()) {
+      Logger.recordOutput("Vision/objectDetection/coralTx", getCoralTx());
+      Logger.recordOutput("Vision/objectDetection/CoralTy", getCoralTy());
+      Logger.recordOutput("Vision/objectDetection/coralToRobot", getCoralPositionRelativeToRobot());
+      Logger.recordOutput("Vision/objectDetection/coralPose", getCoralPose());
+      processCoralDetections();
+    }
+
     Logger.recordOutput("Vision/latencyPeriodicSec", RobotTime.getTimestampSeconds() - startTime);
   }
 
@@ -451,6 +512,14 @@ public class Vision extends SubsystemBase {
             cam.megatagDistance));
   }
 
+  private void processCoralDetections() {
+    ArrayList<Pair<Double, Double>> allCoralTNCs = io.getAllCoralTNCs();
+    ArrayList<Pose2d> coralPoses = new ArrayList<>();
+    for (Pair<Double, Double> coralTNC : allCoralTNCs) {
+      coralPoses.add(getCoralPose(coralTNC));
+    }
+  }
+  
   public void setUseVision(boolean useVision) {
     this.useVision = useVision;
   }

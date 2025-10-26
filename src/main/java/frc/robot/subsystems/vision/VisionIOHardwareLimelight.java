@@ -1,8 +1,11 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.VisionConstants;
+
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.littletonrobotics.junction.AutoLogOutput;
 
@@ -17,6 +20,8 @@ public class VisionIOHardwareLimelight implements VisionIO {
 
   double coral_tx = 0.0;
   double coral_ty = 0.0;
+  double coral_txnc = 0.0;
+  double coral_tync = 0.0;
 
   private static final double[] DEFAULT_STDDEVS =
       new double[VisionConstants.kExpectedStdDevArrayLength];
@@ -109,4 +114,29 @@ public class VisionIOHardwareLimelight implements VisionIO {
         isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
     return coral_ty;
   }
+  @Override
+  public double getCoralTxNc() {
+    coral_txnc =
+        isCoralDetected() ? LimelightHelpers.getTXNC(VisionConstants.DETECTION_LIMELIGHT) : coral_txnc;
+    return coral_txnc;
+  }
+
+  @Override
+  public double getCoralTyNc() {
+    coral_tync =
+        isCoralDetected() ? LimelightHelpers.getTYNC(VisionConstants.DETECTION_LIMELIGHT) : coral_tync;
+    return coral_tync;
+  }
+
+  @Override
+  public ArrayList<Pair<Double, Double>> getAllCoralTNCs() {
+    LimelightHelpers.RawDetection[] detections =
+        isCoralDetected() ? LimelightHelpers.getRawDetections(VisionConstants.DETECTION_LIMELIGHT) : new LimelightHelpers.RawDetection[0];
+    ArrayList<Pair<Double, Double>> tncs = new ArrayList<Pair<Double, Double>>(detections.length);
+    for (int i = 0; i < detections.length; i++) {
+        tncs.set(i, new Pair<Double,Double>(detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
+    }
+    return tncs;
+  }
+
 }
