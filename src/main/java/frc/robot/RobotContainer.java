@@ -92,6 +92,7 @@ import frc.robot.util.Controls.StreamDeck;
 import frc.robot.util.Controls.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeckButtonConfig;
 import frc.robot.util.PoseUtils;
+import frc.robot.viz.RobotViz;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -117,6 +118,7 @@ public class RobotContainer {
   private final ClimbRoller climbRoller;
   private final Feeder feeder;
   private final Vision vision;
+  private final RobotViz robotViz;
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
       new Consumer<VisionFieldPoseEstimate>() {
@@ -156,6 +158,7 @@ public class RobotContainer {
                     Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
                     Constants.DriveConstants.kDrivetrain.getModuleConstants()),
                 robotState);
+        robotViz = null; // No visualization on real robot
         break;
 
       case SIM:
@@ -176,6 +179,7 @@ public class RobotContainer {
                     Constants.DriveConstants.kDrivetrain.getDriveTrainConstants(),
                     Constants.DriveConstants.kDrivetrain.getModuleConstants()),
                 robotState);
+        robotViz = new RobotViz(elevator, endEffector, intake, claw, feeder, climber, climbRoller);
         break;
 
       default:
@@ -190,6 +194,7 @@ public class RobotContainer {
         climbRoller = new ClimbRoller(new ClimbRollerIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
+        robotViz = null; // No visualization for replay
         break;
     }
 
@@ -2259,5 +2264,9 @@ public class RobotContainer {
 
   public Superstructure getSuperStructure() {
     return superstructure;
+  }
+
+  public RobotViz getRobotViz() {
+    return robotViz;
   }
 }

@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.DoubleSupplier;
@@ -102,6 +103,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
   public void updateInputs(ElevatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("Elevator", signals);
 
     inputs.rightMotorData =
         new ElevatorIO.RightMotorData(

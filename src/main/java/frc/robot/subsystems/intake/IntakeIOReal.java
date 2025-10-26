@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
@@ -150,6 +151,7 @@ public class IntakeIOReal implements IntakeIO {
 
   public void updateInputs(IntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("Intake", signals);
 
     inputs.pivotData =
         new PivotData(

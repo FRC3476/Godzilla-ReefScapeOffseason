@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.FeederConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
@@ -136,6 +137,7 @@ public class FeederIOReal implements FeederIO {
 
   public void updateInputs(FeederIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("Feeder", signals);
 
     inputs.rightRollerData =
         new F_RollerData(

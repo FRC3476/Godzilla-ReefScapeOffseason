@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
@@ -86,6 +87,7 @@ public class ClawIOReal implements ClawIO {
   @Override
   public void updateInputs(ClawIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("Claw", signals);
 
     inputs.rollerData =
         new EE_RollerData(

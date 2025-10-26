@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.RobotState;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.RobotTime;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -152,14 +153,18 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     var desiredFieldRelativeChassisSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(desiredRobotRelativeChassisSpeeds, gyroRotation);
 
-    BaseStatusSignal.refreshAll(
-        angularRollVelocity,
-        angularPitchVelocity,
-        angularYawVelocity,
-        pitch,
-        roll,
-        accelerationX,
-        accelerationY);
+    BaseStatusSignal[] gyroSignals =
+        new BaseStatusSignal[] {
+          angularRollVelocity,
+          angularPitchVelocity,
+          angularYawVelocity,
+          pitch,
+          roll,
+          accelerationX,
+          accelerationY
+        };
+    BaseStatusSignal.refreshAll(gyroSignals);
+    CANDiagnostics.checkSignalHealth("Drive/Gyro", gyroSignals);
 
     double timestamp = RobotTime.getTimestampSeconds();
     double rollRadsPerS = Units.degreesToRadians(angularRollVelocity.getValueAsDouble());

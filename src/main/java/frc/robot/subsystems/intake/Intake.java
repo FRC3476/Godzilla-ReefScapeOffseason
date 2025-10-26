@@ -116,6 +116,10 @@ public class Intake extends SubsystemBase {
     return io.checkRollerStalled() || feeder.checkForJam();
   }
 
+  public double getRollerVelocityRPS() {
+    return inputs.rollerData.velocityRPS();
+  }
+
   public Command intakeFWD() {
     return Commands.runOnce(() -> this.io.setRollerVoltage(rollerIntakeVolts.get()), this);
   }

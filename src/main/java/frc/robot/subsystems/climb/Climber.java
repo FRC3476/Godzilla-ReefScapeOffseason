@@ -81,4 +81,8 @@ public class Climber extends SubsystemBase {
   public Trigger climbFinished() {
     return new Trigger(() -> this.io.checkClimbMotorStalled());
   }
+
+  public double getPositionRadians() {
+    return inputs.data.positionRads();
+  }
 }

@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
 
@@ -63,6 +64,7 @@ public class ClimbRollerIOReal implements ClimbRollerIO {
   @Override
   public void updateInputs(ClimbRollerIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("ClimbRoller", signals);
 
     inputs.rollerData =
         new ClimbRollerData(

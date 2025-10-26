@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
@@ -89,6 +90,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
+    CANDiagnostics.checkSignalHealth("EndEffector", signals);
 
     inputs.pivotData =
         new EE_PivotData(

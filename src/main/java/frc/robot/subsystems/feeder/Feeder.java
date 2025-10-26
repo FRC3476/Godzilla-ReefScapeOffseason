@@ -52,4 +52,8 @@ public class Feeder extends SubsystemBase {
 
   public Trigger dejamTrigger =
       new Trigger(() -> checkForJam()).debounce(FeederConstants.DEJAM_DEBOUNCE_SECONDS);
+
+  public double getRightRollerVelocityRPS() {
+    return inputs.rightRollerData.velocityRPS();
+  }
 }

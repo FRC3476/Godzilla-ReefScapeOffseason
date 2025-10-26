@@ -231,4 +231,8 @@ public class Claw extends SubsystemBase {
     return Commands.runOnce(
         () -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
   }
+
+  public double getRollerVelocityRPS() {
+    return inputs.rollerData.rollerVelocityRPS();
+  }
 }

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.util.CANDiagnostics;
 import frc.robot.util.LoopTimingLogger;
 import frc.robot.util.MagicVirtualSubsystem;
 import java.io.File;
@@ -215,6 +216,9 @@ public class Robot extends LoggedRobot {
     MagicVirtualSubsystem.runPeriodically();
     LoopTimingLogger.endTiming("VirtualSubsystems");
 
+    // Periodic CAN diagnostics health check
+    CANDiagnostics.periodicHealthCheck();
+
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
 
@@ -348,6 +352,11 @@ public class Robot extends LoggedRobot {
     LoopTimingLogger.startTiming("VirtualSubsystemsSimulation");
     MagicVirtualSubsystem.runSimulationPeriodically();
     LoopTimingLogger.endTiming("VirtualSubsystemsSimulation");
+
+    // Update robot visualization for AdvantageScope
+    if (robotContainer.getRobotViz() != null) {
+      robotContainer.getRobotViz().updateViz();
+    }
 
     LoopTimingLogger.endTiming("SimulationPeriodic");
   }

@@ -71,4 +71,8 @@ public class ClimbRoller extends SubsystemBase {
   public boolean hasCage() {
     return io.checkRollerStalled() && climbing;
   }
+
+  public double getRollerVelocityRPS() {
+    return inputs.rollerData.rollerVelocityRPS();
+  }
 }
