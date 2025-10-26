@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.leds.TeleopLedCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoopTimingLogger;
@@ -267,6 +268,8 @@ public class Robot extends LoggedRobot {
     robotContainer.getSuperStructure().clearCommandsIfManualOverride().schedule();
 
     robotContainer.getSuperStructure().setStateCommand(state, "Auto End Reset").schedule();
+
+    new TeleopLedCommand(robotContainer).schedule();
   }
 
   /** This function is called periodically during operator control. */

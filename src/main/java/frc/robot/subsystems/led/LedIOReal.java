@@ -8,9 +8,14 @@ import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.controls.StrobeAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.AnimationDirectionValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
 import frc.robot.Constants;
+import frc.robot.Constants.LedConstants;
+import frc.robot.Constants.LedConstants.LedStrip;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PhoenixUtil;
+import java.util.function.Supplier;
 
 public class LedIOReal implements LedIO {
   private final CANdle candle;
@@ -42,27 +47,126 @@ public class LedIOReal implements LedIO {
   //   if (candle != null) candle.setControl(new SolidColor(0, 399).withColor(state.getRGBW()));
   // }
 
-  @Override
-  public void writePixels(LedState state) {
+  private void clearLeds() {
+    clearLeft();
+    clearRight();
+  }
+
+  private void clearLeft() {
     candle.setControl(new EmptyAnimation(0));
-    candle.setControl(new SolidColor(0, 399).withColor(state.getRGBW()));
+  }
+
+  private void clearRight() {
+    candle.setControl(new EmptyAnimation(1));
   }
 
   @Override
+  public void writePixels(LedState state, LedStrip strip) {
+
+    switch (strip) {
+      case LEFT:
+        clearLeft();
+        candle.setControl(
+            new SolidColor(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW()));
+        break;
+      case RIGHT:
+        clearRight();
+        candle.setControl(
+            new SolidColor(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW()));
+        break;
+      case BOTH:
+        clearLeds();
+        candle.setControl(
+            new SolidColor(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW()));
+        candle.setControl(
+            new SolidColor(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW()));
+        break;
+    }
+  }
+
+  @Override
+  public void writeNumPixels(LedState state, Supplier<Integer> numLeds) {
+    clearLeds();
+    candle.setControl(new EmptyAnimation(0));
+    candle.setControl(new SolidColor(0, numLeds.get()).withColor(state.getRGBW()));
+    candle.setControl(new SolidColor(numLeds.get(), 399).withColor(LedState.kOff.getRGBW()));
+  }
+
+  private static final LoggedTunableNumber fireSparking =
+      new LoggedTunableNumber("LED/Fire Sparking", 0.5);
+  private static final LoggedTunableNumber fireCooling =
+      new LoggedTunableNumber("LED/Fire Cooling", 0.5);
+  private static final LoggedTunableNumber fireFrameRate =
+      new LoggedTunableNumber("LED/Fire Frame Rate", 1);
+
+  @Override
   public void fire() {
-    if (candle != null)
-      candle.setControl(new FireAnimation(0, 399).withSparking(0.1).withCooling(0.7));
+    clearLeds();
+    candle.setControl(
+        new FireAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+            .withSparking(fireSparking.get())
+            .withCooling(fireCooling.get())
+            .withFrameRate(fireFrameRate.get())
+            .withSlot(0));
+    candle.setControl(
+        new FireAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+            .withSparking(fireSparking.get())
+            .withCooling(fireCooling.get())
+            .withFrameRate(fireFrameRate.get())
+            .withDirection(AnimationDirectionValue.Backward)
+            .withSlot(1));
   }
 
   @Override
   public void rainbow() {
-    if (candle != null) candle.setControl(new RainbowAnimation(0, 399));
+    clearLeds();
+    candle.setControl(
+        new RainbowAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+            .withSlot(0));
+    candle.setControl(
+        new RainbowAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+            .withDirection(AnimationDirectionValue.Backward)
+            .withSlot(1));
   }
 
   @Override
-  public void blink(LedState state, double duration) {
-    candle.setControl(
-        new StrobeAnimation(0, 399).withColor(state.getRGBW()).withUpdateFreqHz(1 / duration));
+  public void blink(LedState state, double duration, LedStrip strip) {
+
+    switch (strip) {
+      case LEFT:
+        clearLeft();
+        candle.setControl(
+            new StrobeAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withUpdateFreqHz(1 / duration)
+                .withSlot(0));
+        break;
+      case RIGHT:
+        clearRight();
+        candle.setControl(
+            new StrobeAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withUpdateFreqHz(1 / duration)
+                .withSlot(1));
+        break;
+      case BOTH:
+        clearLeds();
+        candle.setControl(
+            new StrobeAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withUpdateFreqHz(1 / duration)
+                .withSlot(0));
+        candle.setControl(
+            new StrobeAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withUpdateFreqHz(1 / duration)
+                .withSlot(1));
+        break;
+    }
   }
 
   @Override

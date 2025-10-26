@@ -32,6 +32,10 @@ public class Climber extends SubsystemBase {
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
+  public boolean isOK() {
+    return inputs.data.motorConnected();
+  }
+
   public Command climbVoltOut() {
     return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }

@@ -8,6 +8,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
@@ -378,6 +379,15 @@ public class ElasticTabs {
 
     tab.addButton("Solid Red")
         .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed));
+    tab.addButton("Right Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed, LedStrip.RIGHT));
+    tab.addButton("Left Yellow")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColor(LedState.kYellow, LedStrip.LEFT));
+    tab.addButton("Right Red Left Yellow")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColor(LedState.kRed, LedStrip.RIGHT)
+                .andThen(led.commandSolidColor(LedState.kYellow, LedStrip.LEFT)));
     tab.addButton("Solid Orange").setupOnPressCommandIgnoringDisabled(led.commandSetOrange());
     tab.addButton("Solid Teal").setupOnPressCommandIgnoringDisabled(led.commandSetTeal());
     tab.addButton("Blink Red")
@@ -388,6 +398,9 @@ public class ElasticTabs {
     tab.addButton("Half Orange")
         .setupOnPressCommandIgnoringDisabled(
             led.commandPercentageFull(() -> 0.5, LedState.kCOOrangeLed));
+    tab.addButton("Partial Orange")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColorNumLeds(LedState.kCOOrangeLed, led::getLedsOn));
   }
 
   private void buildTestTab() {

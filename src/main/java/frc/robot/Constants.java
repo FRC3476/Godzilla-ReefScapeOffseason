@@ -741,9 +741,20 @@ public final class Constants {
   // ====================LED (8_)====================
   public static final class LedConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
-    public static final int kNonCandleLEDCount = 392;
+    public static final int kNonCandleLEDCount = 32;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final int kLeftLEDStartIdx = 8;
+    public static final int kLeftLEDEndIdx = 23;
+    public static final int kRightLEDStartIdx = 24;
+    public static final int kRightLEDEndIdx = 40;
+
+    public enum LedStrip {
+      LEFT,
+      RIGHT,
+      BOTH
+    }
+
     public static final double kLowBatteryThresholdVolts = 12.3;
   }
 

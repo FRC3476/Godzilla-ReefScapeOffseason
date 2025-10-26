@@ -3,6 +3,7 @@ package frc.robot.subsystems.led;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
@@ -12,19 +13,7 @@ import org.littletonrobotics.junction.Logger;
 public class Led extends SubsystemBase {
   private final LedIO io;
   private final RobotState state;
-
-  private static final LoggedTunableNumber orangeR =
-      new LoggedTunableNumber("LED/Orange R", LedState.kCOOrangeLed.red);
-  private static final LoggedTunableNumber orangeG =
-      new LoggedTunableNumber("LED/Orange G", LedState.kCOOrangeLed.green); // Placeholder value
-  private static final LoggedTunableNumber orangeB =
-      new LoggedTunableNumber("LED/Orange B", LedState.kCOOrangeLed.blue);
-  private static final LoggedTunableNumber tealR =
-      new LoggedTunableNumber("LED/Teal R", LedState.kCOTealLed.red);
-  private static final LoggedTunableNumber tealG =
-      new LoggedTunableNumber("LED/Teal G", LedState.kCOTealLed.green); // Placeholder value
-  private static final LoggedTunableNumber tealB =
-      new LoggedTunableNumber("LED/Teal B", LedState.kCOTealLed.blue);
+  private static final LoggedTunableNumber LedsOn = new LoggedTunableNumber("LED/Num On", 0);
 
   public record PercentageSetpoint(double pct, LedState color) {}
 
@@ -47,13 +36,33 @@ public class Led extends SubsystemBase {
     return io.getCurrentState();
   }
 
+  public int getLedsOn() {
+    return (int) Math.round(LedsOn.get());
+  }
+
   /* change runOnce to run in case we have to keep setting the LED color periodically? */
   public Command commandSolidColor(LedState state) {
-    return run(() -> setSolidColor(state)).ignoringDisable(true).withName("LED Solid Color");
+    return run(() -> setSolidColor(state, LedStrip.BOTH))
+        .ignoringDisable(true)
+        .withName("LED Solid Color");
+  }
+
+  public Command commandSolidColor(LedState state, LedStrip strip) {
+    return runOnce(() -> setSolidColor(state, strip))
+        .ignoringDisable(true)
+        .withName("LED Solid Color");
   }
 
   public Command commandSolidColor(Supplier<LedState> state) {
-    return run(() -> setSolidColor(state.get())).ignoringDisable(true).withName("LED Solid Color");
+    return runOnce(() -> setSolidColor(state.get()))
+        .ignoringDisable(true)
+        .withName("LED Solid Color");
+  }
+
+  public Command commandSolidColorNumLeds(LedState state, Supplier<Integer> numLeds) {
+    return runOnce(() -> setSolidColorNumLeds(state, numLeds))
+        .ignoringDisable(true)
+        .withName("LED Solid Color Num Leds");
   }
 
   public Command commandOff() {
@@ -83,7 +92,15 @@ public class Led extends SubsystemBase {
   }
 
   public Command commandBlinkingState(LedState state, double duration) {
-    return this.runOnce(() -> this.io.blink(state, duration));
+    return this.runOnce(() -> blinkingState(state, duration, LedStrip.BOTH));
+  }
+
+  public Command commandBlinkingState(LedState state, double duration, LedStrip strip) {
+    return this.runOnce(() -> blinkingState(state, duration, strip));
+  }
+
+  public void blinkingState(LedState state, double duration, LedStrip strip) {
+    this.io.blink(state, duration, strip);
   }
 
   public Command commandFire() {
@@ -95,7 +112,16 @@ public class Led extends SubsystemBase {
   }
 
   private void setSolidColor(LedState state) {
-    io.writePixels(state);
+    io.writePixels(state, LedStrip.BOTH);
+  }
+
+  private void setSolidColor(LedState state, LedStrip strip) {
+    io.writePixels(state, strip);
+  }
+
+  private void setSolidColorNumLeds(LedState state, Supplier<Integer> numLeds) {
+    System.out.println(numLeds);
+    io.writeNumPixels(state, numLeds);
   }
 
   private void setSolidPattern(LedState[] states) {
