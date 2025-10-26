@@ -240,6 +240,23 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isCoralScoringState() {
+    return isUprightScoringState() || isL1ScoringState();
+  }
+
+  public boolean isAlgaeScoringState() {
+    switch (this) {
+      case PROCESSOR_AIM, BARGE_AIM_BACKWARD, BARGE_AIM_FORWARD:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public boolean isScoringState() {
+    return isCoralScoringState() || isAlgaeScoringState();
+  }
+
   public boolean isFadeawayState() {
     switch (this) {
       case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:

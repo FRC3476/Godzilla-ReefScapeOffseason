@@ -1,4 +1,4 @@
-package frc.robot.util.Controls;
+package frc.robot.util.Controls.StreamDeck;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.BooleanPublisher;

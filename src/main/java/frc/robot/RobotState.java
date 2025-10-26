@@ -83,7 +83,7 @@ public class RobotState extends MagicVirtualSubsystem {
     AUTO
   }
 
-  class ScorePosition {
+  public class ScorePosition {
     private ReefSide reefSide;
     private CoralBranch coralBranch;
     private ScoreLevel coralScoreLevel;
@@ -236,6 +236,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer;
 
+  private final RobotContainer robotContainer;
+
   private static Pose2d globalPose = Pose2d.kZero;
 
   private static Pose2d visionPose;
@@ -252,8 +254,10 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static boolean superstructureManualOverrideMode = false;
 
-  public RobotState(Consumer<VisionFieldPoseEstimate> visionEstimateConsumer) {
+  public RobotState(
+      Consumer<VisionFieldPoseEstimate> visionEstimateConsumer, RobotContainer robotContainer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
+    this.robotContainer = robotContainer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
 
@@ -443,7 +447,7 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
-  public static boolean isSafeToStow() {
+  public boolean isSafeToStow() {
     // imaginary position of end effector if extended as far as possible
     Pose2d clearancePose =
         getGlobalPose()
@@ -461,8 +465,9 @@ public class RobotState extends MagicVirtualSubsystem {
             .minus(FieldUtils.getClosestReef().rightPole.getPose())
             .getTranslation()
             .getNorm();
-    return distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
-        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS;
+    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+            && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS)
+        || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
   }
 
   public static final double LOOKBACK_TIME = 1.0;

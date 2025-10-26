@@ -138,6 +138,4 @@ public class Superstructure extends SubsystemBase {
 
     return dynamicLimit;
   }
-
-  public void setTriggers() {}
 }
