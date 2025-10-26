@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Field.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
 import java.util.Optional;
@@ -421,11 +422,14 @@ public class Vision extends SubsystemBase {
       }
     }
 
-    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
-        < VisionConstants.kDefaultNormThreshold) {
+    //if we're not inside the field, we're checking if it's half the width since that's the worst case senario
+    if (!(poseEstimate.fieldToRobot().getTranslation().getX() < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2) ||
+        poseEstimate.fieldToRobot().getTranslation().getX() > 0.0 ||
+        poseEstimate.fieldToRobot().getTranslation().getY() < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2) ||
+        poseEstimate.fieldToRobot().getTranslation().getY() > 0.0)) {
+          
       return Optional.empty();
     }
-
     if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
       return Optional.empty();
     }
@@ -522,22 +526,27 @@ public class Vision extends SubsystemBase {
       return Optional.empty();
     }
 
-    var priorPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
-    if (poseEstimate.avgTagArea() < VisionConstants.kTagAreaThresholdForYawCheck
-        && priorPose.isPresent()) {
-      double yawDiff =
-          Math.abs(
-              MathUtil.angleModulus(
-                  priorPose.get().getRotation().getRadians()
-                      - poseEstimate.fieldToRobot().getRotation().getRadians()));
+    // var priorPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
+    // if (poseEstimate.avgTagArea() < VisionConstants.kTagAreaThresholdForYawCheck
+    //     && priorPose.isPresent()) {
+    //   double yawDiff =
+    //       Math.abs(
+    //           MathUtil.angleModulus(
+    //               priorPose.get().getRotation().getRadians()
+    //                   - poseEstimate.fieldToRobot().getRotation().getRadians()));
 
-      if (yawDiff > Units.degreesToRadians(VisionConstants.kDefaultYawDiffThreshold)) {
-        return Optional.empty();
-      }
-    }
+    //   if (yawDiff > Units.degreesToRadians(VisionConstants.kDefaultYawDiffThreshold)) {
+    //     return Optional.empty();
+    //   }
+    // }
+    
 
-    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
-        < VisionConstants.kDefaultNormThreshold) {
+    //if we're not inside the field, we're checking if it's half the width since that's the worst case senario
+    if (!(poseEstimate.fieldToRobot().getTranslation().getX() < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2) ||
+        poseEstimate.fieldToRobot().getTranslation().getX() > 0.0 ||
+        poseEstimate.fieldToRobot().getTranslation().getY() < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2) ||
+        poseEstimate.fieldToRobot().getTranslation().getY() > 0.0)) {
+          
       return Optional.empty();
     }
 

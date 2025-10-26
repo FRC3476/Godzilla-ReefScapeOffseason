@@ -82,6 +82,7 @@ public final class Constants {
   public static double kAlignOffset = 0.0;
   public static double kAlignOffsetFB = 0.0;
 
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
@@ -143,8 +144,8 @@ public final class Constants {
             ? SimTunerConstants.createDrivetrain()
             : CompTunerConstants.createDrivetrain();
     public static final double kRobotWeightPounds = 150.0;
-    public static final double kBumperLengthInches = 35.625;
-    public static final double kBumperWidthInches = 35.625;
+    public static final double kBumperLengthInches = 37.5;
+    public static final double kBumperWidthInches = 37.75;
     public static final double kWheelCoefficientOfFriction = 1.0;
     public static final int kDriveMotorCount = 1;
 
@@ -799,7 +800,7 @@ public final class Constants {
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
     public static final double kTagMinAreaForMultipleTagMegatag = 0.4;
-    public static final double kDefaultZThreshold = 0.2;
+    public static final double kDefaultZThreshold = 0.5;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
     public static final double kXStdDevCoefficent = 0.3;
