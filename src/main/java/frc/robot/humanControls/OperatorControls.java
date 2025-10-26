@@ -10,7 +10,6 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.AlgaeIntake;
-import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveToCoralCommand;
@@ -146,26 +145,26 @@ public class OperatorControls {
     //         .withInactiveConfig(tealConfig)
     //         .withActiveConfig(activeConfig)
     //         .withText("F");
-    StreamDeckButton reefRightSideButton =
-        new StreamDeckButton(3, 4, "Reef Right Side 1")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("R");
-    StreamDeckButton reefRightSideButton2 =
-        new StreamDeckButton(3, 5, "Reef Right Side 2")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("R");
-    StreamDeckButton reefLeftSideButton =
-        new StreamDeckButton(3, 2, "Reef Left Side 1")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L");
-    StreamDeckButton reefLeftSideButton2 =
-        new StreamDeckButton(3, 3, "Reef Left Side 2")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L");
+    // StreamDeckButton reefRightSideButton =
+    //     new StreamDeckButton(3, 4, "Reef Right Side 1")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("R");
+    // StreamDeckButton reefRightSideButton2 =
+    //     new StreamDeckButton(3, 5, "Reef Right Side 2")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("R");
+    // StreamDeckButton reefLeftSideButton =
+    //     new StreamDeckButton(3, 2, "Reef Left Side 1")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L");
+    // StreamDeckButton reefLeftSideButton2 =
+    //     new StreamDeckButton(3, 3, "Reef Left Side 2")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L");
     StreamDeckButton homeElevatorButton =
         new StreamDeckButton(2, 4, "Home Elevator")
             .withInactiveConfig(orangeOnWhiteConfig)
@@ -320,18 +319,18 @@ public class OperatorControls {
     //     ReefESideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
     // customStreamDeckButtonMap.put(
     //     ReefFSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
-    customStreamDeckButtonMap.put(
-        reefRightSideButton,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
-    customStreamDeckButtonMap.put(
-        reefRightSideButton2,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
-    customStreamDeckButtonMap.put(
-        reefLeftSideButton,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
-    customStreamDeckButtonMap.put(
-        reefLeftSideButton2,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    // customStreamDeckButtonMap.put(
+    //     reefRightSideButton,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
+    // customStreamDeckButtonMap.put(
+    //     reefRightSideButton2,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
+    // customStreamDeckButtonMap.put(
+    //     reefLeftSideButton,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    // customStreamDeckButtonMap.put(
+    //     reefLeftSideButton2,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
     customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton, climbDeployButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton2, climbDeployButtonCommand::isScheduled);
@@ -452,30 +451,30 @@ public class OperatorControls {
     //     .onTrue(
     //         Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.F))
     //             .ignoringDisable(true));
-    streamdeck
-        .button(reefRightSideButton)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefRightSideButton2)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefLeftSideButton)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefLeftSideButton2)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
-                .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefRightSideButton)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefRightSideButton2)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefLeftSideButton)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefLeftSideButton2)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
+    //             .ignoringDisable(true));
     streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
     // streamdeck
     //     .button(setManualScoringButton)
