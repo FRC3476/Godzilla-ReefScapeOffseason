@@ -236,7 +236,7 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer;
 
-  private final RobotContainer robotContainer;
+  private static RobotContainer robotContainer = new RobotContainer();
 
   private static Pose2d globalPose = Pose2d.kZero;
 
@@ -257,7 +257,7 @@ public class RobotState extends MagicVirtualSubsystem {
   public RobotState(
       Consumer<VisionFieldPoseEstimate> visionEstimateConsumer, RobotContainer robotContainer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
-    this.robotContainer = robotContainer;
+    RobotState.robotContainer = robotContainer;
     fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
 
@@ -861,4 +861,12 @@ public class RobotState extends MagicVirtualSubsystem {
 
   @Override
   public void simulationPeriodic() {}
+// because "The field RobotState.robotContainer is not visibleJava(33554503)"
+  public static double calculateDynamicTranslationalAccelLimit() {
+    return RobotState.robotContainer.getSuperStructure().calculateDynamicTranslationalAccelLimit(); 
+  }
+  //same here
+  public static double calculateDynamicRotationalAccelLimit() {
+    return RobotState.robotContainer.getSuperStructure().calculateDynamicRotationalAccelLimit();
+  }
 }

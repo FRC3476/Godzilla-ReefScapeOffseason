@@ -29,14 +29,14 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
               (Constants.DriveConstants.kDriveMaxSpeed / 3),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 3));
+              RobotState.calculateDynamicTranslationalAccelLimit() / 3));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 3));
+              DriveConstants.kDriveMaxAngularRate, RobotState.calculateDynamicRotationalAccelLimit() / 3));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
