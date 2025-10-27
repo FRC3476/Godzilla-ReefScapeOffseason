@@ -36,7 +36,8 @@ public class GarageDriveToPoseCommand extends Command {
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, RobotState.calculateDynamicRotationalAccelLimit() / 3));
+              DriveConstants.kDriveMaxAngularRate,
+              RobotState.calculateDynamicRotationalAccelLimit() / 3));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;

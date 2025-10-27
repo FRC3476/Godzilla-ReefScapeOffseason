@@ -861,11 +861,11 @@ public class RobotState extends MagicVirtualSubsystem {
 
   @Override
   public void simulationPeriodic() {}
-// because "The field RobotState.robotContainer is not visibleJava(33554503)"
+  // because "The field RobotState.robotContainer is not visibleJava(33554503)"
   public static double calculateDynamicTranslationalAccelLimit() {
-    return RobotState.robotContainer.getSuperStructure().calculateDynamicTranslationalAccelLimit(); 
+    return RobotState.robotContainer.getSuperStructure().calculateDynamicTranslationalAccelLimit();
   }
-  //same here
+  // same here
   public static double calculateDynamicRotationalAccelLimit() {
     return RobotState.robotContainer.getSuperStructure().calculateDynamicRotationalAccelLimit();
   }
