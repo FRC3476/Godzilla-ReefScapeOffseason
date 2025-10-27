@@ -103,14 +103,7 @@
                       "data": {
                         "pathName": "LeftRaw4R"
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
+                    },
                     {
                       "type": "wait",
                       "data": {
@@ -128,14 +121,7 @@
                       "data": {
                         "pathName": "LeftRaw4R"
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
+                    },
                     {
                       "type": "wait",
                       "data": {
@@ -246,14 +232,7 @@
                       "data": {
                         "pathName": "LeftRaw4R"
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
+                    },
                     {
                       "type": "wait",
                       "data": {
@@ -271,14 +250,7 @@
                       "data": {
                         "pathName": "LeftRaw4R"
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
+                    },
                     {
                       "type": "wait",
                       "data": {
