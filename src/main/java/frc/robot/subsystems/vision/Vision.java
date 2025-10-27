@@ -230,6 +230,29 @@ public class Vision extends SubsystemBase {
           est ->
               Logger.recordOutput(logPrefix + "/AcceptedCameratoTagDist", est.getDistanceToTag()));
 
+      // Generate TxTy observation for single-tag local pose estimation
+      if (cam.fiducialObservations != null && cam.fiducialObservations.length > 0) {
+        // Calculate average tx/ty angles from fiducial observations
+        double[] angles = TxTyCalculator.calculateAverageAngles(cam.fiducialObservations);
+        if (angles != null && cam.megatag2Distance > 0) {
+          // Determine camera index (0 = A/left, 1 = B/right)
+          int cameraIndex = label.equals("CameraA") ? 0 : 1;
+
+          // Create TxTy observation
+          TxTyObservation txTyObs =
+              new TxTyObservation(
+                  cam.megatag2PoseEstimate.fiducialIds()[0],
+                  cameraIndex,
+                  angles[0],
+                  angles[1],
+                  cam.megatag2Distance,
+                  cam.megatag2PoseEstimate.timestampSeconds());
+
+          // Send to RobotState for local pose calculation
+          state.addTxTyObservation(txTyObs);
+        }
+      }
+
       if (mt2Estimate.isPresent()) {
         estimate = mt2Estimate;
         Logger.recordOutput(logPrefix + "/AcceptMegatag2", true);

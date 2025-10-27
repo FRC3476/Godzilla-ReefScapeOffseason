@@ -520,6 +520,10 @@ public class RobotState extends MagicVirtualSubsystem {
   private Optional<Pose2d> trajectoryTargetPose = Optional.empty();
   private Optional<Pose2d> trajectoryCurrentPose = Optional.empty();
 
+  // TxTy local pose estimation storage
+  private final Map<Integer, frc.robot.subsystems.vision.TxTyPoseEstimate> txTyPoses =
+      new HashMap<>();
+
   public void setAutoStartTime(double timestamp) {
     autoStartTime = timestamp;
   }
@@ -704,6 +708,88 @@ public class RobotState extends MagicVirtualSubsystem {
     return lastUsedMegatagPose;
   }
 
+  /**
+   * Adds a TxTy observation for local pose estimation.
+   *
+   * @param observation The TxTy observation from vision system
+   */
+  public void addTxTyObservation(frc.robot.subsystems.vision.TxTyObservation observation) {
+    // Get robot pose at observation timestamp
+    Optional<Pose2d> robotPoseAtTime = getFieldToRobot(observation.timestampSeconds());
+    if (robotPoseAtTime.isEmpty()) {
+      return;
+    }
+
+    // Determine which camera and get its transform
+    edu.wpi.first.math.geometry.Transform2d robotToCamera;
+    double cameraPitch;
+    if (observation.cameraIndex() == 0) {
+      // Camera A (left)
+      robotToCamera = frc.robot.Constants.VisionConstants.kRobotToCameraA;
+      cameraPitch = frc.robot.Constants.VisionConstants.kCameraAPitchRads;
+    } else {
+      // Camera B (right)
+      robotToCamera = frc.robot.Constants.VisionConstants.kRobotToCameraB;
+      cameraPitch = frc.robot.Constants.VisionConstants.kCameraBPitchRads;
+    }
+
+    // Create TxTy pose estimate
+    Optional<frc.robot.subsystems.vision.TxTyPoseEstimate> txTyEstimate =
+        frc.robot.subsystems.vision.TxTyPoseEstimate.fromObservation(
+            observation, robotPoseAtTime.get(), robotToCamera, cameraPitch);
+
+    if (txTyEstimate.isEmpty()) {
+      return;
+    }
+
+    // Store the estimate
+    txTyPoses.put(observation.tagId(), txTyEstimate.get());
+  }
+
+  /**
+   * Gets the TxTy local pose estimate for a specific tag.
+   *
+   * @param tagId The AprilTag ID
+   * @return The latency-compensated robot pose if available and not stale
+   */
+  public Optional<Pose2d> getTxTyPose(int tagId) {
+    if (!txTyPoses.containsKey(tagId)) {
+      return Optional.empty();
+    }
+
+    frc.robot.subsystems.vision.TxTyPoseEstimate estimate = txTyPoses.get(tagId);
+
+    // Check if observation is stale
+    double currentTime = frc.robot.util.RobotTime.getTimestampSeconds();
+    if (currentTime - estimate.getTimestampSeconds()
+        >= frc.robot.Constants.VisionConstants.kTxTyObservationStaleSecs) {
+      return Optional.empty();
+    }
+
+    // Get odometry pose at observation time for latency compensation
+    Optional<Pose2d> poseAtObservationTime = getFieldToRobot(estimate.getTimestampSeconds());
+    if (poseAtObservationTime.isEmpty()) {
+      return Optional.empty();
+    }
+
+    // Apply latency compensation: transform from observation time to current time
+    edu.wpi.first.math.geometry.Transform2d observationTimeToNow =
+        new edu.wpi.first.math.geometry.Transform2d(
+            poseAtObservationTime.get(), getLatestFieldToRobot().getValue());
+
+    return Optional.of(estimate.getLocalPose().plus(observationTimeToNow));
+  }
+
+  /**
+   * Gets the TxTy local pose estimate for the closest reef tag.
+   *
+   * @return The latency-compensated robot pose if available
+   */
+  public Optional<Pose2d> getClosestTxTyPose() {
+    frc.robot.Field.ReefFace closestReef = frc.robot.Field.FieldUtils.getClosestReef();
+    return getTxTyPose(closestReef.tag.fiducialId());
+  }
+
   public boolean isRedAlliance() {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().equals(Optional.of(Alliance.Red));
@@ -856,6 +942,32 @@ public class RobotState extends MagicVirtualSubsystem {
       String calcLogRoot = logRoot + "ClosestAlignment/";
       Logger.recordOutput(
           calcLogRoot + "Type", getClosestAlignmentTracker().getClass().getSimpleName());
+    }
+
+    // Log TxTy local pose estimates
+    {
+      String calcLogRoot = "RobotState/TxTyPoses/";
+
+      // Log all individual tag poses
+      for (edu.wpi.first.apriltag.AprilTag tag :
+          frc.robot.Constants.VisionConstants.kAprilTagLayout.getTags()) {
+        Optional<Pose2d> txTyPose = getTxTyPose(tag.ID);
+        Logger.recordOutput(
+            calcLogRoot + tag.ID,
+            txTyPose.isPresent() ? new Pose2d[] {txTyPose.get()} : new Pose2d[] {});
+
+        // Log 2D distance if pose is available
+        if (txTyPose.isPresent() && txTyPoses.containsKey(tag.ID)) {
+          Logger.recordOutput(
+              calcLogRoot + tag.ID + "/Distance2d", txTyPoses.get(tag.ID).getDistance2d());
+        }
+      }
+
+      // Log closest reef TxTy pose
+      Optional<Pose2d> closestTxTyPose = getClosestTxTyPose();
+      Logger.recordOutput(
+          "RobotState/ClosestTxTyPose",
+          closestTxTyPose.isPresent() ? new Pose2d[] {closestTxTyPose.get()} : new Pose2d[] {});
     }
   }
 

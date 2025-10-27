@@ -828,6 +828,16 @@ public final class Constants {
     // Validation constants
     public static final int kMinFiducialCount = 1;
     public static final int kExpectedStdDevArrayLength = 12;
+
+    // TxTy Local Pose Estimation
+    /** Limelight 3 horizontal field of view in degrees */
+    public static final double kLimelight3HorizontalFOVDegrees = 63.3;
+
+    /** Limelight 3 vertical field of view in degrees */
+    public static final double kLimelight3VerticalFOVDegrees = 49.7;
+
+    /** Time in seconds after which a TxTy observation is considered stale */
+    public static final double kTxTyObservationStaleSecs = 0.5;
   }
 
   public static class SuperstructureConstants {
