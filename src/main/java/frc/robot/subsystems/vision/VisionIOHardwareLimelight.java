@@ -37,7 +37,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       VisionConstants.kCameraAYawOffset.getDegrees()
     };
 
-    tableA.getEntry("camerapose_robotspace_set").setDoubleArray(cameraAPose);
+    // tableA.getEntry("camerapose_robotspace_set").setDoubleArray(cameraAPose);
 
     double[] cameraBPose = {
       VisionConstants.kRobotToCameraBForward,
@@ -48,7 +48,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       VisionConstants.kCameraBYawOffset.getDegrees()
     };
 
-    tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBPose);
+    // tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBPose);
   }
 
   @Override
@@ -74,6 +74,15 @@ public class VisionIOHardwareLimelight implements VisionIO {
           camera.fiducialObservations = FiducialObservation.fromLimelight(megatag.rawFiducials);
           camera.megatagDistance = megatag.avgTagDist; // have no clue if this value is accurate
         }
+
+        // Read MegaTag2 data (only when single tag is in view)
+        var megatag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+        if (megatag2 != null && megatag2.tagCount == 1) {
+          camera.megatag2PoseEstimate = MegatagPoseEstimate.fromLimelight(megatag2);
+          camera.megatag2Count = megatag2.tagCount;
+          camera.megatag2Distance = megatag2.avgTagDist;
+        }
+
         if (robotPose3d != null) {
           camera.pose3d = robotPose3d;
         }
