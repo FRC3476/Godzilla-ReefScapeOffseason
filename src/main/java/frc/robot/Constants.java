@@ -758,25 +758,27 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Camera A (left side)
-    public static final double kCameraAPitchDegrees = 15.0;
+    public static final double kCameraAPitchDegrees = 11.57;
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
     public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-148.64);
+    public static final double kCameraARollDegrees = -9.97;
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
 
     // Camera B (right side)
-    public static final double kCameraBPitchDegrees = 15.0;
+    public static final double kCameraBPitchDegrees = 11.57;
     public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
     public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(148.64);
+    public static final double kCameraBRollDegrees = 9.97;
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
