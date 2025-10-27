@@ -82,7 +82,6 @@ public final class Constants {
   public static double kAlignOffset = 0.0;
   public static double kAlignOffsetFB = 0.0;
 
-
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
