@@ -32,7 +32,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       VisionConstants.kRobotToCameraAForward,
       VisionConstants.kRobotToCameraASide,
       VisionConstants.kCameraAHeightOffGroundMeters,
-      0.0,
+      VisionConstants.kCameraARollDegrees,
       VisionConstants.kCameraAPitchDegrees,
       VisionConstants.kCameraAYawOffset.getDegrees()
     };
@@ -43,7 +43,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
       VisionConstants.kRobotToCameraBForward,
       VisionConstants.kRobotToCameraBSide,
       VisionConstants.kCameraBHeightOffGroundMeters,
-      0.0,
+      VisionConstants.kCameraBRollDegrees,
       VisionConstants.kCameraBPitchDegrees,
       VisionConstants.kCameraBYawOffset.getDegrees()
     };
