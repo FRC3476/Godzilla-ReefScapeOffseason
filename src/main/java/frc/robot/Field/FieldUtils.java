@@ -25,7 +25,6 @@ public class FieldUtils {
     return FieldUtils.isRedAlliance() ? -1 : 1;
   }
 
-  public static ReefFace getClosestReef() {
     List<ReefFace> reefTags =
         FieldUtils.isBlueAlliance() ? FieldConstants.blueReefTags : FieldConstants.redReefTags;
     Translation2d robotTranslation = RobotState.getGlobalPose().getTranslation();
@@ -93,7 +92,9 @@ public class FieldUtils {
 
     if (sideSelect.getAsDouble() < -0.5) {
       chosenReefPole = getClosestReef().leftPole;
-    } else if (sideSelect.getAsDouble() > 0.5) chosenReefPole = getClosestReef().rightPole;
+    } else if (sideSelect.getAsDouble() > 0.5){
+      chosenReefPole = getClosestReef().rightPole;
+    } 
     else {
       chosenReefPole = closestReefPole;
     }
