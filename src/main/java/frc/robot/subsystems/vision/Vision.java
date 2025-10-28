@@ -437,6 +437,7 @@ public class Vision extends SubsystemBase {
 
       return Optional.empty();
     }
+
     if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
       return Optional.empty();
     }
