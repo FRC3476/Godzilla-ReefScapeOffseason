@@ -79,7 +79,7 @@ public final class Constants {
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
 
-  public static double kAlignOffset = 0.0;
+  public static double kAlignOffset = 0.5;
   public static double kAlignOffsetFB = 0.0;
 
   // ====================Drive (0_ and 1_)====================
