@@ -79,7 +79,7 @@ public final class Constants {
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
 
-  public static double kAlignOffset = 0.0;
+  public static double kAlignOffset = 0.5;
   public static double kAlignOffsetFB = 0.0;
 
   // ====================Drive (0_ and 1_)====================
@@ -143,8 +143,8 @@ public final class Constants {
             ? SimTunerConstants.createDrivetrain()
             : CompTunerConstants.createDrivetrain();
     public static final double kRobotWeightPounds = 150.0;
-    public static final double kBumperLengthInches = 35.625;
-    public static final double kBumperWidthInches = 35.625;
+    public static final double kBumperLengthInches = 37.5;
+    public static final double kBumperWidthInches = 37.75;
     public static final double kWheelCoefficientOfFriction = 1.0;
     public static final int kDriveMotorCount = 1;
 
@@ -163,12 +163,14 @@ public final class Constants {
     public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
     public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
-    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
-    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
-    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
-    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
-    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
-    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5 * 2);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5 * 2);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10 * 2);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC =
+        Units.degreesToRadians(10 * 2);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY =
+        MetersPerSecond.of(15.0 / 100 * 2);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0 * 2);
   }
 
   public static final class AutoConstants {
@@ -571,6 +573,7 @@ public final class Constants {
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
     public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
     public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
+    public static final double L2_L3_FADEAWAY_ANGLE_ROTATIONS = Units.degreesToRotations(17.7998883 + 5);
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
@@ -756,25 +759,27 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Camera A (left side)
-    public static final double kCameraAPitchDegrees = 15.0;
+    public static final double kCameraAPitchDegrees = 11.57;
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
     public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-148.64);
+    public static final double kCameraARollDegrees = -9.97;
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
 
     // Camera B (right side)
-    public static final double kCameraBPitchDegrees = 15.0;
+    public static final double kCameraBPitchDegrees = 11.57;
     public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
     public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(148.64);
+    public static final double kCameraBRollDegrees = 9.97;
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
@@ -797,11 +802,12 @@ public final class Constants {
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
     public static final double kTagMinAreaForMultipleTagMegatag = 0.4;
-    public static final double kDefaultZThreshold = 0.2;
+    public static final double kDefaultZThreshold = 0.5;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
     public static final double kXStdDevCoefficent = 0.3;
     public static final double kYStdDevCoefficent = 0.3;
+
     public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
@@ -940,12 +946,12 @@ public final class Constants {
     public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;

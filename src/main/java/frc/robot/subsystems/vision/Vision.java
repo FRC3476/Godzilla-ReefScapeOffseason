@@ -244,6 +244,25 @@ public class Vision extends SubsystemBase {
       Logger.recordOutput(prefix + "/CameratoTagDist", cam.megatagDistance);
     }
 
+    // Log MegaTag2 data
+    Logger.recordOutput(prefix + "/Megatag2Count", cam.megatag2Count);
+    if (cam.megatag2PoseEstimate != null) {
+      Logger.recordOutput(
+          prefix + "/Megatag2PoseEstimate", cam.megatag2PoseEstimate.fieldToRobot());
+      Logger.recordOutput(prefix + "/Megatag2Quality", cam.megatag2PoseEstimate.quality());
+      Logger.recordOutput(prefix + "/Megatag2AvgTagArea", cam.megatag2PoseEstimate.avgTagArea());
+      Logger.recordOutput(
+          prefix + "/Megatag2XStandardDeviations",
+          cam.standardDeviations[VisionConstants.kMegatag2XStdDevIndex]);
+      Logger.recordOutput(
+          prefix + "/Megatag2YStandardDeviations",
+          cam.standardDeviations[VisionConstants.kMegatag2YStdDevIndex]);
+      Logger.recordOutput(
+          prefix + "/Megatag2YawStandardDeviations",
+          cam.standardDeviations[VisionConstants.kMegatag2YawStdDevIndex]);
+      Logger.recordOutput(prefix + "/Megatag2CameratoTagDist", cam.megatag2Distance);
+    }
+
     if (cam.fiducialObservations != null) {
       Logger.recordOutput(prefix + "/FiducialCount", cam.fiducialObservations.length);
     }
@@ -260,7 +279,36 @@ public class Vision extends SubsystemBase {
 
     Optional<VisionFieldPoseEstimate> estimate = Optional.empty();
 
-    if (cam.megatagPoseEstimate != null) {
+    // Use MegaTag2 for single tag, MegaTag1 for multiple tags
+    if (cam.megatag2PoseEstimate != null) {
+      // MegaTag2 available (single tag in view) - use it with MT2 standard deviations
+      Optional<VisionFieldPoseEstimate> mt2Estimate =
+          processMegatag2PoseEstimate(cam.megatag2PoseEstimate, cam, logPrefix);
+
+      mt2Estimate.ifPresent(
+          est ->
+              Logger.recordOutput(
+                  logPrefix + "/AcceptedMegatag2Estimate", est.getVisionRobotPoseMeters()));
+      mt2Estimate.ifPresent(
+          est ->
+              Logger.recordOutput(
+                  logPrefix + "/AcceptedStdDevs", est.getVisionMeasurementStdDevs().getData()));
+      mt2Estimate.ifPresent(
+          est ->
+              Logger.recordOutput(logPrefix + "/AcceptedCameratoTagDist", est.getDistanceToTag()));
+
+      if (mt2Estimate.isPresent()) {
+        estimate = mt2Estimate;
+        Logger.recordOutput(logPrefix + "/AcceptMegatag2", true);
+        Logger.recordOutput(logPrefix + "/AcceptMegatag", false);
+        Logger.recordOutput(logPrefix + "/AcceptGyro", false);
+      } else {
+        Logger.recordOutput(logPrefix + "/AcceptMegatag2", false);
+        Logger.recordOutput(logPrefix + "/AcceptMegatag", false);
+        Logger.recordOutput(logPrefix + "/AcceptGyro", false);
+      }
+    } else if (cam.megatagPoseEstimate != null) {
+      // MegaTag1 available (multiple tags in view)
       Optional<VisionFieldPoseEstimate> mtEstimate =
           processMegatagPoseEstimate(cam.megatagPoseEstimate, cam, logPrefix);
 
@@ -294,13 +342,16 @@ public class Vision extends SubsystemBase {
       // Prefer Megatag when available
       if (mtEstimate.isPresent()) {
         estimate = mtEstimate;
+        Logger.recordOutput(logPrefix + "/AcceptMegatag2", false);
         Logger.recordOutput(logPrefix + "/AcceptMegatag", true);
         Logger.recordOutput(logPrefix + "/AcceptGyro", false);
       } else if (gyroEstimate.isPresent()) {
         estimate = gyroEstimate;
+        Logger.recordOutput(logPrefix + "/AcceptMegatag2", false);
         Logger.recordOutput(logPrefix + "/AcceptMegatag", false);
         Logger.recordOutput(logPrefix + "/AcceptGyro", true);
       } else {
+        Logger.recordOutput(logPrefix + "/AcceptMegatag2", false);
         Logger.recordOutput(logPrefix + "/AcceptMegatag", false);
         Logger.recordOutput(logPrefix + "/AcceptGyro", false);
       }
@@ -442,6 +493,20 @@ public class Vision extends SubsystemBase {
       return Optional.empty();
     }
 
+    // if we're not inside the field, we're checking if it's half the width since that's the worst
+    // case senario
+    // if (!(poseEstimate.fieldToRobot().getTranslation().getX()
+    //         < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getX()
+    //         > 0.0 + (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getY()
+    //         < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getY()
+    //         > 0.0 + (Constants.DriveConstants.kBumperWidthInches / 2))) {
+
+    //   return Optional.empty();
+    // }
+
     if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
       return Optional.empty();
     }
@@ -516,6 +581,120 @@ public class Vision extends SubsystemBase {
             visionStdDevs,
             poseEstimate.fiducialIds().length,
             cam.megatagDistance));
+  }
+
+  private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
+      MegatagPoseEstimate poseEstimate,
+      VisionIO.VisionIOInputs.CameraInputs cam,
+      String logPrefix) {
+
+    if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {
+      return Optional.empty();
+    }
+
+    // MegaTag2 is only for single tags, so apply single-tag checks
+    for (var fiducial : cam.fiducialObservations) {
+      if (fiducial.ambiguity() > VisionConstants.kDefaultAmbiguityThreshold) {
+        return Optional.empty();
+      }
+    }
+
+    if (poseEstimate.avgTagArea() < VisionConstants.kTagMinAreaForSingleTagMegatag) {
+      return Optional.empty();
+    }
+
+    // var priorPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
+    // if (poseEstimate.avgTagArea() < VisionConstants.kTagAreaThresholdForYawCheck
+    //     && priorPose.isPresent()) {
+    //   double yawDiff =
+    //       Math.abs(
+    //           MathUtil.angleModulus(
+    //               priorPose.get().getRotation().getRadians()
+    //                   - poseEstimate.fieldToRobot().getRotation().getRadians()));
+
+    //   if (yawDiff > Units.degreesToRadians(VisionConstants.kDefaultYawDiffThreshold)) {
+    //     return Optional.empty();
+    //   }
+    // }
+
+    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
+        < VisionConstants.kDefaultNormThreshold) {
+      return Optional.empty();
+    }
+
+    // if we're not inside the field, we're checking if it's half the width since that's the worst
+    // case senario
+    // if (!(poseEstimate.fieldToRobot().getTranslation().getX()
+    //         < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getX()
+    //         > 0.0 + (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getY()
+    //         < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2)
+    //     || poseEstimate.fieldToRobot().getTranslation().getY()
+    //         > 0.0 + (Constants.DriveConstants.kBumperWidthInches / 2))) {
+
+    //   return Optional.empty();
+    // }
+
+    if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
+      return Optional.empty();
+    }
+
+    var loggedPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
+    if (loggedPose.isEmpty()) {
+      return Optional.empty();
+    }
+
+    Pose2d estimatePose = poseEstimate.fieldToRobot();
+
+    double xStd = 0.0;
+    double yStd = 0.0;
+    double rotStd = 0.0;
+
+    if (Constants.currentMode == Mode.REAL) {
+      xStd =
+          // cam.standardDeviations[VisionConstants.kMegatag2XStdDevIndex]
+          //     *
+          VisionConstants
+                  .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+              * Math.pow(
+                  cam.megatag2Distance, 2.0) // we are less confident if we are farther from the tag
+              / Math.pow(
+                  cam.megatag2Count,
+                  2.0); // we are more confident if we have more tags visible so divide
+      yStd =
+          // cam.standardDeviations[VisionConstants.kMegatag2YStdDevIndex]
+          //     *
+          VisionConstants
+                  .kXStdDevCoefficent // semi-random constant tuned so we get a reasonable std
+              * Math.pow(
+                  cam.megatag2Distance, 2.0) // we are less confident if we are farther from the tag
+              / Math.pow(
+                  cam.megatag2Count,
+                  2.0); // we are more confident if we have more tags visible so divide
+      rotStd =
+          // cam.standardDeviations[VisionConstants.kMegatag2YawStdDevIndex]
+          //     *
+          VisionConstants.thetaStdDevCoefficient
+              * Math.pow(cam.megatag2Distance, 2)
+              / Math.pow(cam.megatag2Count, 2.0);
+    } else {
+      double scaleFactor = 1.0 / poseEstimate.quality();
+      xStd = cam.standardDeviations[VisionConstants.kMegatag2XStdDevIndex] * scaleFactor;
+      yStd = cam.standardDeviations[VisionConstants.kMegatag2YStdDevIndex] * scaleFactor;
+      rotStd = cam.standardDeviations[VisionConstants.kMegatag2YawStdDevIndex] * scaleFactor;
+    }
+
+    double xyStd = Math.max(xStd, yStd);
+    Matrix<N3, N1> visionStdDevs = VecBuilder.fill(xyStd, xyStd, rotStd);
+
+    return Optional.of(
+        new VisionFieldPoseEstimate(
+            estimatePose,
+            poseEstimate.timestampSeconds(),
+            visionStdDevs,
+            poseEstimate.fiducialIds().length,
+            cam.megatag2Distance));
   }
 
   private void processCoralDetections() {

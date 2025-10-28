@@ -54,7 +54,7 @@ public class GarageDriveToPoseCommand extends Command {
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
     distanceController.setTolerance(Units.inchesToMeters(0.5));
-    angleController.setTolerance(Units.degreesToRadians(0.5));
+    angleController.setTolerance(Units.degreesToRadians(1.5));
   }
 
   public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
