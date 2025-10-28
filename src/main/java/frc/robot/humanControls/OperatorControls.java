@@ -532,25 +532,23 @@ public class OperatorControls {
     // left and right are swapped on purpose to match the operator's POV
     streamdeck
         .button(autoScoreLeftButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetRight(
-            FieldUtils.getClosestReef()
-        )).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetRight(FieldUtils.getClosestReef())).asProxy());
     streamdeck
         .button(autoScoreRightButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetLeft(            
-            FieldUtils.getClosestReef()
-        )).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetLeft(FieldUtils.getClosestReef())).asProxy());
 
     streamdeck
         .button(autoScoreForwardButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetForward(
-            FieldUtils.getClosestReef()
-        )).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetForward(FieldUtils.getClosestReef()))
+                .asProxy());
     streamdeck
         .button(autoScoreBackButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetBackward(
-            FieldUtils.getClosestReef()
-        )).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetBackward(FieldUtils.getClosestReef()))
+                .asProxy());
     streamdeck
         .button(autoScoreZeroButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetZero()).asProxy());

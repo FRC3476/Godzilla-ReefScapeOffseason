@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Field.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
 import java.util.Optional;

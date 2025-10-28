@@ -319,29 +319,35 @@ public class RobotState extends MagicVirtualSubsystem {
   }
 
   public void offsetRight(ReefFace closestReefFace) {
-    FieldConstants.setReefFaceOffset(closestReefFace, 
-      FieldConstants.getReefFaceOffset(closestReefFace).plus(new Transform2d(1.0, 0.0, Rotation2d.kZero))
-    );
+    FieldConstants.setReefFaceOffset(
+        closestReefFace,
+        FieldConstants.getReefFaceOffset(closestReefFace)
+            .plus(new Transform2d(1.0, 0.0, Rotation2d.kZero)));
     // Constants.kAlignOffset += 1.0;
   }
 
   public void offsetLeft(ReefFace closestReefFace) {
-    FieldConstants.setReefFaceOffset(closestReefFace, 
-      FieldConstants.getReefFaceOffset(closestReefFace).plus(new Transform2d(-1.0, 0.0, Rotation2d.kZero))
-    );
+    FieldConstants.setReefFaceOffset(
+        closestReefFace,
+        FieldConstants.getReefFaceOffset(closestReefFace)
+            .plus(new Transform2d(-1.0, 0.0, Rotation2d.kZero)));
     // Constants.kAlignOffset -= 1.0;
   }
 
   public void offsetForward(ReefFace closestReefFace) {
-    FieldConstants.setReefFaceOffset(closestReefFace, 
-      FieldConstants.getReefFaceOffset(closestReefFace).plus(new Transform2d(0.0, 1.0, Rotation2d.kZero))
-    );  
+    FieldConstants.setReefFaceOffset(
+        closestReefFace,
+        FieldConstants.getReefFaceOffset(closestReefFace)
+            .plus(new Transform2d(0.0, 1.0, Rotation2d.kZero)));
+    // Constants.kAlignOffsetFB += 1.0;
+
   }
 
   public void offsetBackward(ReefFace closestReefFace) {
-    FieldConstants.setReefFaceOffset(closestReefFace, 
-      FieldConstants.getReefFaceOffset(closestReefFace).plus(new Transform2d(0.0, 1.0, Rotation2d.kZero))
-    );  
+    FieldConstants.setReefFaceOffset(
+        closestReefFace,
+        FieldConstants.getReefFaceOffset(closestReefFace)
+            .plus(new Transform2d(0.0, 1.0, Rotation2d.kZero)));
     // Constants.kAlignOffsetFB -= 1.0;
   }
 
