@@ -296,8 +296,6 @@ public class LedIOReal implements LedIO {
             - (LedConstants.kRightLEDEndIdx - LedConstants.kRightLEDStartIdx + 1) * (percent)
             + 1;
 
-    System.out.println(leftStart + " " + leftEnd + ", " + rightStart + " " + rightEnd);
-
     candle.setControl(
         new SolidColor(leftStart, (int) Math.round(leftEnd)).withColor(state.getRGBW()));
     candle.setControl(
