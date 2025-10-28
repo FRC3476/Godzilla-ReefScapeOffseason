@@ -10,6 +10,7 @@ import frc.robot.RobotState;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -114,19 +115,21 @@ public class CoralPoseTracker {
         observations.add(new CoralPoseObservation(coralPose));
       }
     }
-    for (CoralPoseObservation observation : observations) {
+    Iterator<CoralPoseObservation> iterator = observations.iterator();
+    while (iterator.hasNext()) {
+      CoralPoseObservation observation = iterator.next();
       if (Timer.getFPGATimestamp() - observation.lastObservation
-          < VisionConstants.coralObservationTimeThreshold) {
-        observations.remove(observation);
+          > VisionConstants.coralObservationTimeThreshold) {
+        iterator.remove();
       }
     }
   }
 
   public Optional<Pose2d> getCoralPose() {
     if (observations.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
-    CoralPoseObservation bestObservation = observations.iterator().next();
+    CoralPoseObservation bestObservation = new CoralPoseObservation();
     for (CoralPoseObservation observation : observations) {
       if (observation.distanceToRobot() < bestObservation.distanceToRobot()
           || bestObservation.numObservations < VisionConstants.coralObservationMinObservations
@@ -135,7 +138,7 @@ public class CoralPoseTracker {
       }
     }
     if (bestObservation.numObservations < VisionConstants.coralObservationMinObservations) {
-      return null;
+      return Optional.empty();
     }
     return Optional.of(new Pose2d(bestObservation.pose, Rotation2d.kZero));
   }

@@ -135,17 +135,16 @@ public class VisionIOHardwareLimelight implements VisionIO {
 
   @Override
   public Optional<ArrayList<Pair<Double, Double>>> getAllCoralTNCs() {
+    if (!isCoralDetected()) {
+      return Optional.empty();
+    }
     LimelightHelpers.RawDetection[] detections =
         isCoralDetected()
             ? LimelightHelpers.getRawDetections(VisionConstants.DETECTION_LIMELIGHT)
             : new LimelightHelpers.RawDetection[0];
     ArrayList<Pair<Double, Double>> tncs = new ArrayList<Pair<Double, Double>>(detections.length);
-    if (detections.length == 0) {
-      return null;
-    }
     for (int i = 0; i < detections.length; i++) {
-      tncs.set(
-          i,
+      tncs.add(
           new Pair<Double, Double>(
               detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
     }
