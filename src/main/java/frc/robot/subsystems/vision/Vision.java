@@ -205,8 +205,11 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput(
             "Vision/objectDetection/CoralPoseObservations/" + i, coralPoseObservations[i]);
       }
-      Logger.recordOutput(
-          "Vision/objectDetection/bestCoralPose", coralPoseTracker.getCoralPose().get());
+      if (coralPoseTracker.getCoralPose().isPresent()) {
+
+        Logger.recordOutput(
+            "Vision/objectDetection/bestCoralPose", coralPoseTracker.getCoralPose().get());
+      }
     }
 
     Logger.recordOutput("Vision/latencyPeriodicSec", RobotTime.getTimestampSeconds() - startTime);
