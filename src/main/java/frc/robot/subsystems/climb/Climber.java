@@ -42,8 +42,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbReset() {
-    return climbDeployToPositionReverse(
-        0, -ClimbConstants.CLIMB_RESET_VOLTAGE);
+    return climbDeployToPositionReverse(0, ClimbConstants.CLIMB_RESET_VOLTAGE);
   }
 
   public Command climbClimb() {
