@@ -832,6 +832,9 @@ public final class Constants {
     public static final double kIntakeCameraOffset = Units.inchesToMeters(-1.852118);
     public static final double kIntakeCameraHorizontalFOVDegrees = 62.5;
     public static final double kIntakeCameraVerticalFOVDegrees = 48.9;
+    public static final double coralObservationDistanceThreshold = 0.1;
+    public static final double coralObservationTimeThreshold = 1;
+    public static final int coralObservationMinObservations = 3;
   }
 
   public static class SuperstructureConstants {

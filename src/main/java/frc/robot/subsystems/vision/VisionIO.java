@@ -1,9 +1,9 @@
 package frc.robot.subsystems.vision;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
+import java.util.ArrayList;
+import java.util.Optional;
 
 /** Interface for vision system hardware abstraction. */
 public interface VisionIO {
@@ -52,7 +52,7 @@ public interface VisionIO {
     return 0.0;
   }
 
-  default ArrayList<Pair<Double, Double>> getAllCoralTNCs() {
-    return new ArrayList<Pair<Double,Double>>();
+  default Optional<ArrayList<Pair<Double, Double>>> getAllCoralTNCs() {
+    return Optional.of(new ArrayList<Pair<Double, Double>>());
   }
 }
