@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.58864670343267,
-        "y": 2.8074820827807425
+        "x": 3.5621735708409243,
+        "y": 2.830774397428946
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1483648809875096,
-        "y": 1.281990659513966
+        "x": 2.1218917483957638,
+        "y": 1.3052829741621697
       },
       "isLocked": false,
       "linkedName": "RR3E"
     },
     {
       "anchor": {
-        "x": 1.8021688039488835,
-        "y": 0.9567900707850014
+        "x": 1.8126583540668795,
+        "y": 0.9017224880172864
       },
       "prevControl": {
-        "x": 3.2757917696874204,
-        "y": 2.505993740253876
+        "x": 3.2862813198054166,
+        "y": 2.450926157486161
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 1.75,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

@@ -71,7 +71,8 @@ public class NamedCommandsSetup {
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
             .withTimeout(2.0));
 
-    NamedCommands.registerCommand("ConfirmScore", new Score(superstructure, claw, robotState));
+    NamedCommands.registerCommand(
+        "ConfirmScore", new Score(superstructure, claw, robotState, container));
 
     NamedCommands.registerCommand(
         "StowRobotState",
@@ -111,9 +112,8 @@ public class NamedCommandsSetup {
         new WaitUntilCommand(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR));
 
-    NamedCommands.registerCommand("IsCoralInRobot", 
-        new WaitUntilCommand(
-            () -> CoralStateTracker.hasCoral()));
+    NamedCommands.registerCommand(
+        "IsCoralInRobot", new WaitUntilCommand(() -> CoralStateTracker.hasCoral()));
 
     // ====================PID DRIVE COMMANDS====================
     // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new

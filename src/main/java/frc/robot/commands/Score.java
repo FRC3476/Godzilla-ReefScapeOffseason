@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
@@ -19,9 +20,11 @@ import frc.robot.subsystems.superstructure.Superstructure;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Score extends SequentialCommandGroup {
   /** Creates a new score. */
-  public Score(Superstructure superstructure, Claw claw, RobotState robotState) {
+  public Score(
+      Superstructure superstructure, Claw claw, RobotState robotState, RobotContainer container) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
+        new WaitUntilCommand(() -> container.getDrive().isRobotStable()),
         new ConditionalCommand(
             claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
             claw.setClawStateCommand(ClawState.SCORING).asProxy(),
