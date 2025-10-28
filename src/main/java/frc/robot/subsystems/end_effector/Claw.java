@@ -71,6 +71,12 @@ public class Claw extends SubsystemBase {
     io.setRollerVoltage(voltage);
   }
 
+  public boolean isOK() {
+    return inputs.firstCANRangeData.canRangeConnected()
+        && inputs.secondCANRangeData.canRangeConnected()
+        && inputs.rollerData.rollerMotorConnected();
+  }
+
   public boolean isClawScoring() {
     return currentState == ClawState.SCORING || currentState == ClawState.SCORING_L1;
   }

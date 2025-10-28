@@ -58,13 +58,14 @@ public class OperatorControls {
 
   private void configureDriveStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOOrangePure.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOTealPure.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig tealOnWhiteConfig =
-        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOTeal.toString(), "");
+        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOTealPure.toString(), "");
     StreamDeckButtonConfig orangeOnWhiteConfig =
-        new StreamDeckButtonConfig(LedState.kWhite.toString(), LedState.kCOOrange.toString(), "");
+        new StreamDeckButtonConfig(
+            LedState.kWhite.toString(), LedState.kCOOrangePure.toString(), "");
     StreamDeckButtonConfig redConfig =
         new StreamDeckButtonConfig(LedState.kRed.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig yellowConfig =
@@ -273,8 +274,15 @@ public class OperatorControls {
                             .asProxy()))
             .andThen(new WaitCommand(0.25))
             .andThen(climber.climbDeploy())
+            // .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYING)))
+            // .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYED)))
             .withName("climbDeployButton");
-    Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
+    Command climbClimbButtonCommand =
+        climber
+            .climbClimb()
+            // .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBING)))
+            // .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBED)))
+            .withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbOut(12).withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =
