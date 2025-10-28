@@ -394,6 +394,7 @@ public class ElasticTabs {
         .setupOnPressCommandIgnoringDisabled(led.commandBlinkingState(LedState.kRed, 0.5));
     tab.addButton("Fire").setupOnPressCommandIgnoringDisabled(led.commandFire());
     tab.addButton("Rainbow").setupOnPressCommandIgnoringDisabled(led.commandRainbow());
+    tab.addButton("LarsonCO").setupOnPressCommandIgnoringDisabled(led.commandColorflowCO());
     tab.addButton("Off").setupOnPressCommandIgnoringDisabled(led.commandOff());
     tab.addButton("Half Orange")
         .setupOnPressCommandIgnoringDisabled(
@@ -401,6 +402,18 @@ public class ElasticTabs {
     tab.addButton("Partial Orange")
         .setupOnPressCommandIgnoringDisabled(
             led.commandSolidColorNumLeds(LedState.kCOOrangeLed, led::getLedsOn));
+    tab.addButton("Larson Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kBlue));
+    tab.addButton("Larson Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kRed));
+    tab.addButton("Twinkle Off Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, true));
+    tab.addButton("Twinkle Off Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, true));
+    tab.addButton("Twinkle Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, false));
+    tab.addButton("Twinkle Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, false));
   }
 
   private void buildTestTab() {

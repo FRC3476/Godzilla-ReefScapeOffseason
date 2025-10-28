@@ -111,6 +111,20 @@ public class Led extends SubsystemBase {
     return this.runOnce(() -> this.io.rainbow()).ignoringDisable(true).withName("LED Rainbow");
   }
 
+  public Command commandColorflowCO() {
+    return this.runOnce(() -> this.io.colorflowCO()).ignoringDisable(true).withName("LED LarsonCO");
+  }
+
+  public Command commandLarson(LedState state) {
+    return this.runOnce(() -> this.io.larson(state)).ignoringDisable(true).withName("LED Larson");
+  }
+
+  public Command commandTwinkle(LedState state, boolean off) {
+    return this.runOnce(() -> this.io.twinkle(state, off))
+        .ignoringDisable(true)
+        .withName("LED Twinkle");
+  }
+
   private void setSolidColor(LedState state) {
     io.writePixels(state, LedStrip.BOTH);
   }

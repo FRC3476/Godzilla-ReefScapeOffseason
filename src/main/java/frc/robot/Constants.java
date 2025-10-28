@@ -750,7 +750,7 @@ public final class Constants {
     public static final int kLeftLEDStartIdx = 8;
     public static final int kLeftLEDEndIdx = 23;
     public static final int kRightLEDStartIdx = 24;
-    public static final int kRightLEDEndIdx = 40;
+    public static final int kRightLEDEndIdx = 39;
 
     public enum LedStrip {
       LEFT,

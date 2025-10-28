@@ -33,6 +33,15 @@ public interface LedIO {
   default void rainbow() {}
   ;
 
+  default void colorflowCO() {}
+  ;
+
+  default void larson(LedState state) {}
+  ;
+
+  default void twinkle(LedState state, boolean off) {}
+  ;
+
   public default void percentageFull(double percent, LedState state) {}
   ;
 }

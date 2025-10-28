@@ -2,13 +2,18 @@ package frc.robot.subsystems.led;
 
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.configs.LEDConfigs;
+import com.ctre.phoenix6.controls.ColorFlowAnimation;
 import com.ctre.phoenix6.controls.EmptyAnimation;
 import com.ctre.phoenix6.controls.FireAnimation;
+import com.ctre.phoenix6.controls.LarsonAnimation;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.controls.StrobeAnimation;
+import com.ctre.phoenix6.controls.TwinkleAnimation;
+import com.ctre.phoenix6.controls.TwinkleOffAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.AnimationDirectionValue;
+import com.ctre.phoenix6.signals.LarsonBounceValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
 import frc.robot.Constants;
 import frc.robot.Constants.LedConstants;
@@ -54,10 +59,16 @@ public class LedIOReal implements LedIO {
 
   private void clearLeft() {
     candle.setControl(new EmptyAnimation(0));
+    candle.setControl(new EmptyAnimation(2));
+    candle.setControl(new EmptyAnimation(4));
+    candle.setControl(new EmptyAnimation(6));
   }
 
   private void clearRight() {
     candle.setControl(new EmptyAnimation(1));
+    candle.setControl(new EmptyAnimation(3));
+    candle.setControl(new EmptyAnimation(5));
+    candle.setControl(new EmptyAnimation(7));
   }
 
   @Override
@@ -119,6 +130,108 @@ public class LedIOReal implements LedIO {
             .withFrameRate(fireFrameRate.get())
             .withDirection(AnimationDirectionValue.Backward)
             .withSlot(1));
+  }
+
+  private static final LoggedTunableNumber larsonBounceMode =
+      new LoggedTunableNumber("LED/Larson Mode", 2);
+  private static final LoggedTunableNumber larsonSize =
+      new LoggedTunableNumber("LED/Larson Size", 5);
+  private static final LoggedTunableNumber larsonFrameRate =
+      new LoggedTunableNumber("LED/Larson Frame Rate", 30);
+
+  @Override
+  public void larson(LedState state) {
+    clearLeds();
+    candle.setControl(
+        new LarsonAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+            .withBounceMode(
+                (int) larsonBounceMode.get() == 0
+                    ? LarsonBounceValue.Front
+                    : ((int) larsonBounceMode.get() == 1
+                        ? LarsonBounceValue.Center
+                        : LarsonBounceValue.Back))
+            .withColor(state.getRGBW())
+            .withFrameRate(larsonFrameRate.get())
+            .withSize((int) larsonSize.get())
+            .withSlot(0));
+    candle.setControl(
+        new LarsonAnimation(LedConstants.kRightLEDEndIdx, LedConstants.kRightLEDStartIdx)
+            .withBounceMode(
+                (int) larsonBounceMode.get() == 0
+                    ? LarsonBounceValue.Front
+                    : ((int) larsonBounceMode.get() == 1
+                        ? LarsonBounceValue.Center
+                        : LarsonBounceValue.Back))
+            .withColor(state.getRGBW())
+            .withFrameRate(larsonFrameRate.get())
+            .withSize((int) larsonSize.get())
+            .withSlot(1));
+  }
+
+  private static final LoggedTunableNumber colorflowFrameRate =
+      new LoggedTunableNumber("LED/Colorflow Frame Rate", 30);
+
+  @Override
+  public void colorflowCO() {
+    clearLeds();
+    candle.setControl(
+        new ColorFlowAnimation(LedConstants.kLeftLEDStartIdx, 15)
+            .withColor(LedState.kCOTealLed.getRGBW())
+            .withFrameRate(colorflowFrameRate.get())
+            .withDirection(AnimationDirectionValue.Forward)
+            .withSlot(0));
+    candle.setControl(
+        new ColorFlowAnimation(LedConstants.kRightLEDStartIdx, 31)
+            .withColor(LedState.kCOOrangeLed.getRGBW())
+            .withFrameRate(colorflowFrameRate.get())
+            .withDirection(AnimationDirectionValue.Forward)
+            .withSlot(1));
+    candle.setControl(
+        new ColorFlowAnimation(16, LedConstants.kLeftLEDEndIdx)
+            .withColor(LedState.kCOOrangeLed.getRGBW())
+            .withFrameRate(colorflowFrameRate.get())
+            .withDirection(AnimationDirectionValue.Backward)
+            .withSlot(2));
+    candle.setControl(
+        new ColorFlowAnimation(32, LedConstants.kRightLEDEndIdx)
+            .withColor(LedState.kCOTealLed.getRGBW())
+            .withFrameRate(colorflowFrameRate.get())
+            .withDirection(AnimationDirectionValue.Backward)
+            .withSlot(3));
+  }
+
+  private static final LoggedTunableNumber twinkleMax =
+      new LoggedTunableNumber("LED/Twinkle Max", 1);
+  private static final LoggedTunableNumber twinkleFrameRate =
+      new LoggedTunableNumber("LED/Twinkle Frame Rate", 30);
+
+  @Override
+  public void twinkle(LedState state, boolean off) {
+    clearLeds();
+    candle.setControl(
+        off
+            ? new TwinkleAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withFrameRate(twinkleFrameRate.get())
+                .withMaxLEDsOnProportion(twinkleMax.get())
+                .withSlot(0)
+            : new TwinkleOffAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withFrameRate(twinkleFrameRate.get())
+                .withMaxLEDsOnProportion(twinkleMax.get())
+                .withSlot(0));
+    candle.setControl(
+        off
+            ? new TwinkleAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withFrameRate(twinkleFrameRate.get())
+                .withMaxLEDsOnProportion(twinkleMax.get())
+                .withSlot(1)
+            : new TwinkleOffAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+                .withColor(state.getRGBW())
+                .withFrameRate(twinkleFrameRate.get())
+                .withMaxLEDsOnProportion(twinkleMax.get())
+                .withSlot(1));
   }
 
   @Override
