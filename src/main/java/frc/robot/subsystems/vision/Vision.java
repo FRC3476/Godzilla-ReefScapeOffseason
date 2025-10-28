@@ -58,6 +58,10 @@ public class Vision extends SubsystemBase {
     return io.getCoralTyNc();
   }
 
+  public CoralPoseTracker getCoralPoseTracker(){
+    return coralPoseTracker;
+  }
+
   public Transform2d getCoralPositionRelativeToRobot() {
     double dy =
         VisionConstants.kIntakeCameraHeight
@@ -88,6 +92,8 @@ public class Vision extends SubsystemBase {
   public Pose2d getCoralPose() {
     return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot());
   }
+
+
 
   public Pose2d getCoralPose(Pair<Double, Double> TNCs) {
     return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot(TNCs));
