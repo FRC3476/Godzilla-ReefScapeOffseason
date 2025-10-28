@@ -424,15 +424,12 @@ public class Vision extends SubsystemBase {
 
     // if we're not inside the field, we're checking if it's half the width since that's the worst
     // case senario
-    if (!(poseEstimate.fieldToRobot().getTranslation().getX()
-            < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2)
-        || poseEstimate.fieldToRobot().getTranslation().getX() > 0.0
-        || poseEstimate.fieldToRobot().getTranslation().getY()
-            < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2)
-        || poseEstimate.fieldToRobot().getTranslation().getY() > 0.0)) {
 
+    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
+        < VisionConstants.kDefaultNormThreshold) {
       return Optional.empty();
     }
+
     if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
       return Optional.empty();
     }
@@ -545,13 +542,9 @@ public class Vision extends SubsystemBase {
 
     // if we're not inside the field, we're checking if it's half the width since that's the worst
     // case senario
-    if (!(poseEstimate.fieldToRobot().getTranslation().getX()
-            < FieldConstants.fieldLength - (Constants.DriveConstants.kBumperWidthInches / 2)
-        || poseEstimate.fieldToRobot().getTranslation().getX() > 0.0
-        || poseEstimate.fieldToRobot().getTranslation().getY()
-            < FieldConstants.fieldWidth - (Constants.DriveConstants.kBumperWidthInches / 2)
-        || poseEstimate.fieldToRobot().getTranslation().getY() > 0.0)) {
 
+    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
+        < VisionConstants.kDefaultNormThreshold) {
       return Optional.empty();
     }
 
