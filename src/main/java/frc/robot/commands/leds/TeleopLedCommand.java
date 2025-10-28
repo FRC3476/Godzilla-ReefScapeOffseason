@@ -86,12 +86,12 @@ public class TeleopLedCommand extends Command {
 
     // has algae: teal
     if (claw.hasAlgae()){
-      led.commandSolidColor(LedState.kCOTealLed).schedule();
+      led.commandSetTeal().schedule();
       return;
     }
     // has coral: orange  (future: orange with different fill levels based on scoring height)
     if (CoralStateTracker.hasCoral()){
-      led.commandSolidColor(LedState.kCOOrangeLed);
+      led.commandSetOrange().schedule();
     }
     // else off
     led.commandOff().schedule();
