@@ -25,7 +25,7 @@ public class LedIOReal implements LedIO {
           [Constants.LedConstants.kCandleLEDCount + Constants.LedConstants.kNonCandleLEDCount];
 
   public LedIOReal() {
-    candle = new CANdle(Constants.LedConstants.ID, Constants.DRIVE_CANIVORE);
+    candle = new CANdle(Constants.LedConstants.ID, Constants.RIO_CANBUS);
     LEDConfigs ledConfigs =
         new LEDConfigs().withBrightnessScalar(.2).withStripType(StripTypeValue.RGB);
     CANdleConfiguration candleConfiguration = new CANdleConfiguration().withLED(ledConfigs);

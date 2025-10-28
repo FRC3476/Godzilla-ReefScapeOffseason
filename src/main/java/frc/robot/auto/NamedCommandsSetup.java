@@ -111,9 +111,8 @@ public class NamedCommandsSetup {
         new WaitUntilCommand(
             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.STAGED_IN_END_EFFECTOR));
 
-    NamedCommands.registerCommand("IsCoralInRobot", 
-        new WaitUntilCommand(
-            () -> CoralStateTracker.hasCoral()));
+    NamedCommands.registerCommand(
+        "IsCoralInRobot", new WaitUntilCommand(() -> CoralStateTracker.hasCoral()));
 
     // ====================PID DRIVE COMMANDS====================
     // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new

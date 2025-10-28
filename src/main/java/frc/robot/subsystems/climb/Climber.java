@@ -14,8 +14,12 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-  public enum ClimbState{
-    STOWED, DEPLOYING, DEPLOYED, CLIMBING, CLIMBED
+  public enum ClimbState {
+    STOWED,
+    DEPLOYING,
+    DEPLOYED,
+    CLIMBING,
+    CLIMBED
   }
 
   private ClimbState climbState = ClimbState.STOWED;
@@ -42,11 +46,11 @@ public class Climber extends SubsystemBase {
     return inputs.data.motorConnected();
   }
 
-  public Command setClimbState(ClimbState state){
+  public Command setClimbState(ClimbState state) {
     return Commands.runOnce(() -> climbState = state, this).asProxy();
   }
 
-  public ClimbState getClimbState(){
+  public ClimbState getClimbState() {
     return climbState;
   }
 
@@ -56,22 +60,16 @@ public class Climber extends SubsystemBase {
 
   public Command climbDeploy() {
     return climbDeployToPosition(
-        ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE)
-        .alongWith(
-          setClimbState(ClimbState.DEPLOYING)
-        ).andThen(
-          setClimbState(ClimbState.DEPLOYED)
-        );
+            ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE)
+        .alongWith(setClimbState(ClimbState.DEPLOYING))
+        .andThen(setClimbState(ClimbState.DEPLOYED));
   }
 
   public Command climbClimb() {
     return climbDeployToPosition(
-        ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE)
-        .alongWith(
-          setClimbState(ClimbState.CLIMBING)
-        ).andThen(
-          setClimbState(ClimbState.CLIMBED)
-        );
+            ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE)
+        .alongWith(setClimbState(ClimbState.CLIMBING))
+        .andThen(setClimbState(ClimbState.CLIMBED));
   }
 
   public Command climbDeployToPosition(double position, double voltage) {

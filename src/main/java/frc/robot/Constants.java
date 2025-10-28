@@ -73,6 +73,7 @@ public final class Constants {
   public static String MISC_CANIVORE_NAME = "MISC";
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
+  public static CANBus RIO_CANBUS = new CANBus("rio");
 
   public static final double kSteerJoystickDeadband = 0.012;
   public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
