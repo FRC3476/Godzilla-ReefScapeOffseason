@@ -573,6 +573,7 @@ public final class Constants {
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
     public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
     public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
+    public static final double L2_L3_FADEAWAY_ANGLE_ROTATIONS = Units.degreesToRotations(17.7998883 + 5);
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
@@ -935,12 +936,12 @@ public final class Constants {
     public static double L2_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L2_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L2_L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
