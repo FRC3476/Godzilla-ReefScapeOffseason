@@ -704,6 +704,7 @@ public final class Constants {
     public static final double CLIMB_DEPLOY_POSITION = 87.5;
     public static final double CLIMB_CLIMB_POSITION = 215;
     public static final double CLIMB_DEPLOY_VOLTAGE = 12;
+    public static final double CLIMB_RESET_VOLTAGE = -2;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;

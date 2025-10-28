@@ -41,6 +41,11 @@ public class Climber extends SubsystemBase {
         ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE);
   }
 
+  public Command climbReset() {
+    return climbDeployToPositionReverse(
+        0, -ClimbConstants.CLIMB_RESET_VOLTAGE);
+  }
+
   public Command climbClimb() {
     return climbDeployToPosition(
         ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE);
@@ -52,6 +57,15 @@ public class Climber extends SubsystemBase {
     }
     return climbOut(voltage)
         .until(() -> inputs.data.positionRads() > position)
+        .andThen(climbSTOP());
+  }
+
+  public Command climbDeployToPositionReverse(double position, double voltage) {
+    if (inputs.data.positionRads() < position) {
+      return climbSTOP();
+    }
+    return climbOut(voltage)
+        .until(() -> inputs.data.positionRads() < position)
         .andThen(climbSTOP());
   }
 

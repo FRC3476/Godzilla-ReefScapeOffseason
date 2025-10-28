@@ -275,6 +275,7 @@ public class OperatorControls {
             .andThen(climber.climbDeploy())
             .withName("climbDeployButton");
     Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
+    Command climbResetButtonCommand = climber.climbReset().withName("climbClimbResetButton");
     Command manualClimbButtonCommand = climber.climbOut(12).withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =
@@ -335,8 +336,8 @@ public class OperatorControls {
     customStreamDeckButtonMap.put(climbDeployButton, climbDeployButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton2, climbDeployButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbRollerStopButton, climbRollerStopButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
-    customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbClimbButton, climbResetButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(climbClimbButton2, climbResetButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(driveToCoralButton, driveToCoralButtonCommand::isScheduled);
     // customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
@@ -491,7 +492,7 @@ public class OperatorControls {
         .button(climbClimbButton)
         .and(streamdeck.button(climbClimbButton2))
         .and(streamdeck.button(manualClimbButton).negate())
-        .onTrue(climbClimbButtonCommand);
+        .onTrue(climbResetButtonCommand);
     streamdeck
         .button(manualClimbButton)
         .and(streamdeck.button(climbClimbButton))
@@ -519,14 +520,6 @@ public class OperatorControls {
         .onTrue(Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode()));
 
     // Arbitrary triggers + streamdeck confirmation
-
-    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(1);
-    autoClimbTrigger.onTrue(climber.climbClimb().withName("AutoClimb"));
-    streamdeck
-        .button(climbDeployButton)
-        .and(streamdeck.button(climbDeployButton2))
-        .and(autoClimbTrigger)
-        .onTrue(climber.climbClimb().withName("AutoClimb"));
 
     // left and right are swapped on purpose to match the operator's POV
     streamdeck
