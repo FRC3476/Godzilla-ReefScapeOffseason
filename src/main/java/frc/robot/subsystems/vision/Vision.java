@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
                     / (weightAx + weightBx),
                 (poseA.getTranslation().getY() * weightAy
                         + poseB.getTranslation().getY() * weightBy)
-                    / (weightAy + weightBy))
+                    / (weightAy + weightBy)),
             fusedHeading);
 
     Matrix<N3, N1> fusedStdDev =
