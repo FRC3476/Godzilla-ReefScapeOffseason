@@ -14,6 +14,12 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
+  public enum ClimbState{
+    STOWED, DEPLOYING, DEPLOYED, CLIMBING, CLIMBED
+  }
+
+  private ClimbState climbState = ClimbState.STOWED;
+
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
       new LoggedTunableNumber("Climber/DeployVolts", 1);
@@ -36,18 +42,36 @@ public class Climber extends SubsystemBase {
     return inputs.data.motorConnected();
   }
 
+  public Command setClimbState(ClimbState state){
+    return Commands.runOnce(() -> climbState = state, this).asProxy();
+  }
+
+  public ClimbState getClimbState(){
+    return climbState;
+  }
+
   public Command climbVoltOut() {
     return Commands.run(() -> this.io.runVolts(climberVolts.get()), this);
   }
 
   public Command climbDeploy() {
     return climbDeployToPosition(
-        ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE);
+        ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE)
+        .alongWith(
+          setClimbState(ClimbState.DEPLOYING)
+        ).andThen(
+          setClimbState(ClimbState.DEPLOYED)
+        );
   }
 
   public Command climbClimb() {
     return climbDeployToPosition(
-        ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE);
+        ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE)
+        .alongWith(
+          setClimbState(ClimbState.CLIMBING)
+        ).andThen(
+          setClimbState(ClimbState.CLIMBED)
+        );
   }
 
   public Command climbDeployToPosition(double position, double voltage) {
