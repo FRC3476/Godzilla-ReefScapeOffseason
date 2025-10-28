@@ -21,6 +21,7 @@ public class TeleopLedCommand extends Command {
 
   private boolean driveCanbusDown = false;
   private boolean miscCanbusDown = false;
+  private ClimbState climbState = ClimbState.STOWED;
 
   public TeleopLedCommand(RobotContainer container) {
     this.container = container;
@@ -28,6 +29,12 @@ public class TeleopLedCommand extends Command {
     claw = container.getClaw();
     drive = container.getDrive();
     climber = container.getClimber();
+    addRequirements(); // no requirements
+  }
+
+  @Override
+  public void initialize() {
+    led.commandOff().withName("Led Off Teleop Init").schedule();
   }
 
   @Override
@@ -39,6 +46,7 @@ public class TeleopLedCommand extends Command {
       led.commandBlinkingState(LedState.kYellow, 0.25, LedStrip.LEFT)
           .asProxy()
           .alongWith(led.commandBlinkingState(LedState.kGreen, 0.25, LedStrip.RIGHT).asProxy())
+          .withName("Led Drive CANBus off")
           .schedule();
       driveCanbusDown = true;
       return;
@@ -50,17 +58,26 @@ public class TeleopLedCommand extends Command {
 
     // climber flashing yellow coming out, solid yellow deployed, flashing green when climbing,
     // solid green when climbed
-    if (climber.getClimbState() == ClimbState.DEPLOYING) {
-      led.commandBlinkingState(LedState.kYellow, 0.25).schedule();
+    if (Climber.getClimbState() == ClimbState.DEPLOYING && climbState != ClimbState.DEPLOYING) {
+      led.commandBlinkingState(LedState.kYellow, 0.25).withName("Led Climb Deploying").schedule();
+      climbState = ClimbState.DEPLOYING;
       return;
-    } else if (climber.getClimbState() == ClimbState.DEPLOYED) {
-      led.commandSolidColor(LedState.kYellow).schedule();
+    } else if (Climber.getClimbState() == ClimbState.DEPLOYED
+        && climbState != ClimbState.DEPLOYED) {
+      led.commandSolidColor(LedState.kYellow).withName("Led Climb Deployed").schedule();
+      climbState = ClimbState.DEPLOYED;
       return;
-    } else if (climber.getClimbState() == ClimbState.CLIMBING) {
-      led.commandBlinkingState(LedState.kGreen, 0.25).schedule();
+    } else if (Climber.getClimbState() == ClimbState.CLIMBING
+        && climbState != ClimbState.CLIMBING) {
+      led.commandBlinkingState(LedState.kGreen, 0.25).withName("Led Climb Climbing").schedule();
+      climbState = ClimbState.CLIMBING;
       return;
-    } else if (climber.getClimbState() == ClimbState.CLIMBED) {
-      led.commandSolidColor(LedState.kGreen).schedule();
+    } else if (Climber.getClimbState() == ClimbState.CLIMBED && climbState != ClimbState.CLIMBED) {
+      led.commandSolidColor(LedState.kGreen).withName("Led Climb Climbed").schedule();
+      climbState = ClimbState.CLIMBED;
+      return;
+    }
+    if (climbState != ClimbState.STOWED) {
       return;
     }
 
@@ -69,6 +86,7 @@ public class TeleopLedCommand extends Command {
       led.commandBlinkingState(LedState.kYellow, 0.25, LedStrip.RIGHT)
           .asProxy()
           .alongWith(led.commandBlinkingState(LedState.kGreen, 0.25, LedStrip.LEFT).asProxy())
+          .withName("Led Misc CANBus off")
           .schedule();
       miscCanbusDown = true;
       return;
@@ -80,21 +98,22 @@ public class TeleopLedCommand extends Command {
 
     // has algae and has coral: solid white
     if (claw.hasAlgae() && CoralStateTracker.hasCoral()) {
-      led.commandSolidColor(LedState.kWhite).schedule();
+      led.commandSolidColor(LedState.kWhite).withName("Led Both Game Pieces").schedule();
       return;
     }
 
     // has algae: teal
     if (claw.hasAlgae()) {
-      led.commandSetTeal().schedule();
+      led.commandSetTeal().withName("Led Has Algae").schedule();
       return;
     }
     // has coral: orange  (future: orange with different fill levels based on scoring height)
     if (CoralStateTracker.hasCoral()) {
-      led.commandSetOrange().schedule();
+      led.commandSetOrange().withName("Led Has Coral").schedule();
+      return;
     }
     // else off
-    led.commandOff().schedule();
+    led.commandOff().withName("Led Default Teleop").schedule();
   }
 
   @Override
@@ -103,5 +122,7 @@ public class TeleopLedCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    led.commandOff().withName("Led Off Teleop End").schedule();
+  }
 }

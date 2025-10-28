@@ -22,7 +22,7 @@ public class Climber extends SubsystemBase {
     CLIMBED
   }
 
-  private ClimbState climbState = ClimbState.STOWED;
+  private static ClimbState climbState = ClimbState.STOWED;
 
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
@@ -38,6 +38,10 @@ public class Climber extends SubsystemBase {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
+    Logger.recordOutput("Climber/ClimbState", climbState);
+    Logger.recordOutput(
+        "Climber/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
@@ -46,11 +50,16 @@ public class Climber extends SubsystemBase {
     return inputs.data.motorConnected();
   }
 
-  public Command setClimbState(ClimbState state) {
-    return Commands.runOnce(() -> climbState = state, this).asProxy();
+  // public Command setClimbState(ClimbState state) {
+  //   return Commands.runOnce(() -> climbState = state, this).asProxy().withName("Set Climb
+  // State");
+  // }
+
+  public static void setClimbState(ClimbState state) {
+    climbState = state;
   }
 
-  public ClimbState getClimbState() {
+  public static ClimbState getClimbState() {
     return climbState;
   }
 
@@ -61,15 +70,15 @@ public class Climber extends SubsystemBase {
   public Command climbDeploy() {
     return climbDeployToPosition(
             ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE)
-        .alongWith(setClimbState(ClimbState.DEPLOYING))
-        .andThen(setClimbState(ClimbState.DEPLOYED));
+        .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYING)))
+        .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYED)));
   }
 
   public Command climbClimb() {
     return climbDeployToPosition(
             ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE)
-        .alongWith(setClimbState(ClimbState.CLIMBING))
-        .andThen(setClimbState(ClimbState.CLIMBED));
+        .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBING)))
+        .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBED)));
   }
 
   public Command climbDeployToPosition(double position, double voltage) {
@@ -97,7 +106,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climbSTOP() {
-    return Commands.run(() -> this.io.runVolts(0.0), this);
+    return Commands.runOnce(() -> this.io.runVolts(0.0), this);
   }
 
   public Command climbRun() {

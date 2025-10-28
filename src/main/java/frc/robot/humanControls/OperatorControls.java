@@ -274,8 +274,15 @@ public class OperatorControls {
                             .asProxy()))
             .andThen(new WaitCommand(0.25))
             .andThen(climber.climbDeploy())
+            // .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYING)))
+            // .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYED)))
             .withName("climbDeployButton");
-    Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
+    Command climbClimbButtonCommand =
+        climber
+            .climbClimb()
+            // .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBING)))
+            // .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBED)))
+            .withName("climbClimbButton");
     Command manualClimbButtonCommand = climber.climbOut(12).withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =

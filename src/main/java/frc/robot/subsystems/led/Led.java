@@ -66,15 +66,15 @@ public class Led extends SubsystemBase {
   }
 
   public Command commandOff() {
-    return commandSolidColor(LedState.kOff);
+    return commandSolidColor(LedState.kOff).withName("Led Off");
   }
 
   public Command commandSetTeal() {
-    return commandSolidColor(LedState.kCOTealLed);
+    return commandSolidColor(LedState.kCOTealLed).withName("Led Teal");
   }
 
   public Command commandSetOrange() {
-    return commandSolidColor(LedState.kCOOrangeLed);
+    return commandSolidColor(LedState.kCOOrangeLed).withName("Led Orange");
   }
 
   public Command commandSolidPattern(LedState[] states) {

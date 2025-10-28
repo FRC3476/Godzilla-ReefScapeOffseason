@@ -97,11 +97,11 @@ public class LedIOReal implements LedIO {
   }
 
   private static final LoggedTunableNumber fireSparking =
-      new LoggedTunableNumber("LED/Fire Sparking", 0.5);
+      new LoggedTunableNumber("LED/Fire Sparking", 0.2);
   private static final LoggedTunableNumber fireCooling =
-      new LoggedTunableNumber("LED/Fire Cooling", 0.5);
+      new LoggedTunableNumber("LED/Fire Cooling", 0.35);
   private static final LoggedTunableNumber fireFrameRate =
-      new LoggedTunableNumber("LED/Fire Frame Rate", 1);
+      new LoggedTunableNumber("LED/Fire Frame Rate", 60);
 
   @Override
   public void fire() {
