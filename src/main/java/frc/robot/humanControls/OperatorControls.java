@@ -10,9 +10,9 @@ import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.AlgaeIntake;
-import frc.robot.RobotState.CoralBranch;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
+import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -21,6 +21,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
@@ -39,6 +40,7 @@ public class OperatorControls {
   private final StreamDeck streamdeck;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;
+  private final Vision vision;
 
   public OperatorControls(RobotContainer container, StreamDeck streamdeck, RobotState robotState) {
     this.container = container;
@@ -50,6 +52,7 @@ public class OperatorControls {
     intake = container.getIntake();
     climber = container.getClimber();
     climbRoller = container.getClimbRoller();
+    vision = container.getVision();
     configureDriveStreamDeckBindings();
   }
 
@@ -143,26 +146,26 @@ public class OperatorControls {
     //         .withInactiveConfig(tealConfig)
     //         .withActiveConfig(activeConfig)
     //         .withText("F");
-    StreamDeckButton reefRightSideButton =
-        new StreamDeckButton(3, 4, "Reef Right Side 1")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("R");
-    StreamDeckButton reefRightSideButton2 =
-        new StreamDeckButton(3, 5, "Reef Right Side 2")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("R");
-    StreamDeckButton reefLeftSideButton =
-        new StreamDeckButton(3, 2, "Reef Left Side 1")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L");
-    StreamDeckButton reefLeftSideButton2 =
-        new StreamDeckButton(3, 3, "Reef Left Side 2")
-            .withInactiveConfig(orangeConfig)
-            .withActiveConfig(activeConfig)
-            .withText("L");
+    // StreamDeckButton reefRightSideButton =
+    //     new StreamDeckButton(3, 4, "Reef Right Side 1")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("R");
+    // StreamDeckButton reefRightSideButton2 =
+    //     new StreamDeckButton(3, 5, "Reef Right Side 2")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("R");
+    // StreamDeckButton reefLeftSideButton =
+    //     new StreamDeckButton(3, 2, "Reef Left Side 1")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L");
+    // StreamDeckButton reefLeftSideButton2 =
+    //     new StreamDeckButton(3, 3, "Reef Left Side 2")
+    //         .withInactiveConfig(orangeConfig)
+    //         .withActiveConfig(activeConfig)
+    //         .withText("L");
     StreamDeckButton homeElevatorButton =
         new StreamDeckButton(2, 4, "Home Elevator")
             .withInactiveConfig(orangeOnWhiteConfig)
@@ -243,6 +246,11 @@ public class OperatorControls {
             .withInactiveConfig(orangeConfig)
             .withActiveConfig(activeConfig)
             .withText("AS0");
+    StreamDeckButton driveToCoralButton =
+        new StreamDeckButton(3, 1, "Drive to Coral")
+            .withInactiveConfig(tealConfig)
+            .withActiveConfig(activeConfig)
+            .withText("DTC");
 
     StreamDeckButton manualOverrideButton =
         new StreamDeckButton(3, 0, "Manual Override")
@@ -272,6 +280,8 @@ public class OperatorControls {
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
     Command climbRollerStopButtonCommand =
         climbRoller.rollerSTOP().withName("climbRollerStopButton");
+    Command driveToCoralButtonCommand = new DriveToCoralCommand(drive, vision);
+
     Map<StreamDeckButton, BooleanSupplier> customStreamDeckButtonMap = new HashMap<>();
 
     customStreamDeckButtonMap.put(
@@ -310,18 +320,18 @@ public class OperatorControls {
     //     ReefESideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
     // customStreamDeckButtonMap.put(
     //     ReefFSideButton, () -> robotState.getStoredScorePosition().getReefSide() == ReefSide.E);
-    customStreamDeckButtonMap.put(
-        reefRightSideButton,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
-    customStreamDeckButtonMap.put(
-        reefRightSideButton2,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
-    customStreamDeckButtonMap.put(
-        reefLeftSideButton,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
-    customStreamDeckButtonMap.put(
-        reefLeftSideButton2,
-        () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    // customStreamDeckButtonMap.put(
+    //     reefRightSideButton,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
+    // customStreamDeckButtonMap.put(
+    //     reefRightSideButton2,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.RIGHT);
+    // customStreamDeckButtonMap.put(
+    //     reefLeftSideButton,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
+    // customStreamDeckButtonMap.put(
+    //     reefLeftSideButton2,
+    //     () -> robotState.getStoredScorePosition().getCoralBranch() == CoralBranch.LEFT);
     customStreamDeckButtonMap.put(homeElevatorButton, homeElevatorButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton, climbDeployButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbDeployButton2, climbDeployButtonCommand::isScheduled);
@@ -329,6 +339,7 @@ public class OperatorControls {
     customStreamDeckButtonMap.put(climbClimbButton, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(climbClimbButton2, climbClimbButtonCommand::isScheduled);
     customStreamDeckButtonMap.put(manualClimbButton, manualClimbButtonCommand::isScheduled);
+    customStreamDeckButtonMap.put(driveToCoralButton, driveToCoralButtonCommand::isScheduled);
     // customStreamDeckButtonMap.put(setManualScoringButton, () -> false);
     customStreamDeckButtonMap.put(
         manualOverrideButton, () -> RobotState.getSuperstructureManualOverrideMode());
@@ -441,30 +452,30 @@ public class OperatorControls {
     //     .onTrue(
     //         Commands.runOnce(() -> robotState.getStoredScorePosition().setReefSide(ReefSide.F))
     //             .ignoringDisable(true));
-    streamdeck
-        .button(reefRightSideButton)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefRightSideButton2)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefLeftSideButton)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
-                .ignoringDisable(true));
-    streamdeck
-        .button(reefLeftSideButton2)
-        .onTrue(
-            Commands.runOnce(
-                    () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
-                .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefRightSideButton)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefRightSideButton2)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.RIGHT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefLeftSideButton)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
+    //             .ignoringDisable(true));
+    // streamdeck
+    //     .button(reefLeftSideButton2)
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () -> robotState.getStoredScorePosition().setBranchSide(CoralBranch.LEFT))
+    //             .ignoringDisable(true));
     streamdeck.button(homeElevatorButton).onTrue(homeElevatorButtonCommand);
     // streamdeck
     //     .button(setManualScoringButton)
@@ -518,12 +529,14 @@ public class OperatorControls {
         .and(autoClimbTrigger)
         .onTrue(climber.climbClimb().withName("AutoClimb"));
 
+    // left and right are swapped on purpose to match the operator's POV
     streamdeck
         .button(autoScoreLeftButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetLeft()).asProxy());
+        .onTrue(Commands.runOnce(() -> robotState.offsetRight()).asProxy());
     streamdeck
         .button(autoScoreRightButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetRight()).asProxy());
+        .onTrue(Commands.runOnce(() -> robotState.offsetLeft()).asProxy());
+
     streamdeck
         .button(autoScoreForwardButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetForward()).asProxy());
@@ -533,5 +546,6 @@ public class OperatorControls {
     streamdeck
         .button(autoScoreZeroButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetZero()).asProxy());
+    streamdeck.button(driveToCoralButton).whileTrue(driveToCoralButtonCommand);
   }
 }
