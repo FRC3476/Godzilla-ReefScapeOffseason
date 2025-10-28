@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -16,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Field.FieldConstants;
+import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import java.util.function.Supplier;
@@ -72,11 +73,7 @@ public class GarageDriveToPoseCommand extends Command {
     Logger.recordOutput("Align Offset Inches", Constants.kAlignOffset);
     Logger.recordOutput("Align OffsetFB Inches", Constants.kAlignOffsetFB);
     Pose2d robot =
-        robotPoseOriginal.plus(
-            new Transform2d(
-                Units.inchesToMeters(Constants.kAlignOffsetFB),
-                Units.inchesToMeters(Constants.kAlignOffset),
-                Rotation2d.kZero));
+        robotPoseOriginal.plus(FieldConstants.getReefFaceOffset(FieldUtils.getClosestReef()));
     Pose2d target = targetPoseSupplier.get();
 
     double currentDistance = robot.getTranslation().getDistance(target.getTranslation());

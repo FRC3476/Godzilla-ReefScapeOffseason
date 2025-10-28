@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.AlgaeIntake;
@@ -539,17 +540,23 @@ public class OperatorControls {
     // left and right are swapped on purpose to match the operator's POV
     streamdeck
         .button(autoScoreLeftButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetRight()).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetRight(FieldUtils.getClosestReef())).asProxy());
     streamdeck
         .button(autoScoreRightButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetLeft()).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetLeft(FieldUtils.getClosestReef())).asProxy());
 
     streamdeck
         .button(autoScoreForwardButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetForward()).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetForward(FieldUtils.getClosestReef()))
+                .asProxy());
     streamdeck
         .button(autoScoreBackButton)
-        .onTrue(Commands.runOnce(() -> robotState.offsetBackward()).asProxy());
+        .onTrue(
+            Commands.runOnce(() -> robotState.offsetBackward(FieldUtils.getClosestReef()))
+                .asProxy());
     streamdeck
         .button(autoScoreZeroButton)
         .onTrue(Commands.runOnce(() -> robotState.offsetZero()).asProxy());
