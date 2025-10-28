@@ -79,7 +79,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "IsCoralInRobot"
                 }
               },
               {
@@ -208,7 +208,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IsCoralInFeeder"
+                  "name": "IsCoralInRobot"
                 }
               },
               {
