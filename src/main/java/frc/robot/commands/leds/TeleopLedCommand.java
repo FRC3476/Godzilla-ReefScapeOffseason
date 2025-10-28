@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.RobotContainer;
+import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreLevel;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.Climber.ClimbState;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -18,13 +20,15 @@ public class TeleopLedCommand extends Command {
   private final Claw claw;
   private final DriveSubsystem drive;
   private final Climber climber;
+  private final RobotState robotState;
 
   private boolean driveCanbusDown = false;
   private boolean miscCanbusDown = false;
   private ClimbState climbState = ClimbState.STOWED;
 
-  public TeleopLedCommand(RobotContainer container) {
+  public TeleopLedCommand(RobotContainer container, RobotState robotState) {
     this.container = container;
+    this.robotState = robotState;
     led = container.getLed();
     claw = container.getClaw();
     drive = container.getDrive();
@@ -52,7 +56,7 @@ public class TeleopLedCommand extends Command {
       return;
     } else if (!climber.isOK()) {
       return;
-    } else if (climber.isOK()) {
+    } else {
       driveCanbusDown = false;
     }
 
@@ -92,7 +96,7 @@ public class TeleopLedCommand extends Command {
       return;
     } else if (!claw.isOK()) {
       return;
-    } else if (claw.isOK()) {
+    } else {
       miscCanbusDown = false;
     }
 
@@ -109,7 +113,27 @@ public class TeleopLedCommand extends Command {
     }
     // has coral: orange  (future: orange with different fill levels based on scoring height)
     if (CoralStateTracker.hasCoral()) {
-      led.commandSetOrange().withName("Led Has Coral").schedule();
+      // led.commandSetOrange().withName("Led Has Coral").schedule();
+      if (robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1) {
+        led.commandPercentageFull(() -> 7.0 / 16.0, LedState.kCOOrangeLed)
+            .withName("Led Has Coral L1")
+            .schedule();
+      }
+      if (robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L2) {
+        led.commandPercentageFull(() -> 10.0 / 16.0, LedState.kCOOrangeLed)
+            .withName("Led Has Coral L2")
+            .schedule();
+      }
+      if (robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L3) {
+        led.commandPercentageFull(() -> 13.0 / 16.0, LedState.kCOOrangeLed)
+            .withName("Led Has Coral L3")
+            .schedule();
+      }
+      if (robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L4) {
+        led.commandPercentageFull(() -> 16.0 / 16.0, LedState.kCOOrangeLed)
+            .withName("Led Has Coral L4")
+            .schedule();
+      }
       return;
     }
     // else off
@@ -123,6 +147,6 @@ public class TeleopLedCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    led.commandOff().withName("Led Off Teleop End").schedule();
+    // led.commandOff().withName("Led Off Teleop End").schedule();
   }
 }

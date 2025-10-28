@@ -92,11 +92,11 @@ public class Led extends SubsystemBase {
   }
 
   public Command commandBlinkingState(LedState state, double duration) {
-    return this.runOnce(() -> blinkingState(state, duration, LedStrip.BOTH));
+    return this.runOnce(() -> blinkingState(state, duration, LedStrip.BOTH)).ignoringDisable(true);
   }
 
   public Command commandBlinkingState(LedState state, double duration, LedStrip strip) {
-    return this.runOnce(() -> blinkingState(state, duration, strip));
+    return this.runOnce(() -> blinkingState(state, duration, strip)).ignoringDisable(true);
   }
 
   public void blinkingState(LedState state, double duration, LedStrip strip) {
@@ -104,19 +104,31 @@ public class Led extends SubsystemBase {
   }
 
   public Command commandFire() {
-    return this.runOnce(() -> this.io.fire()).ignoringDisable(true).withName("LED Fire");
+    return this.runOnce(() -> this.io.fire())
+        .ignoringDisable(true)
+        .ignoringDisable(true)
+        .withName("LED Fire");
   }
 
   public Command commandRainbow() {
-    return this.runOnce(() -> this.io.rainbow()).ignoringDisable(true).withName("LED Rainbow");
+    return this.runOnce(() -> this.io.rainbow())
+        .ignoringDisable(true)
+        .ignoringDisable(true)
+        .withName("LED Rainbow");
   }
 
   public Command commandColorflowCO() {
-    return this.runOnce(() -> this.io.colorflowCO()).ignoringDisable(true).withName("LED LarsonCO");
+    return this.runOnce(() -> this.io.colorflowCO())
+        .ignoringDisable(true)
+        .ignoringDisable(true)
+        .withName("LED LarsonCO");
   }
 
   public Command commandLarson(LedState state) {
-    return this.runOnce(() -> this.io.larson(state)).ignoringDisable(true).withName("LED Larson");
+    return this.runOnce(() -> this.io.larson(state))
+        .ignoringDisable(true)
+        .ignoringDisable(true)
+        .withName("LED Larson");
   }
 
   public Command commandTwinkle(LedState state, boolean off) {

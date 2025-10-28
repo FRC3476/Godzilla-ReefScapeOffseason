@@ -19,7 +19,7 @@ public class LedState {
   public static final LedState kCOOrangeLed = new LedState(255, 30, 0);
 
   public static final LedState kOff = new LedState(0, 0, 0); // No Color
-  public static final LedState kLowBattery = kRed;
+  public static final LedState kLowBattery = kYellow;
   public static final LedState kGoodBattery = kGreen;
   public static final LedState[] kRainbow = {
     kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kOff, kRed, kOrange, kYellow,

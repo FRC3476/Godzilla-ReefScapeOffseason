@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.leds.DisabledLedCommand;
 import frc.robot.commands.leds.TeleopLedCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.superstructure.SuperstructureState;
@@ -225,13 +226,21 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    new DisabledLedCommand(robotContainer).ignoringDisable(true).schedule();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
     LoopTimingLogger.startTiming("DisabledPeriodic");
     LoopTimingLogger.endTiming("DisabledPeriodic");
+  }
+
+  @Override
+  public void disabledExit() {
+    if (robotContainer.getLed().getCurrentCommand() != null)
+      robotContainer.getLed().getCurrentCommand().cancel();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -269,7 +278,7 @@ public class Robot extends LoggedRobot {
 
     robotContainer.getSuperStructure().setStateCommand(state, "Auto End Reset").schedule();
 
-    new TeleopLedCommand(robotContainer).schedule();
+    new TeleopLedCommand(robotContainer, robotContainer.getRobotState()).schedule();
   }
 
   /** This function is called periodically during operator control. */
@@ -278,6 +287,12 @@ public class Robot extends LoggedRobot {
     LoopTimingLogger.startTiming("TeleopPeriodic");
 
     LoopTimingLogger.endTiming("TeleopPeriodic");
+  }
+
+  @Override
+  public void teleopExit() {
+    if (robotContainer.getLed().getCurrentCommand() != null)
+      robotContainer.getLed().getCurrentCommand().cancel();
   }
 
   /** This function is called once when test mode is enabled. */

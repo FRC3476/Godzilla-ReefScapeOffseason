@@ -258,4 +258,8 @@ public class RobotContainer {
   public Led getLed() {
     return led;
   }
+
+  public RobotState getRobotState() {
+    return robotState;
+  }
 }

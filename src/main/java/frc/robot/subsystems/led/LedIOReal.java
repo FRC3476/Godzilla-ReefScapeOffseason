@@ -255,7 +255,7 @@ public class LedIOReal implements LedIO {
         candle.setControl(
             new StrobeAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
                 .withColor(state.getRGBW())
-                .withUpdateFreqHz(1 / duration)
+                .withFrameRate(1 / duration)
                 .withSlot(0));
         break;
       case RIGHT:
@@ -263,7 +263,7 @@ public class LedIOReal implements LedIO {
         candle.setControl(
             new StrobeAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
                 .withColor(state.getRGBW())
-                .withUpdateFreqHz(1 / duration)
+                .withFrameRate(1 / duration)
                 .withSlot(1));
         break;
       case BOTH:
@@ -271,12 +271,12 @@ public class LedIOReal implements LedIO {
         candle.setControl(
             new StrobeAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
                 .withColor(state.getRGBW())
-                .withUpdateFreqHz(1 / duration)
+                .withFrameRate(1 / duration)
                 .withSlot(0));
         candle.setControl(
             new StrobeAnimation(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
                 .withColor(state.getRGBW())
-                .withUpdateFreqHz(1 / duration)
+                .withFrameRate(1 / duration)
                 .withSlot(1));
         break;
     }
@@ -284,18 +284,24 @@ public class LedIOReal implements LedIO {
 
   @Override
   public void percentageFull(double percent, LedState state) {
-    candle.setControl(new EmptyAnimation(0));
-    // candle.setControl(
-    //     new SolidColor(0, (int) Math.round(7 + Constants.LedConstants.kNonCandleLEDCount *
-    // percent))
-    //         .withColor(state.getRGBW()));
-    // candle.setControl(
-    //     new SolidColor(
-    //             (int) Math.round(7 + Constants.LedConstants.kNonCandleLEDCount * percent),
-    //             Constants.LedConstants.kNonCandleLEDCount)
-    //         .withColor(LedState.kOff.getRGBW()));
-    candle.setControl(new SolidColor(0, 20).withColor(state.getRGBW()));
-    candle.setControl(new SolidColor(20, 399).withColor(LedState.kOff.getRGBW()));
+    clearLeds();
+    int leftStart = LedConstants.kLeftLEDStartIdx;
+    int rightEnd = LedConstants.kRightLEDEndIdx;
+    double leftEnd =
+        leftStart
+            + (LedConstants.kLeftLEDEndIdx - LedConstants.kLeftLEDStartIdx + 1) * (percent)
+            - 1;
+    double rightStart =
+        rightEnd
+            - (LedConstants.kRightLEDEndIdx - LedConstants.kRightLEDStartIdx + 1) * (percent)
+            + 1;
+
+    System.out.println(leftStart + " " + leftEnd + ", " + rightStart + " " + rightEnd);
+
+    candle.setControl(
+        new SolidColor(leftStart, (int) Math.round(leftEnd)).withColor(state.getRGBW()));
+    candle.setControl(
+        new SolidColor((int) Math.round(rightStart), rightEnd).withColor(state.getRGBW()));
   }
 
   // @Override

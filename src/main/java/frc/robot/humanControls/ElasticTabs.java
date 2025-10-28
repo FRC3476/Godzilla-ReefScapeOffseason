@@ -394,7 +394,7 @@ public class ElasticTabs {
         .setupOnPressCommandIgnoringDisabled(led.commandBlinkingState(LedState.kRed, 0.5));
     tab.addButton("Fire").setupOnPressCommandIgnoringDisabled(led.commandFire());
     tab.addButton("Rainbow").setupOnPressCommandIgnoringDisabled(led.commandRainbow());
-    tab.addButton("LarsonCO").setupOnPressCommandIgnoringDisabled(led.commandColorflowCO());
+    tab.addButton("ColorflowCO").setupOnPressCommandIgnoringDisabled(led.commandColorflowCO());
     tab.addButton("Off").setupOnPressCommandIgnoringDisabled(led.commandOff());
     tab.addButton("Half Orange")
         .setupOnPressCommandIgnoringDisabled(
