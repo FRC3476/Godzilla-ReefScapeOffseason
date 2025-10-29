@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.Timer;
@@ -9,13 +8,12 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class CoralPoseTracker {
-  private Set<CoralPoseObservation> observations;
+  private List<CoralPoseObservation> observations = new ArrayList<>();
 
   public class CoralPoseObservation implements Struct<CoralPoseObservation> {
     Translation2d pose;
@@ -57,15 +55,15 @@ public class CoralPoseTracker {
 
     @Override
     public String getSchema() {
-      return "Pose2d pose; double lastObservation; int numObservations";
+      return "Translation2d pose; double lastObservation; int numObservations";
     }
 
     @Override
     public void pack(ByteBuffer bb, CoralPoseObservation data) {
-      bb.putDouble(pose.getX());
-      bb.putDouble(pose.getY());
-      bb.putDouble(lastObservation);
-      bb.putInt(numObservations);
+      bb.putDouble(data.pose.getX());
+      bb.putDouble(data.pose.getY());
+      bb.putDouble(data.lastObservation);
+      bb.putInt(data.numObservations);
     }
 
     @Override
@@ -94,7 +92,7 @@ public class CoralPoseTracker {
   }
 
   public CoralPoseTracker() {
-    this.observations = new HashSet<>();
+    this.observations = new ArrayList<>();
   }
 
   public CoralPoseObservation[] getObservations() {
@@ -140,6 +138,6 @@ public class CoralPoseTracker {
     if (bestObservation.numObservations < VisionConstants.coralObservationMinObservations) {
       return Optional.empty();
     }
-    return Optional.of(new Pose2d(bestObservation.pose, Rotation2d.kZero));
+    return Optional.of(new Pose2d(bestObservation.pose, RobotState.getGlobalPose().getRotation()));
   }
 }

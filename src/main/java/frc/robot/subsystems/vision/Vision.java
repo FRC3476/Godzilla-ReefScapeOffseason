@@ -58,19 +58,6 @@ public class Vision extends SubsystemBase {
     return io.getCoralTyNc();
   }
 
-  public Transform2d getCoralPositionRelativeToRobot() {
-    double dy =
-        VisionConstants.kIntakeCameraHeight
-            * Math.tan(
-                Units.degreesToRadians(VisionConstants.kIntakeCameraPitchDegrees + getCoralTyNc()));
-
-    double d0 = Math.sqrt(Math.pow(dy, 2) + Math.pow(VisionConstants.kIntakeCameraHeight, 2));
-
-    double dx = d0 * Math.tan(Units.degreesToRadians(getCoralTxNc()));
-
-    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, dx, Rotation2d.kZero);
-  }
-
   public Transform2d getCoralPositionRelativeToRobot(Pair<Double, Double> TNCs) {
     double dy =
         VisionConstants.kIntakeCameraHeight
@@ -82,14 +69,10 @@ public class Vision extends SubsystemBase {
 
     double dx = d0 * Math.tan(Units.degreesToRadians(TNCs.getFirst()));
 
-    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, dx, Rotation2d.kZero);
+    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, -dx, Rotation2d.kZero);
   }
 
-  public Pose2d getCoralPose() {
-    return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot());
-  }
-
-  public Pose2d getCoralPose(Pair<Double, Double> TNCs) {
+  public Pose2d calculateCoralPose(Pair<Double, Double> TNCs) {
     return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot(TNCs));
   }
 
@@ -196,8 +179,6 @@ public class Vision extends SubsystemBase {
     if (isCoralDetected()) {
       Logger.recordOutput("Vision/objectDetection/coralTx", getCoralTx());
       Logger.recordOutput("Vision/objectDetection/CoralTy", getCoralTy());
-      Logger.recordOutput("Vision/objectDetection/coralToRobot", getCoralPositionRelativeToRobot());
-      Logger.recordOutput("Vision/objectDetection/coralPose", getCoralPose());
       processCoralDetections();
       CoralPoseTracker.CoralPoseObservation[] coralPoseObservations =
           coralPoseTracker.getObservations();
@@ -213,6 +194,13 @@ public class Vision extends SubsystemBase {
     }
 
     Logger.recordOutput("Vision/latencyPeriodicSec", RobotTime.getTimestampSeconds() - startTime);
+  }
+
+  public Optional<Pose2d> getCoralPose() {
+    if (coralPoseTracker.getCoralPose().isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(coralPoseTracker.getCoralPose().get());
   }
 
   private void logCameraInputs(String prefix, VisionIO.VisionIOInputs.CameraInputs cam) {
@@ -523,7 +511,7 @@ public class Vision extends SubsystemBase {
       ArrayList<Pair<Double, Double>> allCoralTNCs = io.getAllCoralTNCs().get();
       ArrayList<Pose2d> coralPoses = new ArrayList<>();
       for (Pair<Double, Double> coralTNC : allCoralTNCs) {
-        coralPoses.add(getCoralPose(coralTNC));
+        coralPoses.add(calculateCoralPose(coralTNC));
       }
       coralPoseTracker.addObservations(coralPoses);
     }
