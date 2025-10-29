@@ -1,9 +1,14 @@
 package frc.robot.Field;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.VisionConstants;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FieldConstants {
   /** AdvantageKit-safe loggable version of `AprilTag` that contains data we want without lookups */
@@ -80,4 +85,66 @@ public class FieldConstants {
       List.of(blueHPSDriverLeft, blueHPSDriverRight);
   public static final List<AprilTagStruct> redHPSTags =
       List.of(redHPSDriverLeft, redHPSDriverRight);
+
+  /**
+   * Map of alignment offsets for each reef face. These offsets can be adjusted via StreamDeck
+   * buttons to fine-tune robot positioning for each reef face.
+   */
+  private static final Map<ReefFace, Transform2d> reefFaceOffsets = new HashMap<>();
+
+  static {
+    // Blue alliance reef faces
+    reefFaceOffsets.put(blueReefAB, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(blueReefCD, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(blueReefEF, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(blueReefGH, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(blueReefIJ, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(blueReefKL, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+
+    // Red alliance reef faces
+    reefFaceOffsets.put(redReefAB, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(redReefCD, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(redReefEF, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(redReefGH, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(redReefIJ, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+    reefFaceOffsets.put(redReefKL, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+  }
+
+  /**
+   * Gets the alignment offset for a specific reef face.
+   *
+   * @param reefFace The reef face to get the offset for
+   * @return The Transform2d offset for the specified reef face, or a zero offset if not found
+   */
+  public static Transform2d getReefFaceOffset(ReefFace reefFace) {
+    return reefFaceOffsets.getOrDefault(
+        reefFace, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+  }
+
+  /**
+   * Sets the alignment offset for a specific reef face.
+   *
+   * @param reefFace The reef face to set the offset for
+   * @param offset The Transform2d offset to apply
+   */
+  public static void setReefFaceOffset(ReefFace reefFace, Transform2d offset) {
+    reefFaceOffsets.put(reefFace, offset);
+  }
+
+  /**
+   * Resets the alignment offset for a specific reef face to zero.
+   *
+   * @param reefFace The reef face to reset
+   */
+  public static void resetReefFaceOffset(ReefFace reefFace) {
+    reefFaceOffsets.put(reefFace, new Transform2d(new Translation2d(0, 0), Rotation2d.kZero));
+  }
+
+  /** Resets all reef face offsets to zero. */
+  public static void resetAllReefFaceOffsets() {
+    Transform2d defaultOffset = new Transform2d(new Translation2d(0, 0), Rotation2d.kZero);
+    for (ReefFace reefFace : reefFaceOffsets.keySet()) {
+      reefFaceOffsets.put(reefFace, defaultOffset);
+    }
+  }
 }

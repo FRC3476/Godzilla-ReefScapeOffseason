@@ -170,6 +170,9 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.processInputs("DriveInputs", inputs);
     io.logModules(inputs);
 
+    // Send robot orientation to Limelights for MegaTag2
+    sendRobotOrientationToLimelights();
+
     robotState.incrementIterationCount();
     if (DriverStation.isDisabled()) {
       configureStandardDevsForDisabled();
@@ -334,6 +337,19 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.DriveConstants.kEnabledDriveXStdDev,
         Constants.DriveConstants.kEnabledDriveYStdDev,
         Constants.DriveConstants.kEnabledDriveRotStdDev);
+  }
+
+  /** Sends robot gyro orientation to Limelights for MegaTag2 pose estimation. */
+  private void sendRobotOrientationToLimelights() {
+    // Convert radians to degrees for Limelight API
+    double yawDegrees = inputs.Pose.getRotation().getDegrees();
+
+    // Send to both Limelights
+    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+        Constants.VisionConstants.kLimelightATableName, yawDegrees, 0, 0, 0, 0, 0);
+
+    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+        Constants.VisionConstants.kLimelightBTableName, yawDegrees, 0, 0, 0, 0, 0);
   }
 
   public MapleSimSwerveDrivetrain getMapleSimDrive() {

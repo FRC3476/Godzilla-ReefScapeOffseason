@@ -222,6 +222,23 @@ public enum SuperstructureState {
     }
   }
 
+  public boolean isNonL4ScoringState() {
+    switch (this) {
+      case L2_AIM,
+          L3_AIM,
+          L2_FADEAWAY,
+          L3_FADEAWAY,
+          L2_AWAY_FROM_REEF,
+          L3_AWAY_FROM_REEF,
+          BARGE_AIM_BACKWARD,
+          BARGE_AIM_CENTER,
+          BARGE_AIM_FORWARD:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public boolean isL1ScoringState() {
     switch (this) {
       case L1_AIM, L1_FADEAWAY:
