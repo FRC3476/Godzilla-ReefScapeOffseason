@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 3.6382388045021026,
-        "y": 2.832505389644817
+        "y": 2.8325053896448167
       },
       "isLocked": false,
       "linkedName": "RR2E"
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

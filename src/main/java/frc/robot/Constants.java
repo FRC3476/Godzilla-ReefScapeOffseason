@@ -226,7 +226,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(3))
+                    .withProximityThreshold(Units.inchesToMeters(4))
                     .withProximityHysteresis(0.006));
 
     public static final double FEEDER_IN_VOLTS = 12.0;

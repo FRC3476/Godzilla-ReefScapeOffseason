@@ -103,9 +103,7 @@ public class NamedCommandsSetup {
             .withTimeout(10.0)); // Gets X seconds to perform action
 
     NamedCommands.registerCommand(
-        "IsCoralInFeeder",
-        new WaitUntilCommand(
-            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.AT_BACK_FEEDER));
+        "IsCoralInFeeder", new WaitUntilCommand(() -> CoralStateTracker.hasCoralAboveIntake()));
 
     NamedCommands.registerCommand(
         "IsCoralInEndEffector",

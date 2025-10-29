@@ -191,9 +191,9 @@ public class RobotState extends MagicVirtualSubsystem {
       case L1_AIM:
         return SuperstructureState.L1_FADEAWAY;
       case L2_AIM:
-        return SuperstructureState.L2_FADEAWAY;
+        return SuperstructureState.L2_AIM;
       case L3_AIM:
-        return SuperstructureState.L3_FADEAWAY;
+        return SuperstructureState.L3_AIM;
       case L4_AIM:
         return SuperstructureState.L4_FADEAWAY;
       case BARGE_AIM_FORWARD:
