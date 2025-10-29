@@ -129,7 +129,7 @@ public final class Constants {
     public static final double DRIVE_TO_CORAL_KP = 6.0;
     public static final double DRIVE_TO_CORAL_KI = 0.0;
     public static final double DRIVE_TO_CORAL_KD = 0.4;
-    public static final double DRIVE_TO_CORAL_PERP_OFFSET_METERS = Units.inchesToMeters(-15);
+    public static final double DRIVE_TO_CORAL_PERP_OFFSET_METERS = Units.inchesToMeters(-17);
 
     public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;

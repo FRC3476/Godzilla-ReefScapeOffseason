@@ -18,6 +18,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PoseUtils;
 import org.littletonrobotics.junction.Logger;
@@ -29,15 +31,15 @@ public class DriveToCoralCommand extends Command {
           DriveConstants.DRIVE_TO_CORAL_KI,
           DriveConstants.DRIVE_TO_CORAL_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 3),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 3));
+              (Constants.DriveConstants.kDriveMaxSpeed),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 3));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
 
   private final DriveSubsystem drive;
   private final Vision vision;
@@ -82,7 +84,8 @@ public class DriveToCoralCommand extends Command {
       Translation2d targetTranslation = vision.getCoralPose().get().getTranslation();
       Translation2d translationalError = robot.getTranslation().minus(targetTranslation);
       Rotation2d targetRotation =
-          new Rotation2d(translationalError.getX(), translationalError.getY());
+          new Rotation2d(translationalError.getX(), translationalError.getY())
+              .plus(Rotation2d.k180deg);
       Pose2d target =
           PoseUtils.getPerpendicularOffsetPose(
               new Pose2d(targetTranslation, targetRotation),
@@ -100,8 +103,8 @@ public class DriveToCoralCommand extends Command {
           distanceController.getSetpoint().velocity * ffScaler
               + MathUtil.clamp(
                   distanceController.calculate(translationalError.getNorm(), 0),
-                  -DriveConstants.kDriveMaxSpeed / 3,
-                  DriveConstants.kDriveMaxSpeed / 3);
+                  -DriveConstants.kDriveMaxSpeed,
+                  DriveConstants.kDriveMaxSpeed);
       translationalSpeed = !distanceController.atGoal() ? translationalSpeed : 0;
 
       double anglularVelocity =
@@ -151,4 +154,8 @@ public class DriveToCoralCommand extends Command {
   //                       drive.getChassisSpeeds().vyMetersPerSecond)
   //                   < velocityTolerance);
   // }
+  @Override
+  public boolean isFinished() {
+    return CoralStateTracker.getCurrentPosition() != CoralPosition.NONE;
+  }
 }

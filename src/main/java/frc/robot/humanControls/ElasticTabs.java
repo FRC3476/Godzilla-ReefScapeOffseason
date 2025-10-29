@@ -8,12 +8,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
-import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
-import frc.robot.commands.PathfindToPoseCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -23,6 +22,7 @@ import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.ElasticButton.ElasticTab;
 import frc.robot.util.PoseUtils;
 import java.util.HashMap;
@@ -39,6 +39,7 @@ public class ElasticTabs {
   private final RobotState robotState;
   private final EndEffector endEffector;
   private final Claw claw;
+  private final Vision vision;
   private final Map<String, ElasticTab> elasticTabMap = new HashMap<>();
 
   public ElasticTabs(RobotContainer container, RobotState robotState) {
@@ -52,6 +53,7 @@ public class ElasticTabs {
     climbRoller = container.getClimbRoller();
     endEffector = container.getEndEffector();
     claw = container.getClaw();
+    vision = container.getVision();
     buildElasticTabs();
   }
 
@@ -303,13 +305,12 @@ public class ElasticTabs {
     // tab.addButton("Drive Turn Clockwise").setupWhileHeldCommand(
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
 
-    tab.addButton("Pathfind to Pose")
-        .setupWhileHeldCommand(
-            new PathfindToPoseCommand(
-                drive,
-                () ->
-                    PoseUtils.getPerpendicularOffsetPose(
-                        FieldConstants.redReefCD.rightPole.getPose(), 0.65)));
+    tab.addButton("Pathfind to Pose").setupWhileHeldCommand(new DriveToCoralCommand(drive, vision));
+    /*new PathfindToPoseCommand(
+    drive,
+    () ->
+        PoseUtils.getPerpendicularOffsetPose(
+            FieldConstants.redReefCD.rightPole.getPose(), 0.65)));*/
 
     // FieldUtils.getClosestReefPole().getPose(), 0.65)));
 
