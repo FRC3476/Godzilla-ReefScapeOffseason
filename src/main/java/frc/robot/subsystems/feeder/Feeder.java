@@ -12,9 +12,6 @@ public class Feeder extends SubsystemBase {
   private final FeederIO io;
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
 
-  Debouncer debouncerFirst = new Debouncer(0.05);
-  Debouncer debouncerSecound = new Debouncer(0.05);
-
   public Feeder(FeederIO io) {
     this.io = io;
     System.out.println("====================Feeder Subsystem Online====================");
@@ -39,12 +36,12 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCoralInFeeder() {
-    return debouncerFirst.calculate(inputs.canRangeData.tripped())
+    return inputs.canRangeData.tripped()
         && inputs.canRangeData.isSensorConnected();
   }
 
   public boolean isCoralInFrontFeeder() {
-    return debouncerSecound.calculate(inputs.frontCanRangeData.tripped())
+    return inputs.frontCanRangeData.tripped()
         && inputs.frontCanRangeData.isSensorConnected();
   }
 
