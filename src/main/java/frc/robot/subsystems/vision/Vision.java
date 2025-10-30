@@ -2,9 +2,11 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +21,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,7 +29,8 @@ public class Vision extends SubsystemBase {
   private final VisionIO io;
   private final RobotState state;
   private final VisionIO.VisionIOInputs inputs = new VisionIO.VisionIOInputs();
-  private final Debouncer debouce = new Debouncer(0.25);
+  private final Debouncer debounce = new Debouncer(0.25);
+  private final CoralPoseTracker coralPoseTracker = new CoralPoseTracker();
 
   private boolean useVision = true;
 
@@ -36,7 +40,7 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isCoralDetected() {
-    return debouce.calculate(io.isCoralDetected());
+    return debounce.calculate(io.isCoralDetected());
   }
 
   public double getCoralTx() {
@@ -45,6 +49,32 @@ public class Vision extends SubsystemBase {
 
   public double getCoralTy() {
     return io.getCoralTy();
+  }
+
+  public double getCoralTxNc() {
+    return io.getCoralTxNc();
+  }
+
+  public double getCoralTyNc() {
+    return io.getCoralTyNc();
+  }
+
+  public Transform2d getCoralPositionRelativeToRobot(Pair<Double, Double> TNCs) {
+    double dy =
+        VisionConstants.kIntakeCameraHeight
+            * Math.tan(
+                Units.degreesToRadians(
+                    VisionConstants.kIntakeCameraPitchDegrees + TNCs.getSecond()));
+
+    double d0 = Math.sqrt(Math.pow(dy, 2) + Math.pow(VisionConstants.kIntakeCameraHeight, 2));
+
+    double dx = d0 * Math.tan(Units.degreesToRadians(TNCs.getFirst()));
+
+    return new Transform2d(dy + VisionConstants.kIntakeCameraOffset, -dx, Rotation2d.kZero);
+  }
+
+  public Pose2d calculateCoralPose(Pair<Double, Double> TNCs) {
+    return RobotState.getGlobalPose().plus(getCoralPositionRelativeToRobot(TNCs));
   }
 
   /** Fuses two vision pose estimates using inverse-variance weighting. */
@@ -145,7 +175,36 @@ public class Vision extends SubsystemBase {
         });
 
     Logger.recordOutput("Vision/exclusiveTagId", state.getExclusiveTag().orElse(-1));
+
+    Logger.recordOutput("Vision/objectDetection/isCoralDetected", isCoralDetected());
+    if (isCoralDetected()) {
+      Logger.recordOutput("Vision/objectDetection/coralTx", getCoralTx());
+      Logger.recordOutput("Vision/objectDetection/CoralTy", getCoralTy());
+      processCoralDetections();
+      CoralPoseTracker.CoralPoseObservation[] coralPoseObservations =
+          coralPoseTracker.getObservations();
+      Pose3d[] coralPoses = new Pose3d[coralPoseObservations.length];
+      for (int i = 0; i < coralPoseObservations.length; i++) {
+        //  Logger.recordOutput(
+        //       "Vision/objectDetection/CoralPoseObservations/" + i, coralPoseObservations[i]);
+        coralPoses[i] = (new Pose3d(new Pose2d(coralPoseObservations[i].pose, Rotation2d.kZero)));
+      }
+      Logger.recordOutput("Vision/objectDetection/CoralPoses", coralPoses);
+      if (coralPoseTracker.getCoralPose().isPresent()) {
+
+        Logger.recordOutput(
+            "Vision/objectDetection/bestCoralPose", coralPoseTracker.getCoralPose().get());
+      }
+    }
+
     Logger.recordOutput("Vision/latencyPeriodicSec", RobotTime.getTimestampSeconds() - startTime);
+  }
+
+  public Optional<Pose2d> getCoralPose() {
+    if (coralPoseTracker.getCoralPose().isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(coralPoseTracker.getCoralPose().get());
   }
 
   private void logCameraInputs(String prefix, VisionIO.VisionIOInputs.CameraInputs cam) {
@@ -514,6 +573,17 @@ public class Vision extends SubsystemBase {
             visionStdDevs,
             poseEstimate.fiducialIds().length,
             cam.megatagDistance));
+  }
+
+  private void processCoralDetections() {
+    if (io.getAllCoralTNCs().isPresent()) {
+      ArrayList<Pair<Double, Double>> allCoralTNCs = io.getAllCoralTNCs().get();
+      ArrayList<Pose2d> coralPoses = new ArrayList<>();
+      for (Pair<Double, Double> coralTNC : allCoralTNCs) {
+        coralPoses.add(calculateCoralPose(coralTNC));
+      }
+      coralPoseTracker.addObservations(coralPoses);
+    }
   }
 
   private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
