@@ -111,7 +111,7 @@ public class TeleopLedCommand extends Command {
       led.commandSetTeal().withName("Led Has Algae").schedule();
       return;
     }
-    // has coral: orange  (future: orange with different fill levels based on scoring height)
+    // has coral: orange
     if (CoralStateTracker.hasCoral()) {
       // led.commandSetOrange().withName("Led Has Coral").schedule();
       if (robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1) {
