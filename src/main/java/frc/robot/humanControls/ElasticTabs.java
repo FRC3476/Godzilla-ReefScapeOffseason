@@ -9,7 +9,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.Constants.LedConstants.LedStrip;
-import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;

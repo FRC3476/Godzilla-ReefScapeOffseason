@@ -22,6 +22,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   double coral_ty = 0.0;
   double coral_txnc = 0.0;
   double coral_tync = 0.0;
+  Optional<ArrayList<Pair<Double, Double>>> lastCoralTNCs = Optional.empty();
 
   private static final double[] DEFAULT_STDDEVS =
       new double[VisionConstants.kExpectedStdDevArrayLength];
@@ -154,6 +155,12 @@ public class VisionIOHardwareLimelight implements VisionIO {
       tncs.add(
           new Pair<Double, Double>(
               detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
+    }
+    if (lastCoralTNCs.isPresent()) {
+      if (lastCoralTNCs.get().equals(tncs)) {
+        // no update from limelight yet
+        return Optional.empty();
+      }
     }
     return Optional.of(tncs);
   }

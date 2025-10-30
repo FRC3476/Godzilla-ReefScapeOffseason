@@ -99,7 +99,7 @@ public class NamedCommandsSetup {
     // ====================AUTO CORAL TRACKER COMMANDS====================
     NamedCommands.registerCommand(
         "SeesCoral",
-        new WaitUntilCommand(() -> vision.isCoralDetected())
+        new WaitUntilCommand(() -> vision.getCoralPose().isPresent())
             .withTimeout(10.0)); // Gets X seconds to perform action
 
     NamedCommands.registerCommand(

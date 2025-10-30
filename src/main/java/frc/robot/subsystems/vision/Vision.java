@@ -6,6 +6,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -182,10 +183,13 @@ public class Vision extends SubsystemBase {
       processCoralDetections();
       CoralPoseTracker.CoralPoseObservation[] coralPoseObservations =
           coralPoseTracker.getObservations();
+      Pose3d[] coralPoses = new Pose3d[coralPoseObservations.length];
       for (int i = 0; i < coralPoseObservations.length; i++) {
-        Logger.recordOutput(
-            "Vision/objectDetection/CoralPoseObservations/" + i, coralPoseObservations[i]);
+        //  Logger.recordOutput(
+        //       "Vision/objectDetection/CoralPoseObservations/" + i, coralPoseObservations[i]);
+        coralPoses[i] = (new Pose3d(new Pose2d(coralPoseObservations[i].pose, Rotation2d.kZero)));
       }
+      Logger.recordOutput("Vision/objectDetection/CoralPoses", coralPoses);
       if (coralPoseTracker.getCoralPose().isPresent()) {
 
         Logger.recordOutput(

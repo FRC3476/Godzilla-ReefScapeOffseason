@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Field.FieldUtils;
 import frc.robot.RobotState;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -102,6 +103,9 @@ public class CoralPoseTracker {
   public void addObservations(ArrayList<Pose2d> coralPoses) {
     for (Pose2d coralPose : coralPoses) {
       boolean newObservation = true;
+      if (!FieldUtils.isInsideField(coralPose, -0.05)) {
+        continue;
+      }
       for (CoralPoseObservation observation : observations) {
         if (observation.isClose(coralPose)) {
           observation.update(coralPose);
