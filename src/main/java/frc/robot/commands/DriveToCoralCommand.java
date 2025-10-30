@@ -31,15 +31,15 @@ public class DriveToCoralCommand extends Command {
           DriveConstants.DRIVE_TO_CORAL_KI,
           DriveConstants.DRIVE_TO_CORAL_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
+              (Constants.DriveConstants.kDriveMaxSpeed / 2),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
+              DriveConstants.kDriveMaxAngularRate / 2, DriveConstants.ANGLE_MAX_ACCELERATION / 2));
 
   private final DriveSubsystem drive;
   private final Vision vision;
