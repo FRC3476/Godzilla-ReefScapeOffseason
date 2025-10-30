@@ -123,7 +123,7 @@ public class DriverControls {
                     },
                     Set.of(drive)),
                 new GarageDriveToPoseCommand(
-                    drive,
+                    container,
                     () ->
                         PoseUtils.getPerpendicularOffsetPose(
                             FieldUtils.getChosenReefPole(() -> controller.getLeftX()).getPose(),

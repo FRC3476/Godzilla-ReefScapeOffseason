@@ -204,6 +204,7 @@ public class RobotContainer {
             () -> -controller.getRightX() * Math.abs(controller.getRightX())));
     claw.setDefaultCommand(claw.clawDefault());
     intake.setDefaultCommand(intake.intakeDefault());
+    led.setDefaultCommand(led.ledDefault(this, robotState));
   }
 
   /**

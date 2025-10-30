@@ -19,13 +19,13 @@ public class DisabledLedCommand extends Command {
   private enum DISABLED_LED_STATE {
     NONE,
     LOW_BATTERY,
-    RED,
-    BLUE,
+    DISABLED_RED,
+    DISABLED_BLUE,
     DEFAULT
   }
 
-  private DISABLED_LED_STATE state = DISABLED_LED_STATE.NONE;
-  private DISABLED_LED_STATE prevState = DISABLED_LED_STATE.NONE;
+  private DISABLED_LED_STATE defaultState = DISABLED_LED_STATE.NONE;
+  private DISABLED_LED_STATE prevDefaultState = DISABLED_LED_STATE.NONE;
 
   private static final LoggedTunableNumber lowBatteryThreshold =
       new LoggedTunableNumber("LED/Low Battery Threshold", LedConstants.kLowBatteryThresholdVolts);
@@ -33,7 +33,7 @@ public class DisabledLedCommand extends Command {
   public DisabledLedCommand(RobotContainer container) {
     this.container = container;
     led = container.getLed();
-    addRequirements(); // no requirements
+    addRequirements(led); // no requirements
   }
 
   @Override
@@ -43,38 +43,42 @@ public class DisabledLedCommand extends Command {
 
   @Override
   public void execute() {
-    prevState = state;
+    prevDefaultState = defaultState;
 
     // lowest check is highest priority
-    state = DISABLED_LED_STATE.DEFAULT;
+    defaultState = DISABLED_LED_STATE.DEFAULT;
     if (FieldUtils.getAlliance() == Alliance.Red && DriverStation.isFMSAttached()) {
-      state = DISABLED_LED_STATE.RED;
+      defaultState = DISABLED_LED_STATE.DISABLED_RED;
     }
     if (FieldUtils.getAlliance() == Alliance.Blue && DriverStation.isFMSAttached()) {
-      state = DISABLED_LED_STATE.BLUE;
+      defaultState = DISABLED_LED_STATE.DISABLED_BLUE;
     }
     if (RobotController.getBatteryVoltage() < lowBatteryThreshold.get()) {
-      state = DISABLED_LED_STATE.LOW_BATTERY;
+      defaultState = DISABLED_LED_STATE.LOW_BATTERY;
     }
 
-    Logger.recordOutput("LED/Disabled/state", state);
-    Logger.recordOutput("LED/Disabled/prevState", prevState);
+    Logger.recordOutput("LED/Disabled/state", defaultState);
+    Logger.recordOutput("LED/Disabled/prevState", prevDefaultState);
 
-    if (state != prevState) {
-      switch (state) {
+    if (defaultState != prevDefaultState) {
+      switch (defaultState) {
         case LOW_BATTERY:
           led.commandBlinkingState(LedState.kLowBattery, 0.125)
-              .withName("Disabled LED: " + state.name())
+              .withName("Disabled LED: " + defaultState.name())
               .schedule();
           break;
-        case RED:
-          led.commandLarson(LedState.kRed).withName("Disabled LED: " + state.name()).schedule();
+        case DISABLED_RED:
+          led.commandLarson(LedState.kRed)
+              .withName("Disabled LED: " + defaultState.name())
+              .schedule();
           break;
-        case BLUE:
-          led.commandLarson(LedState.kBlue).withName("Disabled LED: " + state.name()).schedule();
+        case DISABLED_BLUE:
+          led.commandLarson(LedState.kBlue)
+              .withName("Disabled LED: " + defaultState.name())
+              .schedule();
           break;
         case DEFAULT:
-          led.commandColorflowCO().withName("Disabled LED: " + state.name()).schedule();
+          led.commandColorflowCO().withName("Disabled LED: " + defaultState.name()).schedule();
           break;
         default:
           led.commandOff().withName("Disabled LED default").schedule();

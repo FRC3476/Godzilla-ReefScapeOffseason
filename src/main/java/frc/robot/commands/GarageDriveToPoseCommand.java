@@ -16,8 +16,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.Led.DEFAULT_LED_STATE;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,6 +43,7 @@ public class GarageDriveToPoseCommand extends Command {
               DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
 
   private final DriveSubsystem drive;
+  private final Led led;
   private final Supplier<Pose2d> targetPoseSupplier;
 
   private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
@@ -50,13 +55,19 @@ public class GarageDriveToPoseCommand extends Command {
           .withDriveRequestType(DriveRequestType.Velocity)
           .withDesaturateWheelSpeeds(true);
 
-  public GarageDriveToPoseCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
-    addRequirements(drive);
+  public Command ledRainbow;
 
-    this.drive = drive;
+  public GarageDriveToPoseCommand(RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
+    drive = container.getDrive();
+    addRequirements(drive);
+    led = container.getLed();
     this.targetPoseSupplier = targetPoseSupplier;
     distanceController.setTolerance(Units.inchesToMeters(0.7));
     angleController.setTolerance(Units.degreesToRadians(1.5));
+  }
+
+  public Trigger atSetpoint() {
+    return new Trigger(() -> distanceController.atSetpoint() && angleController.atSetpoint());
   }
 
   public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
@@ -125,6 +136,16 @@ public class GarageDriveToPoseCommand extends Command {
     Logger.recordOutput("Commands/" + getName() + "/AtGoal/Angle", angleController.atGoal());
     Logger.recordOutput("Commands/" + getName() + "/Speeds/Translational", translationalSpeed);
     Logger.recordOutput("Commands/" + getName() + "/Speeds/ChassisSpeeds", speeds);
+
+    // turn on LEDs when at the right position and in a coral scoring state
+    // if in L4_AIM, do that only if the robot is stable
+    if (distanceController.atSetpoint()
+        && angleController.atSetpoint()
+        && RobotState.getSuperstructureState().isCoralScoringState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || drive.isRobotStable())) {
+      led.setLedState(DEFAULT_LED_STATE.GARGE_DRIVE_ALIGNED);
+    }
   }
 
   @Override
@@ -132,10 +153,7 @@ public class GarageDriveToPoseCommand extends Command {
     drive.setControl(robotSpeeds.withSpeeds(new ChassisSpeeds()));
     distanceController.reset(0);
     angleController.reset(0);
-  }
-
-  public Trigger atSetpoint() {
-    return new Trigger(() -> distanceController.atSetpoint() && angleController.atSetpoint());
+    led.setLedState(DEFAULT_LED_STATE.NONE);
   }
 
   // public Trigger canShoot(

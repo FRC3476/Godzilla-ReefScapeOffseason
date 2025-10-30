@@ -54,7 +54,7 @@ public class NamedCommandsSetup {
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
         new GarageDriveToPoseCommand(
-                drive,
+                container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
@@ -64,7 +64,7 @@ public class NamedCommandsSetup {
     NamedCommands.registerCommand(
         "FinalRightPoleAlign",
         new GarageDriveToPoseCommand(
-                drive,
+                container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),

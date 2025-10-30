@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.264342289850262,
-        "y": 2.677723513126594
+        "x": 2.494610990646151,
+        "y": 2.6055436778865024
       },
       "isLocked": false,
       "linkedName": "RR2E"
@@ -20,8 +20,8 @@
         "y": 3.880674342105263
       },
       "prevControl": {
-        "x": 1.935345695002576,
-        "y": 3.7369556871339196
+        "x": 2.691510527838381,
+        "y": 2.9885090797663505
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.75,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

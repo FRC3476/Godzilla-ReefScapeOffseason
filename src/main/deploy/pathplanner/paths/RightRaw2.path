@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.094757323087272,
-        "y": 2.6416085251866446
+        "x": 5.0831096939708775,
+        "y": 2.662302719178357
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.348487090764931,
-        "y": 1.1809996413436508
+        "x": 4.336839461648537,
+        "y": 1.201693835335363
       },
       "isLocked": false,
       "linkedName": "RR1E"
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.75,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -55,5 +55,5 @@
     "velocity": 0,
     "rotation": -59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -58,6 +58,9 @@ public class LedIOReal implements LedIO {
   }
 
   private void clearLeft() {
+    candle.setControl(
+        new SolidColor(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
+            .withColor(LedState.kOff.getRGBW()));
     candle.setControl(new EmptyAnimation(0));
     candle.setControl(new EmptyAnimation(2));
     candle.setControl(new EmptyAnimation(4));
@@ -65,6 +68,9 @@ public class LedIOReal implements LedIO {
   }
 
   private void clearRight() {
+    candle.setControl(
+        new SolidColor(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
+            .withColor(LedState.kOff.getRGBW()));
     candle.setControl(new EmptyAnimation(1));
     candle.setControl(new EmptyAnimation(3));
     candle.setControl(new EmptyAnimation(5));
