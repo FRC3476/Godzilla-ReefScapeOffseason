@@ -25,8 +25,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.leds.DisabledLedCommand;
+import frc.robot.commands.leds.TeleopLedCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoopTimingLogger;
 import frc.robot.util.MagicVirtualSubsystem;
 import java.io.File;
@@ -164,7 +170,7 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     // configure brown out voltage
-    RobotController.setBrownoutVoltage(6.0);
+    RobotController.setBrownoutVoltage(6.5);
 
     // StringLogEntry entry = new StringLogEntry(DataLogManager.getLog(), "/ntlog");
     // NetworkTableInstance.getDefault()
@@ -220,13 +226,21 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    new DisabledLedCommand(robotContainer).ignoringDisable(true).schedule();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
     LoopTimingLogger.startTiming("DisabledPeriodic");
     LoopTimingLogger.endTiming("DisabledPeriodic");
+  }
+
+  @Override
+  public void disabledExit() {
+    if (robotContainer.getLed().getCurrentCommand() != null)
+      robotContainer.getLed().getCurrentCommand().cancel();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -258,6 +272,13 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    SuperstructureState state = RobotState.getSuperstructureTargetState();
+    robotContainer.getSuperStructure().clearCommandsIfManualOverride().schedule();
+
+    robotContainer.getSuperStructure().setStateCommand(state, "Auto End Reset").schedule();
+
+    new TeleopLedCommand(robotContainer, robotContainer.getRobotState()).schedule();
   }
 
   /** This function is called periodically during operator control. */
@@ -268,10 +289,16 @@ public class Robot extends LoggedRobot {
     LoopTimingLogger.endTiming("TeleopPeriodic");
   }
 
+  @Override
+  public void teleopExit() {
+    if (robotContainer.getLed().getCurrentCommand() != null)
+      robotContainer.getLed().getCurrentCommand().cancel();
+  }
+
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
+    // Cancels all running commands at the end of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -280,7 +307,51 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     LoopTimingLogger.startTiming("TestPeriodic");
     // Add any test-specific code here if needed
+    Commands.run(() -> robotContainer.getClaw().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    Commands.run(() -> robotContainer.getIntake().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    Commands.run(() -> robotContainer.getFeeder().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    Commands.run(() -> robotContainer.getClimbRoller().setRollerVoltage(1))
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+
+    robotContainer
+        .getElevator()
+        .elevatorSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getClimber()
+        .climbSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getEndEffector()
+        .pivotSTOP()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+    robotContainer
+        .getIntake()
+        .pivotStop()
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+
+    DriveCommands.StopDriveTrain(robotContainer.getDrive())
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .schedule();
+
     LoopTimingLogger.endTiming("TestPeriodic");
+  }
+
+  @Override
+  public void testExit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called once when the robot is first started up. */

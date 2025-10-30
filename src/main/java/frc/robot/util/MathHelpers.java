@@ -67,4 +67,8 @@ public class MathHelpers {
     Translation2d closestPoint = start.plus(segment.times(t));
     return query.getDistance(closestPoint);
   }
+
+  public static double dotProduct(Translation2d first, Translation2d second) {
+    return first.getX() * second.getX() + first.getY() * second.getY();
+  }
 }

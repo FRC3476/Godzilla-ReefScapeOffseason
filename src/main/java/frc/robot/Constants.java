@@ -13,6 +13,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -27,6 +30,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -68,16 +73,20 @@ public final class Constants {
   public static String MISC_CANIVORE_NAME = "MISC";
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
+  public static CANBus RIO_CANBUS = new CANBus("rio");
 
   public static final double kSteerJoystickDeadband = 0.012;
   public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
 
+  public static double kAlignOffset = 0.5;
+  public static double kAlignOffsetFB = 0.0;
+
   // ====================Drive (0_ and 1_)====================
   public static class DriveConstants {
     public static final boolean useMapleSim = false;
-    public static final double kDriveMaxSpeed = 3.6;
+    public static final double kDriveMaxSpeed = 3.65;
 
     public static final double DRIVE_BASE_RADIUS =
         Math.max(
@@ -92,8 +101,8 @@ public final class Constants {
 
     // Acceleration limits
     // Large numnbers so they don't do anything.
-    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s²
-    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s²
+    public static final double MAX_TRANSLATIONAL_ACCEL = 3476.0; // m/s/s
+    public static final double MAX_ROTATIONAL_ACCEL = 3476.0; // rad/s/s
 
     // Dynamic acceleration limit formula weights for: E - elevator.height*b -
     // intakePivot.height*c-(endeffectorpivot.height*a+elevator.height)*d
@@ -122,11 +131,16 @@ public final class Constants {
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 
-    public static final double DRIVE_TO_POSE_KP = 5.0;
+    public static final double DRIVE_TO_POSE_KP = 6.0;
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.4;
 
-    public static final double ANGLE_KP = 4.5;
+    public static final double DRIVE_TO_CORAL_KP = 6.0;
+    public static final double DRIVE_TO_CORAL_KI = 0.0;
+    public static final double DRIVE_TO_CORAL_KD = 0.4;
+    public static final double DRIVE_TO_CORAL_PERP_OFFSET_METERS = Units.inchesToMeters(-18);
+
+    public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
     public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
@@ -143,8 +157,8 @@ public final class Constants {
             ? SimTunerConstants.createDrivetrain()
             : CompTunerConstants.createDrivetrain();
     public static final double kRobotWeightPounds = 150.0;
-    public static final double kBumperLengthInches = 35.625;
-    public static final double kBumperWidthInches = 35.625;
+    public static final double kBumperLengthInches = 37.5;
+    public static final double kBumperWidthInches = 37.75;
     public static final double kWheelCoefficientOfFriction = 1.0;
     public static final int kDriveMotorCount = 1;
 
@@ -159,7 +173,16 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.605;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
+    public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
+    public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
+
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
   }
 
   public static final class AutoConstants {
@@ -189,6 +212,7 @@ public final class Constants {
     public static final int RIGHT_ID = 20;
     public static final int LEFT_ID = 21;
     public static final int CANRANGE_ID = 22;
+    public static final int FRONT_CANRANGE_ID = 23;
 
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 1.0 / 4.0;
@@ -207,15 +231,15 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
             .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(3))
+                    .withProximityThreshold(Units.inchesToMeters(4))
                     .withProximityHysteresis(0.006));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
@@ -261,6 +285,9 @@ public final class Constants {
       STOW,
       INTAKE,
       REJECT_CORAL,
+      REJECT_INTAKE_CORAL,
+      REJECT_INTAKE_CORAL_STAGED,
+      REJECT_INTAKE_CORAL_HANDOFF,
       IDLE,
       HAND_OFF,
       SCORING,
@@ -288,9 +315,9 @@ public final class Constants {
     public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
     public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
-    public static final double ROLLER_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double L1_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
-    public static final double PIVOT_MAX_STATOR_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double ROLLER_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double L1_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
+    // public static final double PIVOT_MAX_SUPPLY_CURRENT_LIMIT = 40.0; // Amps
 
     // PID constants
     public static final double Tuneable_pivotKP = 50; // Proportional gain
@@ -395,11 +422,12 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(7).withFOVRangeY(7))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(15.75))
-                    .withProximityHysteresis(0.0));
+                    .withMinSignalStrengthForValidMeasurement(8000)
+                    .withProximityThreshold(0.53)
+                    .withProximityHysteresis(0.01));
   }
 
   // ====================Elevator (4_)====================
@@ -472,8 +500,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ELEVATOR_CURRENT_LIMIT_AMPS));
 
     // ========Elevator Constant Positions========
     public static final double ELEVATOR_ZERO_SETPOINT_INCH = 0.0;
@@ -537,7 +565,7 @@ public final class Constants {
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 40;
 
-    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80;
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 40;
 
     public static final double ALGAE_GEAR_RATIO = 1.0 / 12.22;
     public static final double CORAL_GEAR_RATIO = 1.0 / 6.11;
@@ -558,15 +586,17 @@ public final class Constants {
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
     public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
     public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
+    public static final double L3_FADEAWAY_ANGLE_ROTATIONS =
+        Units.degreesToRotations(17.7998883 + 5);
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
-    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625;
+    public static final double ALGAE_GROUND_ANGLE_ROTATIONS = -0.121337890625 - 0.01;
     public static final double ALGAE_IDLE_ANGLE_ROTATIONS = Units.degreesToRotations(-38.3080987);
     public static final double PROCESSOR_ANGLE_ROTATIONS = -0.033447265625;
     public static final double L1_FADEAWAY_ANGLE_ROTATIONS = -.21;
     public static final double L2_AGAINST_REEF_ANGLE_ROTATIONS =
-        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(5);
+        MAX_SAFE_ANGLE_ROTATIONS - Units.degreesToRotations(7);
     public static final double L3_AGAINST_REEF_ANGLE_ROTATIONS =
         Units.degreesToRotations(17.7998883); // Units.degreesToRotations(-16.3769186);
     public static final double L2_L3_AWAY_FROM_REEF_ANGLE_ROTATIONS =
@@ -578,13 +608,23 @@ public final class Constants {
     public static final double BARGE_FORWARD_ANGLE_ROTATIONS = Units.degreesToRotations(43.8547133);
     public static final double BARGE_BACKWARD_ANGLE_ROTATIONS = MAX_ANGLE_ROTATIONS;
     public static final double PIVOT_ABSOLUTE_ENCODER_OFFSET = 0.305908;
-    public static final double PIVOT_CLIMB_SAFE_ROTATIONS = Units.degreesToRotations(-82.8);
+    public static final double PIVOT_CLIMB_SAFE_ROTATIONS =
+        -.185; // Units.degreesToRotations(-82.8);
 
     public static final TalonFXConfiguration PIVOT_TALON_CONFIG =
         new TalonFXConfiguration()
             .withSlot0(
                 new Slot0Configs()
                     .withKP(Tunable_PIVOT_kP)
+                    .withKI(Tunable_PIVOT_kI)
+                    .withKD(Tunable_PIVOT_kD)
+                    .withKG(Tunable_PIVOT_kG)
+                    .withKA(Tunable_PIVOT_kA)
+                    .withKV(Tunable_PIVOT_kV)
+                    .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withSlot1(
+                new Slot1Configs()
+                    .withKP(Tunable_PIVOT_kP * 4)
                     .withKI(Tunable_PIVOT_kI)
                     .withKD(Tunable_PIVOT_kD)
                     .withKG(Tunable_PIVOT_kG)
@@ -608,8 +648,8 @@ public final class Constants {
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
     public static final CANcoderConfiguration PIVOT_CANCODER_CONFIG =
         new CANcoderConfiguration()
@@ -626,8 +666,8 @@ public final class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimitEnable(true)
-                    .withStatorCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ROLLER_CURRENT_LIMIT_AMPS));
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
@@ -649,11 +689,11 @@ public final class Constants {
     }
 
     // Roller Voltages
-    public static final double ROLLER_INTAKE_CORAL_VOLTS = 3;
+    public static final double ROLLER_INTAKE_CORAL_VOLTS = 7;
     public static final double ROLLER_SCORING_VOLTS = -12;
     public static final double ROLLER_SCORING_L1_VOLTS = 6;
-    public static final double ROLLER_SCORING_ALGAE_VOLTS = -10;
-    public static final double ROLLER_HOLDING_CORAL_VOLTS = 1;
+    public static final double ROLLER_SCORING_ALGAE_VOLTS = -5;
+    public static final double ROLLER_HOLDING_CORAL_VOLTS = 3;
 
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
@@ -671,13 +711,18 @@ public final class Constants {
     public static final double climbMOI = 0.01;
 
     public static final int ID = 60;
+    public static final int rollerID = 61;
 
-    public static final double CLIMB_DEPLOY_POSITION = 65;
-    public static final double CLIMB_CLIMB_POSITION = 209;
-    public static final double CLIMB_DEPLOY_VOLTAGE = 3.5;
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
+
+    public static final double CLIMB_DEPLOY_POSITION = 87.5;
+    public static final double CLIMB_CLIMB_POSITION = 215;
+    public static final double CLIMB_DEPLOY_VOLTAGE = 12;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
     public static final double STALL_VELOCITY = 0.0;
+    public static final double CLIMB_ANGLE_SNAP = 109.69;
 
     public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
@@ -691,45 +736,75 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
+
+    public static final double ROLLER_HOLD_CAGE_AMPS = -60.0; // TODO fine-adjust
+    public static final double ROLLER_BACKOUT_VOLTS = 0.5; // TODO fine-adjust
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
+    public static final double ROLLER_STALLED_RPS = 2; // TODO fine-adjust
+    public static final double ROLLER_STALLED_CURRENT = 50.0; // TODO fine-adjust
+
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
   }
 
   // ====================LED (8_)====================
-  public static final class LEDConstants {
+  public static final class LedConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
-    public static final int kNonCandleLEDCount = 10;
+    public static final int kNonCandleLEDCount = 32;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final int kLeftLEDStartIdx = 8;
+    public static final int kLeftLEDEndIdx = 23;
+    public static final int kRightLEDStartIdx = 24;
+    public static final int kRightLEDEndIdx = 39;
+
+    public enum LedStrip {
+      LEFT,
+      RIGHT,
+      BOTH
+    }
+
     public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
   // ====================Vision Constants====================
   public static class VisionConstants {
-    public static final String DETECTION_LIMELIGHT = "limelight-center";
+    public static final String DETECTION_LIMELIGHT = "limelight-intake";
     public static final AprilTagFieldLayout fieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     public static final AprilTagFieldLayout kAprilTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Camera A (left side)
-    public static final double kCameraAPitchDegrees = 15.0;
+    public static final double kCameraAPitchDegrees = 11.57;
     public static final double kCameraAPitchRads = Units.degreesToRadians(kCameraAPitchDegrees);
     public static final double kCameraAHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightATableName = "limelight-left";
     public static final double kRobotToCameraAForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraASide = Units.inchesToMeters(-10.365637);
-    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-146.74);
+    public static final Rotation2d kCameraAYawOffset = Rotation2d.fromDegrees(-148.64);
+    public static final double kCameraARollDegrees = -9.97;
     public static final Transform2d kRobotToCameraA =
         new Transform2d(
             new Translation2d(kRobotToCameraAForward, kRobotToCameraASide), kCameraAYawOffset);
 
     // Camera B (right side)
-    public static final double kCameraBPitchDegrees = 15.0;
+    public static final double kCameraBPitchDegrees = 11.57;
     public static final double kCameraBPitchRads = Units.degreesToRadians(kCameraBPitchDegrees);
     public static final double kCameraBHeightOffGroundMeters = Units.inchesToMeters(8.580998);
     public static final String kLimelightBTableName = "limelight-right";
     public static final double kRobotToCameraBForward = Units.inchesToMeters(-11.422523);
     public static final double kRobotToCameraBSide = Units.inchesToMeters(10.365637);
-    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(146.74);
+    public static final Rotation2d kCameraBYawOffset = Rotation2d.fromDegrees(148.64);
+    public static final double kCameraBRollDegrees = 9.97;
     public static final Transform2d kRobotToCameraB =
         new Transform2d(
             new Translation2d(kRobotToCameraBForward, kRobotToCameraBSide), kCameraBYawOffset);
@@ -751,12 +826,13 @@ public final class Constants {
     public static final double kDefaultYawDiffThreshold = 5.0;
     public static final double kTagAreaThresholdForYawCheck = 2.0;
     public static final double kTagMinAreaForSingleTagMegatag = 1.0;
-    public static final double kTagMinAreaForMultipleTagMegatag = 0.5;
-    public static final double kDefaultZThreshold = 0.2;
+    public static final double kTagMinAreaForMultipleTagMegatag = 0.4;
+    public static final double kDefaultZThreshold = 0.5;
     public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 0.08;
-    public static final double kXStdDevCoefficent = 0.5;
-    public static final double kYStdDevCoefficent = 0.5;
+    public static final double kXStdDevCoefficent = 0.3;
+    public static final double kYStdDevCoefficent = 0.3;
+
     public static final double thetaStdDevCoefficient = 3476.0;
 
     public static final double kCameraHorizontalFOVDegrees = 81.0;
@@ -780,6 +856,16 @@ public final class Constants {
     // Validation constants
     public static final int kMinFiducialCount = 1;
     public static final int kExpectedStdDevArrayLength = 12;
+
+    // Coral Position Constants
+    public static final double kIntakeCameraHeight = Units.inchesToMeters(36.916501);
+    public static final double kIntakeCameraPitchDegrees = 62.5;
+    public static final double kIntakeCameraOffset = Units.inchesToMeters(-1.852118);
+    public static final double kIntakeCameraHorizontalFOVDegrees = 62.5;
+    public static final double kIntakeCameraVerticalFOVDegrees = 48.9;
+    public static final double coralObservationDistanceThreshold = 0.15;
+    public static final double coralObservationTimeThreshold = 1.5;
+    public static final int coralObservationMinObservations = 3;
   }
 
   public static class SuperstructureConstants {
@@ -817,9 +903,14 @@ public final class Constants {
     public static double FEED_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
-    public static double L1_PIVOT_ELEVATOR_HEIGHT_INCH =
+    public static double CORAL_STUCK_UNDER_FEEDER_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
-    public static double L1_PIVOT_ENDEFFECTOR_ROTATION_ROTATIONS =
+    public static double CORAL_STUCK_UNDER_FEEDER_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+
+    public static double L1_AIM_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
+    public static double L1_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
         EndEffectorConstants.MIN_ANGLE_ROTATIONS + .02;
     public static double L2_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L2_AGAINST_REEF_SETPOINT_INCH;
@@ -885,7 +976,7 @@ public final class Constants {
     public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;

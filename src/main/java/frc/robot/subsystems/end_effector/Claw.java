@@ -1,5 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -8,6 +9,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -33,7 +35,7 @@ public class Claw extends SubsystemBase {
           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
       new LoggedTunableNumber(
-          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
@@ -49,10 +51,10 @@ public class Claw extends SubsystemBase {
     Logger.processInputs("Claw", inputs);
     Logger.recordOutput("Claw/CurrentState", currentState);
 
-    firstSensorTriggered =
-        inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
-    secondSensorTriggered =
-        inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
+    firstSensorTriggered = inputs.firstCANRangeData.rangeIsTripped()
+            && inputs.firstCANRangeData.canRangeConnected();
+    secondSensorTriggered = inputs.secondCANRangeData.rangeIsTripped()
+            && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
@@ -68,6 +70,12 @@ public class Claw extends SubsystemBase {
 
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
+  }
+
+  public boolean isOK() {
+    return inputs.firstCANRangeData.canRangeConnected()
+        && inputs.secondCANRangeData.canRangeConnected()
+        && inputs.rollerData.rollerMotorConnected();
   }
 
   public boolean isClawScoring() {
@@ -140,9 +148,9 @@ public class Claw extends SubsystemBase {
               // }
               break;
             case ALGAE:
-              // if (RobotState.getSuperstructureState() == SuperstructureState.STOW) {
-              //   this.currentState = ClawState.IDLE;
-              // }
+              if (RobotState.getSuperstructureTargetState() == SuperstructureState.STOW) {
+                this.currentState = ClawState.IDLE;
+              }
               break;
             default:
               this.currentState = ClawState.IDLE;
@@ -156,7 +164,12 @@ public class Claw extends SubsystemBase {
               this.io.setRollerVoltage(0);
               break;
             case INTAKING_CORAL:
-              this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.io.setRollerVoltage(0);
+
+              } else {
+                this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+              }
               break;
             case HOLDING_CORAL:
               // move coral forward if at first sensor, backward if at second sensor, do nothing if
@@ -191,8 +204,28 @@ public class Claw extends SubsystemBase {
         this);
   }
 
+  public ClawState getClawState() {
+    return currentState;
+  }
+
   public Command setClawStateCommand(ClawState state) {
-    return Commands.runOnce(() -> currentState = state);
+    return Commands.runOnce(() -> currentState = state)
+        .onlyIf(
+            () -> {
+              boolean allowStateChange = true;
+
+              if (state == ClawState.SCORING
+                  && !RobotState.getSuperstructureState().isUprightScoringState()) {
+                allowStateChange = false;
+              }
+
+              if (state == ClawState.SCORING_L1
+                  && !RobotState.getSuperstructureState().isL1ScoringState()) {
+                allowStateChange = false;
+              }
+
+              return allowStateChange;
+            });
   }
 
   public Command rollerFWD() {

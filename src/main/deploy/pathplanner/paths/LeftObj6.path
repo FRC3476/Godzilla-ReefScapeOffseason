@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5922056887913323,
+        "y": 5.235396664601228
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.2838808824244987,
+        "y": 5.689526859863354
+      },
+      "isLocked": false,
+      "linkedName": "LOBJ5.5E"
+    },
+    {
+      "anchor": {
+        "x": 2.607802152317881,
+        "y": 6.5456332781456945
+      },
+      "prevControl": {
+        "x": 3.4556222438949638,
+        "y": 5.398628656435345
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LOBJ2E"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 147.5
+  },
+  "reversed": false,
+  "folder": "LEFTOBJ",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

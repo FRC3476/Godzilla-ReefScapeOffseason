@@ -50,7 +50,7 @@ public class CompTunerConstants {
   // This may need to be tuned to your individual robot
   private static final double kCoupleRatio = 3.5714285714285716;
 
-  private static final double kDriveGearRatio = 6.746031746031747;
+  private static final double kDriveGearRatio = (50 * 19 * 45) / (14 * 25 * 15);
   private static final double kSteerGearRatio = 21.428571428571427;
   private static final Distance kWheelRadius = Inches.of(1.944);
 
@@ -318,9 +318,9 @@ public class CompTunerConstants {
      * @param odometryUpdateFrequency The frequency to run the odometry loop. If unspecified or set
      *     to 0 Hz, this is 250 Hz on CAN FD, and 100 Hz on CAN 2.0.
      * @param odometryStandardDeviation The standard deviation for odometry calculation in the form
-     *     [x, y, theta]ᵀ, with units in meters and radians
-     * @param visionStandardDeviation The standard deviation for vision calculation in the form [x,
-     *     y, theta]ᵀ, with units in meters and radians
+     *     transpose([x, y, theta]), with units in meters and radians
+     * @param visionStandardDeviation The standard deviation for vision calculation in the form
+     *     transpose([x, y, theta]), with units in meters and radians
      * @param modules Constants for each specific module
      */
     public TunerSwerveDrivetrain(

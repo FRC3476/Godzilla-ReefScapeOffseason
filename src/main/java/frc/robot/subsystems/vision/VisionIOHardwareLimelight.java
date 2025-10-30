@@ -1,9 +1,13 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants.VisionConstants;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
 public class VisionIOHardwareLimelight implements VisionIO {
@@ -16,6 +20,9 @@ public class VisionIOHardwareLimelight implements VisionIO {
 
   double coral_tx = 0.0;
   double coral_ty = 0.0;
+  double coral_txnc = 0.0;
+  double coral_tync = 0.0;
+  Optional<ArrayList<Pair<Double, Double>>> lastCoralTNCs = Optional.empty();
 
   private static final double[] DEFAULT_STDDEVS =
       new double[VisionConstants.kExpectedStdDevArrayLength];
@@ -31,23 +38,23 @@ public class VisionIOHardwareLimelight implements VisionIO {
       VisionConstants.kRobotToCameraAForward,
       VisionConstants.kRobotToCameraASide,
       VisionConstants.kCameraAHeightOffGroundMeters,
-      0.0,
+      VisionConstants.kCameraARollDegrees,
       VisionConstants.kCameraAPitchDegrees,
       VisionConstants.kCameraAYawOffset.getDegrees()
     };
 
-    tableA.getEntry("camerapose_robotspace_set").setDoubleArray(cameraAPose);
+    // tableA.getEntry("camerapose_robotspace_set").setDoubleArray(cameraAPose);
 
     double[] cameraBPose = {
       VisionConstants.kRobotToCameraBForward,
       VisionConstants.kRobotToCameraBSide,
       VisionConstants.kCameraBHeightOffGroundMeters,
-      0.0,
+      VisionConstants.kCameraBRollDegrees,
       VisionConstants.kCameraBPitchDegrees,
       VisionConstants.kCameraBYawOffset.getDegrees()
     };
 
-    tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBPose);
+    // tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBPose);
   }
 
   @Override
@@ -73,6 +80,15 @@ public class VisionIOHardwareLimelight implements VisionIO {
           camera.fiducialObservations = FiducialObservation.fromLimelight(megatag.rawFiducials);
           camera.megatagDistance = megatag.avgTagDist; // have no clue if this value is accurate
         }
+
+        // Read MegaTag2 data (only when single tag is in view)
+        var megatag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+        if (megatag2 != null && megatag2.tagCount == 1) {
+          camera.megatag2PoseEstimate = MegatagPoseEstimate.fromLimelight(megatag2);
+          camera.megatag2Count = megatag2.tagCount;
+          camera.megatag2Distance = megatag2.avgTagDist;
+        }
+
         if (robotPose3d != null) {
           camera.pose3d = robotPose3d;
         }
@@ -90,6 +106,7 @@ public class VisionIOHardwareLimelight implements VisionIO {
   // object detection methods
 
   @Override
+  @AutoLogOutput(key = "Vision/Coral Detected?")
   public boolean isCoralDetected() {
     return LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
   }
@@ -104,7 +121,47 @@ public class VisionIOHardwareLimelight implements VisionIO {
   @Override
   public double getCoralTy() {
     coral_ty =
-        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
+        isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
     return coral_ty;
+  }
+
+  @Override
+  public double getCoralTxNc() {
+    coral_txnc =
+        isCoralDetected()
+            ? LimelightHelpers.getTXNC(VisionConstants.DETECTION_LIMELIGHT)
+            : coral_txnc;
+    return coral_txnc;
+  }
+
+  @Override
+  public double getCoralTyNc() {
+    coral_tync =
+        isCoralDetected()
+            ? LimelightHelpers.getTYNC(VisionConstants.DETECTION_LIMELIGHT)
+            : coral_tync;
+    return coral_tync;
+  }
+
+  @Override
+  public Optional<ArrayList<Pair<Double, Double>>> getAllCoralTNCs() {
+    if (!isCoralDetected()) {
+      return Optional.empty();
+    }
+    LimelightHelpers.RawDetection[] detections =
+        LimelightHelpers.getRawDetections(VisionConstants.DETECTION_LIMELIGHT);
+    ArrayList<Pair<Double, Double>> tncs = new ArrayList<Pair<Double, Double>>(detections.length);
+    for (int i = 0; i < detections.length; i++) {
+      tncs.add(
+          new Pair<Double, Double>(
+              detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
+    }
+    if (lastCoralTNCs.isPresent()) {
+      if (lastCoralTNCs.get().equals(tncs)) {
+        // no update from limelight yet
+        return Optional.empty();
+      }
+    }
+    return Optional.of(tncs);
   }
 }

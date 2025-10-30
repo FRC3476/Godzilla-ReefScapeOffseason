@@ -12,10 +12,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
@@ -31,6 +33,7 @@ import frc.robot.util.RobotTime;
 // import frc.robot.util.pathplanner.util.PathPlannerLogging;
 import frc.robot.util.simulations.MapleSimSwerveDrivetrain;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -81,6 +84,29 @@ public class DriveSubsystem extends SubsystemBase {
       input.omegaRadiansPerSecond = 0.0;
     }
     return input;
+  }
+
+  @AutoLogOutput(key = "Drive/isRollStable")
+  public boolean isRollStable() {
+    return Math.abs(inputs.gyroRoll) < DriveConstants.SCORING_MAX_ROLL_RADIANS
+        && Math.abs(inputs.gyroRollVelocity) < DriveConstants.SCORING_MAX_ROLL_VELOCITY_RADPERSEC;
+  }
+
+  @AutoLogOutput(key = "Drive/isPitchStable")
+  public boolean isPitchStable() {
+    return Math.abs(inputs.gyroPitch) < DriveConstants.SCORING_MAX_PITCH_RADIANS
+        && Math.abs(inputs.gyroPitchVelocity) < DriveConstants.SCORING_MAX_PITCH_VELOCITY_RADPERSEC;
+  }
+
+  @AutoLogOutput(key = "Drive/isRobotStable")
+  public boolean isRobotStable() {
+    return isPitchStable()
+        && isRollStable()
+        && Units.MetersPerSecond.of(
+                Math.hypot(inputs.Speeds.vxMetersPerSecond, inputs.Speeds.vyMetersPerSecond))
+            .lte(DriveConstants.SCORING_MAX_LINEAR_VELOCITY)
+        && Units.RadiansPerSecond.of(Math.abs(inputs.Speeds.omegaRadiansPerSecond))
+            .lte(DriveConstants.SCORING_MAX_ANGULAR_VELOCITY);
   }
 
   // private class Controller implements Consumer<PathPlannerTrajectory>, Runnable {
@@ -149,6 +175,9 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.processInputs("DriveInputs", inputs);
     io.logModules(inputs);
 
+    // Send robot orientation to Limelights for MegaTag2
+    sendRobotOrientationToLimelights();
+
     robotState.incrementIterationCount();
     if (DriverStation.isDisabled()) {
       configureStandardDevsForDisabled();
@@ -167,7 +196,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Configure AutoBuilder last
     AutoBuilder.configure(
-        () -> robotState.getLatestFieldToRobot().getValue(), // Robot pose supplier
+        () -> this.inputs.Pose, // Robot pose supplier
         (pose) -> {
           resetOdometry(pose);
         }, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -313,6 +342,19 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.DriveConstants.kEnabledDriveXStdDev,
         Constants.DriveConstants.kEnabledDriveYStdDev,
         Constants.DriveConstants.kEnabledDriveRotStdDev);
+  }
+
+  /** Sends robot gyro orientation to Limelights for MegaTag2 pose estimation. */
+  private void sendRobotOrientationToLimelights() {
+    // Convert radians to degrees for Limelight API
+    double yawDegrees = inputs.Pose.getRotation().getDegrees();
+
+    // Send to both Limelights
+    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+        Constants.VisionConstants.kLimelightATableName, yawDegrees, 0, 0, 0, 0, 0);
+
+    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+        Constants.VisionConstants.kLimelightBTableName, yawDegrees, 0, 0, 0, 0, 0);
   }
 
   public MapleSimSwerveDrivetrain getMapleSimDrive() {

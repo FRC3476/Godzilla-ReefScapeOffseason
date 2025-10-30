@@ -152,9 +152,9 @@ public class ElevatorIOReal implements ElevatorIO {
   }
 
   @Override
-  public void setElevatorZero() {
-    rightTalon.setPosition(0.0);
-    leftTalon.setPosition(0.0);
+  public void setElevatorPosition(double position) {
+    rightTalon.setPosition(position);
+    leftTalon.setPosition(position);
   }
 
   public void stop() {
