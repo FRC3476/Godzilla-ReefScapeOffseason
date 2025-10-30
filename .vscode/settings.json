@@ -1,4 +1,5 @@
 {
+  "java.jdt.ls.java.home": "C:\\Users\\Public\\wpilib\\2025\\jdk",
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.server.launchMode": "Standard",
   "files.exclude": {

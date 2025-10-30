@@ -31,10 +31,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
@@ -43,8 +39,13 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Util;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.025;
@@ -367,9 +368,11 @@ public class DriveCommands {
 
   /** Measures the robot's wheel radius by spinning in a circle. */
   public static Command wheelRadiusCharacterization(DriveSubsystem drive) {
-    SlewRateLimiter limiter =
-        new SlewRateLimiter(Constants.DriveConstants.WHEEL_RADIUS_RAMP_RATE);
+    SlewRateLimiter limiter = new SlewRateLimiter(Constants.DriveConstants.WHEEL_RADIUS_RAMP_RATE);
     WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
+    Logger.recordOutput(
+        "Commands/WheelRadiusCharacterization/DriveBaseRadius",
+        Constants.DriveConstants.DRIVE_BASE_RADIUS);
 
     return Commands.parallel(
         // Drive control sequence
@@ -385,9 +388,12 @@ public class DriveCommands {
                 () -> {
                   double speed =
                       limiter.calculate(Constants.DriveConstants.WHEEL_RADIUS_MAX_VELOCITY);
+                  Logger.recordOutput("Commands/WheelRadiusCharacterization/Speed", speed);
                   drive.setControl(
                       new SwerveRequest.ApplyRobotSpeeds()
-                          .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed)));
+                          .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed))
+                          .withDriveRequestType(DriveRequestType.Velocity)
+                          .withDesaturateWheelSpeeds(true));
                 },
                 drive)),
 

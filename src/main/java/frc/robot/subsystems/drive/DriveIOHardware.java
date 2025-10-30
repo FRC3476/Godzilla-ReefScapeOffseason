@@ -246,14 +246,17 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     double[] positions = new double[4];
     for (int i = 0; i < 4; i++) {
       var module = getModule(i);
-      // Get position in rotations, convert to radians
-      positions[i] = module.getDriveMotor().getPosition().getValueAsDouble() * 2.0 * Math.PI;
+      // Get motor position in rotations, divide by gear ratio to get wheel rotations, convert to
+      // radians
+      double motorRotations = module.getDriveMotor().getPosition().getValueAsDouble();
+      double wheelRotations = motorRotations / CompTunerConstants.kDriveGearRatio;
+      positions[i] = Units.rotationsToRadians(wheelRotations);
     }
     return positions;
   }
 
   @Override
   public Rotation2d getRotation() {
-    return getState().Pose.getRotation();
+    return getPigeon2().getRotation2d();
   }
 }

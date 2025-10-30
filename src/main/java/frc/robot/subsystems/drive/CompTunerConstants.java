@@ -21,6 +21,16 @@ import edu.wpi.first.units.measure.*;
 public class CompTunerConstants {
   // Both sets of gains need to be tuned to your individual robot.
 
+  //   public static final double DRIVE_BASE_RADIUS =
+  //   Math.max(
+  //       Math.max(
+  //           Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
+  //           Math.hypot(TunerConstants.FrontRight.LocationX,
+  // TunerConstants.FrontRight.LocationY)),
+  //       Math.max(
+  //           Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
+  //           Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
+
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
@@ -50,9 +60,9 @@ public class CompTunerConstants {
   // This may need to be tuned to your individual robot
   private static final double kCoupleRatio = 3.5714285714285716;
 
-  private static final double kDriveGearRatio = (50 * 19 * 45) / (14 * 25 * 15);
+  public static final double kDriveGearRatio = (50 * 19 * 45) / (14 * 25 * 15);
   private static final double kSteerGearRatio = 21.428571428571427;
-  private static final Distance kWheelRadius = Inches.of(1.944);
+  private static final Distance kWheelRadius = Inches.of(1.884);
 
   private static final AngularVelocity driveMaxSpeedCalculatedRPS =
       Rotations.of((12 - driveGains.kS) / driveGains.kV).per(Second);

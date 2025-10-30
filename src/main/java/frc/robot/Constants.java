@@ -127,7 +127,7 @@ public final class Constants {
 
     // Wheel Radius Characterization Constants
     public static final double WHEEL_RADIUS_RAMP_RATE = 0.25; // rad/s per second
-    public static final double WHEEL_RADIUS_MAX_VELOCITY = 1.0; // rad/s
+    public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.4; // rad/s
 
     public static final double AUTO_ALIGN_NORM_TOLERANCE = 0.03;
 

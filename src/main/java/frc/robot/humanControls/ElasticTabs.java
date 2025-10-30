@@ -12,6 +12,7 @@ import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
@@ -303,8 +304,8 @@ public class ElasticTabs {
     // tab.addButton("Characterize Slip Current").setupWhileHeldCommand(
     //     Commands.print("running slip current test")
     //     .andThen(DriveCommands.slipCurrentCharacterization(drive)));
-    // tab.addButton("Characterize Wheel
-    // Radius").setupWhileHeldCommand(DriveCommands.wheelRadiusCharacterization(drive));
+    tab.addButton("Characterize Wheel Radius")
+        .setupWhileHeldCommand(DriveCommands.wheelRadiusCharacterization(drive));
     // tab.addButton("Drive Stop X").setupOnPressCommand(
     //     Commands.runOnce(drive::stopWithX, drive));
     // tab.addButton("Drive Forward").setupWhileHeldCommand(
@@ -312,7 +313,8 @@ public class ElasticTabs {
     // tab.addButton("Drive Turn Clockwise").setupWhileHeldCommand(
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
 
-    tab.addButton("Pathfind to Pose").setupWhileHeldCommand(new DriveToCoralCommand(drive, vision));
+    tab.addButton("Drive to Coral Pose")
+        .setupWhileHeldCommand(new DriveToCoralCommand(drive, vision));
     /*new PathfindToPoseCommand(
     drive,
     () ->
