@@ -42,7 +42,7 @@ public class Led extends SubsystemBase {
 
   /* change runOnce to run in case we have to keep setting the LED color periodically? */
   public Command commandSolidColor(LedState state) {
-    return run(() -> setSolidColor(state, LedStrip.BOTH))
+    return runOnce(() -> setSolidColor(state, LedStrip.BOTH))
         .ignoringDisable(true)
         .withName("LED Solid Color");
   }
@@ -78,11 +78,14 @@ public class Led extends SubsystemBase {
   }
 
   public Command commandSolidPattern(LedState[] states) {
-    return run(() -> setSolidPattern(states)).ignoringDisable(true).withName("LED Solid Pattern");
+    return runOnce(() -> setSolidPattern(states))
+        .ignoringDisable(true)
+        .withName("LED Solid Pattern");
   }
 
   public Command commandPercentageFull(DoubleSupplier percentageFull, LedState state) {
-    return run(() -> setPercentageFull(percentageFull.getAsDouble(), state)).ignoringDisable(true);
+    return runOnce(() -> setPercentageFull(percentageFull.getAsDouble(), state))
+        .ignoringDisable(true);
   }
 
   public Command commandPercentageFull(Supplier<PercentageSetpoint> percentageSupplier) {

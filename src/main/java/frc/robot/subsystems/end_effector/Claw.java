@@ -41,9 +41,6 @@ public class Claw extends SubsystemBase {
   private boolean firstSensorTriggered;
   private boolean secondSensorTriggered;
 
-  Debouncer debouncerFirst = new Debouncer(0.05);
-  Debouncer debouncerSecound = new Debouncer(0.05);
-
   public Claw(ClawIO io) {
     this.io = io;
   }
@@ -54,11 +51,9 @@ public class Claw extends SubsystemBase {
     Logger.processInputs("Claw", inputs);
     Logger.recordOutput("Claw/CurrentState", currentState);
 
-    firstSensorTriggered =
-        debouncerFirst.calculate(inputs.firstCANRangeData.rangeIsTripped())
+    firstSensorTriggered = inputs.firstCANRangeData.rangeIsTripped()
             && inputs.firstCANRangeData.canRangeConnected();
-    secondSensorTriggered =
-        debouncerSecound.calculate(inputs.secondCANRangeData.rangeIsTripped())
+    secondSensorTriggered = inputs.secondCANRangeData.rangeIsTripped()
             && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);

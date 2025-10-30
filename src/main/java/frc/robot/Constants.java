@@ -414,10 +414,11 @@ public final class Constants {
 
     public static final CANrangeConfiguration CANRANGE_CONFIG =
         new CANrangeConfiguration()
-            .withFovParams(new FovParamsConfigs().withFOVRangeX(27).withFOVRangeY(27))
+            .withFovParams(new FovParamsConfigs().withFOVRangeX(7).withFOVRangeY(7))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(0.55)
+                    .withMinSignalStrengthForValidMeasurement(8000)
+                    .withProximityThreshold(0.53)
                     .withProximityHysteresis(0.01));
   }
 
