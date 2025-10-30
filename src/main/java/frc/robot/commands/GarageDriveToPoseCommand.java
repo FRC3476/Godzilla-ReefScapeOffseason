@@ -81,7 +81,7 @@ public class GarageDriveToPoseCommand extends Command {
                 Rotation2d.kZero));
     Pose2d target = targetPoseSupplier.get();
 
-    if (RobotState.getSuperstructureState().isL4State()) {
+    if (RobotState.getSuperstructureTargetState().isL4State()) {
       maxVelocity = DriveConstants.kDriveMaxSpeed / 3;
     } else {
       maxVelocity = DriveConstants.kDriveMaxSpeed;
