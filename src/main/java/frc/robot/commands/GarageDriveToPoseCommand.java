@@ -28,20 +28,22 @@ public class GarageDriveToPoseCommand extends Command {
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 3),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 3));
+              (Constants.DriveConstants.kDriveMaxSpeed),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
           0.0,
           DriveConstants.ANGLE_KD,
           new TrapezoidProfile.Constraints(
-              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION / 3));
+              DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
 
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
 
   private double ffMinRadius = 0.0, ffMaxRadius = 0.1;
+
+  private double maxVelocity = DriveConstants.kDriveMaxSpeed;
 
   private final ApplyRobotSpeeds robotSpeeds =
       new ApplyRobotSpeeds()
@@ -53,8 +55,8 @@ public class GarageDriveToPoseCommand extends Command {
 
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
-    distanceController.setTolerance(Units.inchesToMeters(0.5));
-    angleController.setTolerance(Units.degreesToRadians(0.5));
+    distanceController.setTolerance(Units.inchesToMeters(0.7));
+    angleController.setTolerance(Units.degreesToRadians(1.5));
   }
 
   public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
@@ -79,6 +81,12 @@ public class GarageDriveToPoseCommand extends Command {
                 Rotation2d.kZero));
     Pose2d target = targetPoseSupplier.get();
 
+    if (RobotState.getSuperstructureState().isL4State()) {
+      maxVelocity = DriveConstants.kDriveMaxSpeed / 3;
+    } else {
+      maxVelocity = DriveConstants.kDriveMaxSpeed;
+    }
+
     double currentDistance = robot.getTranslation().getDistance(target.getTranslation());
     double ffScaler =
         MathUtil.clamp((currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius), 0.0, 1.0);
@@ -91,8 +99,8 @@ public class GarageDriveToPoseCommand extends Command {
         distanceController.getSetpoint().velocity * ffScaler
             + MathUtil.clamp(
                 distanceController.calculate(translationalError.getNorm(), 0),
-                -DriveConstants.kDriveMaxSpeed / 3,
-                DriveConstants.kDriveMaxSpeed / 3);
+                -maxVelocity,
+                maxVelocity);
     translationalSpeed = !distanceController.atGoal() ? translationalSpeed : 0;
 
     double anglularVelocity =

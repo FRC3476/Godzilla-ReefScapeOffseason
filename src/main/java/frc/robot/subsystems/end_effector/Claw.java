@@ -1,5 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,6 +41,9 @@ public class Claw extends SubsystemBase {
   private boolean firstSensorTriggered;
   private boolean secondSensorTriggered;
 
+  Debouncer debouncerFirst = new Debouncer(0.05);
+  Debouncer debouncerSecound = new Debouncer(0.05);
+
   public Claw(ClawIO io) {
     this.io = io;
   }
@@ -51,9 +55,11 @@ public class Claw extends SubsystemBase {
     Logger.recordOutput("Claw/CurrentState", currentState);
 
     firstSensorTriggered =
-        inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
+        debouncerFirst.calculate(inputs.firstCANRangeData.rangeIsTripped())
+            && inputs.firstCANRangeData.canRangeConnected();
     secondSensorTriggered =
-        inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
+        debouncerSecound.calculate(inputs.secondCANRangeData.rangeIsTripped())
+            && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
@@ -69,6 +75,12 @@ public class Claw extends SubsystemBase {
 
   public void setRollerVoltage(double voltage) {
     io.setRollerVoltage(voltage);
+  }
+
+  public boolean isOK() {
+    return inputs.firstCANRangeData.canRangeConnected()
+        && inputs.secondCANRangeData.canRangeConnected()
+        && inputs.rollerData.rollerMotorConnected();
   }
 
   public boolean isClawScoring() {

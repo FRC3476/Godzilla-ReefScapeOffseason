@@ -8,6 +8,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Constants.LedConstants.LedStrip;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
@@ -20,6 +22,8 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
@@ -39,6 +43,7 @@ public class ElasticTabs {
   private final RobotState robotState;
   private final EndEffector endEffector;
   private final Claw claw;
+  private final Led led;
   private final Vision vision;
   private final Map<String, ElasticTab> elasticTabMap = new HashMap<>();
 
@@ -53,6 +58,7 @@ public class ElasticTabs {
     climbRoller = container.getClimbRoller();
     endEffector = container.getEndEffector();
     claw = container.getClaw();
+    led = container.getLed();
     vision = container.getVision();
     buildElasticTabs();
   }
@@ -64,6 +70,7 @@ public class ElasticTabs {
     buildSuperstructureTab();
     buildClimberTab();
     buildDriveTab();
+    buildLedTab();
     buildTestTab();
   }
 
@@ -92,7 +99,7 @@ public class ElasticTabs {
     tab.addButton("Pivot Scoring Position (When Pressed)")
         .setupOnPressCommand(intake.setPivotScoring());
     tab.addButton("Pivot Zero Position (When Pressed)")
-        .setupOnPressCommand(intake.zeroPivotAtPivotUp());
+        .setupOnPressCommandIgnoringDisabled(intake.zeroPivotAtPivotUp());
 
     // Configure intake state button triggers
     tab.addButton("STOW (When Pressed)")
@@ -159,7 +166,8 @@ public class ElasticTabs {
                     (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
                             + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)
                         / 2));
-    tab.addButton("Pivot Zero (When Pressed)").setupOnPressCommand(endEffector.setPivotZero());
+    tab.addButton("Pivot Zero (When Pressed)")
+        .setupOnPressCommandIgnoringDisabled(endEffector.setPivotZero());
   }
 
   private void buildElevatorTab() {
@@ -189,7 +197,7 @@ public class ElasticTabs {
         .setupOnPressCommand(
             elevator.setTargetPositionCommand(() -> SuperstructureState.STOW.getElevatorHeight()));
     tab.addButton("Zero the Elevator (When Pressed)")
-        .setupOnPressCommand(elevator.manualSetElevatorZero());
+        .setupOnPressCommandIgnoringDisabled(elevator.manualSetElevatorZero());
   }
 
   private void buildSuperstructureTab() {
@@ -364,6 +372,50 @@ public class ElasticTabs {
     tab.addButton("Climber Climb (When Pressed)").setupOnPressCommand(climber.climbClimb());
     tab.addButton("Run Climb Rollers (When Pressed)")
         .setupWhileHeldCommand(climbRoller.holdCage(), climbRoller.rollerSTOP());
+  }
+
+  private void buildLedTab() {
+    String key = "Led";
+    ElasticTab tab = new ElasticTab(key);
+    elasticTabMap.put(key, tab);
+
+    tab.addButton("Solid Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed));
+    tab.addButton("Right Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed, LedStrip.RIGHT));
+    tab.addButton("Left Yellow")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColor(LedState.kYellow, LedStrip.LEFT));
+    tab.addButton("Right Red Left Yellow")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColor(LedState.kRed, LedStrip.RIGHT)
+                .andThen(led.commandSolidColor(LedState.kYellow, LedStrip.LEFT)));
+    tab.addButton("Solid Orange").setupOnPressCommandIgnoringDisabled(led.commandSetOrange());
+    tab.addButton("Solid Teal").setupOnPressCommandIgnoringDisabled(led.commandSetTeal());
+    tab.addButton("Blink Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandBlinkingState(LedState.kRed, 0.5));
+    tab.addButton("Fire").setupOnPressCommandIgnoringDisabled(led.commandFire());
+    tab.addButton("Rainbow").setupOnPressCommandIgnoringDisabled(led.commandRainbow());
+    tab.addButton("ColorflowCO").setupOnPressCommandIgnoringDisabled(led.commandColorflowCO());
+    tab.addButton("Off").setupOnPressCommandIgnoringDisabled(led.commandOff());
+    tab.addButton("Half Orange")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandPercentageFull(() -> 0.5, LedState.kCOOrangeLed));
+    tab.addButton("Partial Orange")
+        .setupOnPressCommandIgnoringDisabled(
+            led.commandSolidColorNumLeds(LedState.kCOOrangeLed, led::getLedsOn));
+    tab.addButton("Larson Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kBlue));
+    tab.addButton("Larson Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kRed));
+    tab.addButton("Twinkle Off Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, true));
+    tab.addButton("Twinkle Off Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, true));
+    tab.addButton("Twinkle Blue")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, false));
+    tab.addButton("Twinkle Red")
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, false));
   }
 
   private void buildTestTab() {

@@ -32,6 +32,7 @@ import frc.robot.util.RobotTime;
 // import frc.robot.util.pathplanner.util.PathPlannerLogging;
 import frc.robot.util.simulations.MapleSimSwerveDrivetrain;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -84,16 +85,19 @@ public class DriveSubsystem extends SubsystemBase {
     return input;
   }
 
+  @AutoLogOutput(key = "Drive/isRollStable")
   public boolean isRollStable() {
     return Math.abs(inputs.gyroRoll) < DriveConstants.SCORING_MAX_ROLL_RADIANS
         && Math.abs(inputs.gyroRollVelocity) < DriveConstants.SCORING_MAX_ROLL_VELOCITY_RADPERSEC;
   }
 
+  @AutoLogOutput(key = "Drive/isPitchStable")
   public boolean isPitchStable() {
     return Math.abs(inputs.gyroPitch) < DriveConstants.SCORING_MAX_PITCH_RADIANS
         && Math.abs(inputs.gyroPitchVelocity) < DriveConstants.SCORING_MAX_PITCH_VELOCITY_RADPERSEC;
   }
 
+  @AutoLogOutput(key = "Drive/isRobotStable")
   public boolean isRobotStable() {
     return isPitchStable()
         && isRollStable()

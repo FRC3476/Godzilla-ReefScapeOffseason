@@ -93,9 +93,9 @@ public class RobotState extends MagicVirtualSubsystem {
     public ScorePosition() {
       this.reefSide = ReefSide.NONE;
       this.coralBranch = CoralBranch.NONE;
-      this.coralScoreLevel = ScoreLevel.NONE;
+      this.coralScoreLevel = ScoreLevel.L4;
       this.algaeIntake = AlgaeIntake.NONE;
-      this.algaeScoreLevel = ScoreLevel.NONE;
+      this.algaeScoreLevel = ScoreLevel.BARGE;
     }
 
     public ReefSide getReefSide() {
@@ -191,9 +191,9 @@ public class RobotState extends MagicVirtualSubsystem {
       case L1_AIM:
         return SuperstructureState.L1_FADEAWAY;
       case L2_AIM:
-        return SuperstructureState.L2_FADEAWAY;
+        return SuperstructureState.L2_AIM;
       case L3_AIM:
-        return SuperstructureState.L3_FADEAWAY;
+        return SuperstructureState.L3_AIM;
       case L4_AIM:
         return SuperstructureState.L4_FADEAWAY;
       case BARGE_AIM_FORWARD:
@@ -342,7 +342,7 @@ public class RobotState extends MagicVirtualSubsystem {
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
 
-  private static LedState ledState = LedState.kCOOrange;
+  private static LedState ledState = LedState.kCOOrangePure;
 
   public static void offerVisionObservation(PoseObservation observation) {
     RobotState.poseObservations.offer(observation);

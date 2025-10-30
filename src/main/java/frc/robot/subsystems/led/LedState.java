@@ -13,19 +13,21 @@ public class LedState {
   public static final LedState kWhite = new LedState(255, 255, 255);
   public static final LedState kGray = new LedState(128, 128, 128);
   public static final LedState kPink = new LedState(255, 0, 100);
-  public static final LedState kCOTeal = new LedState(32, 146, 153);
-  public static final LedState kCOOrange = new LedState(255, 122, 28);
+  public static final LedState kCOTealPure = new LedState(32, 146, 153);
+  public static final LedState kCOOrangePure = new LedState(255, 122, 28);
+  public static final LedState kCOTealLed = new LedState(0, 100, 35);
+  public static final LedState kCOOrangeLed = new LedState(255, 30, 0);
 
   public static final LedState kOff = new LedState(0, 0, 0); // No Color
-  public static final LedState kLowBattery = kRed;
+  public static final LedState kLowBattery = kYellow;
   public static final LedState kGoodBattery = kGreen;
   public static final LedState[] kRainbow = {
     kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kWhite, kOff, kRed, kOrange, kYellow,
     kGreen, kCyan, kBlue, kPurple, kOff, kOff
   };
 
-  public static final LedState kCoralMode = kCOOrange;
-  public static final LedState kAlgaeMode = kCOTeal;
+  public static final LedState kCoralMode = kCOOrangeLed;
+  public static final LedState kAlgaeMode = kCOTealLed;
   public static final LedState kCoralManual = kWhite;
 
   // 3 leds for l2, 7 leds for l3, full for l4

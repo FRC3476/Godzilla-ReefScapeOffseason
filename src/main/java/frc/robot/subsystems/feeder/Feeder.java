@@ -1,5 +1,6 @@
 package frc.robot.subsystems.feeder;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FeederConstants;
@@ -10,6 +11,9 @@ import org.littletonrobotics.junction.Logger;
 public class Feeder extends SubsystemBase {
   private final FeederIO io;
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
+
+  Debouncer debouncerFirst = new Debouncer(0.05);
+  Debouncer debouncerSecound = new Debouncer(0.05);
 
   public Feeder(FeederIO io) {
     this.io = io;
@@ -35,11 +39,13 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean isCoralInFeeder() {
-    return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
+    return debouncerFirst.calculate(inputs.canRangeData.tripped())
+        && inputs.canRangeData.isSensorConnected();
   }
 
   public boolean isCoralInFrontFeeder() {
-    return inputs.frontCanRangeData.tripped() && inputs.frontCanRangeData.isSensorConnected();
+    return debouncerSecound.calculate(inputs.frontCanRangeData.tripped())
+        && inputs.frontCanRangeData.isSensorConnected();
   }
 
   public void setRollerVoltage(double voltage) {

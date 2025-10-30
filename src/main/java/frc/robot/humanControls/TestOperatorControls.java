@@ -35,9 +35,9 @@ public class TestOperatorControls {
 
   private void configureTestingStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(LedState.kCOOrange.toString(), LedState.kOff.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOOrangePure.toString(), LedState.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(LedState.kCOTeal.toString(), LedState.kWhite.toString(), "");
+        new StreamDeckButtonConfig(LedState.kCOTealPure.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig grayConfig =
         new StreamDeckButtonConfig(LedState.kGray.toString(), LedState.kWhite.toString(), "");
     StreamDeckButtonConfig redConfig =

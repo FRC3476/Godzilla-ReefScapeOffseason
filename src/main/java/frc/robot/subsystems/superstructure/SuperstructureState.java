@@ -183,6 +183,15 @@ public enum SuperstructureState {
         () -> shortcutType);
   }
 
+  public boolean isL4State() {
+    switch (this) {
+      case L4_AIM, L4_FADEAWAY, L4_AWAY_FROM_REEF:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public boolean isCoralState() {
     switch (this) {
       case STOW_CORAL,
@@ -267,7 +276,7 @@ public enum SuperstructureState {
 
   public boolean isFadeawayState() {
     switch (this) {
-      case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY:
+      case L1_FADEAWAY, L2_FADEAWAY, L3_FADEAWAY, L4_FADEAWAY, L2_AIM, L3_AIM:
         return true;
       default:
         return false;

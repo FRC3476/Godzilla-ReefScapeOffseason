@@ -73,13 +73,14 @@ public final class Constants {
   public static String MISC_CANIVORE_NAME = "MISC";
   public static CANBus DRIVE_CANIVORE = new CANBus(DRIVE_CANIVORE_NAME);
   public static CANBus MISC_CANIVORE = new CANBus(MISC_CANIVORE_NAME);
+  public static CANBus RIO_CANBUS = new CANBus("rio");
 
   public static final double kSteerJoystickDeadband = 0.012;
   public static final double kRobotMassKg = Units.lbsToKilograms(147.92);
   public static final double kRobotMomentOfInertia = 2 * 9.38; // kg * m^2
   public static final double kCOGHeightMeters = Units.inchesToMeters(0.0);
 
-  public static double kAlignOffset = 0.0;
+  public static double kAlignOffset = 0.5;
   public static double kAlignOffsetFB = 0.0;
 
   // ====================Drive (0_ and 1_)====================
@@ -168,14 +169,12 @@ public final class Constants {
     public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
     public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
-    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5 * 2);
-    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5 * 2);
-    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10 * 2);
-    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC =
-        Units.degreesToRadians(10 * 2);
-    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY =
-        MetersPerSecond.of(15.0 / 100 * 2);
-    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0 * 2);
+    public static final double SCORING_MAX_ROLL_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_PITCH_RADIANS = Units.degreesToRadians(5);
+    public static final double SCORING_MAX_ROLL_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final double SCORING_MAX_PITCH_VELOCITY_RADPERSEC = Units.degreesToRadians(10);
+    public static final LinearVelocity SCORING_MAX_LINEAR_VELOCITY = MetersPerSecond.of(15.0 / 100);
+    public static final AngularVelocity SCORING_MAX_ANGULAR_VELOCITY = DegreesPerSecond.of(7.0);
   }
 
   public static final class AutoConstants {
@@ -232,7 +231,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
-                    .withProximityThreshold(Units.inchesToMeters(3))
+                    .withProximityThreshold(Units.inchesToMeters(4))
                     .withProximityHysteresis(0.006));
 
     public static final double FEEDER_IN_VOLTS = 12.0;
@@ -578,6 +577,8 @@ public final class Constants {
     public static final double MIN_ANGLE_ROTATIONS = Units.degreesToRotations(-92.16);
     public static final double MAX_SAFE_ANGLE_ROTATIONS = .155; // old value 53.9126895
     public static final double MIN_SAFE_ANGLE_ROTATIONS = -.169; // old value -61.1115004
+    public static final double L3_FADEAWAY_ANGLE_ROTATIONS =
+        Units.degreesToRotations(17.7998883 + 5);
 
     // Pivot positions in rotations
     public static final double IDLE_ANGLE_ROTATIONS = MIN_ANGLE_ROTATIONS;
@@ -746,11 +747,22 @@ public final class Constants {
   }
 
   // ====================LED (8_)====================
-  public static final class LEDConstants {
+  public static final class LedConstants {
     public static final int ID = 19; // 80 not allowed, max ID is 62
-    public static final int kNonCandleLEDCount = 10;
+    public static final int kNonCandleLEDCount = 32;
     public static final int kCandleLEDCount = 8;
     public static final int kMaxLEDCount = kNonCandleLEDCount + kCandleLEDCount;
+    public static final int kLeftLEDStartIdx = 8;
+    public static final int kLeftLEDEndIdx = 23;
+    public static final int kRightLEDStartIdx = 24;
+    public static final int kRightLEDEndIdx = 39;
+
+    public enum LedStrip {
+      LEFT,
+      RIGHT,
+      BOTH
+    }
+
     public static final double kLowBatteryThresholdVolts = 12.3;
   }
 
@@ -955,7 +967,7 @@ public final class Constants {
     public static double L3_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
     public static double L3_FADEAWAY_ENDEFFECTOR_ROTATION_ROTATIONS =
-        EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS;
+        EndEffectorConstants.L3_FADEAWAY_ANGLE_ROTATIONS;
 
     public static double L4_FADEAWAY_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_FADEAWAY_SETPOINT_INCH;
