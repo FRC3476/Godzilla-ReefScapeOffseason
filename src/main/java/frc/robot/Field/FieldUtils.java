@@ -1,5 +1,6 @@
 package frc.robot.Field;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -149,5 +150,16 @@ public class FieldUtils {
 
   public static AprilTagStruct getBargeTag() {
     return FieldUtils.isBlueAlliance() ? FieldConstants.blueBarge : FieldConstants.redBarge;
+  }
+
+  public static boolean isInsideField(Pose2d pose) {
+    return isInsideField(pose, 0.0);
+  }
+
+  public static boolean isInsideField(Pose2d pose, double bufferMeters) {
+    return pose.getX() >= bufferMeters
+        && pose.getX() <= FieldConstants.fieldLength - bufferMeters
+        && pose.getY() >= bufferMeters
+        && pose.getY() <= FieldConstants.fieldWidth - bufferMeters;
   }
 }

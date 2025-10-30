@@ -127,6 +127,11 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_KI = 0.0;
     public static final double DRIVE_TO_POSE_KD = 0.4;
 
+    public static final double DRIVE_TO_CORAL_KP = 6.0;
+    public static final double DRIVE_TO_CORAL_KI = 0.0;
+    public static final double DRIVE_TO_CORAL_KD = 0.4;
+    public static final double DRIVE_TO_CORAL_PERP_OFFSET_METERS = Units.inchesToMeters(-18);
+
     public static final double ANGLE_KP = 5.0;
     public static final double ANGLE_KD = 0.4;
     public static final double ANGLE_MAX_ACCELERATION = 15.0;
@@ -842,6 +847,16 @@ public final class Constants {
     // Validation constants
     public static final int kMinFiducialCount = 1;
     public static final int kExpectedStdDevArrayLength = 12;
+
+    // Coral Position Constants
+    public static final double kIntakeCameraHeight = Units.inchesToMeters(36.916501);
+    public static final double kIntakeCameraPitchDegrees = 62.5;
+    public static final double kIntakeCameraOffset = Units.inchesToMeters(-1.852118);
+    public static final double kIntakeCameraHorizontalFOVDegrees = 62.5;
+    public static final double kIntakeCameraVerticalFOVDegrees = 48.9;
+    public static final double coralObservationDistanceThreshold = 0.15;
+    public static final double coralObservationTimeThreshold = 1.5;
+    public static final int coralObservationMinObservations = 3;
   }
 
   public static class SuperstructureConstants {
