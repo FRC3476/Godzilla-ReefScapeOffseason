@@ -87,10 +87,15 @@ public class DriverControls {
             Commands.either(
                 Commands.defer(
                     () -> {
-                      Rotation2d targetRotation =
-                          RobotState.getGlobalPose().getRotation().getCos() > 0
-                              ? Rotation2d.kZero
-                              : Rotation2d.k180deg;
+                    Rotation2d targetRotation;
+                    int controllerDirMultiplier;
+                      if (RobotState.getGlobalPose().getRotation().getCos() > 0) {
+                          controllerDirMultiplier = -1;
+                          targetRotation = Rotation2d.kZero;
+                      } else {
+                        controllerDirMultiplier = 1;
+                        targetRotation = Rotation2d.k180deg;
+                      }
                       if (FieldUtils.isOnRedSide()) {
                         return new ParallelDriveCommand(
                             drive,
@@ -104,7 +109,7 @@ public class DriverControls {
                                                 .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
                                     0,
                                     targetRotation),
-                            () -> -controller.getLeftX());
+                            () -> controllerDirMultiplier * controller.getLeftX());
                       } else {
                         return new ParallelDriveCommand(
                             drive,
@@ -118,7 +123,7 @@ public class DriverControls {
                                                 .AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET),
                                     0,
                                     targetRotation),
-                            () -> -controller.getLeftX());
+                            () -> controllerDirMultiplier * controller.getLeftX());
                       }
                     },
                     Set.of(drive)),
@@ -206,7 +211,7 @@ public class DriverControls {
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
-        .onTrue(
+        .whileTrue(
             Commands.either(
                 Commands.sequence(
                     new ConditionalCommand(
