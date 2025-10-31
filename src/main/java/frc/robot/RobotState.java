@@ -254,6 +254,8 @@ public class RobotState extends MagicVirtualSubsystem {
 
   private static boolean superstructureManualOverrideMode = false;
 
+  private static boolean readyToScore = false;
+
   public RobotState(
       Consumer<VisionFieldPoseEstimate> visionEstimateConsumer, RobotContainer robotContainer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
@@ -382,6 +384,14 @@ public class RobotState extends MagicVirtualSubsystem {
 
   public static SuperstructureState getSuperstructureTargetState() {
     return targetState;
+  }
+
+  public static boolean isReadyToScore() {
+    return readyToScore;
+  }
+
+  public static void setReadyToScore(boolean ready) {
+    readyToScore = ready;
   }
 
   public static Trigger onTeamSide() {
@@ -814,6 +824,7 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
     Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
     Logger.recordOutput("SuperstructureManualOverride", getSuperstructureManualOverrideMode());
+    Logger.recordOutput("Ready to Score?", readyToScore);
 
     // updateLogger();
 

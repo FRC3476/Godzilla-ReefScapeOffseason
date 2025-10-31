@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
@@ -87,11 +88,11 @@ public class DriverControls {
             Commands.either(
                 Commands.defer(
                     () -> {
-                    Rotation2d targetRotation;
-                    int controllerDirMultiplier;
+                      Rotation2d targetRotation;
+                      int controllerDirMultiplier;
                       if (RobotState.getGlobalPose().getRotation().getCos() > 0) {
-                          controllerDirMultiplier = -1;
-                          targetRotation = Rotation2d.kZero;
+                        controllerDirMultiplier = -1;
+                        targetRotation = Rotation2d.kZero;
                       } else {
                         controllerDirMultiplier = 1;
                         targetRotation = Rotation2d.k180deg;
@@ -211,7 +212,52 @@ public class DriverControls {
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
-        .whileTrue(
+        .and(new Trigger(() -> RobotState.isReadyToScore()))
+        .and(controller.a())
+        .onTrue(
+            Commands.sequence(
+                new ConditionalCommand(
+                    new ConditionalCommand(
+                        claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                        claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                        () -> robotState.isL1Mode()),
+                    claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                    () ->
+                        RobotState.getSuperstructureState() != null
+                            && RobotState.getSuperstructureState().isCoralState()),
+                new ConditionalCommand(
+                    new WaitUntilCommand(
+                            () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                        .withTimeout(3),
+                    new WaitCommand(0.5),
+                    () -> RobotState.getSuperstructureState().isCoralState()),
+                superstructure
+                    .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                    .asProxy(),
+                Commands.either(
+                    claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                    claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                    () -> CoralStateTracker.hasCoral()),
+                new ConditionalCommand(
+                        new WaitUntilCommand(() -> robotState.isSafeToStow())
+                            .andThen(
+                                new ConditionalCommand(
+                                        superstructure.setStateCommand(
+                                            SuperstructureState.STOW, "STOW"),
+                                        Commands.none(),
+                                        () ->
+                                            RobotState.getSuperstructureTargetState()
+                                                .isFadeawayState())
+                                    .asProxy()),
+                        Commands.none(),
+                        () -> RobotState.getSuperstructureState().isCoralState())
+                    .asProxy()));
+
+    controller
+        .rightTrigger(0.2) // check
+        // .and(new Trigger(() -> RobotState.isReadyToScore()))
+        .and(controller.a().negate())
+        .onTrue(
             Commands.either(
                 Commands.sequence(
                     new ConditionalCommand(
@@ -253,6 +299,8 @@ public class DriverControls {
                 new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
                 () ->
                     (drive.isRobotStable()
+                            && RobotState.getSuperstructureState()
+                                == RobotState.getSuperstructureTargetState()
                             && RobotState.getSuperstructureTargetState()
                                 == SuperstructureState.L4_AIM)
                         || (RobotState.getSuperstructureTargetState().isScoringState()

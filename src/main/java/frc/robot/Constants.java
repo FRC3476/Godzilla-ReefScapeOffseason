@@ -924,6 +924,10 @@ public final class Constants {
 
     public static double L4_AIM_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AGAINST_REEF_SETPOINT_INCH;
+    public static double L4_PRESCORE_ELEVATOR_HEIGHT_INCH =
+        ElevatorConstants.ELEVATOR_L3_AGAINST_REEF_SETPOINT_INCH;
+    public static double L4_PRESCORE_ENDEFFECTOR_ROTATION_ROTATIONS =
+        EndEffectorConstants.L3_AGAINST_REEF_ANGLE_ROTATIONS;
     public static double L4_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_L4_AWAY_FROM_REEF_SETPOINT_INCH;
     public static double L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS =
