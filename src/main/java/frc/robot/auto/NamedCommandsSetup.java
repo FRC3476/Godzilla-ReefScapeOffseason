@@ -1,6 +1,9 @@
 package frc.robot.auto;
 
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.DriveConstants;
@@ -12,6 +15,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.GenerateAndFollowPathCommand;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
@@ -112,6 +116,11 @@ public class NamedCommandsSetup {
 
     NamedCommands.registerCommand(
         "IsCoralInRobot", new WaitUntilCommand(() -> CoralStateTracker.hasCoral()));
+    
+    // ====================AUTO PATHGEN COMMANDS=================
+
+    NamedCommands.registerCommand("GenPathBLEFT", new GenerateAndFollowPathCommand(
+                robotState, new Pose2d(3.562, 2.831, Rotation2d.fromDegrees(45.802))));
 
     // ====================PID DRIVE COMMANDS====================
     // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new

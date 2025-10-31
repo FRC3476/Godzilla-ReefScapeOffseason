@@ -1,6 +1,7 @@
 package frc.robot.humanControls;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -12,8 +13,8 @@ import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
+import frc.robot.commands.GenerateAndFollowPathCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -312,7 +313,10 @@ public class ElasticTabs {
     // tab.addButton("Drive Turn Clockwise").setupWhileHeldCommand(
     //     Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1))));
 
-    tab.addButton("Pathfind to Pose").setupWhileHeldCommand(new DriveToCoralCommand(drive, vision));
+    tab.addButton("Pathfind to Pose")
+        .setupWhileHeldCommand(
+            new GenerateAndFollowPathCommand(
+                robotState, new Pose2d(3.562, 2.831, Rotation2d.fromDegrees(45.802))));
     /*new PathfindToPoseCommand(
     drive,
     () ->

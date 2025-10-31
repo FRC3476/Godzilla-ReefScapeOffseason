@@ -1,6 +1,5 @@
 package frc.robot.subsystems.end_effector;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,10 +50,10 @@ public class Claw extends SubsystemBase {
     Logger.processInputs("Claw", inputs);
     Logger.recordOutput("Claw/CurrentState", currentState);
 
-    firstSensorTriggered = inputs.firstCANRangeData.rangeIsTripped()
-            && inputs.firstCANRangeData.canRangeConnected();
-    secondSensorTriggered = inputs.secondCANRangeData.rangeIsTripped()
-            && inputs.secondCANRangeData.canRangeConnected();
+    firstSensorTriggered =
+        inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
+    secondSensorTriggered =
+        inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
