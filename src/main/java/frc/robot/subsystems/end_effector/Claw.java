@@ -78,7 +78,9 @@ public class Claw extends SubsystemBase {
   }
 
   public boolean isClawScoring() {
-    return currentState == ClawState.SCORING || currentState == ClawState.SCORING_L1;
+    return currentState == ClawState.SCORING
+        || currentState == ClawState.SCORING_L1
+        || currentState == ClawState.SCORING_ALGAE;
   }
 
   public boolean isCoralInClaw() {

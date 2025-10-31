@@ -57,6 +57,9 @@ public enum SuperstructureState {
   L4_AIM(
       Constants.SuperstructureConstants.L4_AIM_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L4_AIM_ENDEFFECTOR_ROTATION_ROTATIONS),
+  L4_PRESCORE(
+      Constants.SuperstructureConstants.L4_PRESCORE_ELEVATOR_HEIGHT_INCH,
+      Constants.SuperstructureConstants.L4_PRESCORE_ENDEFFECTOR_ROTATION_ROTATIONS),
   L2_AWAY_FROM_REEF(
       Constants.SuperstructureConstants.L2_AIM_AWAY_FROM_REEF_ELEVATOR_HEIGHT_INCH,
       Constants.SuperstructureConstants.L2_AIM_AWAY_FROM_REEF_ENDEFFECTOR_ROTATION_ROTATIONS),
@@ -201,6 +204,7 @@ public enum SuperstructureState {
           L2_AIM,
           L3_AIM,
           L4_AIM,
+          L4_PRESCORE,
           L1_FADEAWAY,
           L2_FADEAWAY,
           L3_FADEAWAY,

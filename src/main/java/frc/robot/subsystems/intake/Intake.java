@@ -212,7 +212,7 @@ public class Intake extends SubsystemBase {
               feeder.setRollerVoltage(FeederConstants.FEEDER_IN_VOLTS);
               break;
             case REJECT_CORAL:
-              this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
+              // this.io.setPivotPosition(IntakeConstants.PIVOT_INTAKE_POSITION);
               this.io.setRollerVoltage(-rollerIntakeVolts.get());
               feeder.setRollerVoltage(FeederConstants.FEEDER_OUT_VOLTS);
               break;

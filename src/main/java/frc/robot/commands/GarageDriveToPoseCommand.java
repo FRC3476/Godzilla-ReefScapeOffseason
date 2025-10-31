@@ -76,6 +76,11 @@ public class GarageDriveToPoseCommand extends Command {
     return this;
   }
 
+  @Override
+  public void initialize() {
+    RobotState.setReadyToScore(false);
+  }
+
   // Heavily inspired by 6328's `AutoAlignController` from 2024
   // https://github.com/Mechanical-Advantage/RobotCode2024/blob/main/src/main/java/org/littletonrobotics/frc2024/subsystems/drive/controllers/AutoAlignController.java#L135
   @Override
@@ -141,10 +146,20 @@ public class GarageDriveToPoseCommand extends Command {
     // if in L4_AIM, do that only if the robot is stable
     if (distanceController.atSetpoint()
         && angleController.atSetpoint()
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
         && RobotState.getSuperstructureState().isCoralScoringState()
         && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
             || drive.isRobotStable())) {
-      led.setLedState(DEFAULT_LED_STATE.GARGE_DRIVE_ALIGNED);
+      led.setLedState(DEFAULT_LED_STATE.GARAGE_DRIVE_ALIGNED);
+    }
+
+    if (RobotState.getSuperstructureState().isCoralScoringState()
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || (drive.isRobotStable()
+                && distanceController.atSetpoint()
+                && angleController.atSetpoint()))) {
+      RobotState.setReadyToScore(true);
     }
   }
 
@@ -154,6 +169,7 @@ public class GarageDriveToPoseCommand extends Command {
     distanceController.reset(0);
     angleController.reset(0);
     led.setLedState(DEFAULT_LED_STATE.NONE);
+    RobotState.setReadyToScore(false);
   }
 
   // public Trigger canShoot(

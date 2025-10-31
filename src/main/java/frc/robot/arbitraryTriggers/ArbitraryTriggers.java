@@ -10,7 +10,6 @@ import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
@@ -19,6 +18,7 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import java.util.Set;
 
 public class ArbitraryTriggers {
   private final RobotContainer container;
@@ -71,25 +71,30 @@ public class ArbitraryTriggers {
     autoPreScoreTrigger
         .debounce(0.25)
         .onTrue(
-            Commands.either(
-                Commands.none(),
-                Commands.either(
-                    superstructure
-                        .setStateCommand(SuperstructureState.L1_AIM, "PRE_SCORE_L1")
-                        .asProxy(),
-                    Commands.either(
-                        superstructure
-                            .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
-                            .asProxy(),
-                        superstructure
-                            .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3_OR_L4")
-                            .asProxy(),
-                        () ->
-                            robotState.getStoredScorePosition().getCoralScoreLevel()
-                                == ScoreLevel.L2),
-                    () ->
-                        robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.L1),
-                () -> robotState.getStoredScorePosition().getCoralScoreLevel() == ScoreLevel.NONE));
+            Commands.defer(
+                () -> {
+                  switch (robotState.getStoredScorePosition().getCoralScoreLevel()) {
+                    case L1:
+                      return superstructure
+                          .setStateCommand(SuperstructureState.L1_AIM, "PRE_SCORE_L1")
+                          .asProxy();
+                    case L2:
+                      return superstructure
+                          .setStateCommand(SuperstructureState.L2_AIM, "PRE_SCORE_L2")
+                          .asProxy();
+                    case L3:
+                      return superstructure
+                          .setStateCommand(SuperstructureState.L3_AIM, "PRE_SCORE_L3")
+                          .asProxy();
+                    case L4:
+                      return superstructure
+                          .setStateCommand(SuperstructureState.L4_PRESCORE, "PRE_SCORE_L4")
+                          .asProxy();
+                    default:
+                      return Commands.none();
+                  }
+                },
+                Set.of()));
 
     //
     Trigger autoStowAlgaeTrigger =

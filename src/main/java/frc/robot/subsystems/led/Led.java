@@ -42,7 +42,7 @@ public class Led extends SubsystemBase {
     DISABLED_BLUE,
     DEFAULT_TELEOP,
     DEFAULT_DISABLED,
-    GARGE_DRIVE_ALIGNED;
+    GARAGE_DRIVE_ALIGNED;
 
     public boolean isDefault() {
       switch (this) {
@@ -234,7 +234,7 @@ public class Led extends SubsystemBase {
               if (!defaultState.isDefault()) {
                 if (prevDefaultState != defaultState) {
                   switch (defaultState) {
-                    case GARGE_DRIVE_ALIGNED:
+                    case GARAGE_DRIVE_ALIGNED:
                       io.rainbow();
                       break;
                     default:
@@ -299,13 +299,13 @@ public class Led extends SubsystemBase {
                       blinkingState(LedState.kGreen, 0.25, LedStrip.RIGHT);
                       break;
                     case CLIMB_DEPLOYING:
-                      blinkingState(LedState.kYellow, 0.25);
+                      blinkingState(LedState.kYellow, 0.1);
                       break;
                     case CLIMB_DEPLOYED:
                       setSolidColor(LedState.kYellow);
                       break;
                     case CLIMB_CLIMBING:
-                      blinkingState(LedState.kGreen, 0.25);
+                      blinkingState(LedState.kGreen, 0.1);
                       break;
                     case CLIMB_CLIMBED:
                       setSolidColor(LedState.kGreen);
@@ -337,6 +337,8 @@ public class Led extends SubsystemBase {
                       break;
                   }
                 }
+              } else if (DriverStation.isAutonomousEnabled()) {
+                io.fire();
               } else { // Disabled
                 // low battery debounce
                 if (!(defaultState == DEFAULT_LED_STATE.LOW_BATTERY
@@ -349,7 +351,8 @@ public class Led extends SubsystemBase {
                   if (FieldUtils.getAlliance() == Alliance.Blue && DriverStation.isFMSAttached()) {
                     defaultState = DEFAULT_LED_STATE.DISABLED_BLUE;
                   }
-                  if (RobotController.getBatteryVoltage() < lowBatteryThreshold.get()) {
+                  if (RobotController.getBatteryVoltage() < lowBatteryThreshold.get()
+                      && !DriverStation.isFMSAttached()) {
                     defaultState = DEFAULT_LED_STATE.LOW_BATTERY;
                   }
                 }
