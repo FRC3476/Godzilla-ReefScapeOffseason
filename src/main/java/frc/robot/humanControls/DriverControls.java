@@ -249,12 +249,13 @@ public class DriverControls {
                 new WaitUntilCommand(
                         () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                     .withTimeout(3),
-                new WaitCommand(0.3),
+                new WaitCommand(0.5),
                 () -> RobotState.getSuperstructureState().isCoralState()),
             superstructure
                 .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                 .asProxy(),
-            new WaitCommand(1).onlyIf(() -> robotState.getFadeawayState() == SuperstructureState.L1_FADEAWAY),
+            new WaitCommand(1)
+                .onlyIf(() -> robotState.getFadeawayState() == SuperstructureState.L1_FADEAWAY),
             Commands.either(
                 claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
                 claw.setClawStateCommand(ClawState.IDLE).asProxy(),
@@ -289,12 +290,13 @@ public class DriverControls {
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                         .withTimeout(3),
-                    new WaitCommand(0.3),
+                    new WaitCommand(0.5),
                     () -> RobotState.getSuperstructureState().isCoralState()),
                 superstructure
                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
                     .asProxy(),
-                new WaitCommand(1).onlyIf(() -> robotState.getFadeawayState() == SuperstructureState.L1_FADEAWAY),
+                new WaitCommand(1)
+                    .onlyIf(() -> robotState.getFadeawayState() == SuperstructureState.L1_FADEAWAY),
                 Commands.either(
                     claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
                     claw.setClawStateCommand(ClawState.IDLE).asProxy(),
