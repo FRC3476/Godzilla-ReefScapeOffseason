@@ -57,7 +57,8 @@ public class GarageDriveToPoseAutoCommand extends Command {
 
   public Command ledRainbow;
 
-  public GarageDriveToPoseAutoCommand(RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
+  public GarageDriveToPoseAutoCommand(
+      RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
     drive = container.getDrive();
     addRequirements(drive);
     led = container.getLed();
@@ -175,11 +176,11 @@ public class GarageDriveToPoseAutoCommand extends Command {
   @Override
   public boolean isFinished() {
     return RobotState.getSuperstructureState().isCoralScoringState()
-    && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
-    && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
-        || (drive.isRobotStable()
-            && distanceController.atSetpoint()
-            && angleController.atSetpoint()));
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || (drive.isRobotStable()
+                && distanceController.atSetpoint()
+                && angleController.atSetpoint()));
   }
 
   // public Trigger canShoot(

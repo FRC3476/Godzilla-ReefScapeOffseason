@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ClimberIOReal implements ClimberIO {
 
@@ -90,8 +91,9 @@ public class ClimberIOReal implements ClimberIO {
     talon.setPosition(0.0);
   }
 
+  @AutoLogOutput(key = "Climber/Limit Switch")
   @Override
   public boolean getLimitSwitch() {
-    return limitSwitch.get();
+    return !limitSwitch.get();
   }
 }

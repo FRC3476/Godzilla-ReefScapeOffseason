@@ -528,7 +528,7 @@ public class OperatorControls {
 
     // Arbitrary triggers + streamdeck confirmation
 
-    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(1);
+    Trigger autoClimbTrigger = new Trigger(() -> climbRoller.hasCage()).debounce(.25);
     autoClimbTrigger.onTrue(climber.climbClimb().withName("AutoClimb"));
     streamdeck
         .button(climbDeployButton)

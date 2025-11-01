@@ -39,8 +39,10 @@ public class Climber extends SubsystemBase {
   public Climber(ClimberIO io) {
     this.io = io;
     io.setZero();
-    limitSwitchLatching().onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHING)));
-    limitSwitchLatched().onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHED)));
+    limitSwitchLatching()
+        .onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHING)));
+    limitSwitchLatched()
+        .onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHED)));
   }
 
   @Override
@@ -132,10 +134,18 @@ public class Climber extends SubsystemBase {
   }
 
   public Trigger limitSwitchLatching() {
-    return new Trigger(() -> limitSwitchState == LimitSwitchState.NONE && io.getLimitSwitch() && climbState != ClimbState.STOWED);
+    return new Trigger(
+        () ->
+            limitSwitchState == LimitSwitchState.NONE
+                && io.getLimitSwitch()
+                && climbState != ClimbState.STOWED);
   }
 
   public Trigger limitSwitchLatched() {
-    return new Trigger(() -> limitSwitchState == LimitSwitchState.LATCHING && !io.getLimitSwitch() && climbState != ClimbState.STOWED);
+    return new Trigger(
+        () ->
+            limitSwitchState == LimitSwitchState.LATCHING
+                && !io.getLimitSwitch()
+                && climbState != ClimbState.STOWED);
   }
 }
