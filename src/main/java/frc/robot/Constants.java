@@ -173,7 +173,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63 + 0.05;
     public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
     public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
@@ -716,8 +716,8 @@ public final class Constants {
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
-    public static final double CLIMB_DEPLOY_POSITION = 87.5;
-    public static final double CLIMB_CLIMB_POSITION = 215;
+    public static final double CLIMB_DEPLOY_POSITION = 91;
+    public static final double CLIMB_CLIMB_POSITION = 209;
     public static final double CLIMB_DEPLOY_VOLTAGE = 12;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;

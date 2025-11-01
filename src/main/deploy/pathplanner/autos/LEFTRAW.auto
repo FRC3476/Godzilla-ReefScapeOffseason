@@ -30,15 +30,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AimL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftRaw1E"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimL4"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw1E"
+                }
+              }
+            ]
           }
         },
         {
@@ -153,21 +160,22 @@
           }
         },
         {
-          "type": "wait",
+          "type": "parallel",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftRaw3E"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimL4"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw3E"
+                }
+              }
+            ]
           }
         },
         {
@@ -282,21 +290,22 @@
           }
         },
         {
-          "type": "wait",
+          "type": "parallel",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftRaw5E"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimL4"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftRaw5E"
+                }
+              }
+            ]
           }
         },
         {
