@@ -22,7 +22,15 @@ public class Climber extends SubsystemBase {
     CLIMBED
   }
 
+  public enum LimitSwitchState {
+    NONE,
+    LATCHING,
+    LATCHED
+  }
+
   private static ClimbState climbState = ClimbState.STOWED;
+
+  public static LimitSwitchState limitSwitchState = LimitSwitchState.NONE;
 
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
@@ -31,6 +39,8 @@ public class Climber extends SubsystemBase {
   public Climber(ClimberIO io) {
     this.io = io;
     io.setZero();
+    limitSwitchLatching().onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHING)));
+    limitSwitchLatched().onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHED)));
   }
 
   @Override
@@ -61,6 +71,10 @@ public class Climber extends SubsystemBase {
 
   public static ClimbState getClimbState() {
     return climbState;
+  }
+
+  public static void setLimitSwitchState(LimitSwitchState state) {
+    limitSwitchState = state;
   }
 
   public Command climbVoltOut() {
@@ -115,5 +129,13 @@ public class Climber extends SubsystemBase {
 
   public Trigger climbFinished() {
     return new Trigger(() -> this.io.checkClimbMotorStalled());
+  }
+
+  public Trigger limitSwitchLatching() {
+    return new Trigger(() -> limitSwitchState == LimitSwitchState.NONE && io.getLimitSwitch() && climbState != ClimbState.STOWED);
+  }
+
+  public Trigger limitSwitchLatched() {
+    return new Trigger(() -> limitSwitchState == LimitSwitchState.LATCHING && !io.getLimitSwitch() && climbState != ClimbState.STOWED);
   }
 }

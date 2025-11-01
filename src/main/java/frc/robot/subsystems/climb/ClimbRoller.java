@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.subsystems.climb.Climber.LimitSwitchState;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
@@ -72,6 +73,6 @@ public class ClimbRoller extends SubsystemBase {
   }
 
   public boolean hasCage() {
-    return io.checkRollerStalled() && climbing;
+    return Climber.limitSwitchState == LimitSwitchState.LATCHED && climbing;
   }
 }
