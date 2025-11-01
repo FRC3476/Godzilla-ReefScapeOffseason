@@ -36,7 +36,7 @@ public class ClimberIOReal implements ClimberIO {
 
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID, Constants.DRIVE_CANIVORE);
-    limitSwitch = new DigitalInput(0);
+    limitSwitch = new DigitalInput(Constants.ClimbConstants.LIMIT_SWITCH_PIN);
 
     PhoenixUtil.tryUntilOk(
         5, () -> talon.getConfigurator().apply(Constants.ClimbConstants.CLIMB_TALON_CONFIG));

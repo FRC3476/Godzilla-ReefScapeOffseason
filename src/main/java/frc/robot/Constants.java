@@ -753,6 +753,7 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
+    public static final int LIMIT_SWITCH_PIN = 9;
   }
 
   // ====================LED (8_)====================

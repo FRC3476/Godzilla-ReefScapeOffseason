@@ -212,7 +212,7 @@ public class DriverControls {
     // Manual spit out game piece
     controller
         .rightTrigger(0.2) // check
-        .and(new Trigger(() -> RobotState.isReadyToScore()))
+        .and(new Trigger(() -> RobotState.isReadyToScore() || RobotState.hasAlgae()))
         .and(controller.a())
         .onTrue(
             Commands.sequence(
@@ -229,7 +229,7 @@ public class DriverControls {
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                         .withTimeout(3),
-                    new WaitCommand(0.5),
+                    new WaitCommand(0.3),
                     () -> RobotState.getSuperstructureState().isCoralState()),
                 superstructure
                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
@@ -273,7 +273,7 @@ public class DriverControls {
                         new WaitUntilCommand(
                                 () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                             .withTimeout(3),
-                        new WaitCommand(0.5),
+                        new WaitCommand(0.3),
                         () -> RobotState.getSuperstructureState().isCoralState()),
                     superstructure
                         .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
