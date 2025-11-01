@@ -239,6 +239,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
+                    .withMinSignalStrengthForValidMeasurement(30000)
                     .withProximityThreshold(Units.inchesToMeters(4))
                     .withProximityHysteresis(0.006));
 
@@ -674,6 +675,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(12.75).withFOVRangeY(12.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
+                    .withMinSignalStrengthForValidMeasurement(40000)
                     .withProximityThreshold(Units.inchesToMeters(3))
                     .withProximityHysteresis(0.006));
 
