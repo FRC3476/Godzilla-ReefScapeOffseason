@@ -459,37 +459,48 @@ public class RobotState extends MagicVirtualSubsystem {
   @AutoLogOutput(key = "RobotState/Clears Reef?")
   public boolean endEffectorClearsReef() {
     Pose2d endEffectorPose =
-    getGlobalPose()
-        .plus(
-            new Transform2d(
-                new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
-                Rotation2d.kZero));
-double endEffectorToLeft =
-    endEffectorPose
-        .minus(FieldUtils.getClosestReef().leftPole.getPose())
-        .getTranslation()
-        .getNorm();
-double endEffectorToRight =
-    endEffectorPose
-        .minus(FieldUtils.getClosestReef().rightPole.getPose())
-        .getTranslation()
-        .getNorm();
+        getGlobalPose()
+            .plus(
+                new Transform2d(
+                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                    Rotation2d.kZero));
+    Logger.recordOutput("RobotState/Reef Clearance/EEPose", endEffectorPose);
+    double endEffectorToLeft =
+        endEffectorPose
+            .minus(FieldUtils.getClosestReef().leftPole.getPose())
+            .getTranslation()
+            .getNorm();
+    double endEffectorToRight =
+        endEffectorPose
+            .minus(FieldUtils.getClosestReef().rightPole.getPose())
+            .getTranslation()
+            .getNorm();
 
-  Pose2d reefFace = FieldUtils.getClosestReef().getPose();
+    Pose2d reefFace = FieldUtils.getClosestReef().getPose();
 
-  Translation2d reefFaceToRobot = getGlobalPose().minus(reefFace).getTranslation();
+    Translation2d reefFaceToRobot = getGlobalPose().minus(reefFace).getTranslation();
+    Logger.recordOutput("RobotState/Reef Clearance/reefFaceToRobot", reefFaceToRobot);
+    Translation2d reefFaceToEndEffector = endEffectorPose.minus(reefFace).getTranslation();
+    Logger.recordOutput("RobotState/Reef Clearance/reefFaceToEE", reefFaceToEndEffector);
+    Translation2d outFromReefFace =
+        new Translation2d(reefFace.getRotation().getCos(), reefFace.getRotation().getSin());
+    Logger.recordOutput("RobotState/Reef Clearance/outFromReefFace", outFromReefFace);
 
-  Translation2d reefFaceToEndEffector = endEffectorPose.minus(reefFace).getTranslation();
-  Translation2d outFromReefFace = new Translation2d(reefFace.getRotation().getCos(), reefFace.getRotation().getSin());
+    double reefToRobotDotProduct = MathHelpers.dotProduct(reefFaceToRobot, outFromReefFace);
+    Logger.recordOutput("RobotState/Reef Clearance/ReefToRobotDot", reefToRobotDotProduct);
+    double reefToEndEffectorDotProduct =
+        MathHelpers.dotProduct(reefFaceToEndEffector, outFromReefFace);
+    Logger.recordOutput(
+        "RobotState/Reef Clearance/ReefToEndEffectorDot", reefToEndEffectorDotProduct);
+    boolean endEffectorIntersectsReef = reefToRobotDotProduct * reefToEndEffectorDotProduct < 0;
+    Logger.recordOutput("RobotState/Reef Clearance/EEIntersectsReef", endEffectorIntersectsReef);
 
-  double reefToRobotDotProduct = MathHelpers.dotProduct(reefFaceToRobot, outFromReefFace);
-  double reefToEndEffectorDotProduct = MathHelpers.dotProduct(reefFaceToEndEffector, outFromReefFace);
-  boolean endEffectorIntersectsReef = reefToRobotDotProduct * reefToEndEffectorDotProduct < 0;
+    boolean endEffectorClearsPoles =
+        endEffectorToLeft > EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS
+            && endEffectorToRight > EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS;
+    Logger.recordOutput("RobotState/Reef Clearance/EEClearsPoles", endEffectorClearsPoles);
 
-  boolean endEffectorClearsPoles = endEffectorToLeft < EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS && endEffectorToRight < EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS;
-
-  return !endEffectorIntersectsReef && endEffectorClearsPoles;
-
+    return !endEffectorIntersectsReef && endEffectorClearsPoles;
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
@@ -502,7 +513,6 @@ double endEffectorToRight =
   public boolean isSafeToRaise() {
     return endEffectorClearsReef();
   }
-
 
   public static final double LOOKBACK_TIME = 1.0;
 
