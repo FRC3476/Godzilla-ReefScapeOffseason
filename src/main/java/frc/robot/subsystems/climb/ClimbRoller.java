@@ -33,11 +33,14 @@ public class ClimbRoller extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("ClimbRoller", inputs);
 
-    Logger.recordOutput(
-        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput("ClimbRoller/climbing", climbing);
+    Logger.recordOutput("ClimbRoller/hasCage", hasCage());
+
     Logger.recordOutput(
         "ClimbRoller/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
   public void setRollerVoltage(double voltage) {

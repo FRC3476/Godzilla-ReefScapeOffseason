@@ -732,8 +732,8 @@ public final class Constants {
     public static final double ROLLER_HOLD_CAGE_AMPS = -60.0; // TODO fine-adjust
     public static final double ROLLER_BACKOUT_VOLTS = 0.5; // TODO fine-adjust
     public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
-    public static final double ROLLER_STALLED_RPS = 2; // TODO fine-adjust
-    public static final double ROLLER_STALLED_CURRENT = 50.0; // TODO fine-adjust
+    public static final double ROLLER_STALLED_RPS = 10; // TODO fine-adjust
+    public static final double ROLLER_STALLED_CURRENT = 40.0; // TODO fine-adjust
 
     public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
         new TalonFXConfiguration()

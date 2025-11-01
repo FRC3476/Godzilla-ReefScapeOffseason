@@ -30,15 +30,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AimL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RIghtRaw1"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimL4"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RIghtRaw1"
+                }
+              }
+            ]
           }
         },
         {
