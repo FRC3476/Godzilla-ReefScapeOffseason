@@ -3,37 +3,58 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8126583540668795,
-        "y": 0.9017224880172864
+        "x": 7.159602272727272,
+        "y": 1.9060369318181825
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.6382388045021026,
-        "y": 2.8325053896448167
+        "x": 6.552384868421052,
+        "y": 1.850493421052631
       },
       "isLocked": false,
-      "linkedName": "RR2E"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5921065552078137,
-        "y": 2.825321180407526
+        "x": 5.503618421052631,
+        "y": 2.1295230263157894
       },
       "prevControl": {
-        "x": 1.914061612111364,
-        "y": 1.0996404941800753
+        "x": 5.636118156053427,
+        "y": 1.9175234503145178
+      },
+      "nextControl": {
+        "x": 5.371118686051836,
+        "y": 2.341522602317061
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.213912671232877,
+        "y": 2.4322773972602736
+      },
+      "prevControl": {
+        "x": 5.3577580485495115,
+        "y": 2.227806109729151
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RR3E"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -57.34919770340432
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8315508021390372,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 1.7,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 3.5,
         "maxAcceleration": 2.0,
@@ -55,14 +76,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "velocity": 0.5,
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": "RIGHTRAW",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
