@@ -59,17 +59,7 @@ public class TunerConstants {
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
   public static final LinearVelocity kSpeedAt12Volts = driveMaxSpeedCalculatedMPS;
-  private static final Distance kFrontLeftXPos = Inches.of(12.125);
-  private static final Distance kFrontLeftYPos = Inches.of(12.125);
-  public static final Distance wheelbaseCircle =
-      Meters.of(
-          new Translation2d(kFrontLeftXPos.baseUnitMagnitude(), kFrontLeftYPos.baseUnitMagnitude())
-                  .getNorm()
-              * 2
-              * Math.PI);
-  public static final AngularVelocity kAngularSpeedAt12Volts =
-      RotationsPerSecond.of(
-          kSpeedAt12Volts.baseUnitMagnitude() / wheelbaseCircle.baseUnitMagnitude());
+
   //   public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.54);
 
   // The closed-loop output type to use for the steer motors;
@@ -167,8 +157,18 @@ public class TunerConstants {
   private static final boolean kFrontLeftSteerMotorInverted = true;
   private static final boolean kFrontLeftEncoderInverted = false;
 
-  //   private static final Distance kFrontLeftXPos = Inches.of(12.125);
-  //   private static final Distance kFrontLeftYPos = Inches.of(12.125);
+  private static final Distance kFrontLeftXPos = Inches.of(12.125);
+  private static final Distance kFrontLeftYPos = Inches.of(12.125);
+
+  public static final Distance wheelbaseCircle =
+      Meters.of(
+          new Translation2d(kFrontLeftXPos.baseUnitMagnitude(), kFrontLeftYPos.baseUnitMagnitude())
+                  .getNorm()
+              * 2
+              * Math.PI);
+  public static final AngularVelocity kAngularSpeedAt12Volts =
+      RotationsPerSecond.of(
+          kSpeedAt12Volts.baseUnitMagnitude() / wheelbaseCircle.baseUnitMagnitude());
 
   // Front Right
   private static final int kFrontRightDriveMotorId = 1;
