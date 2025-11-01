@@ -26,4 +26,8 @@ public interface ClimberIO {
   default boolean checkClimbMotorStalled() {
     return false;
   }
+
+  default boolean getLimitSwitch() {
+    return false;
+  }
 }
