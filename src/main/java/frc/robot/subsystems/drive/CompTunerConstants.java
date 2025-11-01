@@ -62,7 +62,7 @@ public class CompTunerConstants {
 
   public static final double kDriveGearRatio = (50 * 19 * 45) / (14 * 25 * 15);
   private static final double kSteerGearRatio = 21.428571428571427;
-  private static final Distance kWheelRadius = Inches.of(1.884);
+  private static final Distance kWheelRadius = Inches.of(1.924);
 
   private static final AngularVelocity driveMaxSpeedCalculatedRPS =
       Rotations.of((12 - driveGains.kS) / driveGains.kV).per(Second);
