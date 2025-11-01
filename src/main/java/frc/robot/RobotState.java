@@ -480,6 +480,29 @@ public class RobotState extends MagicVirtualSubsystem {
         || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
   }
 
+  @AutoLogOutput(key = "RobotState/Safe to Raise?")
+  public boolean isSafeToRaise() {
+    // imaginary position of end effector if extended as far as possible
+    Pose2d clearancePose =
+        getGlobalPose()
+            .plus(
+                new Transform2d(
+                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                    Rotation2d.kZero));
+    double distanceToLeft =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().leftPole.getPose())
+            .getTranslation()
+            .getNorm();
+    double distanceToRight =
+        clearancePose
+            .minus(FieldUtils.getClosestReef().rightPole.getPose())
+            .getTranslation()
+            .getNorm();
+    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
+        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS);
+  }
+
   public static final double LOOKBACK_TIME = 1.0;
 
   // State of robot.

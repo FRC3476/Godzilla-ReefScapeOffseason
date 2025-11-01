@@ -227,7 +227,7 @@ public class DriverControls {
                     .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
                     .asProxy(),
                 () ->
-                    !robotState.isSafeToStow()
+                    !robotState.isSafeToRaise()
                         && claw.isCoralInClaw()
                         && (robotState.getSuperstructureScoreAimState()
                                 == SuperstructureState.L4_AIM
