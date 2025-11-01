@@ -219,10 +219,20 @@ public class DriverControls {
     controller
         .y()
         .onTrue(
-            superstructure
-                .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
-                .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
-                .asProxy());
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                superstructure
+                    .setStateCommand(
+                        () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                    .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
+                    .asProxy(),
+                () ->
+                    !robotState.isSafeToStow()
+                        && claw.isCoralInClaw()
+                        && (robotState.getSuperstructureScoreAimState()
+                                == SuperstructureState.L4_AIM
+                            || robotState.getSuperstructureScoreAimState()
+                                == SuperstructureState.L3_AIM)));
 
     scoreCommandNoRumble =
         Commands.sequence(
