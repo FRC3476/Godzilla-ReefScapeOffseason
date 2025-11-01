@@ -699,9 +699,8 @@ public final class Constants {
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
             32); // distance from the center of the robot to the end of the end effector
-    public static final double MIN_STOW_CLEARANCE_METERS =
-        Units.inchesToMeters(
-            0); // area around that point that would hit something on the end effector
+    public static final double END_EFFECTOR_POLES_CLEARANCE_METERS =
+        Units.inchesToMeters(4);
   }
 
   // ====================Climb (6_)====================

@@ -456,52 +456,53 @@ public class RobotState extends MagicVirtualSubsystem {
     hasAlgae = input;
   }
 
+  @AutoLogOutput(key = "RobotState/Clears Reef?")
+  public boolean endEffectorClearsReef() {
+    Pose2d endEffectorPose =
+    getGlobalPose()
+        .plus(
+            new Transform2d(
+                new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
+                Rotation2d.kZero));
+double endEffectorToLeft =
+    endEffectorPose
+        .minus(FieldUtils.getClosestReef().leftPole.getPose())
+        .getTranslation()
+        .getNorm();
+double endEffectorToRight =
+    endEffectorPose
+        .minus(FieldUtils.getClosestReef().rightPole.getPose())
+        .getTranslation()
+        .getNorm();
+
+  Pose2d reefFace = FieldUtils.getClosestReef().getPose();
+
+  Translation2d reefFaceToRobot = getGlobalPose().minus(reefFace).getTranslation();
+
+  Translation2d reefFaceToEndEffector = endEffectorPose.minus(reefFace).getTranslation();
+  Translation2d outFromReefFace = new Translation2d(reefFace.getRotation().getCos(), reefFace.getRotation().getSin());
+
+  double reefToRobotDotProduct = MathHelpers.dotProduct(reefFaceToRobot, outFromReefFace);
+  double reefToEndEffectorDotProduct = MathHelpers.dotProduct(reefFaceToEndEffector, outFromReefFace);
+  boolean endEffectorIntersectsReef = reefToRobotDotProduct * reefToEndEffectorDotProduct < 0;
+
+  boolean endEffectorClearsPoles = endEffectorToLeft < EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS && endEffectorToRight < EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS;
+
+  return !endEffectorIntersectsReef && endEffectorClearsPoles;
+
+  }
+
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
   public boolean isSafeToStow() {
-    // imaginary position of end effector if extended as far as possible
-    Pose2d clearancePose =
-        getGlobalPose()
-            .plus(
-                new Transform2d(
-                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
-                    Rotation2d.kZero));
-    double distanceToLeft =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().leftPole.getPose())
-            .getTranslation()
-            .getNorm();
-    double distanceToRight =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().rightPole.getPose())
-            .getTranslation()
-            .getNorm();
-    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
-            && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS)
+    return endEffectorClearsReef()
         || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Raise?")
   public boolean isSafeToRaise() {
-    // imaginary position of end effector if extended as far as possible
-    Pose2d clearancePose =
-        getGlobalPose()
-            .plus(
-                new Transform2d(
-                    new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
-                    Rotation2d.kZero));
-    double distanceToLeft =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().leftPole.getPose())
-            .getTranslation()
-            .getNorm();
-    double distanceToRight =
-        clearancePose
-            .minus(FieldUtils.getClosestReef().rightPole.getPose())
-            .getTranslation()
-            .getNorm();
-    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
-        && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS);
+    return endEffectorClearsReef();
   }
+
 
   public static final double LOOKBACK_TIME = 1.0;
 
