@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2099150333457755,
-        "y": 2.0306682812459074
+        "x": 3.609276713518822,
+        "y": 2.3959590025950925
       },
       "isLocked": false,
       "linkedName": "RR2E"
     },
     {
       "anchor": {
-        "x": 3.7730860049632615,
-        "y": 2.4901759270784747
+        "x": 3.81652397260274,
+        "y": 2.4022260273972598
       },
       "prevControl": {
-        "x": 2.8908622078624964,
-        "y": 1.7253798998679586
+        "x": 1.8504737934210909,
+        "y": 0.8392522079150244
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.8529411764705884,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
