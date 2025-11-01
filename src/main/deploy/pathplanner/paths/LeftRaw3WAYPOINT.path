@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.6124697903510996,
-        "y": 5.2279033233353065
+        "x": 3.425856164383562,
+        "y": 5.482491438356164
       },
       "prevControl": {
-        "x": 3.0696645133293523,
-        "y": 5.796928765732186
+        "x": 2.8830508873618146,
+        "y": 6.051516880753044
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LRaw3E"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0.5,
     "rotation": 119.99999999999999
   },
   "reversed": false,

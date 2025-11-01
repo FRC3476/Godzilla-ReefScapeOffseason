@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.098758669451437,
-        "y": 5.384297056196224
+        "x": 5.24396404109589,
+        "y": 5.662799657534247
       },
       "prevControl": {
-        "x": 5.737963525844065,
-        "y": 5.90130210580531
+        "x": 5.883168897488519,
+        "y": 6.179804707143333
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LRAW1END"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0.5,
     "rotation": 59.99999999999999
   },
   "reversed": false,
