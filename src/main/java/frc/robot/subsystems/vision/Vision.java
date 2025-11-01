@@ -577,7 +577,8 @@ public class Vision extends SubsystemBase {
 
   private void processCoralDetections() {
     if (io.getAllCoralTNCs().isPresent()) {
-      ArrayList<Pair<Double, Double>> allCoralTNCs = io.getAllCoralTNCs().get();
+      ArrayList<Pair<Double, Double>> allCoralTNCs =
+          io.getAllCoralTNCs().orElseGet(() -> new ArrayList<>()); // io.getAllCoralTNCs().get();
       ArrayList<Pose2d> coralPoses = new ArrayList<>();
       for (Pair<Double, Double> coralTNC : allCoralTNCs) {
         coralPoses.add(calculateCoralPose(coralTNC));
