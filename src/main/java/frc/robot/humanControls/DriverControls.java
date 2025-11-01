@@ -23,7 +23,9 @@ import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -41,6 +43,8 @@ public class DriverControls {
   private final CommandXboxController controller;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;
+  private final Elevator elevator;
+  private final EndEffector endEffector;
 
   public DriverControls(
       RobotContainer container, CommandXboxController controller, RobotState robotState) {
@@ -52,6 +56,8 @@ public class DriverControls {
     intake = container.getIntake();
     claw = container.getClaw();
     climbRoller = container.getClimbRoller();
+    elevator = container.getElevator();
+    endEffector = container.getEndEffector();
     configureXboxBindings();
   }
 
