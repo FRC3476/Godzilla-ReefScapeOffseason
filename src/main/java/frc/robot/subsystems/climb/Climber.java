@@ -1,9 +1,11 @@
 package frc.robot.subsystems.climb;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
@@ -32,6 +34,8 @@ public class Climber extends SubsystemBase {
 
   public static LimitSwitchState limitSwitchState = LimitSwitchState.NONE;
 
+  private static double latchedTimestamp = 0.0;
+
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
       new LoggedTunableNumber("Climber/DeployVolts", 1);
@@ -49,8 +53,18 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
+    if (Timer.getFPGATimestamp() - latchedTimestamp
+            > Constants.ClimbConstants.CLIMB_LATCHED_RESET_SECONDS
+        && limitSwitchState == LimitSwitchState.LATCHED) {
+      if (io.getLimitSwitch()) {
+        setLimitSwitchState(LimitSwitchState.LATCHING);
+      } else {
+        setLimitSwitchState(LimitSwitchState.NONE);
+      }
+    }
     Logger.processInputs("Climber", inputs);
     Logger.recordOutput("Climber/ClimbState", climbState);
+    Logger.recordOutput("Climber/LimitSwitchState", limitSwitchState);
     Logger.recordOutput(
         "Climber/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
@@ -77,6 +91,9 @@ public class Climber extends SubsystemBase {
 
   public static void setLimitSwitchState(LimitSwitchState state) {
     limitSwitchState = state;
+    if (state == LimitSwitchState.LATCHED) {
+      latchedTimestamp = Timer.getFPGATimestamp();
+    }
   }
 
   public Command climbVoltOut() {

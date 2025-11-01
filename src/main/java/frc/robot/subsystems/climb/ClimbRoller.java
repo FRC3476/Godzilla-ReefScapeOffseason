@@ -73,6 +73,8 @@ public class ClimbRoller extends SubsystemBase {
   }
 
   public boolean hasCage() {
-    return Climber.limitSwitchState == LimitSwitchState.LATCHED && climbing;
+    return Climber.limitSwitchState == LimitSwitchState.LATCHED
+        && climbing
+        && io.checkRollerStalled();
   }
 }
