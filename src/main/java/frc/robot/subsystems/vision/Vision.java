@@ -97,7 +97,7 @@ public class Vision extends SubsystemBase {
     Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
     Pose2d poseB = b.getVisionRobotPoseMeters();
 
-    // Inverse‑variance weighting
+    // Inverse variance weighting
     var varianceA = a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
     var varianceB = b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
 
@@ -366,7 +366,7 @@ public class Vision extends SubsystemBase {
       return Optional.empty();
     }
 
-    // Reject if the robot is yawing rapidly (time‑sync unreliable)
+    // Reject if the robot is yawing rapidly (time sync unreliable)
     final double kHighYawLookbackS = 0.3;
     final double kHighYawVelocityRadS = 5.0;
 
@@ -453,7 +453,7 @@ public class Vision extends SubsystemBase {
       return Optional.empty();
     }
 
-    // Single‑tag extra checks
+    // Single tag extra checks
     if (poseEstimate.fiducialIds().length < 2 && poseEstimate.fiducialIds().length > 1) {
       for (var fiducial : cam.fiducialObservations) {
         if (fiducial.ambiguity() > VisionConstants.kDefaultAmbiguityThreshold) {
@@ -507,7 +507,7 @@ public class Vision extends SubsystemBase {
     //   return Optional.empty();
     // }
 
-    // Exclusive‑tag filtering
+    // Exclusive tag filtering
     // var exclusiveTag = state.getExclusiveTag();
     // boolean hasExclusiveId =
     //     exclusiveTag.isPresent()
