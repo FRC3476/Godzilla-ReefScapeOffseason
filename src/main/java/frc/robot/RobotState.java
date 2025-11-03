@@ -456,28 +456,62 @@ public class RobotState extends MagicVirtualSubsystem {
     hasAlgae = input;
   }
 
-  @AutoLogOutput(key = "RobotState/Safe to Stow?")
-  public boolean isSafeToStow() {
-    // imaginary position of end effector if extended as far as possible
-    Pose2d clearancePose =
+  @AutoLogOutput(key = "RobotState/Clears Reef?")
+  public boolean endEffectorClearsReef() {
+    Pose2d endEffectorPose =
         getGlobalPose()
             .plus(
                 new Transform2d(
                     new Translation2d(-EndEffectorConstants.FULLY_EXTENDED_DISTANCE_METERS, 0.0),
                     Rotation2d.kZero));
-    double distanceToLeft =
-        clearancePose
+    Logger.recordOutput("RobotState/Reef Clearance/EEPose", endEffectorPose);
+    double endEffectorToLeft =
+        endEffectorPose
             .minus(FieldUtils.getClosestReef().leftPole.getPose())
             .getTranslation()
             .getNorm();
-    double distanceToRight =
-        clearancePose
+    double endEffectorToRight =
+        endEffectorPose
             .minus(FieldUtils.getClosestReef().rightPole.getPose())
             .getTranslation()
             .getNorm();
-    return (distanceToLeft > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS
-            && distanceToRight > EndEffectorConstants.MIN_STOW_CLEARANCE_METERS)
+
+    Pose2d reefFace = FieldUtils.getClosestReef().getPose();
+
+    Translation2d reefFaceToRobot = getGlobalPose().minus(reefFace).getTranslation();
+    Logger.recordOutput("RobotState/Reef Clearance/reefFaceToRobot", reefFaceToRobot);
+    Translation2d reefFaceToEndEffector = endEffectorPose.minus(reefFace).getTranslation();
+    Logger.recordOutput("RobotState/Reef Clearance/reefFaceToEE", reefFaceToEndEffector);
+    Translation2d outFromReefFace =
+        new Translation2d(reefFace.getRotation().getCos(), reefFace.getRotation().getSin());
+    Logger.recordOutput("RobotState/Reef Clearance/outFromReefFace", outFromReefFace);
+
+    double reefToRobotDotProduct = MathHelpers.dotProduct(reefFaceToRobot, outFromReefFace);
+    Logger.recordOutput("RobotState/Reef Clearance/ReefToRobotDot", reefToRobotDotProduct);
+    double reefToEndEffectorDotProduct =
+        MathHelpers.dotProduct(reefFaceToEndEffector, outFromReefFace);
+    Logger.recordOutput(
+        "RobotState/Reef Clearance/ReefToEndEffectorDot", reefToEndEffectorDotProduct);
+    boolean endEffectorIntersectsReef = reefToRobotDotProduct * reefToEndEffectorDotProduct < 0;
+    Logger.recordOutput("RobotState/Reef Clearance/EEIntersectsReef", endEffectorIntersectsReef);
+
+    boolean endEffectorClearsPoles =
+        endEffectorToLeft > EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS
+            && endEffectorToRight > EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS;
+    Logger.recordOutput("RobotState/Reef Clearance/EEClearsPoles", endEffectorClearsPoles);
+
+    return !endEffectorIntersectsReef && endEffectorClearsPoles;
+  }
+
+  @AutoLogOutput(key = "RobotState/Safe to Stow?")
+  public boolean isSafeToStow() {
+    return endEffectorClearsReef()
         || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
+  }
+
+  @AutoLogOutput(key = "RobotState/Safe to Raise?")
+  public boolean isSafeToRaise() {
+    return endEffectorClearsReef();
   }
 
   public static final double LOOKBACK_TIME = 1.0;

@@ -42,10 +42,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw1E"
+                  "pathName": "LeftRaw1WAYPOINT"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -172,10 +178,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw3E"
+                  "pathName": "LeftRaw3WAYPOINT"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -302,10 +314,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw5E"
+                  "pathName": "LeftRaw5WAYPOINT"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {

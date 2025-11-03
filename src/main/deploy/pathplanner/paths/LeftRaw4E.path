@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5914399426093904,
-        "y": 5.2374685302263515
+        "x": 3.6124697903510996,
+        "y": 5.2279033233353065
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3870556055684338,
-        "y": 6.4493942108991416
+        "x": 2.408085453310143,
+        "y": 6.4398290040080965
       },
       "isLocked": false,
       "linkedName": "LRaw3E"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.75,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

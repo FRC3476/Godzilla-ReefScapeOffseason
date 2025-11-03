@@ -9,15 +9,18 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.util.MotorStallDetection;
 import frc.robot.util.PhoenixUtil;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ClimberIOReal implements ClimberIO {
 
   // Hardware
   protected final TalonFX talon;
+  protected final DigitalInput limitSwitch;
 
   // Status Signals
   private final StatusSignal<Angle> position;
@@ -34,6 +37,7 @@ public class ClimberIOReal implements ClimberIO {
 
   public ClimberIOReal() {
     talon = new TalonFX(Constants.ClimbConstants.ID, Constants.DRIVE_CANIVORE);
+    limitSwitch = new DigitalInput(Constants.ClimbConstants.LIMIT_SWITCH_PIN);
 
     PhoenixUtil.tryUntilOk(
         5, () -> talon.getConfigurator().apply(Constants.ClimbConstants.CLIMB_TALON_CONFIG));
@@ -85,5 +89,11 @@ public class ClimberIOReal implements ClimberIO {
   @Override
   public void setZero() {
     talon.setPosition(0.0);
+  }
+
+  @AutoLogOutput(key = "Climber/Limit Switch")
+  @Override
+  public boolean getLimitSwitch() {
+    return !limitSwitch.get();
   }
 }

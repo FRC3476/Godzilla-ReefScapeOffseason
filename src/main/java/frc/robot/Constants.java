@@ -173,7 +173,7 @@ public final class Constants {
     public static final double kDrivePitchThresholdRadians = Units.degreesToRadians(10.0);
     public static final double kDriveRollThresholdRadians = Units.degreesToRadians(10.0);
 
-    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63;
+    public static final double AUTO_ALIGN_PERPENDICULAR_OFFSET = 0.63 + 0.05;
     public static final double AUTO_ALIGN_BARGE_FORWARD_PERPENDICULAR_OFFSET = 1.25 - .80;
     public static final double AUTO_ALIGN_BARGE_BACKWARD_PERPENDICULAR_OFFSET = 1.1 - .175;
 
@@ -239,6 +239,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(6.75).withFOVRangeY(6.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
+                    .withMinSignalStrengthForValidMeasurement(30000)
                     .withProximityThreshold(Units.inchesToMeters(4))
                     .withProximityHysteresis(0.006));
 
@@ -674,6 +675,7 @@ public final class Constants {
             .withFovParams(new FovParamsConfigs().withFOVRangeX(12.75).withFOVRangeY(12.75))
             .withProximityParams(
                 new ProximityParamsConfigs()
+                    .withMinSignalStrengthForValidMeasurement(40000)
                     .withProximityThreshold(Units.inchesToMeters(3))
                     .withProximityHysteresis(0.006));
 
@@ -698,10 +700,8 @@ public final class Constants {
     // Reef Collision Avoidance
     public static final double FULLY_EXTENDED_DISTANCE_METERS =
         Units.inchesToMeters(
-            20); // distance from the center of the robot to the end of the end effector
-    public static final double MIN_STOW_CLEARANCE_METERS =
-        Units.inchesToMeters(
-            20); // area around that point that would hit something on the end effector
+            36); // distance from the center of the robot to the end of the end effector
+    public static final double END_EFFECTOR_POLES_CLEARANCE_METERS = Units.inchesToMeters(6);
   }
 
   // ====================Climb (6_)====================
@@ -716,8 +716,8 @@ public final class Constants {
     public static final double ROLLER_MOI = 0.001;
     public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
-    public static final double CLIMB_DEPLOY_POSITION = 87.5;
-    public static final double CLIMB_CLIMB_POSITION = 215;
+    public static final double CLIMB_DEPLOY_POSITION = 91;
+    public static final double CLIMB_CLIMB_POSITION = 209;
     public static final double CLIMB_DEPLOY_VOLTAGE = 12;
     public static final double CLIMB_CLIMB_VOLTAGE = 12;
     public static final double STALL_AMPS = 1000.0;
@@ -753,6 +753,8 @@ public final class Constants {
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
+    public static final int LIMIT_SWITCH_PIN = 9;
+    public static final double CLIMB_LATCHED_RESET_SECONDS = 0.5;
   }
 
   // ====================LED (8_)====================

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.103050232785084,
-        "y": 5.411041050049874
+        "x": 5.098758669451437,
+        "y": 5.384297056196224
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.6802129768129594,
-        "y": 6.87647951319475
+        "x": 4.675921413479312,
+        "y": 6.8497355193411
       },
       "isLocked": false,
       "linkedName": "LRAW1END"
@@ -20,8 +20,8 @@
         "y": 7.095
       },
       "prevControl": {
-        "x": 3.8617489571976016,
-        "y": 6.355657289450698
+        "x": 2.9600599315068497,
+        "y": 5.437414383561644
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.75,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

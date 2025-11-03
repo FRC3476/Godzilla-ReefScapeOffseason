@@ -1,9 +1,11 @@
 package frc.robot.subsystems.climb;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
@@ -22,7 +24,17 @@ public class Climber extends SubsystemBase {
     CLIMBED
   }
 
+  public enum LimitSwitchState {
+    NONE,
+    LATCHING,
+    LATCHED
+  }
+
   private static ClimbState climbState = ClimbState.STOWED;
+
+  public static LimitSwitchState limitSwitchState = LimitSwitchState.NONE;
+
+  private static double latchedTimestamp = 0.0;
 
   // Tunable numbers for manual testing and gravity compensation
   private static final LoggedTunableNumber climberVolts =
@@ -31,14 +43,28 @@ public class Climber extends SubsystemBase {
   public Climber(ClimberIO io) {
     this.io = io;
     io.setZero();
+    limitSwitchLatching()
+        .onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHING)));
+    limitSwitchLatched()
+        .onTrue(Commands.runOnce(() -> setLimitSwitchState(LimitSwitchState.LATCHED)));
   }
 
   @Override
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
+    if (Timer.getFPGATimestamp() - latchedTimestamp
+            > Constants.ClimbConstants.CLIMB_LATCHED_RESET_SECONDS
+        && limitSwitchState == LimitSwitchState.LATCHED) {
+      if (io.getLimitSwitch()) {
+        setLimitSwitchState(LimitSwitchState.LATCHING);
+      } else {
+        setLimitSwitchState(LimitSwitchState.NONE);
+      }
+    }
     Logger.processInputs("Climber", inputs);
     Logger.recordOutput("Climber/ClimbState", climbState);
+    Logger.recordOutput("Climber/LimitSwitchState", limitSwitchState);
     Logger.recordOutput(
         "Climber/currentCommand",
         (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
@@ -61,6 +87,13 @@ public class Climber extends SubsystemBase {
 
   public static ClimbState getClimbState() {
     return climbState;
+  }
+
+  public static void setLimitSwitchState(LimitSwitchState state) {
+    limitSwitchState = state;
+    if (state == LimitSwitchState.LATCHED) {
+      latchedTimestamp = Timer.getFPGATimestamp();
+    }
   }
 
   public Command climbVoltOut() {
@@ -115,5 +148,21 @@ public class Climber extends SubsystemBase {
 
   public Trigger climbFinished() {
     return new Trigger(() -> this.io.checkClimbMotorStalled());
+  }
+
+  public Trigger limitSwitchLatching() {
+    return new Trigger(
+        () ->
+            limitSwitchState == LimitSwitchState.NONE
+                && io.getLimitSwitch()
+                && climbState != ClimbState.STOWED);
+  }
+
+  public Trigger limitSwitchLatched() {
+    return new Trigger(
+        () ->
+            limitSwitchState == LimitSwitchState.LATCHING
+                && !io.getLimitSwitch()
+                && climbState != ClimbState.STOWED);
   }
 }

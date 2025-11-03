@@ -42,10 +42,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw1E"
+                  "pathName": "RIghtRaw1WAYPOINT"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -73,7 +79,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw2E"
+                  "pathName": "RightRaw2"
                 }
               }
             ]
@@ -102,13 +108,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     },
                     {
@@ -120,13 +126,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     },
                     {
@@ -138,13 +144,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     }
                   ]
@@ -164,18 +170,24 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "RightRaw3WAYPOINT"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "AimL4"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftRaw3E"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalLeftPoleAlign"
           }
         },
         {
@@ -203,7 +215,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw4E"
+                  "pathName": "RightRaw4"
                 }
               }
             ]
@@ -232,13 +244,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     },
                     {
@@ -250,13 +262,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     },
                     {
@@ -268,13 +280,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw3R"
+                        "pathName": "RightRaw3R"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "LeftRaw4R"
+                        "pathName": "RightRaw4R"
                       }
                     }
                   ]
@@ -294,18 +306,24 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "RightRaw5WAYPOINT"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "AimL4"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftRaw5E"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FinalRightPoleAlign"
           }
         },
         {
@@ -321,7 +339,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftRaw6E"
+                  "pathName": "RightRaw6"
                 }
               },
               {
@@ -334,6 +352,99 @@
                 "type": "named",
                 "data": {
                   "name": "IntakeEnable"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IsCoralInRobot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.2
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw3R"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw4R"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.2
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw3R"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw4R"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.2
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw3R"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "RightRaw4R"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IsCoralInEndEffector"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightRaw7nocoral"
                 }
               }
             ]

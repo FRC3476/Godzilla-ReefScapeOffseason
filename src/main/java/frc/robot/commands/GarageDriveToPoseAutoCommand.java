@@ -25,15 +25,15 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-public class GarageDriveToPoseCommand extends Command {
+public class GarageDriveToPoseAutoCommand extends Command {
   private final ProfiledPIDController distanceController =
       new ProfiledPIDController(
           DriveConstants.DRIVE_TO_POSE_KP,
           DriveConstants.DRIVE_TO_POSE_KI,
           DriveConstants.DRIVE_TO_POSE_KD,
           new TrapezoidProfile.Constraints(
-              (Constants.DriveConstants.kDriveMaxSpeed / 2),
-              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared / 2));
+              (Constants.DriveConstants.kDriveMaxSpeed),
+              Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared));
   private final ProfiledPIDController angleController =
       new ProfiledPIDController(
           DriveConstants.ANGLE_KP,
@@ -57,7 +57,8 @@ public class GarageDriveToPoseCommand extends Command {
 
   public Command ledRainbow;
 
-  public GarageDriveToPoseCommand(RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
+  public GarageDriveToPoseAutoCommand(
+      RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
     drive = container.getDrive();
     addRequirements(drive);
     led = container.getLed();
@@ -70,7 +71,7 @@ public class GarageDriveToPoseCommand extends Command {
     return new Trigger(() -> distanceController.atSetpoint() && angleController.atSetpoint());
   }
 
-  public GarageDriveToPoseCommand withJoystickRumble(Command rumbleCommand) {
+  public GarageDriveToPoseAutoCommand withJoystickRumble(Command rumbleCommand) {
     atSetpoint().onTrue(Commands.deferredProxy(() -> rumbleCommand));
 
     return this;
@@ -170,6 +171,16 @@ public class GarageDriveToPoseCommand extends Command {
     angleController.reset(0);
     led.setLedState(DEFAULT_LED_STATE.NONE);
     RobotState.setReadyToScore(false);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return RobotState.getSuperstructureState().isCoralScoringState()
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || (drive.isRobotStable()
+                && distanceController.atSetpoint()
+                && angleController.atSetpoint()));
   }
 
   // public Trigger canShoot(

@@ -3,6 +3,7 @@ package frc.robot.humanControls;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -23,7 +24,9 @@ import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -41,6 +44,10 @@ public class DriverControls {
   private final CommandXboxController controller;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;
+  private final Elevator elevator;
+  private final EndEffector endEffector;
+  private Command scoreCommand;
+  private Command scoreCommandNoRumble;
 
   public DriverControls(
       RobotContainer container, CommandXboxController controller, RobotState robotState) {
@@ -52,6 +59,8 @@ public class DriverControls {
     intake = container.getIntake();
     claw = container.getClaw();
     climbRoller = container.getClimbRoller();
+    elevator = container.getElevator();
+    endEffector = container.getEndEffector();
     configureXboxBindings();
   }
 
@@ -158,10 +167,16 @@ public class DriverControls {
     controller
         .povLeft()
         .onTrue(
-            Commands.either(
-                superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae"),
-                superstructure.setStateCommand(SuperstructureState.STOW, "Stow"),
-                () -> RobotState.hasAlgae()));
+            Commands.parallel(
+                Commands.either(
+                    superstructure.setStateCommand(SuperstructureState.STOW_ALGAE, "Stow Algae"),
+                    superstructure.setStateCommand(SuperstructureState.STOW, "Stow"),
+                    () -> RobotState.hasAlgae()),
+                Commands.runOnce(
+                    () -> {
+                      scoreCommand.cancel();
+                      scoreCommandNoRumble.cancel();
+                    })));
 
     // Intake Stow
     controller
@@ -204,17 +219,61 @@ public class DriverControls {
     controller
         .y()
         .onTrue(
+            Commands.either(
+                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+                superstructure
+                    .setStateCommand(
+                        () -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
+                    .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
+                    .asProxy(),
+                () ->
+                    !robotState.isSafeToRaise()
+                        && claw.isCoralInClaw()
+                        && (robotState.getSuperstructureScoreAimState()
+                                == SuperstructureState.L4_AIM
+                            || robotState.getSuperstructureScoreAimState()
+                                == SuperstructureState.L3_AIM)));
+
+    scoreCommandNoRumble =
+        Commands.sequence(
+            new ConditionalCommand(
+                new ConditionalCommand(
+                    claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
+                    claw.setClawStateCommand(ClawState.SCORING).asProxy(),
+                    () -> robotState.isL1Mode()),
+                claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
+                () ->
+                    RobotState.getSuperstructureState() != null
+                        && RobotState.getSuperstructureState().isCoralState()),
+            new ConditionalCommand(
+                new WaitUntilCommand(
+                        () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
+                    .withTimeout(3),
+                new WaitCommand(0.3),
+                () -> RobotState.getSuperstructureState().isCoralState()),
             superstructure
-                .setStateCommand(() -> robotState.getSuperstructureScoreAimState(), "Aim Scoring")
-                .onlyIf(() -> claw.isCoralInClaw() || RobotState.hasAlgae())
+                .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
+                .asProxy(),
+            Commands.either(
+                claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
+                claw.setClawStateCommand(ClawState.IDLE).asProxy(),
+                () -> CoralStateTracker.hasCoral()),
+            new ConditionalCommand(
+                    new WaitUntilCommand(() -> robotState.isSafeToStow())
+                        .andThen(
+                            new ConditionalCommand(
+                                    superstructure.setStateCommand(
+                                        SuperstructureState.STOW, "STOW"),
+                                    Commands.none(),
+                                    () ->
+                                        RobotState.getSuperstructureTargetState().isFadeawayState())
+                                .asProxy()),
+                    Commands.none(),
+                    () -> RobotState.getSuperstructureState().isCoralState())
                 .asProxy());
 
-    // Manual spit out game piece
-    controller
-        .rightTrigger(0.2) // check
-        .and(new Trigger(() -> RobotState.isReadyToScore()))
-        .and(controller.a())
-        .onTrue(
+    scoreCommand =
+        Commands.either(
             Commands.sequence(
                 new ConditionalCommand(
                     new ConditionalCommand(
@@ -229,7 +288,7 @@ public class DriverControls {
                     new WaitUntilCommand(
                             () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
                         .withTimeout(3),
-                    new WaitCommand(0.5),
+                    new WaitCommand(0.3),
                     () -> RobotState.getSuperstructureState().isCoralState()),
                 superstructure
                     .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
@@ -251,61 +310,28 @@ public class DriverControls {
                                     .asProxy()),
                         Commands.none(),
                         () -> RobotState.getSuperstructureState().isCoralState())
-                    .asProxy()));
+                    .asProxy()),
+            new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
+            () ->
+                (drive.isRobotStable()
+                        && RobotState.getSuperstructureState()
+                            == RobotState.getSuperstructureTargetState()
+                        && RobotState.getSuperstructureTargetState() == SuperstructureState.L4_AIM)
+                    || (RobotState.getSuperstructureTargetState().isScoringState()
+                        && RobotState.getSuperstructureTargetState() != SuperstructureState.L4_AIM)
+                    || RobotState.getSuperstructureTargetState().isAlgaeScoringState());
+
+    // Manual spit out game piece
+    controller
+        .rightTrigger(0.2) // check
+        .and(new Trigger(() -> RobotState.isReadyToScore() || RobotState.hasAlgae()))
+        .and(controller.a())
+        .onTrue(scoreCommandNoRumble);
 
     controller
         .rightTrigger(0.2) // check
         // .and(new Trigger(() -> RobotState.isReadyToScore()))
         .and(controller.a().negate())
-        .onTrue(
-            Commands.either(
-                Commands.sequence(
-                    new ConditionalCommand(
-                        new ConditionalCommand(
-                            claw.setClawStateCommand(ClawState.SCORING_L1).asProxy(),
-                            claw.setClawStateCommand(ClawState.SCORING).asProxy(),
-                            () -> robotState.isL1Mode()),
-                        claw.setClawStateCommand(ClawState.SCORING_ALGAE).asProxy(),
-                        () ->
-                            RobotState.getSuperstructureState() != null
-                                && RobotState.getSuperstructureState().isCoralState()),
-                    new ConditionalCommand(
-                        new WaitUntilCommand(
-                                () -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE)
-                            .withTimeout(3),
-                        new WaitCommand(0.5),
-                        () -> RobotState.getSuperstructureState().isCoralState()),
-                    superstructure
-                        .setStateCommand(() -> robotState.getFadeawayState(), "Aim fade")
-                        .asProxy(),
-                    Commands.either(
-                        claw.setClawStateCommand(ClawState.INTAKING_CORAL).asProxy(),
-                        claw.setClawStateCommand(ClawState.IDLE).asProxy(),
-                        () -> CoralStateTracker.hasCoral()),
-                    new ConditionalCommand(
-                            new WaitUntilCommand(() -> robotState.isSafeToStow())
-                                .andThen(
-                                    new ConditionalCommand(
-                                            superstructure.setStateCommand(
-                                                SuperstructureState.STOW, "STOW"),
-                                            Commands.none(),
-                                            () ->
-                                                RobotState.getSuperstructureTargetState()
-                                                    .isFadeawayState())
-                                        .asProxy()),
-                            Commands.none(),
-                            () -> RobotState.getSuperstructureState().isCoralState())
-                        .asProxy()),
-                new Rumble(controller, 0.25, 0.5, RumbleType.kBothRumble),
-                () ->
-                    (drive.isRobotStable()
-                            && RobotState.getSuperstructureState()
-                                == RobotState.getSuperstructureTargetState()
-                            && RobotState.getSuperstructureTargetState()
-                                == SuperstructureState.L4_AIM)
-                        || (RobotState.getSuperstructureTargetState().isScoringState()
-                            && RobotState.getSuperstructureTargetState()
-                                != SuperstructureState.L4_AIM)
-                        || RobotState.getSuperstructureTargetState().isAlgaeScoringState()));
+        .onTrue(scoreCommand);
   }
 }

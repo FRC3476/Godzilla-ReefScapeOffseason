@@ -11,7 +11,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveToCoralCommand;
-import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.GarageDriveToPoseAutoCommand;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
@@ -53,23 +53,23 @@ public class NamedCommandsSetup {
 
     NamedCommands.registerCommand(
         "FinalLeftPoleAlign",
-        new GarageDriveToPoseCommand(
+        new GarageDriveToPoseAutoCommand(
                 container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-            .withTimeout(2.0)); // Gets X seconds to perform action
+            .withTimeout(3.0)); // Gets X seconds to perform action
 
     NamedCommands.registerCommand(
         "FinalRightPoleAlign",
-        new GarageDriveToPoseCommand(
+        new GarageDriveToPoseAutoCommand(
                 container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
-            .withTimeout(2.0));
+            .withTimeout(3.0));
 
     NamedCommands.registerCommand(
         "ConfirmScore", new Score(superstructure, claw, robotState, container));
