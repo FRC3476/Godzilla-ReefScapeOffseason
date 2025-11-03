@@ -1,4 +1,4 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 public interface CanCoderIO {
     void readInputs(CanCoderInputs inputs);

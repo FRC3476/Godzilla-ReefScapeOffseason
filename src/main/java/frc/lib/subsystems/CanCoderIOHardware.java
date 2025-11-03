@@ -1,12 +1,12 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.team254.lib.util.CANStatusLogger;
-import com.team254.lib.util.CTREUtil;
+import frc.lib.util.CANStatusLogger;
+import frc.lib.util.CTREUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 

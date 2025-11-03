@@ -1,9 +1,9 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.team254.lib.drivers.CANDeviceId;
+import frc.lib.drivers.CANDeviceId;
 
 public interface MotorIO {
     void readInputs(MotorInputs inputs);

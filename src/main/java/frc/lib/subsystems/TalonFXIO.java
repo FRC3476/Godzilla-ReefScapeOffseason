@@ -1,4 +1,4 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;

@@ -1,9 +1,9 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.team254.lib.time.RobotTime;
-import com.team254.lib.util.Util;
+import frc.lib.time.RobotTime;
+import frc.lib.util.Util;
 import edu.wpi.first.wpilibj2.command.*;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;

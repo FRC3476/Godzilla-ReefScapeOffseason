@@ -1,7 +1,7 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.team254.lib.drivers.CANDeviceId;
+import frc.lib.drivers.CANDeviceId;
 
 public class CanCoderConfig {
     public CANDeviceId CANID;

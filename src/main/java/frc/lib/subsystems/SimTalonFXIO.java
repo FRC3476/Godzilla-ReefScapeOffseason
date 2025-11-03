@@ -1,4 +1,4 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.ChassisReference;

@@ -1,4 +1,4 @@
-package com.team254.lib.subsystems;
+package frc.lib.subsystems;
 
 public class ServoMotorSubsystemWithFollowersConfig extends ServoMotorSubsystemConfig {
     public static class FollowerConfig {
