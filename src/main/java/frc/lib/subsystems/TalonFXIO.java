@@ -41,7 +41,7 @@ public class TalonFXIO implements MotorIO {
 
   public TalonFXIO(ServoMotorSubsystemConfig config) {
     this.config = config;
-    talon = new TalonFX(config.talonCANID.getDeviceNumber(), config.talonCANID.getBus());
+    talon = new TalonFX(config.talonCANID.getDeviceNumber(), config.talonCANID.getBusName());
 
     // Current limits and ramp rates do not perform well in sim.
     if (Robot.isSimulation()) {

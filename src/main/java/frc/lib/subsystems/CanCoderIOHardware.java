@@ -22,7 +22,7 @@ public class CanCoderIOHardware implements CanCoderIO {
   public CanCoderIOHardware(CanCoderConfig config) {
     this.config = config;
 
-    canCoder = new CANcoder(config.CANID.getDeviceNumber(), config.CANID.getBus());
+    canCoder = new CANcoder(config.CANID.getDeviceNumber(), config.CANID.getBusName());
 
     CTREUtil.applyConfiguration(canCoder, this.config.config);
     positionSignal = canCoder.getAbsolutePosition();
@@ -37,7 +37,7 @@ public class CanCoderIOHardware implements CanCoderIO {
             "CANcoder_ID" + config.CANID.getDeviceNumber(),
             canCoder,
             config.CANID.getDeviceNumber(),
-            config.CANID.getBus());
+            config.CANID.getBusName());
   }
 
   @Override

@@ -49,7 +49,7 @@ public class CANStatusLogger {
   }
 
   public void registerTalonFX(String name, TalonFX talon, CANDeviceId deviceId) {
-    registerTalonFX(name, talon, deviceId.getDeviceNumber(), deviceId.getBus());
+    registerTalonFX(name, talon, deviceId.getDeviceNumber(), deviceId.getBusName());
   }
 
   public void registerCANcoder(String name, CANcoder cancoder, int deviceId, String canBus) {
