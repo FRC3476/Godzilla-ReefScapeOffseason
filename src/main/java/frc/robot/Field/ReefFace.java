@@ -2,7 +2,7 @@ package frc.robot.Field;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Field.FieldConstants.AprilTagStruct;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 
 public class ReefFace {
   public final AprilTagStruct tag;
@@ -20,6 +20,6 @@ public class ReefFace {
   }
 
   public double getPerpendicularError(Pose2d robotPose) {
-    return PoseUtils.getPerpendicularError(robotPose, tag.pose().toPose2d());
+    return MathHelpers.getPerpendicularError(robotPose, tag.pose().toPose2d());
   }
 }

@@ -28,7 +28,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Controls.ElasticButton.ElasticTab;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -318,7 +318,7 @@ public class ElasticTabs {
     /*new PathfindToPoseCommand(
     drive,
     () ->
-        PoseUtils.getPerpendicularOffsetPose(
+        MathHelpers.getPerpendicularOffsetPose(
             FieldConstants.redReefCD.rightPole.getPose(), 0.65)));*/
 
     // FieldUtils.getClosestReefPole().getPose(), 0.65)));
@@ -337,7 +337,7 @@ public class ElasticTabs {
                     default:
                       targetPose = FieldUtils.getClosestReefPole().getPose();
                   }
-                  return PoseUtils.getPerpendicularOffsetPose(
+                  return MathHelpers.getPerpendicularOffsetPose(
                       targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
                 }));
 

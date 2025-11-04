@@ -21,7 +21,7 @@ import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 
 public class NamedCommandsSetup {
   public NamedCommandsSetup(RobotContainer container, RobotState robotState) {
@@ -56,7 +56,7 @@ public class NamedCommandsSetup {
         new GarageDriveToPoseAutoCommand(
                 container,
                 () ->
-                    PoseUtils.getPerpendicularOffsetPose(
+                    MathHelpers.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
             .withTimeout(3.0)); // Gets X seconds to perform action
@@ -66,7 +66,7 @@ public class NamedCommandsSetup {
         new GarageDriveToPoseAutoCommand(
                 container,
                 () ->
-                    PoseUtils.getPerpendicularOffsetPose(
+                    MathHelpers.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),
                         DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
             .withTimeout(3.0));

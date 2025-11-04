@@ -21,7 +21,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveToCoralCommand extends Command {
@@ -87,7 +87,7 @@ public class DriveToCoralCommand extends Command {
           new Rotation2d(translationalError.getX(), translationalError.getY())
               .plus(Rotation2d.k180deg);
       Pose2d target =
-          PoseUtils.getPerpendicularOffsetPose(
+          MathHelpers.getPerpendicularOffsetPose(
               new Pose2d(targetTranslation, targetRotation),
               DriveConstants.DRIVE_TO_CORAL_PERP_OFFSET_METERS);
 

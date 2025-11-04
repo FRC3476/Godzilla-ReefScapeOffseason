@@ -108,4 +108,73 @@ public class MathHelpers {
         first.getZ() * second.getX() - first.getX() * second.getZ(),
         first.getX() * second.getY() - first.getY() * second.getX());
   }
+
+  public static Pose2d getParallelOffsetPose(Pose2d pose, double offsetMeters) {
+    Translation2d offsetTranslation =
+        pose.getTranslation()
+            .plus(
+                new Translation2d(
+                    // Add 90 degrees to all trig functions
+                    // so it is offset parallel to the face of the tag
+                    -offsetMeters * pose.getRotation().getSin(),
+                    offsetMeters * pose.getRotation().getCos()));
+
+    return new Pose2d(offsetTranslation, pose.getRotation());
+
+    // But this way simpler to reason about & understand
+    // return pose.transformBy(new Transform2d(0, offsetMeters, Rotation2d.kZero));
+
+  }
+
+  public static Pose2d getPerpendicularOffsetPose(Pose2d pose, double perpendicularOffsetMeters) {
+    Translation2d offsetTranslation =
+        pose.getTranslation()
+            .plus(
+                new Translation2d(
+                    perpendicularOffsetMeters * pose.getRotation().getCos(),
+                    perpendicularOffsetMeters * pose.getRotation().getSin()));
+
+    return new Pose2d(offsetTranslation, pose.getRotation());
+
+    // But this way simpler to reason about & understand
+    // return pose.transformBy(new Transform2d(perpendicularOffsetMeters, 0, Rotation2d.kZero));
+
+  }
+
+  public static Pose2d getOffsetPose(
+      Pose2d pose, double parellelOffsetMeters, double perpendicularOffsetMeters) {
+    return getPerpendicularOffsetPose(
+        getParallelOffsetPose(pose, parellelOffsetMeters), perpendicularOffsetMeters);
+  }
+
+  public static Pose2d getOffsetPose(
+      Pose2d pose, double distance, Rotation2d direction) {
+    return pose.transformBy(new Transform2d(distance * direction.getCos(), distance * direction.getSin(), Rotation2d.kZero));
+  }
+
+  /**
+   * @see https://en.wikipedia.org/wiki/Vector_projection#Scalar_projection
+   */
+  public static double getParallelError(Pose2d origin, Pose2d target) {
+    Translation2d originToTarget = origin.minus(target).getTranslation();
+    Rotation2d angleBetween = originToTarget.getAngle();
+    double parallelError = originToTarget.getNorm() * angleBetween.getSin();
+
+    return parallelError;
+
+    // return -origin.minus(target).getY();
+  }
+
+  /**
+   * @see https://en.wikipedia.org/wiki/Vector_projection#Scalar_projection
+   */
+  public static double getPerpendicularError(Pose2d origin, Pose2d target) {
+    Translation2d originToTarget = origin.minus(target).getTranslation();
+    Rotation2d angleBetween = originToTarget.getAngle();
+    double perpendicularError = originToTarget.getNorm() * angleBetween.getCos();
+
+    return perpendicularError;
+
+    // return -origin.minus(target).getX();
+  }
 }

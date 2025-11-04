@@ -27,7 +27,6 @@ import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
-import frc.robot.util.PoseUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -421,7 +420,7 @@ public class RobotState extends MagicVirtualSubsystem {
   public static Trigger humanPlayerShouldThrow() {
     return new Trigger(
         () ->
-            PoseUtils.getPerpendicularError(
+            MathHelpers.getPerpendicularError(
                     RobotState.getGlobalPose(), FieldUtils.getClosestHPSTag().pose().toPose2d())
                 < 0.5);
   }

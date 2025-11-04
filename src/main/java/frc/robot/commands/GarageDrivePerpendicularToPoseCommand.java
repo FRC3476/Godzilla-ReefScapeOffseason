@@ -14,7 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -74,10 +74,10 @@ public class GarageDrivePerpendicularToPoseCommand extends Command {
 
     Rotation2d desiredTheta = targetPose.getRotation().plus(Rotation2d.kPi);
 
-    perpendicularError = PoseUtils.getPerpendicularError(robotPose, targetPose);
+    perpendicularError = MathHelpers.getPerpendicularError(robotPose, targetPose);
     Logger.recordOutput("Commands/" + getName() + "/PerpendicularError", perpendicularError);
 
-    double parallelError = PoseUtils.getParallelError(robotPose, targetPose);
+    double parallelError = MathHelpers.getParallelError(robotPose, targetPose);
     Logger.recordOutput("Commands/" + getName() + "/ParallelError", parallelError);
 
     double thetaError = robotPose.getRotation().minus(desiredTheta).getRadians();

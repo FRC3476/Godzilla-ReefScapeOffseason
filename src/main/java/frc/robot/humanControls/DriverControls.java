@@ -32,7 +32,7 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 import java.util.Set;
 
 public class DriverControls {
@@ -140,7 +140,7 @@ public class DriverControls {
                 new GarageDriveToPoseCommand(
                     container,
                     () ->
-                        PoseUtils.getPerpendicularOffsetPose(
+                        MathHelpers.getPerpendicularOffsetPose(
                             FieldUtils.getChosenReefPole(() -> controller.getLeftX()).getPose(),
                             DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)),
                 () -> RobotState.hasAlgae()));

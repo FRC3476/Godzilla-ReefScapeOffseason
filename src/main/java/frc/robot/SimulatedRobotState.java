@@ -13,7 +13,7 @@ import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.util.MagicVirtualSubsystem;
-import frc.robot.util.PoseUtils;
+import frc.robot.util.MathHelpers;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -89,7 +89,7 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
   public static Trigger humanPlayerShouldThrow() {
     return new Trigger(
         () ->
-            PoseUtils.getPerpendicularError(
+            MathHelpers.getPerpendicularError(
                     SimulatedRobotState.getGlobalPose(),
                     FieldUtils.getClosestHPSTag().pose().toPose2d())
                 < 0.5);
