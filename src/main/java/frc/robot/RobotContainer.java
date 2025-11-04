@@ -13,8 +13,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.subsystems.SimElevator;
+import frc.lib.subsystems.TalonFXIO;
+import frc.robot.Constants.ElevatorConstants.Elevator2Constants;
 import frc.robot.arbitraryTriggers.ArbitraryTriggers;
 import frc.robot.auto.AutoChooserSetup;
 import frc.robot.auto.NamedCommandsSetup;
@@ -35,9 +39,6 @@ import frc.robot.subsystems.drive.DriveIOHardware;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOReal;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.end_effector.ClawIO;
 import frc.robot.subsystems.end_effector.ClawIOReal;
@@ -78,13 +79,14 @@ public class RobotContainer {
   private final Intake intake;
   private final EndEffector endEffector;
   private final Claw claw;
-  private final Elevator elevator;
+  // private final ElevatorOld elevator;
   private final Superstructure superstructure;
   private final Climber climber;
   private final ClimbRoller climbRoller;
   private final Feeder feeder;
   private final Vision vision;
   private final Led led;
+  private final Elevator elevator;
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
       new Consumer<VisionFieldPoseEstimate>() {
@@ -108,6 +110,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    elevator = buildElevator2();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -115,7 +118,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOReal(), feeder);
         endEffector = new EndEffector(new EndEffectorIOReal());
         claw = new Claw(new ClawIOReal() {});
-        elevator = new Elevator(new ElevatorIOReal());
+        // elevator = new ElevatorOld(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
         climbRoller = new ClimbRoller(new ClimbRollerIOReal());
@@ -135,7 +138,7 @@ public class RobotContainer {
         feeder = new Feeder(new FeederIOSim());
         intake = new Intake(new IntakeIOSim(), feeder);
         endEffector = new EndEffector(new EndEffectorIOSim());
-        elevator = new Elevator(new ElevatorIOSim());
+        // elevator = new ElevatorOld(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
@@ -157,7 +160,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {}, feeder);
         endEffector = new EndEffector(new EndEffectorIO() {});
         claw = new Claw(new ClawIO() {});
-        elevator = new Elevator(new ElevatorIO() {});
+        // elevator = new ElevatorOld(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         climbRoller = new ClimbRoller(new ClimbRollerIO() {});
@@ -214,6 +217,26 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooserSetup.getAutonomousCommand();
+  }
+
+  private Elevator buildElevator2() {
+    assert Elevator2Constants.kElevatorConfig.followers.length != 1
+        : "Expected 1 follower for elevator";
+    if (RobotBase.isSimulation()) {
+      SimElevator simElevator =
+          new SimElevator(
+              Elevator2Constants.kElevatorConfig, Elevator2Constants.kSimElevatorConfig);
+      return new Elevator(
+          Elevator2Constants.kElevatorConfig,
+          simElevator.getLeadIO(),
+          simElevator.getFollowerIO(),
+          robotState);
+    }
+    return new Elevator(
+        Elevator2Constants.kElevatorConfig,
+        new TalonFXIO(Elevator2Constants.kElevatorConfig),
+        new TalonFXIO[] {new TalonFXIO(Elevator2Constants.kElevatorConfig.followers[0].config)},
+        robotState);
   }
 
   public Elevator getElevator() {

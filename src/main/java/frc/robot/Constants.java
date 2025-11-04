@@ -33,6 +33,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.lib.drivers.CANDeviceId;
+import frc.lib.subsystems.ServoMotorSubsystemWithFollowersConfig;
+import frc.lib.subsystems.SimElevator;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
@@ -433,6 +436,81 @@ public final class Constants {
 
   // ====================Elevator (4_)====================
   public static class ElevatorConstants {
+    public static class Elevator2Constants {
+      public static MotionMagicConfigs kDefaultElevatorConfig = new MotionMagicConfigs();
+
+      static {
+        kDefaultElevatorConfig.MotionMagicCruiseVelocity = 300;
+        kDefaultElevatorConfig.MotionMagicCruiseVelocity = 3000;
+        kDefaultElevatorConfig.MotionMagicCruiseVelocity = 10000;
+      }
+
+      public static final ServoMotorSubsystemWithFollowersConfig.FollowerConfig
+          kElevatorFollowerConfig = new ServoMotorSubsystemWithFollowersConfig.FollowerConfig();
+
+      static {
+        kElevatorFollowerConfig.config.name = "ElevatorLeft";
+        kElevatorFollowerConfig.config.talonCANID =
+            new CANDeviceId(ElevatorConstants.elevatorLeftID, MISC_CANIVORE);
+        kElevatorFollowerConfig.config.momentOfInertia = 0.04; // TODO: update sim values
+        kElevatorFollowerConfig.config.unitToRotorRatio =
+            ElevatorConstants.kElevatorUnitToRotorRatio;
+        kElevatorFollowerConfig.inverted = true;
+
+        kElevatorFollowerConfig.config.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kElevatorFollowerConfig.config.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kElevatorFollowerConfig.config.fxConfig.CurrentLimits.SupplyCurrentLimit = 70.0;
+      }
+
+      public static final ServoMotorSubsystemWithFollowersConfig kElevatorConfig =
+          new ServoMotorSubsystemWithFollowersConfig();
+
+      static {
+        kElevatorConfig.name = "Elevator";
+        kElevatorConfig.talonCANID =
+            new CANDeviceId(ElevatorConstants.elevatorRightID, MISC_CANIVORE);
+        kElevatorConfig.unitToRotorRatio = ElevatorConstants.kElevatorUnitToRotorRatio;
+
+        kElevatorConfig.fxConfig.Slot0.kG = ElevatorConstants.Tunable_ELEVATOR_kG;
+        kElevatorConfig.fxConfig.Slot0.kS = ElevatorConstants.Tunable_ELEVATOR_kS;
+        kElevatorConfig.fxConfig.Slot0.kP = ElevatorConstants.Tunable_ELEVATOR_kP;
+        kElevatorConfig.fxConfig.Slot0.kI = ElevatorConstants.Tunable_ELEVATOR_kI;
+        kElevatorConfig.fxConfig.Slot0.kD = ElevatorConstants.Tunable_ELEVATOR_kD;
+        kElevatorConfig.fxConfig.Slot0.kV = ElevatorConstants.Tunable_ELEVATOR_kV;
+        kElevatorConfig.fxConfig.Slot0.kA = ElevatorConstants.Tunable_ELEVATOR_kA;
+
+        kElevatorConfig.fxConfig.MotionMagic = kDefaultElevatorConfig;
+        kElevatorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        // software limit switches at min/max positions
+        kElevatorConfig.kMinPositionUnits = ElevatorConstants.MIN_HEIGHT_METERS;
+        kElevatorConfig.kMaxPositionUnits = ElevatorConstants.MAX_HEIGHT_METERS;
+        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+            kElevatorConfig.kMaxPositionUnits / kElevatorConfig.unitToRotorRatio;
+        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+            kElevatorConfig.kMinPositionUnits / kElevatorConfig.unitToRotorRatio;
+
+        kElevatorConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kElevatorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kElevatorConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = 70.0;
+
+        kElevatorConfig.followers =
+            new ServoMotorSubsystemWithFollowersConfig.FollowerConfig[] {kElevatorFollowerConfig};
+      }
+
+      public static final SimElevator.SimElevatorConfig kSimElevatorConfig =
+          new SimElevator.SimElevatorConfig();
+
+      static {
+        kSimElevatorConfig.carriageMass = ElevatorConstants.CARRIAGE_MASS_KG;
+        kSimElevatorConfig.drumRadius = ElevatorConstants.DRUM_RADIUS_METERS;
+        kSimElevatorConfig.gearing = ElevatorConstants.kGearing;
+        kSimElevatorConfig.meterToRotorRatio = ElevatorConstants.kElevatorUnitToRotorRatio;
+      }
+    }
+
     public static final int elevatorRightID = 40;
     public static final int elevatorLeftID = 41;
     public static final int elevatorExtraID = 42;
@@ -442,6 +520,8 @@ public final class Constants {
     public static final double Tunable_ELEVATOR_kD = 0.1;
     public static final double Tunable_ELEVATOR_kG = 0.04;
     public static final double Tunable_ELEVATOR_kS = 0.2;
+    public static final double Tunable_ELEVATOR_kV = 0.0;
+    public static final double Tunable_ELEVATOR_kA = 0.0;
 
     public static final double Tunable_ELEVATOR_Velo = 300;
     public static final double Tunable_ELEVATOR_Accel = 3000;

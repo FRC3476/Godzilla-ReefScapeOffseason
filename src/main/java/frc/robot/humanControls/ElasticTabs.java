@@ -183,21 +183,19 @@ public class ElasticTabs {
 
     tab.addButton("Elevator L2 (When Pressed)")
         .setupOnPressCommand(
-            elevator.setTargetPositionCommand(
-                () -> SuperstructureState.L2_AIM.getElevatorHeight()));
+            elevator.positionSetpointCommand(() -> SuperstructureState.L2_AIM.getElevatorHeight()));
     tab.addButton("Elevator L3 (When Pressed)")
         .setupOnPressCommand(
-            elevator.setTargetPositionCommand(
-                () -> SuperstructureState.L3_AIM.getElevatorHeight()));
+            elevator.positionSetpointCommand(() -> SuperstructureState.L3_AIM.getElevatorHeight()));
     tab.addButton("Elevator L4 (When Pressed)")
         .setupOnPressCommand(
-            elevator.setTargetPositionCommand(
-                () -> SuperstructureState.L4_AIM.getElevatorHeight()));
+            elevator.positionSetpointCommand(() -> SuperstructureState.L4_AIM.getElevatorHeight()));
     tab.addButton("Elevator Down Pos (When Pressed)")
         .setupOnPressCommand(
-            elevator.setTargetPositionCommand(() -> SuperstructureState.STOW.getElevatorHeight()));
+            elevator.positionSetpointCommand(() -> SuperstructureState.STOW.getElevatorHeight()));
     tab.addButton("Zero the Elevator (When Pressed)")
-        .setupOnPressCommandIgnoringDisabled(elevator.manualSetElevatorZero());
+        .setupOnPressCommandIgnoringDisabled(
+            Commands.runOnce(() -> elevator.setCurrentPosition(0)));
   }
 
   private void buildSuperstructureTab() {
