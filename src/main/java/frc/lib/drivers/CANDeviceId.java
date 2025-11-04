@@ -3,28 +3,28 @@ package frc.lib.drivers;
 // todo: String-> CANBus object
 
 public class CANDeviceId {
-    private final int deviceNumber;
-    private final String bus;
+  private final int deviceNumber;
+  private final String bus;
 
-    public CANDeviceId(int deviceNumber, String bus) {
-        this.deviceNumber = deviceNumber;
-        this.bus = bus;
-    }
+  public CANDeviceId(int deviceNumber, String bus) {
+    this.deviceNumber = deviceNumber;
+    this.bus = bus;
+  }
 
-    // Use the default bus name (empty string).
-    public CANDeviceId(int deviceNumber) {
-        this(deviceNumber, "");
-    }
+  // Use the default bus name (empty string).
+  public CANDeviceId(int deviceNumber) {
+    this(deviceNumber, "");
+  }
 
-    public int getDeviceNumber() {
-        return deviceNumber;
-    }
+  public int getDeviceNumber() {
+    return deviceNumber;
+  }
 
-    public String getBus() {
-        return bus;
-    }
+  public String getBus() {
+    return bus;
+  }
 
-    public boolean equals(CANDeviceId other) {
-        return other.deviceNumber == deviceNumber && other.bus == bus;
-    }
+  public boolean equals(CANDeviceId other) {
+    return other.deviceNumber == deviceNumber && other.bus == bus;
+  }
 }

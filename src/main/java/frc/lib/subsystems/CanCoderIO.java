@@ -1,7 +1,7 @@
 package frc.lib.subsystems;
 
 public interface CanCoderIO {
-    void readInputs(CanCoderInputs inputs);
+  void readInputs(CanCoderInputs inputs);
 
-    void updateFrequency(double hz);
+  void updateFrequency(double hz);
 }
