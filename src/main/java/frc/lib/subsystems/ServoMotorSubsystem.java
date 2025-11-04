@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.time.RobotTime;
 import frc.lib.util.Util;
+import frc.robot.util.MotorStallDetection;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -298,6 +299,14 @@ public class ServoMotorSubsystem<T extends MotorInputsAutoLogged, U extends Moto
 
   public void setCurrentPosition(double positionUnits) {
     io.setCurrentPosition(positionUnits);
+  }
+
+  public boolean isMotorStalled(double currentLimitAmps, double velocityLimitUnitsPerSecond) {
+    return MotorStallDetection.isMotorStalled(
+        inputs.currentStatorAmps,
+        inputs.velocityUnitsPerSecond,
+        currentLimitAmps,
+        velocityLimitUnitsPerSecond);
   }
 
   protected Command withoutLimitsTemporarily() {
