@@ -2,12 +2,18 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
+import com.therekrab.autopilot.APConstraints;
+import com.therekrab.autopilot.APProfile;
+import com.therekrab.autopilot.APTarget;
+import com.therekrab.autopilot.Autopilot;
+import com.therekrab.autopilot.Autopilot.APResult;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
@@ -15,34 +21,33 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.therekrabs.autopilot.APConstraints;
-import org.therekrabs.autopilot.APProfile;
-import org.therekrabs.autopilot.APResult;
-import org.therekrabs.autopilot.APTarget;
-import org.therekrabs.autopilot.Autopilot;
 
 /**
- * Command that drives the robot to a target pose using the 3414 AutoPilot library.
+ * Command that drives the robot to a target pose using the original AutoPilot library.
  *
- * <p>This command uses the AutoPilot library for smooth path following with configurable motion
- * constraints, error tolerances, and beeline radius.
+ * <p>Uses TheRekrab's AutoPilot with proper velocity constraints. Applies velocities using
+ * ApplyRobotSpeeds (like GarageDriveToPoseCommand) which is proven to work correctly.
  */
 public class DriveToPoseAutopilotCommand extends Command {
-  // Remove 'static final' to make them instance variables
   private APConstraints constraints;
   private APProfile profile;
   private final Autopilot autopilot;
   private final DriveSubsystem drive;
   private final Supplier<Pose2d> targetPoseSupplier;
 
-  private final FieldCentricFacingAngle facingAngleRequest =
-      new FieldCentricFacingAngle()
+  // Track if we're at target to ensure proper stopping
+  private boolean isAtTarget = false;
+
+  private final ApplyRobotSpeeds robotSpeedsRequest =
+      new ApplyRobotSpeeds()
           .withDriveRequestType(DriveRequestType.Velocity)
-          .withDesaturateWheelSpeeds(true)
-          .withHeadingPID(
-              DriveConstants.AUTOPILOT_HEADING_KP,
-              DriveConstants.AUTOPILOT_HEADING_KI,
-              DriveConstants.AUTOPILOT_HEADING_KD);
+          .withDesaturateWheelSpeeds(true);
+
+  private final PIDController headingController =
+      new PIDController(
+          DriveConstants.AUTOPILOT_HEADING_KP,
+          DriveConstants.AUTOPILOT_HEADING_KI,
+          DriveConstants.AUTOPILOT_HEADING_KD);
 
   /**
    * Creates a new DriveToPoseAutopilotCommand.
@@ -53,18 +58,26 @@ public class DriveToPoseAutopilotCommand extends Command {
   public DriveToPoseAutopilotCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
     this.drive = drive;
     this.targetPoseSupplier = targetPoseSupplier;
-    
-    // Initialize with default values
-    this.constraints = new APConstraints()
-        .withAcceleration(DriveConstants.AUTOPILOT_MAX_ACCELERATION)
-        .withJerk(DriveConstants.AUTOPILOT_MAX_JERK);
-    
-    this.profile = new APProfile(constraints)
-        .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
-        .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
-        .withBeelineRadius(Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
-    
+
+    // Initialize AutoPilot with ALL constraints including velocity
+    this.constraints =
+        new APConstraints()
+            .withVelocity(DriveConstants.kDriveMaxSpeed) // CRITICAL: Set max velocity!
+            .withAcceleration(DriveConstants.AUTOPILOT_MAX_ACCELERATION)
+            .withJerk(DriveConstants.AUTOPILOT_MAX_JERK);
+
+    this.profile =
+        new APProfile(constraints)
+            .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
+            .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
+            .withBeelineRadius(
+                Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
+
     this.autopilot = new Autopilot(profile);
+
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
+    headingController.setTolerance(Math.toRadians(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES));
+
     addRequirements(drive);
   }
 
@@ -78,25 +91,10 @@ public class DriveToPoseAutopilotCommand extends Command {
     this(drive, () -> targetPose);
   }
 
-  // Add methods to change profile/constraints on the fly
-  public DriveToPoseAutopilotCommand withConstraints(double acceleration, double jerk) {
-    this.constraints = new APConstraints()
-        .withAcceleration(acceleration)
-        .withJerk(jerk);
-    // Note: You may need to recreate the Autopilot instance with new profile
-    return this;
-  }
-
-  public DriveToPoseAutopilotCommand withTolerance(double xyMeters, double thetaDegrees) {
-    this.profile = new APProfile(constraints)
-        .withErrorXY(Centimeters.of(xyMeters * 100))
-        .withErrorTheta(Degrees.of(thetaDegrees))
-        .withBeelineRadius(Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
-    return this;
-  }
-
   @Override
   public void initialize() {
+    isAtTarget = false;
+    headingController.reset();
     Logger.recordOutput("Commands/" + getName() + "/Active", true);
   }
 
@@ -110,57 +108,64 @@ public class DriveToPoseAutopilotCommand extends Command {
     Pose2d targetPose = targetPoseSupplier.get();
 
     // Create AutoPilot target
-    APTarget target =
-        new APTarget(
-            targetPose.getX(),
-            targetPose.getY(),
-            targetPose.getRotation().getRadians(),
-            0.0); // Target velocity = 0 (stop at target)
+    APTarget target = new APTarget(targetPose);
 
-    // Calculate desired velocities using AutoPilot
+    // Calculate desired velocities using ORIGINAL AutoPilot
     APResult result = autopilot.calculate(currentPose, robotRelativeSpeeds, target);
 
-    // Apply the calculated velocities to the drive
-    drive.setControl(
-        facingAngleRequest
-            .withVelocityX(result.vx())
-            .withVelocityY(result.vy())
-            .withTargetDirection(result.targetAngle()));
+    // Calculate offset for debugging
+    double offsetX = targetPose.getX() - currentPose.getX();
+    double offsetY = targetPose.getY() - currentPose.getY();
+    double distanceToTarget = Math.hypot(offsetX, offsetY);
+
+    // Check if we're at target
+    isAtTarget = autopilot.atTarget(currentPose, target);
+
+    // Calculate heading control
+    double headingVelocity =
+        headingController.calculate(
+            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+
+    // Convert field-relative velocities to robot-relative
+    ChassisSpeeds speeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            result.vx().in(MetersPerSecond),
+            result.vy().in(MetersPerSecond),
+            headingVelocity,
+            currentPose.getRotation());
+
+    // Apply robot-relative speeds
+    drive.setControl(robotSpeedsRequest.withSpeeds(speeds));
 
     // Log telemetry
     Logger.recordOutput("Commands/" + getName() + "/CurrentPose", currentPose);
     Logger.recordOutput("Commands/" + getName() + "/TargetPose", targetPose);
-    Logger.recordOutput("Commands/" + getName() + "/VelocityX", result.vx());
-    Logger.recordOutput("Commands/" + getName() + "/VelocityY", result.vy());
+    Logger.recordOutput("Commands/" + getName() + "/OffsetX", offsetX);
+    Logger.recordOutput("Commands/" + getName() + "/OffsetY", offsetY);
+    Logger.recordOutput("Commands/" + getName() + "/DistanceToTarget", distanceToTarget);
+    Logger.recordOutput("Commands/" + getName() + "/RobotRelativeSpeeds", robotRelativeSpeeds);
+    Logger.recordOutput("Commands/" + getName() + "/FieldRelVelX", result.vx());
+    Logger.recordOutput("Commands/" + getName() + "/FieldRelVelY", result.vy());
+    Logger.recordOutput("Commands/" + getName() + "/HeadingVelocity", headingVelocity);
+    Logger.recordOutput("Commands/" + getName() + "/AppliedSpeeds", speeds);
+    Logger.recordOutput("Commands/" + getName() + "/CurrentRotation", currentPose.getRotation());
     Logger.recordOutput("Commands/" + getName() + "/TargetAngle", result.targetAngle());
-    Logger.recordOutput("Commands/" + getName() + "/AtTarget", autopilot.atTarget(currentPose, target));
+    Logger.recordOutput("Commands/" + getName() + "/AtTarget", isAtTarget);
   }
 
   @Override
   public void end(boolean interrupted) {
     // Stop the robot
-    drive.setControl(
-        facingAngleRequest
-            .withVelocityX(0.0)
-            .withVelocityY(0.0)
-            .withTargetDirection(RobotState.getGlobalPose().getRotation()));
-    
+    drive.setControl(robotSpeedsRequest.withSpeeds(new ChassisSpeeds()));
+
     Logger.recordOutput("Commands/" + getName() + "/Active", false);
     Logger.recordOutput("Commands/" + getName() + "/Interrupted", interrupted);
   }
 
   @Override
   public boolean isFinished() {
-    Pose2d currentPose = RobotState.getGlobalPose();
-    Pose2d targetPose = targetPoseSupplier.get();
-    APTarget target =
-        new APTarget(
-            targetPose.getX(),
-            targetPose.getY(),
-            targetPose.getRotation().getRadians(),
-            0.0);
-    
-    return autopilot.atTarget(currentPose, target);
+    // Use the isAtTarget flag updated in execute()
+    return isAtTarget;
   }
 
   /**
@@ -169,17 +174,6 @@ public class DriveToPoseAutopilotCommand extends Command {
    * @return A trigger that activates when the robot reaches the target
    */
   public Trigger atTarget() {
-    return new Trigger(() -> {
-      Pose2d currentPose = RobotState.getGlobalPose();
-      Pose2d targetPose = targetPoseSupplier.get();
-      APTarget target =
-          new APTarget(
-              targetPose.getX(),
-              targetPose.getY(),
-              targetPose.getRotation().getRadians(),
-              0.0);
-      return autopilot.atTarget(currentPose, target);
-    });
+    return new Trigger(() -> isAtTarget);
   }
 }
-

@@ -259,4 +259,15 @@ public class DriveIOHardware extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
   public Rotation2d getRotation() {
     return getPigeon2().getRotation2d();
   }
+
+  @Override
+  public ChassisSpeeds getChassisSpeeds() {
+    // Get the current state directly from the drivetrain
+    var state = getState();
+    if (state == null || state.Speeds == null) {
+      return new ChassisSpeeds();
+    }
+    // Return robot-relative speeds (which is what AutoPilot expects)
+    return state.Speeds;
+  }
 }

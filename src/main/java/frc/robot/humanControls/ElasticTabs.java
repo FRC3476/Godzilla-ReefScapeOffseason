@@ -379,9 +379,7 @@ public class ElasticTabs {
                 () -> {
                   Pose2d currentPose = RobotState.getGlobalPose();
                   return new Pose2d(
-                      currentPose.getX() + 2.0,
-                      currentPose.getY(),
-                      currentPose.getRotation());
+                      currentPose.getX() + 2.0, currentPose.getY(), currentPose.getRotation());
                 }));
   }
 

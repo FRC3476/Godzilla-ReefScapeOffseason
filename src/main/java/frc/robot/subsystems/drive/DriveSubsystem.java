@@ -383,4 +383,9 @@ public class DriveSubsystem extends SubsystemBase {
   public Rotation2d getRotation() {
     return io.getRotation();
   }
+
+  /** Returns current robot-relative chassis speeds */
+  public ChassisSpeeds getChassisSpeeds() {
+    return io.getChassisSpeeds();
+  }
 }

@@ -77,4 +77,9 @@ public interface DriveIO {
   default Rotation2d getRotation() {
     return new Rotation2d();
   }
+
+  /** Returns current robot-relative chassis speeds */
+  default edu.wpi.first.math.kinematics.ChassisSpeeds getChassisSpeeds() {
+    return new edu.wpi.first.math.kinematics.ChassisSpeeds();
+  }
 }
