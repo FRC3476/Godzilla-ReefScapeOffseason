@@ -2,6 +2,7 @@ package frc.lib;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import java.util.Arrays;
 
 public class AprilTagLayout {
     // April Tag Layout
