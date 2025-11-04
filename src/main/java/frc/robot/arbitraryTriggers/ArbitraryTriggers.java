@@ -43,7 +43,8 @@ public class ArbitraryTriggers {
 
   private void configureTriggers() {
     // feeder.dejamTrigger.onTrue(intake.dejamFeeder());
-    elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator());
+    // elevator.elevatorObjectTrigger.onTrue(elevator.dejamElevator()); // unused since
+    // elevatorObjectTrigger is permanently false
 
     // recommended but untested
     claw.exhaustedCoral()
