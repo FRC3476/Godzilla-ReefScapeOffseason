@@ -179,21 +179,24 @@ public class MathHelpersTest {
   /* ========================
    *  PARALLEL / PERP ERROR TESTS
    * ======================== */
-
   @Test
   void testParallelErrorZero() {
+    // rotation 180 apart so, e.g., you are driving while facing a tag (by conventions tags face out
+    // from the wall)
+    Pose2d target = new Pose2d(new Translation2d(4, 3), Rotation2d.k180deg);
     Pose2d origin = new Pose2d(new Translation2d(0, 0), Rotation2d.kZero);
-    Pose2d target = new Pose2d(new Translation2d(5, 0), Rotation2d.kZero);
-    assertEquals(0.0, MathHelpers.getParallelError(origin, target), EPS);
+    double parallelError = MathHelpers.getParallelError(origin, target);
+    assertTrue(Math.abs(parallelError - 3) < EPS);
   }
 
   @Test
   void testPerpendicularErrorMagnitude() {
+    // rotation 180 apart so, e.g., you are driving while facing a tag (by conventions tags face out
+    // from the wall)
+    Pose2d target = new Pose2d(new Translation2d(4, 3), Rotation2d.k180deg);
     Pose2d origin = new Pose2d(new Translation2d(0, 0), Rotation2d.kZero);
-    Pose2d target = new Pose2d(new Translation2d(0, 5), Rotation2d.kZero);
-    // Offset is purely perpendicular (upward)
     double perpendicularError = MathHelpers.getPerpendicularError(origin, target);
-    assertTrue(Math.abs(perpendicularError - 5.0) < EPS);
+    assertTrue(Math.abs(perpendicularError - 4) < EPS);
   }
 
   /* ========================
