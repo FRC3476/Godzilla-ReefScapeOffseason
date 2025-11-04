@@ -14,6 +14,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCoralCommand;
+import frc.robot.commands.DriveToPoseAutopilotCommand;
 import frc.robot.commands.DriveToPosePIDCommand;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
@@ -348,6 +349,40 @@ public class ElasticTabs {
                   drive.resetOdometry(RobotState.getVisionPose());
                 },
                 drive));
+
+    // AutoPilot test command - drives to closest reef pole with AutoPilot library
+    tab.addButton("AutoPilot: Drive to Reef Pole")
+        .setupWhileHeldCommand(
+            new DriveToPoseAutopilotCommand(
+                drive,
+                () -> {
+                  Pose2d targetPose;
+                  switch (robotState.getStoredScorePosition().getCoralBranch()) {
+                    case LEFT:
+                      targetPose = FieldUtils.getClosestReef().leftPole.getPose();
+                      break;
+                    case RIGHT:
+                      targetPose = FieldUtils.getClosestReef().rightPole.getPose();
+                      break;
+                    default:
+                      targetPose = FieldUtils.getClosestReefPole().getPose();
+                  }
+                  return PoseUtils.getPerpendicularOffsetPose(
+                      targetPose, DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET);
+                }));
+
+    // AutoPilot test command - drives forward 2 meters
+    tab.addButton("AutoPilot: Drive Forward 2m")
+        .setupWhileHeldCommand(
+            new DriveToPoseAutopilotCommand(
+                drive,
+                () -> {
+                  Pose2d currentPose = RobotState.getGlobalPose();
+                  return new Pose2d(
+                      currentPose.getX() + 2.0,
+                      currentPose.getY(),
+                      currentPose.getRotation());
+                }));
   }
 
   private void buildClimberTab() {
