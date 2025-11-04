@@ -260,7 +260,7 @@ public class RobotState extends MagicVirtualSubsystem {
       Consumer<VisionFieldPoseEstimate> visionEstimateConsumer, RobotContainer robotContainer) {
     this.visionEstimateConsumer = visionEstimateConsumer;
     this.robotContainer = robotContainer;
-    fieldToRobot.addSample(0.0, MathHelpers.kPose2dZero);
+    fieldToRobot.addSample(0.0, Pose2d.kZero);
     driveYawAngularVelocity.addSample(0.0, 0.0);
 
     hasAlgaeOverride.setDefaultOption("Default", 0);
@@ -640,8 +640,7 @@ public class RobotState extends MagicVirtualSubsystem {
    */
   public Pose2d getPredictedFieldToRobot(double lookaheadTimeS) {
     var maybeFieldToRobot = getLatestFieldToRobot();
-    Pose2d fieldToRobot =
-        maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
+    Pose2d fieldToRobot = maybeFieldToRobot == null ? Pose2d.kZero : maybeFieldToRobot.getValue();
     var delta = getLatestRobotRelativeChassisSpeed();
     delta = delta.times(lookaheadTimeS);
     return fieldToRobot.exp(
@@ -654,8 +653,7 @@ public class RobotState extends MagicVirtualSubsystem {
    */
   public Pose2d getPredictedCappedFieldToRobot(double lookaheadTimeS) {
     var maybeFieldToRobot = getLatestFieldToRobot();
-    Pose2d fieldToRobot =
-        maybeFieldToRobot == null ? MathHelpers.kPose2dZero : maybeFieldToRobot.getValue();
+    Pose2d fieldToRobot = maybeFieldToRobot == null ? Pose2d.kZero : maybeFieldToRobot.getValue();
     var delta = getLatestRobotRelativeChassisSpeed();
     delta = delta.times(lookaheadTimeS);
     return fieldToRobot.exp(

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Robot;
-import frc.robot.util.MathHelpers;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveViz {
@@ -32,7 +31,7 @@ public class DriveViz {
   }
 
   /* Keep a reference of the last pose to calculate the speeds */
-  private Pose2d lastPose = MathHelpers.kPose2dZero;
+  private Pose2d lastPose = Pose2d.kZero;
   private double lastTime = Logger.getTimestamp();
 
   /* Mechanisms to represent the swerve module states */

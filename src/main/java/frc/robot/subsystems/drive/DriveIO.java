@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
-import frc.robot.util.MathHelpers;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -27,7 +26,7 @@ public interface DriveIO {
     public double gyroPitchVelocity = 0.0;
 
     DriveIOInputs() {
-      this.Pose = MathHelpers.kPose2dZero;
+      this.Pose = Pose2d.kZero;
     }
 
     public void fromSwerveDriveState(SwerveDriveState stateIn) {

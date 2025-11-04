@@ -3,7 +3,6 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
-import frc.robot.util.MathHelpers;
 import java.nio.ByteBuffer;
 
 public record MegatagPoseEstimate(
@@ -17,7 +16,7 @@ public record MegatagPoseEstimate(
 
   public MegatagPoseEstimate {
     if (fieldToRobot == null) {
-      fieldToRobot = MathHelpers.kPose2dZero;
+      fieldToRobot = Pose2d.kZero;
     }
     if (fiducialIds == null) {
       fiducialIds = new int[0];
@@ -28,7 +27,7 @@ public record MegatagPoseEstimate(
   public static MegatagPoseEstimate fromLimelight(LimelightHelpers.PoseEstimate poseEstimate) {
     Pose2d fieldToRobot = poseEstimate.pose;
     if (fieldToRobot == null) {
-      fieldToRobot = MathHelpers.kPose2dZero;
+      fieldToRobot = Pose2d.kZero;
     }
     int[] fiducialIds = new int[poseEstimate.rawFiducials.length];
     for (int i = 0; i < poseEstimate.rawFiducials.length; i++) {
