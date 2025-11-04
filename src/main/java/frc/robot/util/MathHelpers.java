@@ -147,9 +147,10 @@ public class MathHelpers {
         getParallelOffsetPose(pose, parellelOffsetMeters), perpendicularOffsetMeters);
   }
 
-  public static Pose2d getOffsetPose(
-      Pose2d pose, double distance, Rotation2d direction) {
-    return pose.transformBy(new Transform2d(distance * direction.getCos(), distance * direction.getSin(), Rotation2d.kZero));
+  public static Pose2d getOffsetPose(Pose2d pose, double distance, Rotation2d direction) {
+    return pose.transformBy(
+        new Transform2d(
+            distance * direction.getCos(), distance * direction.getSin(), Rotation2d.kZero));
   }
 
   /**
