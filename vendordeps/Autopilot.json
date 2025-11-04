@@ -1,0 +1,21 @@
+{
+  "fileName": "Autopilot.json",
+  "name": "Autopilot",
+  "version": "2025.1.0",
+  "uuid": "7194a2d4-2860-4bcc-86c0-97879737d875",
+  "frcYear": "2025",
+  "mavenUrls": [
+    "https://maven.therekrab.org/releases/"
+  ],
+  "jsonUrl": "https://maven.therekrab.org/releases/Autopilot.json",
+  "javaDependencies": [
+    {
+      "groupId": "org.therekrabs",
+      "artifactId": "Autopilot-java",
+      "version": "2025.1.0"
+    }
+  ],
+  "jniDependencies": [],
+  "cppDependencies": []
+}
+

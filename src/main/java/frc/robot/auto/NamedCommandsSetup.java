@@ -11,6 +11,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.commands.DriveToCoralCommand;
+import frc.robot.commands.DriveToPoseAutopilotCommand;
 import frc.robot.commands.GarageDriveToPoseAutoCommand;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -65,6 +66,27 @@ public class NamedCommandsSetup {
         "FinalRightPoleAlign",
         new GarageDriveToPoseAutoCommand(
                 container,
+                () ->
+                    PoseUtils.getPerpendicularOffsetPose(
+                        FieldUtils.getClosestReef().rightPole.getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+            .withTimeout(3.0));
+
+    // AutoPilot alignment commands - using 3414 AutoPilot library
+    NamedCommands.registerCommand(
+        "AutoPilotLeftPoleAlign",
+        new DriveToPoseAutopilotCommand(
+                drive,
+                () ->
+                    PoseUtils.getPerpendicularOffsetPose(
+                        FieldUtils.getClosestReef().leftPole.getPose(),
+                        DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET))
+            .withTimeout(3.0));
+
+    NamedCommands.registerCommand(
+        "AutoPilotRightPoleAlign",
+        new DriveToPoseAutopilotCommand(
+                drive,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),

@@ -144,6 +144,16 @@ public final class Constants {
     public static final double ANGLE_KD = 0.4;
     public static final double ANGLE_MAX_ACCELERATION = 15.0;
 
+    // AutoPilot Constants
+    public static final double AUTOPILOT_MAX_ACCELERATION = 15.0; // m/s^2
+    public static final double AUTOPILOT_MAX_JERK = 1.5; // m/s^3
+    public static final double AUTOPILOT_ERROR_XY_METERS = Units.inchesToMeters(0.5); // 2 inches
+    public static final double AUTOPILOT_ERROR_THETA_DEGREES = 0.5; // degrees
+    public static final double AUTOPILOT_BEELINE_RADIUS_METERS = Units.inchesToMeters(4.0); // 8 inches
+    public static final double AUTOPILOT_HEADING_KP = 5.0;
+    public static final double AUTOPILOT_HEADING_KI = 0.0;
+    public static final double AUTOPILOT_HEADING_KD = 0.0;
+
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;
     public static final double kMaxYAccelerationMetersPerSecondSquared = 10.0;
