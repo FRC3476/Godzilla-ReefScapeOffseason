@@ -849,14 +849,13 @@ public class RobotState extends MagicVirtualSubsystem {
     Logger.recordOutput("Robot Pose", getGlobalPose());
     Logger.recordOutput("Coral State Tracker", CoralStateTracker.getCurrentPosition());
     Logger.recordOutput(
-        "StoredSuperstructureState/Coral Score Level", storedScorePosition.getCoralScoreLevel());
+        "StoredScorePosition/Coral Score Level", storedScorePosition.getCoralScoreLevel());
     Logger.recordOutput(
-        "StoredSuperstructureState/Algae Score Level", storedScorePosition.getAlgaeScoreLevel());
+        "StoredScorePosition/Algae Score Level", storedScorePosition.getAlgaeScoreLevel());
     Logger.recordOutput("isL1Mode", isL1Mode());
-    Logger.recordOutput(
-        "StoredSuperstructureState/Branch Side", storedScorePosition.getCoralBranch());
-    Logger.recordOutput("StoredSuperstructureState/Reef Side", storedScorePosition.getReefSide());
-    Logger.recordOutput("StoredSuperstructureState/Output", getSuperstructureScoreAimState());
+    Logger.recordOutput("StoredScorePosition/Branch Side", storedScorePosition.getCoralBranch());
+    Logger.recordOutput("StoredScorePosition/Reef Side", storedScorePosition.getReefSide());
+    Logger.recordOutput("StoredScorePosition/Output", getSuperstructureScoreAimState());
     Logger.recordOutput("SuperstructureManualOverride", getSuperstructureManualOverrideMode());
     Logger.recordOutput("Ready to Score?", readyToScore);
 

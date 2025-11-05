@@ -53,7 +53,7 @@ public class Elevator extends ServoMotorSubsystemWithFollowers<MotorInputsAutoLo
 
   public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
     return positionSetpointUntilOnTargetCommand(
-        heightSupplier,
+        () -> Units.inchesToMeters(heightSupplier.getAsDouble()),
         () -> Units.inchesToMeters(Constants.ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH));
   }
 

@@ -43,7 +43,7 @@
             "/AdvantageKit/RealOutputs/Odometry",
             "/StreamDeck/Button/7",
             "/AdvantageKit/RealOutputs/Elevator",
-            "/AdvantageKit/RealOutputs/StoredSuperstructureState",
+            "/AdvantageKit/RealOutputs/StoredScorePosition",
             "/AdvantageKit/Claw/RollerData",
             "/AdvantageKit/Claw/FirstCANRangeData",
             "/AdvantageKit/Claw/SecondCANRangeData",
@@ -979,7 +979,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredSuperstructureState/Branch Side",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredScorePosition/Branch Side",
                     "logType": "String",
                     "visible": true,
                     "options": {
@@ -988,7 +988,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredSuperstructureState/Reef Side",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredScorePosition/Reef Side",
                     "logType": "String",
                     "visible": true,
                     "options": {
@@ -997,7 +997,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredSuperstructureState/Score Level",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredScorePosition/Score Level",
                     "logType": "String",
                     "visible": true,
                     "options": {
@@ -1006,7 +1006,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredSuperstructureState/Output",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredScorePosition/Output",
                     "logType": "String",
                     "visible": true,
                     "options": {
@@ -1208,7 +1208,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredSuperstructureState/Score Level",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/StoredScorePosition/Score Level",
                     "logType": "String",
                     "visible": true,
                     "options": {

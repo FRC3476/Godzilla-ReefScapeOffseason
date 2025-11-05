@@ -7,6 +7,8 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.Led.DEFAULT_LED_STATE;
 import frc.robot.util.COColor;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -23,18 +25,19 @@ public class RobotViz {
   private RobotState state;
   private RobotContainer container;
   private Elevator elevator;
+  private Led led;
 
-  private LoggedMechanism2d viz2d = new LoggedMechanism2d(1.27, 3);
-
-  //     private LoggedMechanismRoot2d ledDisplayRoot =
-  //             viz2d.getRoot("ledDisplay", 0.58, 1.5); // this goes above the robot
-  //     private LoggedMechanismLigament2d ledDisplayBox =
-  //             new LoggedMechanismLigament2d("LED State", 0.5, 0, 5.0, new
-  // Color8Bit(Color.kBlack));
+  private LoggedMechanism2d viz2d = new LoggedMechanism2d(1.27, 4);
 
   Color8Bit red = COColor.kRed.getColor8Bit();
   Color8Bit orange = COColor.kCOOrangePure.getColor8Bit();
   Color8Bit teal = COColor.kCOTealPure.getColor8Bit();
+  Color8Bit black = COColor.kBlack.getColor8Bit();
+
+  private LoggedMechanismRoot2d ledDisplayRoot =
+      viz2d.getRoot("ledDisplay", 0.58, 3); // this goes above the robot
+  private LoggedMechanismLigament2d ledDisplayBox =
+      new LoggedMechanismLigament2d("LED State", 0.5, 0, 5.0, black);
 
   private LoggedMechanismRoot2d driveRoot = viz2d.getRoot("drive", 0.25, 0);
   private LoggedMechanismLigament2d driveLigament =
@@ -80,7 +83,7 @@ public class RobotViz {
   private Pose3d elevatorTopPose3d = new Pose3d();
   private Pose3d clawPose3d = new Pose3d();
   //     private Pose3d climberPose3d = new Pose3d();
-  //     private Color8Bit ledColor = new Color8Bit(0, 0, 0);
+  private Color8Bit ledColor = new Color8Bit(0, 0, 0);
 
   public Pose3d getClawPose3d() {
     return clawPose3d;
@@ -90,17 +93,17 @@ public class RobotViz {
     this.state = robotState;
     this.container = container;
     elevator = container.getElevator();
+    led = container.getLed();
     if (Robot.isReal()) return;
     init2dViz();
   }
 
   private void init2dViz() {
-    viz2d = new LoggedMechanism2d(1.27, 2.032);
+    viz2d = new LoggedMechanism2d(1.27, 4);
 
-    // ledDisplayRoot = viz2d.getRoot("ledDisplay", 0.58, 1.5); // this goes above the robot
-    // ledDisplayBox =
-    //         new LoggedMechanismLigament2d(
-    //                 "LED State", 0.5, 0, 5.0, new Color8Bit(Color.kBlack));
+    ledDisplayRoot = viz2d.getRoot("ledDisplay", 0.58, 3); // this goes above the robot
+    ledDisplayBox =
+        new LoggedMechanismLigament2d("LED State", 0.5, 0, 5.0, COColor.kBlack.getColor8Bit());
 
     driveRoot = viz2d.getRoot("drive", 0.25, 0);
     driveLigament = new LoggedMechanismLigament2d("drivetrain", 0.76, 0.0, 5.0, red);
@@ -125,7 +128,7 @@ public class RobotViz {
     // climberLigament =
     //         new LoggedMechanismLigament2d("climber", kClimberNormalLength, 0.0, 5.0, yellow);
 
-    // ledDisplayRoot.append(ledDisplayBox);
+    ledDisplayRoot.append(ledDisplayBox);
     driveRoot.append(this.driveLigament);
 
     // indexerRoot.append(indexerLigament);
@@ -206,13 +209,10 @@ public class RobotViz {
           elevatorBasePose3d, elevatorMiddlePose3d, elevatorTopPose3d,
         });
 
-    // LedState currentLEDState = state.getLedState();
-    // ledColor = new Color8Bit(currentLEDState.red, currentLEDState.green, currentLEDState.blue);
-    // Logger.recordOutput(
-    //         "LEDState",
-    //         String.format(
-    //                 "R:%d G:%d B:%d",
-    //                 currentLEDState.red, currentLEDState.green, currentLEDState.blue));
+    DEFAULT_LED_STATE currentLEDState = led.getLedState();
+    Color8Bit ledColor = currentLEDState.toVizColor().getColor8Bit();
+    Logger.recordOutput(
+        "LEDState", String.format("R:%d G:%d B:%d", ledColor.red, ledColor.green, ledColor.blue));
 
     if (Robot.isReal()) return;
 
@@ -234,6 +234,6 @@ public class RobotViz {
     // this.indexerLigament.setAngle(Units.rotationsToDegrees(indexerRotations));
     Logger.recordOutput("viz2d", this.viz2d);
 
-    // ledDisplayBox.setColor(ledColor);
+    ledDisplayBox.setColor(ledColor);
   }
 }

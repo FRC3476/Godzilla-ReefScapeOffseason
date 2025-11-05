@@ -115,13 +115,13 @@ public class EndEffector extends SubsystemBase {
 
   public Command rotatePivotCommand(
       DoubleSupplier rotationSupplier, Supplier<Integer> slotSupplier) {
-    pivotSetpoint =
+    this.pivotSetpoint =
         MathUtil.clamp(
             rotationSupplier.getAsDouble(),
             EndEffectorConstants.MIN_ANGLE_ROTATIONS,
             EndEffectorConstants.MAX_ANGLE_ROTATIONS);
     return Commands.runOnce(
-        () -> this.io.setPivotPosition(() -> pivotSetpoint, slotSupplier), this);
+        () -> this.io.setPivotPosition(() -> this.pivotSetpoint, slotSupplier), this);
   }
 
   public Command rotatePivotCommand(DoubleSupplier rotationSupplier) {

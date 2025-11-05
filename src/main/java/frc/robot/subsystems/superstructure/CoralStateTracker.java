@@ -301,7 +301,7 @@ public class CoralStateTracker {
   }
 
   public static boolean hasCoral() {
-    switch (currentPosition) {
+    switch (getCurrentPosition()) {
       case AT_INTAKE,
           GOING_TO_FEEDER,
           AT_FRONT_FEEDER,
@@ -316,7 +316,7 @@ public class CoralStateTracker {
   }
 
   public static boolean hasCoralAboveIntake() {
-    switch (currentPosition) {
+    switch (getCurrentPosition()) {
       case AT_FRONT_FEEDER,
           AT_BACK_FEEDER,
           AT_FIRST_END_EFFECTOR,

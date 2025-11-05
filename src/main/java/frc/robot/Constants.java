@@ -487,12 +487,12 @@ public final class Constants {
         // software limit switches at min/max positions
         kElevatorConfig.kMinPositionUnits = ElevatorConstants.MIN_HEIGHT_METERS;
         kElevatorConfig.kMaxPositionUnits = ElevatorConstants.MAX_HEIGHT_METERS;
-        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-            kElevatorConfig.kMaxPositionUnits / kElevatorConfig.unitToRotorRatio;
-        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-            kElevatorConfig.kMinPositionUnits / kElevatorConfig.unitToRotorRatio;
+        // kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        // kElevatorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        //     kElevatorConfig.kMaxPositionUnits / kElevatorConfig.unitToRotorRatio;
+        // kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        // kElevatorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        //     kElevatorConfig.kMinPositionUnits / kElevatorConfig.unitToRotorRatio;
 
         kElevatorConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kElevatorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;

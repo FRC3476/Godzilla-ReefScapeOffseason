@@ -70,6 +70,51 @@ public class Led extends SubsystemBase {
           return false;
       }
     }
+
+    public COColor toVizColor() {
+      switch (this) {
+        case NONE:
+          return COColor.kOff;
+        case CAN_DOWN_DRIVE:
+          return COColor.kMagenta;
+        case CAN_DOWN_MISC:
+          return COColor.kMagenta;
+        case CLIMB_DEPLOYING:
+          return COColor.kYellow;
+        case CLIMB_DEPLOYED:
+          return COColor.kYellow;
+        case CLIMB_CLIMBING:
+          return COColor.kGreen;
+        case CLIMB_CLIMBED:
+          return COColor.kGreen;
+        case HAS_CORAL_AND_ALGAE:
+          return COColor.kWhite;
+        case HAS_ALGAE:
+          return COColor.kCOTealPure;
+        case HAS_CORAL_L1:
+          return COColor.kCOOrangePure;
+        case HAS_CORAL_L2:
+          return COColor.kCOOrangePure;
+        case HAS_CORAL_L3:
+          return COColor.kCOOrangePure;
+        case HAS_CORAL_L4:
+          return COColor.kCOOrangePure;
+        case LOW_BATTERY:
+          return COColor.kPurple;
+        case DISABLED_RED:
+          return COColor.kRed;
+        case DISABLED_BLUE:
+          return COColor.kBlue;
+        case DEFAULT_TELEOP:
+          return COColor.kOff;
+        case DEFAULT_DISABLED:
+          return COColor.kPink;
+        case GARAGE_DRIVE_ALIGNED:
+          return COColor.kGray;
+        default:
+          return COColor.kOff;
+      }
+    }
   }
 
   private DEFAULT_LED_STATE defaultState = DEFAULT_LED_STATE.NONE;
@@ -225,6 +270,10 @@ public class Led extends SubsystemBase {
     Logger.recordOutput("LED/Force Set State", state);
   }
 
+  public DEFAULT_LED_STATE getLedState() {
+    return defaultState;
+  }
+
   public Command ledDefault(RobotContainer container, RobotState robotState) {
     return this.run(
             () -> {
@@ -265,10 +314,10 @@ public class Led extends SubsystemBase {
                       break;
                   }
                 }
-                if (container.getClaw().hasAlgae()) {
+                if (RobotState.hasAlgae()) {
                   defaultState = DEFAULT_LED_STATE.HAS_ALGAE;
                 }
-                if (container.getClaw().hasAlgae() && CoralStateTracker.hasCoral()) {
+                if (RobotState.hasAlgae() && CoralStateTracker.hasCoral()) {
                   defaultState = DEFAULT_LED_STATE.HAS_CORAL_AND_ALGAE;
                 }
                 if (!container.getClaw().isOK()) {
