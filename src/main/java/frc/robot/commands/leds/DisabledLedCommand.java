@@ -8,7 +8,7 @@ import frc.robot.Constants.LedConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.led.Led;
-import frc.robot.subsystems.led.LedState;
+import frc.robot.util.Color;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -63,17 +63,15 @@ public class DisabledLedCommand extends Command {
     if (defaultState != prevDefaultState) {
       switch (defaultState) {
         case LOW_BATTERY:
-          led.commandBlinkingState(LedState.kLowBattery, 0.125)
+          led.commandBlinkingState(Color.kLowBattery, 0.125)
               .withName("Disabled LED: " + defaultState.name())
               .schedule();
           break;
         case DISABLED_RED:
-          led.commandLarson(LedState.kRed)
-              .withName("Disabled LED: " + defaultState.name())
-              .schedule();
+          led.commandLarson(Color.kRed).withName("Disabled LED: " + defaultState.name()).schedule();
           break;
         case DISABLED_BLUE:
-          led.commandLarson(LedState.kBlue)
+          led.commandLarson(Color.kBlue)
               .withName("Disabled LED: " + defaultState.name())
               .schedule();
           break;

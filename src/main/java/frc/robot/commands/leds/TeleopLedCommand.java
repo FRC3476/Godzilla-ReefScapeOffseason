@@ -10,8 +10,8 @@ import frc.robot.subsystems.climb.Climber.ClimbState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.led.Led;
-import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
+import frc.robot.util.Color;
 import org.littletonrobotics.junction.Logger;
 
 public class TeleopLedCommand extends Command {
@@ -117,60 +117,58 @@ public class TeleopLedCommand extends Command {
     if (state != prevState) {
       switch (state) {
         case CAN_DOWN_DRIVE:
-          led.commandBlinkingState(LedState.kYellow, 0.25, LedStrip.LEFT)
+          led.commandBlinkingState(Color.kYellow, 0.25, LedStrip.LEFT)
               .asProxy()
-              .alongWith(led.commandBlinkingState(LedState.kGreen, 0.25, LedStrip.RIGHT).asProxy())
+              .alongWith(led.commandBlinkingState(Color.kGreen, 0.25, LedStrip.RIGHT).asProxy())
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_DEPLOYING:
-          led.commandBlinkingState(LedState.kYellow, 0.25)
+          led.commandBlinkingState(Color.kYellow, 0.25)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_DEPLOYED:
-          led.commandSolidColor(LedState.kYellow)
-              .withName("Teleop LED: " + state.name())
-              .schedule();
+          led.commandSolidColor(Color.kYellow).withName("Teleop LED: " + state.name()).schedule();
           break;
         case CLIMB_CLIMBING:
-          led.commandBlinkingState(LedState.kGreen, 0.25)
+          led.commandBlinkingState(Color.kGreen, 0.25)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_CLIMBED:
-          led.commandSolidColor(LedState.kGreen).withName("Teleop LED: " + state.name()).schedule();
+          led.commandSolidColor(Color.kGreen).withName("Teleop LED: " + state.name()).schedule();
           break;
         case CAN_DOWN_MISC:
-          led.commandBlinkingState(LedState.kGreen, 0.25, LedStrip.LEFT)
+          led.commandBlinkingState(Color.kGreen, 0.25, LedStrip.LEFT)
               .asProxy()
-              .alongWith(led.commandBlinkingState(LedState.kYellow, 0.25, LedStrip.RIGHT).asProxy())
+              .alongWith(led.commandBlinkingState(Color.kYellow, 0.25, LedStrip.RIGHT).asProxy())
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_AND_ALGAE:
-          led.commandSolidColor(LedState.kWhite).withName("Teleop LED: " + state.name()).schedule();
+          led.commandSolidColor(Color.kWhite).withName("Teleop LED: " + state.name()).schedule();
           break;
         case HAS_ALGAE:
           led.commandSetTeal().withName("Teleop LED: " + state.name()).schedule();
           break;
         case HAS_CORAL_L1:
-          led.commandPercentageFull(() -> 7.0 / 16.0, LedState.kCOOrangeLed)
+          led.commandPercentageFull(() -> 7.0 / 16.0, Color.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L2:
-          led.commandPercentageFull(() -> 10.0 / 16.0, LedState.kCOOrangeLed)
+          led.commandPercentageFull(() -> 10.0 / 16.0, Color.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L3:
-          led.commandPercentageFull(() -> 13.0 / 16.0, LedState.kCOOrangeLed)
+          led.commandPercentageFull(() -> 13.0 / 16.0, Color.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L4:
-          led.commandPercentageFull(() -> 16.0 / 16.0, LedState.kCOOrangeLed)
+          led.commandPercentageFull(() -> 16.0 / 16.0, Color.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
