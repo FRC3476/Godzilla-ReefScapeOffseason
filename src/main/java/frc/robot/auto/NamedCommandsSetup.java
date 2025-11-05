@@ -10,6 +10,7 @@ import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.commands.ContinuousPathTestCommand;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPoseAutopilotCommand;
 import frc.robot.commands.GarageDriveToPoseAutoCommand;
@@ -134,6 +135,24 @@ public class NamedCommandsSetup {
 
     NamedCommands.registerCommand(
         "IsCoralInRobot", new WaitUntilCommand(() -> CoralStateTracker.hasCoral()));
+
+    // ====================CONTINUOUS PATH TEST COMMANDS====================
+    // Test commands for Team 2056's continuous path following approach
+    NamedCommands.registerCommand(
+        "ContinuousPathSquareTest", ContinuousPathTestCommand.squareTest(drive));
+
+    NamedCommands.registerCommand(
+        "ContinuousPathZigzagTest", ContinuousPathTestCommand.zigzagTest(drive));
+
+    NamedCommands.registerCommand(
+        "ContinuousPathForwardTest", ContinuousPathTestCommand.forwardPathTest(drive));
+
+    NamedCommands.registerCommand(
+        "ContinuousPathVariableSwitchingTest",
+        ContinuousPathTestCommand.variableSwitchingDistanceTest(drive));
+
+    NamedCommands.registerCommand(
+        "ContinuousPathRightRawTest", ContinuousPathTestCommand.rightRawPathTest(drive));
 
     // ====================PID DRIVE COMMANDS====================
     // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new

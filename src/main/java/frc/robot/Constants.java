@@ -147,7 +147,7 @@ public final class Constants {
     // AutoPilot Constants
     public static final double AUTOPILOT_MAX_ACCELERATION = 15.0; // m/s^2
     public static final double AUTOPILOT_MAX_JERK =
-        1.5; // m/s^3 (increased for better responsiveness)
+        8; // m/s^3 (increased for better responsiveness)
     public static final double AUTOPILOT_ERROR_XY_METERS = Units.inchesToMeters(0.5); // 2 inches
     public static final double AUTOPILOT_ERROR_THETA_DEGREES = 0.5; // degrees
     public static final double AUTOPILOT_BEELINE_RADIUS_METERS =
@@ -155,6 +155,19 @@ public final class Constants {
     public static final double AUTOPILOT_HEADING_KP = 5.0;
     public static final double AUTOPILOT_HEADING_KI = 0.0;
     public static final double AUTOPILOT_HEADING_KD = 0.0;
+
+    // Continuous Path Following Constants (Team 2056 approach)
+    // Default switching distance for intermediate waypoints (~12 inches)
+    public static final double CONTINUOUS_PATH_DEFAULT_SWITCHING_DISTANCE_METERS =
+        Units.inchesToMeters(24.0);
+    // Minimum switching distance (safety minimum, ~1.5 inches)
+    public static final double CONTINUOUS_PATH_MIN_SWITCHING_DISTANCE_METERS =
+        Units.inchesToMeters(1.5);
+    // Maximum switching distance (~48 inches)
+    public static final double CONTINUOUS_PATH_MAX_SWITCHING_DISTANCE_METERS =
+        Units.inchesToMeters(48.0);
+    // Max velocity to command for intermediate waypoints during continuous moves
+    public static final double CONTINUOUS_PATH_INTERMEDIATE_VELOCITY = kDriveMaxSpeed;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxXAccelerationMetersPerSecondSquared = 10.0;

@@ -98,11 +98,30 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
   public void updateInputs(VisionIOInputs inputs) {
     // Pose2d estimatedPose = simRobotState.getLatestFieldToRobot();
     Pose2d estimatedPose = RobotState.getGlobalPose();
-    if (estimatedPose != null) {
+    if (estimatedPose != null && isValidPose(estimatedPose)) {
       visionSim.update(estimatedPose);
       Logger.recordOutput("Vision/SimIO/updateSimPose", estimatedPose);
+    } else if (estimatedPose != null) {
+      Logger.recordOutput("Vision/SimIO/InvalidPose", estimatedPose);
     }
 
+    continueUpdateInputs(inputs);
+  }
+
+  /**
+   * Validates that a pose has a valid rotation (non-zero x and y components). PhotonVision's
+   * simulation will crash if given a pose with an invalid rotation.
+   */
+  private boolean isValidPose(Pose2d pose) {
+    double cos = pose.getRotation().getCos();
+    double sin = pose.getRotation().getSin();
+    // Check if both components are zero (invalid) or NaN
+    return !((Math.abs(cos) < 1e-10 && Math.abs(sin) < 1e-10)
+        || Double.isNaN(cos)
+        || Double.isNaN(sin));
+  }
+
+  private void continueUpdateInputs(VisionIOInputs inputs) {
     NetworkTable table =
         NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightATableName);
     NetworkTable tableB =
@@ -173,9 +192,12 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
       List<Double> pose_data = null;
       if (result.getMultiTagResult().isPresent()) {
         var multiTagResult = result.getMultiTagResult().get();
-        Transform3d best = multiTagResult.estimatedPose.best;
+        // multiTagResult.estimatedPose.best is camera-to-field, but getBotpose expects
+        // field-to-camera
+        Transform3d fieldToCamera = multiTagResult.estimatedPose.best.inverse();
 
-        pose_data = getBotpose(best, multiTagResult.fiducialIDsUsed.size(), result, cameraSim);
+        pose_data =
+            getBotpose(fieldToCamera, multiTagResult.fiducialIDsUsed.size(), result, cameraSim);
       } else if (result.hasTargets()) {
         var bestTarget = result.getBestTarget();
         Transform3d best =
@@ -207,5 +229,11 @@ public class VisionIOSimPhoton extends VisionIOHardwareLimelight {
       table.getEntry("cl").setDouble(result.metadata.getLatencyMillis());
     }
     table.getEntry("tv").setInteger(seesTarget ? 1 : 0);
+
+    // Clear pose data when no targets are seen to prevent stale data from being used
+    if (!seesTarget) {
+      table.getEntry("botpose_wpiblue").setDoubleArray(new double[0]);
+      table.getEntry("botpose_orb_wpiblue").setDoubleArray(new double[0]);
+    }
   }
 }

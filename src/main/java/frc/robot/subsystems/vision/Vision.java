@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Field.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.util.RobotTime;
 import java.util.ArrayList;
@@ -170,8 +171,12 @@ public class Vision extends SubsystemBase {
 
     accepted.ifPresent(
         est -> {
-          Logger.recordOutput("Vision/fusedAccepted", est.getVisionRobotPoseMeters());
-          state.updateMegatagEstimate(est);
+          if (isValidVisionEstimate(est)) {
+            Logger.recordOutput("Vision/fusedAccepted", est.getVisionRobotPoseMeters());
+            state.updateMegatagEstimate(est);
+          } else {
+            Logger.recordOutput("Vision/rejectedInvalidEstimate", est.getVisionRobotPoseMeters());
+          }
         });
 
     Logger.recordOutput("Vision/exclusiveTagId", state.getExclusiveTag().orElse(-1));
@@ -703,5 +708,79 @@ public class Vision extends SubsystemBase {
 
   public void setUseVision(boolean useVision) {
     this.useVision = useVision;
+  }
+
+  /**
+   * Validates a vision pose estimate before adding it to the drivetrain odometry. This prevents
+   * invalid poses from corrupting the robot's position estimate.
+   *
+   * @param estimate The vision field pose estimate to validate
+   * @return true if the estimate is valid and safe to use, false otherwise
+   */
+  private boolean isValidVisionEstimate(VisionFieldPoseEstimate estimate) {
+    if (estimate == null) {
+      return false;
+    }
+
+    Pose2d pose = estimate.getVisionRobotPoseMeters();
+    if (pose == null) {
+      return false;
+    }
+
+    // Check for NaN values in position
+    if (Double.isNaN(pose.getX())
+        || Double.isNaN(pose.getY())
+        || Double.isInfinite(pose.getX())
+        || Double.isInfinite(pose.getY())) {
+      Logger.recordOutput("Vision/Rejected/Reason", "NaN or Infinite position");
+      return false;
+    }
+
+    // Check for NaN or invalid rotation
+    double cos = pose.getRotation().getCos();
+    double sin = pose.getRotation().getSin();
+    if (Double.isNaN(cos)
+        || Double.isNaN(sin)
+        || Double.isInfinite(cos)
+        || Double.isInfinite(sin)) {
+      Logger.recordOutput("Vision/Rejected/Reason", "NaN or Infinite rotation");
+      return false;
+    }
+
+    // Check for degenerate rotation (both components near zero)
+    if (Math.abs(cos) < 1e-10 && Math.abs(sin) < 1e-10) {
+      Logger.recordOutput("Vision/Rejected/Reason", "Degenerate rotation");
+      return false;
+    }
+
+    // Reject poses at or very near the origin (likely invalid data)
+    double distanceFromOrigin = Math.hypot(pose.getX(), pose.getY());
+    if (distanceFromOrigin < 0.5) { // Less than 0.5 meters from origin
+      Logger.recordOutput("Vision/Rejected/Reason", "Too close to origin");
+      return false;
+    }
+
+    // Check if pose is within reasonable field boundaries (with generous margins)
+    // Field is approximately 16.5m x 8.2m, add 2m margin on each side
+    double maxX = FieldConstants.fieldLength + 2.0;
+    double maxY = FieldConstants.fieldWidth + 2.0;
+    if (pose.getX() < -2.0 || pose.getX() > maxX || pose.getY() < -2.0 || pose.getY() > maxY) {
+      Logger.recordOutput("Vision/Rejected/Reason", "Outside field boundaries");
+      return false;
+    }
+
+    // Check for valid standard deviations
+    var stdDevs = estimate.getVisionMeasurementStdDevs();
+    if (stdDevs != null) {
+      for (int i = 0; i < stdDevs.getNumRows(); i++) {
+        double val = stdDevs.get(i, 0);
+        if (Double.isNaN(val) || Double.isInfinite(val) || val <= 0) {
+          Logger.recordOutput("Vision/Rejected/Reason", "Invalid standard deviations");
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }
