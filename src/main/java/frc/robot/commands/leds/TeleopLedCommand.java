@@ -11,7 +11,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.led.Led;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import org.littletonrobotics.junction.Logger;
 
 public class TeleopLedCommand extends Command {
@@ -117,58 +117,58 @@ public class TeleopLedCommand extends Command {
     if (state != prevState) {
       switch (state) {
         case CAN_DOWN_DRIVE:
-          led.commandBlinkingState(Color.kYellow, 0.25, LedStrip.LEFT)
+          led.commandBlinkingState(COColor.kYellow, 0.25, LedStrip.LEFT)
               .asProxy()
-              .alongWith(led.commandBlinkingState(Color.kGreen, 0.25, LedStrip.RIGHT).asProxy())
+              .alongWith(led.commandBlinkingState(COColor.kGreen, 0.25, LedStrip.RIGHT).asProxy())
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_DEPLOYING:
-          led.commandBlinkingState(Color.kYellow, 0.25)
+          led.commandBlinkingState(COColor.kYellow, 0.25)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_DEPLOYED:
-          led.commandSolidColor(Color.kYellow).withName("Teleop LED: " + state.name()).schedule();
+          led.commandSolidColor(COColor.kYellow).withName("Teleop LED: " + state.name()).schedule();
           break;
         case CLIMB_CLIMBING:
-          led.commandBlinkingState(Color.kGreen, 0.25)
+          led.commandBlinkingState(COColor.kGreen, 0.25)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case CLIMB_CLIMBED:
-          led.commandSolidColor(Color.kGreen).withName("Teleop LED: " + state.name()).schedule();
+          led.commandSolidColor(COColor.kGreen).withName("Teleop LED: " + state.name()).schedule();
           break;
         case CAN_DOWN_MISC:
-          led.commandBlinkingState(Color.kGreen, 0.25, LedStrip.LEFT)
+          led.commandBlinkingState(COColor.kGreen, 0.25, LedStrip.LEFT)
               .asProxy()
-              .alongWith(led.commandBlinkingState(Color.kYellow, 0.25, LedStrip.RIGHT).asProxy())
+              .alongWith(led.commandBlinkingState(COColor.kYellow, 0.25, LedStrip.RIGHT).asProxy())
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_AND_ALGAE:
-          led.commandSolidColor(Color.kWhite).withName("Teleop LED: " + state.name()).schedule();
+          led.commandSolidColor(COColor.kWhite).withName("Teleop LED: " + state.name()).schedule();
           break;
         case HAS_ALGAE:
           led.commandSetTeal().withName("Teleop LED: " + state.name()).schedule();
           break;
         case HAS_CORAL_L1:
-          led.commandPercentageFull(() -> 7.0 / 16.0, Color.kCOOrangeLed)
+          led.commandPercentageFull(() -> 7.0 / 16.0, COColor.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L2:
-          led.commandPercentageFull(() -> 10.0 / 16.0, Color.kCOOrangeLed)
+          led.commandPercentageFull(() -> 10.0 / 16.0, COColor.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L3:
-          led.commandPercentageFull(() -> 13.0 / 16.0, Color.kCOOrangeLed)
+          led.commandPercentageFull(() -> 13.0 / 16.0, COColor.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;
         case HAS_CORAL_L4:
-          led.commandPercentageFull(() -> 16.0 / 16.0, Color.kCOOrangeLed)
+          led.commandPercentageFull(() -> 16.0 / 16.0, COColor.kCOOrangeLed)
               .withName("Teleop LED: " + state.name())
               .schedule();
           break;

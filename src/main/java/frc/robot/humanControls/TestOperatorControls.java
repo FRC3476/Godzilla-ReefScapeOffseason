@@ -8,7 +8,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
@@ -35,15 +35,15 @@ public class TestOperatorControls {
 
   private void configureTestingStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(Color.kCOOrangePure.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kCOOrangePure.toString(), COColor.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(Color.kCOTealPure.toString(), Color.kWhite.toString(), "");
+        new StreamDeckButtonConfig(COColor.kCOTealPure.toString(), COColor.kWhite.toString(), "");
     StreamDeckButtonConfig grayConfig =
-        new StreamDeckButtonConfig(Color.kGray.toString(), Color.kWhite.toString(), "");
+        new StreamDeckButtonConfig(COColor.kGray.toString(), COColor.kWhite.toString(), "");
     StreamDeckButtonConfig redConfig =
-        new StreamDeckButtonConfig(Color.kRed.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kRed.toString(), COColor.kOff.toString(), "");
     StreamDeckButtonConfig activeConfig =
-        new StreamDeckButtonConfig(Color.kWhite.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kWhite.toString(), COColor.kOff.toString(), "");
 
     // StreamDeckButton swerveXButton =
     //     new StreamDeckButton(3, 7, "Swerve X")

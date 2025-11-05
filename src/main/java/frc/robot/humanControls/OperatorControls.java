@@ -21,7 +21,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
 import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
@@ -58,21 +58,21 @@ public class OperatorControls {
 
   private void configureDriveStreamDeckBindings() {
     StreamDeckButtonConfig orangeConfig =
-        new StreamDeckButtonConfig(Color.kCOOrangePure.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kCOOrangePure.toString(), COColor.kOff.toString(), "");
     StreamDeckButtonConfig tealConfig =
-        new StreamDeckButtonConfig(Color.kCOTealPure.toString(), Color.kWhite.toString(), "");
+        new StreamDeckButtonConfig(COColor.kCOTealPure.toString(), COColor.kWhite.toString(), "");
     StreamDeckButtonConfig tealOnWhiteConfig =
-        new StreamDeckButtonConfig(Color.kWhite.toString(), Color.kCOTealPure.toString(), "");
+        new StreamDeckButtonConfig(COColor.kWhite.toString(), COColor.kCOTealPure.toString(), "");
     StreamDeckButtonConfig orangeOnWhiteConfig =
-        new StreamDeckButtonConfig(Color.kWhite.toString(), Color.kCOOrangePure.toString(), "");
+        new StreamDeckButtonConfig(COColor.kWhite.toString(), COColor.kCOOrangePure.toString(), "");
     StreamDeckButtonConfig redConfig =
-        new StreamDeckButtonConfig(Color.kRed.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kRed.toString(), COColor.kOff.toString(), "");
     StreamDeckButtonConfig yellowConfig =
-        new StreamDeckButtonConfig(Color.kYellow.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kYellow.toString(), COColor.kOff.toString(), "");
     StreamDeckButtonConfig yellowOnBlackConfig =
-        new StreamDeckButtonConfig(Color.kOff.toString(), Color.kYellow.toString(), "");
+        new StreamDeckButtonConfig(COColor.kOff.toString(), COColor.kYellow.toString(), "");
     StreamDeckButtonConfig activeConfig =
-        new StreamDeckButtonConfig(Color.kGreen.toString(), Color.kOff.toString(), "");
+        new StreamDeckButtonConfig(COColor.kGreen.toString(), COColor.kOff.toString(), "");
 
     StreamDeckButton coralL4Button =
         new StreamDeckButton(0, 7, "Coral L4")
@@ -253,10 +253,10 @@ public class OperatorControls {
 
     StreamDeckButton manualOverrideButton =
         new StreamDeckButton(3, 0, "Manual Override")
-            .withInactiveBackground(Color.kOff.toString())
-            .withInactiveForeground(Color.kWhite.toString())
-            .withActiveBackground(Color.kRed.toString())
-            .withActiveForeground(Color.kYellow.toString())
+            .withInactiveBackground(COColor.kOff.toString())
+            .withInactiveForeground(COColor.kWhite.toString())
+            .withActiveBackground(COColor.kRed.toString())
+            .withActiveForeground(COColor.kYellow.toString())
             .withText("MO");
 
     Command homeElevatorButtonCommand =
