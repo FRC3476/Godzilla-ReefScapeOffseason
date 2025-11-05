@@ -3,6 +3,7 @@ package frc.robot.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import edu.wpi.first.math.geometry.*;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /*
@@ -61,7 +62,7 @@ public class MathHelpersTest {
   void testProjection2d() {
     Translation2d a = new Translation2d(3, 4);
     Translation2d b = new Translation2d(1, 0);
-    Translation2d proj = MathHelpers.projectedOnto(a, b);
+    Translation2d proj = MathHelpers.projectOnto(a, b);
     assertEquals(new Translation2d(3, 0), proj);
   }
 
@@ -69,7 +70,7 @@ public class MathHelpersTest {
   void testProjection3d() {
     Translation3d a = new Translation3d(2, 3, 4);
     Translation3d b = new Translation3d(0, 0, 1);
-    Translation3d proj = MathHelpers.projectedOnto(a, b);
+    Translation3d proj = MathHelpers.projectOnto(a, b);
     assertEquals(new Translation3d(0, 0, 4), proj);
   }
 
@@ -77,7 +78,7 @@ public class MathHelpersTest {
   void testProjectionZeroVector2d() {
     Translation2d a = new Translation2d(3, 4);
     Translation2d zero = Translation2d.kZero;
-    Translation2d proj = MathHelpers.projectedOnto(a, zero);
+    Translation2d proj = MathHelpers.projectOnto(a, zero);
     assertEquals(Translation2d.kZero, proj);
   }
 
@@ -233,5 +234,149 @@ public class MathHelpersTest {
     Transform2d tf = MathHelpers.transform2dFromTranslation(trans);
     assertEquals(trans, tf.getTranslation());
     assertEquals(Rotation2d.kZero, tf.getRotation());
+  }
+
+  /* ========================
+   *  LINE INTERSECTION METHOD TESTS
+   * ======================== */
+
+  @Test
+  void testIntersection_basic() {
+    Translation2d p1 = new Translation2d(0, 0);
+    Translation2d p2 = new Translation2d(3, 3);
+    Translation2d q1 = new Translation2d(0, 3);
+    Translation2d q2 = new Translation2d(3, 0);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertTrue(intersection.isPresent());
+    assertEquals(1.5, intersection.get().getX(), 1e-9);
+    assertEquals(1.5, intersection.get().getY(), 1e-9);
+  }
+
+  @Test
+  void testIntersection_parallel_noIntersection() {
+    Translation2d p1 = new Translation2d(0, 0);
+    Translation2d p2 = new Translation2d(2, 0);
+    Translation2d q1 = new Translation2d(0, 1);
+    Translation2d q2 = new Translation2d(2, 1);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertFalse(intersection.isPresent());
+  }
+
+  @Test
+  void testIntersection_nonIntersectingSegments() {
+    Translation2d p1 = new Translation2d(0, 0);
+    Translation2d p2 = new Translation2d(1, 1);
+    Translation2d q1 = new Translation2d(2, 2);
+    Translation2d q2 = new Translation2d(3, 3);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertFalse(intersection.isPresent());
+  }
+
+  @Test
+  void testIntersection_touchingEndpoints() {
+    Translation2d p1 = new Translation2d(0, 0);
+    Translation2d p2 = new Translation2d(2, 2);
+    Translation2d q1 = new Translation2d(2, 2);
+    Translation2d q2 = new Translation2d(3, 0);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertTrue(intersection.isPresent());
+    assertEquals(2, intersection.get().getX(), 1e-9);
+    assertEquals(2, intersection.get().getY(), 1e-9);
+  }
+
+  @Test
+  void testIntersection_collinearOverlapping() {
+    Translation2d p1 = new Translation2d(0, 0);
+    Translation2d p2 = new Translation2d(3, 3);
+    Translation2d q1 = new Translation2d(1, 1);
+    Translation2d q2 = new Translation2d(4, 4);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertTrue(intersection.isPresent());
+    assertEquals(2, intersection.get().getX(), 1e-9);
+    assertEquals(2, intersection.get().getY(), 1e-9); // midpoint of overlap (1,1)-(3,3)
+  }
+
+  @Test
+  void testIntersection_verticalAndHorizontal() {
+    Translation2d p1 = new Translation2d(1, 0);
+    Translation2d p2 = new Translation2d(1, 3);
+    Translation2d q1 = new Translation2d(0, 2);
+    Translation2d q2 = new Translation2d(3, 2);
+
+    Optional<Translation2d> intersection = MathHelpers.lineSegmentIntersection(p1, p2, q1, q2);
+
+    assertTrue(intersection.isPresent());
+    assertEquals(1, intersection.get().getX(), 1e-9);
+    assertEquals(2, intersection.get().getY(), 1e-9);
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_basicIntersection() {
+    Translation2d a1 = new Translation2d(0, 0);
+    Translation2d a2 = new Translation2d(3, 3);
+    Translation2d b1 = new Translation2d(0, 3);
+    Translation2d b2 = new Translation2d(3, 0);
+
+    assertTrue(MathHelpers.doLineSegmentsIntersect(a1, a2, b1, b2));
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_noIntersection() {
+    Translation2d a1 = new Translation2d(0, 0);
+    Translation2d a2 = new Translation2d(1, 1);
+    Translation2d b1 = new Translation2d(2, 2);
+    Translation2d b2 = new Translation2d(3, 3);
+
+    assertFalse(MathHelpers.doLineSegmentsIntersect(a1, a2, b1, b2));
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_collinearOverlapping() {
+    Translation2d a1 = new Translation2d(0, 0);
+    Translation2d a2 = new Translation2d(3, 3);
+    Translation2d b1 = new Translation2d(1, 1);
+    Translation2d b2 = new Translation2d(4, 4);
+
+    assertTrue(MathHelpers.doLineSegmentsIntersect(a1, a2, b1, b2));
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_endpointsTouching() {
+    Translation2d a1 = new Translation2d(0, 0);
+    Translation2d a2 = new Translation2d(2, 2);
+    Translation2d b1 = new Translation2d(2, 2);
+    Translation2d b2 = new Translation2d(3, 0);
+
+    assertTrue(MathHelpers.doLineSegmentsIntersect(a1, a2, b1, b2));
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_parallelNonIntersecting() {
+    Translation2d a1 = new Translation2d(0, 0);
+    Translation2d a2 = new Translation2d(2, 0);
+    Translation2d b1 = new Translation2d(0, 1);
+    Translation2d b2 = new Translation2d(2, 1);
+
+    assertFalse(MathHelpers.doLineSegmentsIntersect(a1, a2, b1, b2));
+  }
+
+  @Test
+  void testDoLineSegmentsIntersect_verticalAndHorizontal() {
+    Translation2d p1 = new Translation2d(1, 0);
+    Translation2d p2 = new Translation2d(1, 3);
+    Translation2d q1 = new Translation2d(0, 2);
+    Translation2d q2 = new Translation2d(3, 2);
+
+    assertTrue(MathHelpers.doLineSegmentsIntersect(p1, p2, q1, q2));
   }
 }

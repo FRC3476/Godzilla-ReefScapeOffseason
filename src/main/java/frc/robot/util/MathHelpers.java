@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.util.Optional;
 
 public class MathHelpers {
 
@@ -80,18 +81,16 @@ public class MathHelpers {
         + first.getZ() * second.getZ();
   }
 
-  public static Translation2d projectedOnto(
-      Translation2d toProject, Translation2d projectDirection) {
-    double normSq = projectDirection.getNorm() * projectDirection.getNorm();
+  public static Translation2d projectOnto(Translation2d toProject, Translation2d projectionTarget) {
+    double normSq = projectionTarget.getNorm() * projectionTarget.getNorm();
     if (normSq == 0) return Translation2d.kZero;
-    return projectDirection.times(dotProduct(toProject, projectDirection) / normSq);
+    return projectionTarget.times(dotProduct(toProject, projectionTarget) / normSq);
   }
 
-  public static Translation3d projectedOnto(
-      Translation3d toProject, Translation3d projectDirection) {
-    double normSq = projectDirection.getNorm() * projectDirection.getNorm();
+  public static Translation3d projectOnto(Translation3d toProject, Translation3d projectionTarget) {
+    double normSq = projectionTarget.getNorm() * projectionTarget.getNorm();
     if (normSq == 0) return Translation3d.kZero;
-    return projectDirection.times(dotProduct(toProject, projectDirection) / normSq);
+    return projectionTarget.times(dotProduct(toProject, projectionTarget) / normSq);
   }
 
   public static int crossProductDirection(Translation2d first, Translation2d second) {
@@ -177,5 +176,126 @@ public class MathHelpers {
     return perpendicularError;
 
     // return -origin.minus(target).getX();
+  }
+
+  /**
+   * Checks if two line segments intersect.
+   *
+   * @param p1 Start of first segment
+   * @param p2 End of first segment
+   * @param q1 Start of second segment
+   * @param q2 End of second segment
+   * @return Optional containing intersection point if segments intersect, empty otherwise
+   */
+  public static Optional<Translation2d> lineSegmentIntersection(
+      Translation2d p1, Translation2d p2, Translation2d q1, Translation2d q2) {
+
+    double a1 = p2.getY() - p1.getY();
+    double b1 = p1.getX() - p2.getX();
+    double c1 = a1 * p1.getX() + b1 * p1.getY();
+
+    double a2 = q2.getY() - q1.getY();
+    double b2 = q1.getX() - q2.getX();
+    double c2 = a2 * q1.getX() + b2 * q1.getY();
+
+    double determinant = a1 * b2 - a2 * b1;
+
+    if (Math.abs(determinant) < 1e-9) {
+      // Lines are parallel or collinear
+      if (Math.abs(a1 * q1.getX() + b1 * q1.getY() - c1) < 1e-9) {
+        // Collinear: check for overlap
+        double minX = Math.max(Math.min(p1.getX(), p2.getX()), Math.min(q1.getX(), q2.getX()));
+        double maxX = Math.min(Math.max(p1.getX(), p2.getX()), Math.max(q1.getX(), q2.getX()));
+        double minY = Math.max(Math.min(p1.getY(), p2.getY()), Math.min(q1.getY(), q2.getY()));
+        double maxY = Math.min(Math.max(p1.getY(), p2.getY()), Math.max(q1.getY(), q2.getY()));
+
+        if (minX <= maxX && minY <= maxY) {
+          // There is overlap, return midpoint of overlapping segment
+          double midX = (minX + maxX) / 2.0;
+          double midY = (minY + maxY) / 2.0;
+          return Optional.of(new Translation2d(midX, midY));
+        }
+      }
+      return Optional.empty(); // Parallel but not overlapping
+    }
+
+    // Compute intersection point
+    double x = (b2 * c1 - b1 * c2) / determinant;
+    double y = (a1 * c2 - a2 * c1) / determinant;
+    Translation2d intersection = new Translation2d(x, y);
+
+    // Check if intersection is within both segments
+    if (isPointOnSegmentForLineSegmentIntersection(intersection, p1, p2)
+        && isPointOnSegmentForLineSegmentIntersection(intersection, q1, q2)) {
+      return Optional.of(intersection);
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  private static boolean isPointOnSegmentForLineSegmentIntersection(
+      Translation2d pt, Translation2d segStart, Translation2d segEnd) {
+    double minX = Math.min(segStart.getX(), segEnd.getX()) - 1e-9;
+    double maxX = Math.max(segStart.getX(), segEnd.getX()) + 1e-9;
+    double minY = Math.min(segStart.getY(), segEnd.getY()) - 1e-9;
+    double maxY = Math.max(segStart.getY(), segEnd.getY()) + 1e-9;
+
+    return pt.getX() >= minX && pt.getX() <= maxX && pt.getY() >= minY && pt.getY() <= maxY;
+  }
+
+  /**
+   * Returns true if two line segments intersect (including collinear overlaps).
+   *
+   * @param p1 Start of first segment
+   * @param p2 End of first segment
+   * @param q1 Start of second segment
+   * @param q2 End of second segment
+   * @return true if segments intersect
+   */
+  public static boolean doLineSegmentsIntersect(
+      Translation2d p1, Translation2d p2, Translation2d q1, Translation2d q2) {
+
+    // General case: check CCW
+    if (ccwForDoLineSegmentsIntersect(p1, q1, q2) != ccwForDoLineSegmentsIntersect(p2, q1, q2)
+        && ccwForDoLineSegmentsIntersect(p1, p2, q1) != ccwForDoLineSegmentsIntersect(p1, p2, q2)) {
+      return true;
+    }
+
+    // Special case: collinear
+    if (isPointOnSegmentForDoLineSegmentsIntersect(p1, q1, q2)) return true;
+    if (isPointOnSegmentForDoLineSegmentsIntersect(p2, q1, q2)) return true;
+    if (isPointOnSegmentForDoLineSegmentsIntersect(q1, p1, p2)) return true;
+    if (isPointOnSegmentForDoLineSegmentsIntersect(q2, p1, p2)) return true;
+
+    return false;
+  }
+
+  /** Checks if points a, b, c are in counter-clockwise order. */
+  private static boolean ccwForDoLineSegmentsIntersect(
+      Translation2d a, Translation2d b, Translation2d c) {
+    return (c.getY() - a.getY()) * (b.getX() - a.getX())
+        > (b.getY() - a.getY()) * (c.getX() - a.getX());
+  }
+
+  /** Returns true if point p is on the line segment ab. */
+  private static boolean isPointOnSegmentForDoLineSegmentsIntersect(
+      Translation2d p, Translation2d a, Translation2d b) {
+    double minX = Math.min(a.getX(), b.getX()) - 1e-9;
+    double maxX = Math.max(a.getX(), b.getX()) + 1e-9;
+    double minY = Math.min(a.getY(), b.getY()) - 1e-9;
+    double maxY = Math.max(a.getY(), b.getY()) + 1e-9;
+
+    return p.getX() >= minX
+        && p.getX() <= maxX
+        && p.getY() >= minY
+        && p.getY() <= maxY
+        && Math.abs(crossForDoLineSegmentsIntersect(a, b, p)) < 1e-9;
+  }
+
+  /** Cross product of vectors AB and AP. */
+  private static double crossForDoLineSegmentsIntersect(
+      Translation2d a, Translation2d b, Translation2d p) {
+    return (b.getX() - a.getX()) * (p.getY() - a.getY())
+        - (b.getY() - a.getY()) * (p.getX() - a.getX());
   }
 }
