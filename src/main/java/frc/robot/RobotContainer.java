@@ -65,6 +65,8 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
 import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
+import frc.robot.viz.RobotViz;
+
 import java.util.function.Consumer;
 
 /**
@@ -87,6 +89,7 @@ public class RobotContainer {
   private final Vision vision;
   private final Led led;
   private final Elevator elevator;
+  private final RobotViz robotViz;
 
   private final Consumer<VisionFieldPoseEstimate> visionEstimateConsumer =
       new Consumer<VisionFieldPoseEstimate>() {
@@ -189,6 +192,8 @@ public class RobotContainer {
 
     // Configure arbitrary triggers
     new ArbitraryTriggers(this, controller, robotState);
+
+    robotViz = new RobotViz(this, robotState);
   }
 
   private void configureButtonBindings() {
@@ -285,5 +290,9 @@ public class RobotContainer {
 
   public RobotState getRobotState() {
     return robotState;
+  }
+
+  public RobotViz getRobotViz() {
+    return robotViz;
   }
 }

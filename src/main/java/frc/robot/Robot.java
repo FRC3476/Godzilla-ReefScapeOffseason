@@ -214,6 +214,7 @@ public class Robot extends LoggedRobot {
     LoopTimingLogger.startTiming("VirtualSubsystems");
     MagicVirtualSubsystem.runPeriodically();
     LoopTimingLogger.endTiming("VirtualSubsystems");
+    robotContainer.getRobotViz().updateViz();
 
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
