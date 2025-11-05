@@ -460,6 +460,8 @@ public final class Constants {
         kElevatorFollowerConfig.config.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kElevatorFollowerConfig.config.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         kElevatorFollowerConfig.config.fxConfig.CurrentLimits.SupplyCurrentLimit = 70.0;
+        kElevatorFollowerConfig.config.fxConfig.MotorOutput.Inverted =
+            InvertedValue.Clockwise_Positive;
       }
 
       public static final ServoMotorSubsystemWithFollowersConfig kElevatorConfig =
