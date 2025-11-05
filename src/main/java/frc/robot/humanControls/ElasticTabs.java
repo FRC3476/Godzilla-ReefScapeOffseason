@@ -23,10 +23,10 @@ import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.led.Led;
-import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.Color;
 import frc.robot.util.Controls.ElasticButton.ElasticTab;
 import frc.robot.util.PoseUtils;
 import java.util.HashMap;
@@ -381,42 +381,40 @@ public class ElasticTabs {
     elasticTabMap.put(key, tab);
 
     tab.addButton("Solid Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed));
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(Color.kRed));
     tab.addButton("Right Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(LedState.kRed, LedStrip.RIGHT));
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(Color.kRed, LedStrip.RIGHT));
     tab.addButton("Left Yellow")
-        .setupOnPressCommandIgnoringDisabled(
-            led.commandSolidColor(LedState.kYellow, LedStrip.LEFT));
+        .setupOnPressCommandIgnoringDisabled(led.commandSolidColor(Color.kYellow, LedStrip.LEFT));
     tab.addButton("Right Red Left Yellow")
         .setupOnPressCommandIgnoringDisabled(
-            led.commandSolidColor(LedState.kRed, LedStrip.RIGHT)
-                .andThen(led.commandSolidColor(LedState.kYellow, LedStrip.LEFT)));
+            led.commandSolidColor(Color.kRed, LedStrip.RIGHT)
+                .andThen(led.commandSolidColor(Color.kYellow, LedStrip.LEFT)));
     tab.addButton("Solid Orange").setupOnPressCommandIgnoringDisabled(led.commandSetOrange());
     tab.addButton("Solid Teal").setupOnPressCommandIgnoringDisabled(led.commandSetTeal());
     tab.addButton("Blink Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandBlinkingState(LedState.kRed, 0.5));
+        .setupOnPressCommandIgnoringDisabled(led.commandBlinkingState(Color.kRed, 0.5));
     tab.addButton("Fire").setupOnPressCommandIgnoringDisabled(led.commandFire());
     tab.addButton("Rainbow").setupOnPressCommandIgnoringDisabled(led.commandRainbow());
     tab.addButton("ColorflowCO").setupOnPressCommandIgnoringDisabled(led.commandColorflowCO());
     tab.addButton("Off").setupOnPressCommandIgnoringDisabled(led.commandOff());
     tab.addButton("Half Orange")
         .setupOnPressCommandIgnoringDisabled(
-            led.commandPercentageFull(() -> 0.5, LedState.kCOOrangeLed));
+            led.commandPercentageFull(() -> 0.5, Color.kCOOrangeLed));
     tab.addButton("Partial Orange")
         .setupOnPressCommandIgnoringDisabled(
-            led.commandSolidColorNumLeds(LedState.kCOOrangeLed, led::getLedsOn));
+            led.commandSolidColorNumLeds(Color.kCOOrangeLed, led::getLedsOn));
     tab.addButton("Larson Blue")
-        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kBlue));
-    tab.addButton("Larson Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandLarson(LedState.kRed));
+        .setupOnPressCommandIgnoringDisabled(led.commandLarson(Color.kBlue));
+    tab.addButton("Larson Red").setupOnPressCommandIgnoringDisabled(led.commandLarson(Color.kRed));
     tab.addButton("Twinkle Off Blue")
-        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, true));
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(Color.kBlue, true));
     tab.addButton("Twinkle Off Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, true));
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(Color.kRed, true));
     tab.addButton("Twinkle Blue")
-        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kBlue, false));
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(Color.kBlue, false));
     tab.addButton("Twinkle Red")
-        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(LedState.kRed, false));
+        .setupOnPressCommandIgnoringDisabled(led.commandTwinkle(Color.kRed, false));
   }
 
   private void buildTestTab() {
