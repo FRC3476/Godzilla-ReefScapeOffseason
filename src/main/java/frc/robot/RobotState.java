@@ -23,7 +23,7 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.PoseObservation;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import frc.robot.util.ConcurrentTimeInterpolatableBuffer;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.MathHelpers;
@@ -344,7 +344,7 @@ public class RobotState extends MagicVirtualSubsystem {
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(RobotState.hpsTracker, RobotState.reefTracker);
 
-  private static Color ledState = Color.kCOOrangePure;
+  private static COColor ledState = COColor.kCOOrangePure;
 
   public static void offerVisionObservation(PoseObservation observation) {
     RobotState.poseObservations.offer(observation);
@@ -695,11 +695,11 @@ public class RobotState extends MagicVirtualSubsystem {
     return speeds;
   }
 
-  public static void setLedState(Color state) {
+  public static void setLedState(COColor state) {
     RobotState.ledState = state;
   }
 
-  public static Color getLedState() {
+  public static COColor getLedState() {
     return RobotState.ledState;
   }
 
@@ -804,7 +804,7 @@ public class RobotState extends MagicVirtualSubsystem {
     // getClawRollerRotations());
 
     // Add LED state logging
-    Color currentLEDState = getLedState();
+    COColor currentLEDState = getLedState();
     Logger.recordOutput(
         "RobotState/LEDState",
         String.format(

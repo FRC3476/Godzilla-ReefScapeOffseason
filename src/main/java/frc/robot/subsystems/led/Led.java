@@ -13,7 +13,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.Climber.ClimbState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -78,7 +78,7 @@ public class Led extends SubsystemBase {
       new LoggedTunableNumber(
           "LED/Low Battery Threshold", Constants.LedConstants.kLowBatteryThresholdVolts);
 
-  public record PercentageSetpoint(double pct, Color color) {}
+  public record PercentageSetpoint(double pct, COColor color) {}
 
   public Led(final LedIO io, RobotState state) {
     this.io = io;
@@ -97,7 +97,7 @@ public class Led extends SubsystemBase {
     Logger.recordOutput("LED/prevState", prevDefaultState);
   }
 
-  public Color getCurrentState() {
+  public COColor getCurrentState() {
     return io.getCurrentState();
   }
 
@@ -106,49 +106,49 @@ public class Led extends SubsystemBase {
   }
 
   /* change runOnce to run in case we have to keep setting the LED color periodically? */
-  public Command commandSolidColor(Color state) {
+  public Command commandSolidColor(COColor state) {
     return runOnce(() -> setSolidColor(state, LedStrip.BOTH))
         .ignoringDisable(true)
         .withName("LED Solid Color");
   }
 
-  public Command commandSolidColor(Color state, LedStrip strip) {
+  public Command commandSolidColor(COColor state, LedStrip strip) {
     return runOnce(() -> setSolidColor(state, strip))
         .ignoringDisable(true)
         .withName("LED Solid Color");
   }
 
-  public Command commandSolidColor(Supplier<Color> state) {
+  public Command commandSolidColor(Supplier<COColor> state) {
     return runOnce(() -> setSolidColor(state.get()))
         .ignoringDisable(true)
         .withName("LED Solid Color");
   }
 
-  public Command commandSolidColorNumLeds(Color state, Supplier<Integer> numLeds) {
+  public Command commandSolidColorNumLeds(COColor state, Supplier<Integer> numLeds) {
     return runOnce(() -> setSolidColorNumLeds(state, numLeds))
         .ignoringDisable(true)
         .withName("LED Solid Color Num Leds");
   }
 
   public Command commandOff() {
-    return commandSolidColor(Color.kOff).withName("Led Off");
+    return commandSolidColor(COColor.kOff).withName("Led Off");
   }
 
   public Command commandSetTeal() {
-    return commandSolidColor(Color.kCOTealLed).withName("Led Teal");
+    return commandSolidColor(COColor.kCOTealLed).withName("Led Teal");
   }
 
   public Command commandSetOrange() {
-    return commandSolidColor(Color.kCOOrangeLed).withName("Led Orange");
+    return commandSolidColor(COColor.kCOOrangeLed).withName("Led Orange");
   }
 
-  public Command commandSolidPattern(Color[] states) {
+  public Command commandSolidPattern(COColor[] states) {
     return runOnce(() -> setSolidPattern(states))
         .ignoringDisable(true)
         .withName("LED Solid Pattern");
   }
 
-  public Command commandPercentageFull(DoubleSupplier percentageFull, Color state) {
+  public Command commandPercentageFull(DoubleSupplier percentageFull, COColor state) {
     return runOnce(() -> setPercentageFull(percentageFull.getAsDouble(), state))
         .ignoringDisable(true);
   }
@@ -159,19 +159,19 @@ public class Led extends SubsystemBase {
         .ignoringDisable(true);
   }
 
-  public Command commandBlinkingState(Color state, double duration) {
+  public Command commandBlinkingState(COColor state, double duration) {
     return this.runOnce(() -> blinkingState(state, duration, LedStrip.BOTH)).ignoringDisable(true);
   }
 
-  public Command commandBlinkingState(Color state, double duration, LedStrip strip) {
+  public Command commandBlinkingState(COColor state, double duration, LedStrip strip) {
     return this.runOnce(() -> blinkingState(state, duration, strip)).ignoringDisable(true);
   }
 
-  public void blinkingState(Color state, double duration) {
+  public void blinkingState(COColor state, double duration) {
     blinkingState(state, duration, LedStrip.BOTH);
   }
 
-  public void blinkingState(Color state, double duration, LedStrip strip) {
+  public void blinkingState(COColor state, double duration, LedStrip strip) {
     this.io.blink(state, duration, strip);
   }
 
@@ -193,30 +193,30 @@ public class Led extends SubsystemBase {
     return this.runOnce(() -> this.io.colorflowCO()).ignoringDisable(true).withName("LED LarsonCO");
   }
 
-  public Command commandLarson(Color state) {
+  public Command commandLarson(COColor state) {
     return this.runOnce(() -> this.io.larson(state)).ignoringDisable(true).withName("LED Larson");
   }
 
-  public Command commandTwinkle(Color state, boolean off) {
+  public Command commandTwinkle(COColor state, boolean off) {
     return this.runOnce(() -> this.io.twinkle(state, off))
         .ignoringDisable(true)
         .withName("LED Twinkle");
   }
 
-  private void setSolidColor(Color state) {
+  private void setSolidColor(COColor state) {
     io.writePixels(state, LedStrip.BOTH);
   }
 
-  private void setSolidColor(Color state, LedStrip strip) {
+  private void setSolidColor(COColor state, LedStrip strip) {
     io.writePixels(state, strip);
   }
 
-  private void setSolidColorNumLeds(Color state, Supplier<Integer> numLeds) {
+  private void setSolidColorNumLeds(COColor state, Supplier<Integer> numLeds) {
     System.out.println(numLeds);
     io.writeNumPixels(state, numLeds);
   }
 
-  private void setSolidPattern(Color[] states) {
+  private void setSolidPattern(COColor[] states) {
     io.writePixels(states);
   }
 
@@ -239,7 +239,7 @@ public class Led extends SubsystemBase {
                       io.rainbow();
                       break;
                     default:
-                      setSolidColor(Color.kOff);
+                      setSolidColor(COColor.kOff);
                       break;
                   }
                   prevDefaultState = defaultState;
@@ -296,45 +296,45 @@ public class Led extends SubsystemBase {
                 if (defaultState != prevDefaultState) {
                   switch (defaultState) {
                     case CAN_DOWN_DRIVE:
-                      blinkingState(Color.kYellow, 0.25, LedStrip.LEFT);
-                      blinkingState(Color.kGreen, 0.25, LedStrip.RIGHT);
+                      blinkingState(COColor.kYellow, 0.25, LedStrip.LEFT);
+                      blinkingState(COColor.kGreen, 0.25, LedStrip.RIGHT);
                       break;
                     case CLIMB_DEPLOYING:
-                      blinkingState(Color.kYellow, 0.1);
+                      blinkingState(COColor.kYellow, 0.1);
                       break;
                     case CLIMB_DEPLOYED:
-                      setSolidColor(Color.kYellow);
+                      setSolidColor(COColor.kYellow);
                       break;
                     case CLIMB_CLIMBING:
-                      blinkingState(Color.kGreen, 0.1);
+                      blinkingState(COColor.kGreen, 0.1);
                       break;
                     case CLIMB_CLIMBED:
-                      setSolidColor(Color.kGreen);
+                      setSolidColor(COColor.kGreen);
                       break;
                     case CAN_DOWN_MISC:
-                      blinkingState(Color.kGreen, 0.25, LedStrip.LEFT);
-                      blinkingState(Color.kYellow, 0.25, LedStrip.RIGHT);
+                      blinkingState(COColor.kGreen, 0.25, LedStrip.LEFT);
+                      blinkingState(COColor.kYellow, 0.25, LedStrip.RIGHT);
                       break;
                     case HAS_CORAL_AND_ALGAE:
-                      setSolidColor(Color.kWhite);
+                      setSolidColor(COColor.kWhite);
                       break;
                     case HAS_ALGAE:
-                      setSolidColor(Color.kCOTealLed);
+                      setSolidColor(COColor.kCOTealLed);
                       break;
                     case HAS_CORAL_L1:
-                      setPercentageFull(7.0 / 16.0, Color.kCOOrangeLed);
+                      setPercentageFull(7.0 / 16.0, COColor.kCOOrangeLed);
                       break;
                     case HAS_CORAL_L2:
-                      setPercentageFull(10.0 / 16.0, Color.kCOOrangeLed);
+                      setPercentageFull(10.0 / 16.0, COColor.kCOOrangeLed);
                       break;
                     case HAS_CORAL_L3:
-                      setPercentageFull(13.0 / 16.0, Color.kCOOrangeLed);
+                      setPercentageFull(13.0 / 16.0, COColor.kCOOrangeLed);
                       break;
                     case HAS_CORAL_L4:
-                      setPercentageFull(16.0 / 16.0, Color.kCOOrangeLed);
+                      setPercentageFull(16.0 / 16.0, COColor.kCOOrangeLed);
                       break;
                     default:
-                      setSolidColor(Color.kOff);
+                      setSolidColor(COColor.kOff);
                       break;
                   }
                 }
@@ -364,19 +364,19 @@ public class Led extends SubsystemBase {
                 if (defaultState != prevDefaultState) {
                   switch (defaultState) {
                     case LOW_BATTERY:
-                      blinkingState(Color.kLowBattery, 0.125);
+                      blinkingState(COColor.kLowBattery, 0.125);
                       break;
                     case DISABLED_RED:
-                      this.io.larson(Color.kRed);
+                      this.io.larson(COColor.kRed);
                       break;
                     case DISABLED_BLUE:
-                      this.io.larson(Color.kBlue);
+                      this.io.larson(COColor.kBlue);
                       break;
                     case DEFAULT_DISABLED:
                       this.io.colorflowCO();
                       break;
                     default:
-                      setSolidColor(Color.kOff);
+                      setSolidColor(COColor.kOff);
                       break;
                   }
                 }
@@ -394,13 +394,13 @@ public class Led extends SubsystemBase {
   //   }
   // }
 
-  private void setPercentageFull(double percent, Color state) {
+  private void setPercentageFull(double percent, COColor state) {
     this.io.percentageFull(percent, state);
   }
 
   @SuppressWarnings("unused")
-  private Color[] mirror(Color[] pixels) {
-    Color[] fullPixels = new Color[Constants.LedConstants.kMaxLEDCount];
+  private COColor[] mirror(COColor[] pixels) {
+    COColor[] fullPixels = new COColor[Constants.LedConstants.kMaxLEDCount];
 
     for (int i = Constants.LedConstants.kCandleLEDCount;
         i

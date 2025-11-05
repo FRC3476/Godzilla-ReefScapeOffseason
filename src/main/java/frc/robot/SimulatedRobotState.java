@@ -11,7 +11,7 @@ import frc.robot.Field.varc.HPSTagTracker;
 import frc.robot.Field.varc.ReefTagTracker;
 import frc.robot.Field.varc.TargetAngleTracker;
 import frc.robot.subsystems.vision.PoseObservation;
-import frc.robot.util.Color;
+import frc.robot.util.COColor;
 import frc.robot.util.MagicVirtualSubsystem;
 import frc.robot.util.PoseUtils;
 import java.util.List;
@@ -36,7 +36,7 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
   private static List<TargetAngleTracker> autoAlignmentTrackers =
       List.of(SimulatedRobotState.hpsTracker, SimulatedRobotState.reefTracker);
 
-  private static Color ledState = Color.kCOOrangePure;
+  private static COColor ledState = COColor.kCOOrangePure;
 
   public static void offerVisionObservation(PoseObservation observation) {
     SimulatedRobotState.poseObservations.offer(observation);
@@ -78,11 +78,11 @@ public class SimulatedRobotState extends MagicVirtualSubsystem {
     return SimulatedRobotState.hpsTracker.getDistanceMeters();
   }
 
-  public static void setLedState(Color state) {
+  public static void setLedState(COColor state) {
     SimulatedRobotState.ledState = state;
   }
 
-  public static Color getLedState() {
+  public static COColor getLedState() {
     return SimulatedRobotState.ledState;
   }
 
