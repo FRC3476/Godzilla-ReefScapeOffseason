@@ -1,6 +1,7 @@
 package frc.robot.subsystems.led;
 
 import frc.robot.Constants.LedConstants.LedStrip;
+import frc.robot.util.Color;
 import java.util.function.Supplier;
 
 public interface LedIO {
@@ -10,21 +11,21 @@ public interface LedIO {
 
   default void update(final LedIO.LedInputs inputs) {}
 
-  default LedState getCurrentState() {
-    return LedState.kOff;
+  default Color getCurrentState() {
+    return Color.kOff;
   }
   ;
 
-  default void writePixels(LedState state, LedStrip strip) {}
+  default void writePixels(Color state, LedStrip strip) {}
   ;
 
-  default void writeNumPixels(LedState state, Supplier<Integer> numLeds) {}
+  default void writeNumPixels(Color state, Supplier<Integer> numLeds) {}
   ;
 
-  default void writePixels(LedState[] states) {}
+  default void writePixels(Color[] states) {}
   ;
 
-  default void blink(LedState state, double duration, LedStrip strip) {}
+  default void blink(Color state, double duration, LedStrip strip) {}
   ;
 
   default void fire() {}
@@ -36,12 +37,12 @@ public interface LedIO {
   default void colorflowCO() {}
   ;
 
-  default void larson(LedState state) {}
+  default void larson(Color state) {}
   ;
 
-  default void twinkle(LedState state, boolean off) {}
+  default void twinkle(Color state, boolean off) {}
   ;
 
-  public default void percentageFull(double percent, LedState state) {}
+  public default void percentageFull(double percent, Color state) {}
   ;
 }

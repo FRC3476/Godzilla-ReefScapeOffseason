@@ -18,16 +18,16 @@ import com.ctre.phoenix6.signals.StripTypeValue;
 import frc.robot.Constants;
 import frc.robot.Constants.LedConstants;
 import frc.robot.Constants.LedConstants.LedStrip;
+import frc.robot.util.Color;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.Supplier;
 
 public class LedIOReal implements LedIO {
   private final CANdle candle;
-  private LedState currentState = LedState.kCOOrangePure;
-  private LedState[] currentPixels =
-      new LedState
-          [Constants.LedConstants.kCandleLEDCount + Constants.LedConstants.kNonCandleLEDCount];
+  private Color currentState = Color.kCOOrangePure;
+  private Color[] currentPixels =
+      new Color[Constants.LedConstants.kCandleLEDCount + Constants.LedConstants.kNonCandleLEDCount];
 
   public LedIOReal() {
     candle = new CANdle(Constants.LedConstants.ID, Constants.RIO_CANBUS);
@@ -37,11 +37,11 @@ public class LedIOReal implements LedIO {
     PhoenixUtil.tryUntilOk(5, () -> candle.getConfigurator().apply(candleConfiguration));
   }
 
-  public LedState getCurrentState() {
+  public Color getCurrentState() {
     return currentState;
   }
 
-  public LedState[] getCurrentPixels() {
+  public Color[] getCurrentPixels() {
     return currentPixels;
   }
 
@@ -60,7 +60,7 @@ public class LedIOReal implements LedIO {
   private void clearLeft() {
     candle.setControl(
         new SolidColor(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
-            .withColor(LedState.kOff.getRGBW()));
+            .withColor(Color.kOff.getRGBW()));
     candle.setControl(new EmptyAnimation(0));
     candle.setControl(new EmptyAnimation(2));
     candle.setControl(new EmptyAnimation(4));
@@ -70,7 +70,7 @@ public class LedIOReal implements LedIO {
   private void clearRight() {
     candle.setControl(
         new SolidColor(LedConstants.kRightLEDStartIdx, LedConstants.kRightLEDEndIdx)
-            .withColor(LedState.kOff.getRGBW()));
+            .withColor(Color.kOff.getRGBW()));
     candle.setControl(new EmptyAnimation(1));
     candle.setControl(new EmptyAnimation(3));
     candle.setControl(new EmptyAnimation(5));
@@ -78,7 +78,7 @@ public class LedIOReal implements LedIO {
   }
 
   @Override
-  public void writePixels(LedState state, LedStrip strip) {
+  public void writePixels(Color state, LedStrip strip) {
 
     switch (strip) {
       case LEFT:
@@ -106,11 +106,11 @@ public class LedIOReal implements LedIO {
   }
 
   @Override
-  public void writeNumPixels(LedState state, Supplier<Integer> numLeds) {
+  public void writeNumPixels(Color state, Supplier<Integer> numLeds) {
     clearLeds();
     candle.setControl(new EmptyAnimation(0));
     candle.setControl(new SolidColor(0, numLeds.get()).withColor(state.getRGBW()));
-    candle.setControl(new SolidColor(numLeds.get(), 399).withColor(LedState.kOff.getRGBW()));
+    candle.setControl(new SolidColor(numLeds.get(), 399).withColor(Color.kOff.getRGBW()));
   }
 
   private static final LoggedTunableNumber fireSparking =
@@ -146,7 +146,7 @@ public class LedIOReal implements LedIO {
       new LoggedTunableNumber("LED/Larson Frame Rate", 30);
 
   @Override
-  public void larson(LedState state) {
+  public void larson(Color state) {
     clearLeds();
     candle.setControl(
         new LarsonAnimation(LedConstants.kLeftLEDStartIdx, LedConstants.kLeftLEDEndIdx)
@@ -182,25 +182,25 @@ public class LedIOReal implements LedIO {
     clearLeds();
     candle.setControl(
         new ColorFlowAnimation(LedConstants.kLeftLEDStartIdx, 15)
-            .withColor(LedState.kCOTealLed.getRGBW())
+            .withColor(Color.kCOTealLed.getRGBW())
             .withFrameRate(colorflowFrameRate.get())
             .withDirection(AnimationDirectionValue.Forward)
             .withSlot(0));
     candle.setControl(
         new ColorFlowAnimation(LedConstants.kRightLEDStartIdx, 31)
-            .withColor(LedState.kCOOrangeLed.getRGBW())
+            .withColor(Color.kCOOrangeLed.getRGBW())
             .withFrameRate(colorflowFrameRate.get())
             .withDirection(AnimationDirectionValue.Forward)
             .withSlot(1));
     candle.setControl(
         new ColorFlowAnimation(16, LedConstants.kLeftLEDEndIdx)
-            .withColor(LedState.kCOOrangeLed.getRGBW())
+            .withColor(Color.kCOOrangeLed.getRGBW())
             .withFrameRate(colorflowFrameRate.get())
             .withDirection(AnimationDirectionValue.Backward)
             .withSlot(2));
     candle.setControl(
         new ColorFlowAnimation(32, LedConstants.kRightLEDEndIdx)
-            .withColor(LedState.kCOTealLed.getRGBW())
+            .withColor(Color.kCOTealLed.getRGBW())
             .withFrameRate(colorflowFrameRate.get())
             .withDirection(AnimationDirectionValue.Backward)
             .withSlot(3));
@@ -212,7 +212,7 @@ public class LedIOReal implements LedIO {
       new LoggedTunableNumber("LED/Twinkle Frame Rate", 30);
 
   @Override
-  public void twinkle(LedState state, boolean off) {
+  public void twinkle(Color state, boolean off) {
     clearLeds();
     candle.setControl(
         off
@@ -253,7 +253,7 @@ public class LedIOReal implements LedIO {
   }
 
   @Override
-  public void blink(LedState state, double duration, LedStrip strip) {
+  public void blink(Color state, double duration, LedStrip strip) {
 
     switch (strip) {
       case LEFT:
@@ -289,7 +289,7 @@ public class LedIOReal implements LedIO {
   }
 
   @Override
-  public void percentageFull(double percent, LedState state) {
+  public void percentageFull(double percent, Color state) {
     clearLeds();
     int leftStart = LedConstants.kLeftLEDStartIdx;
     int rightEnd = LedConstants.kRightLEDEndIdx;
