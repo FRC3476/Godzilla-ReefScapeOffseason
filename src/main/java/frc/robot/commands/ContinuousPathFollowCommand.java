@@ -5,13 +5,13 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.therekrab.autopilot.APConstraints;
 import com.therekrab.autopilot.APProfile;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot;
 import com.therekrab.autopilot.Autopilot.APResult;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,27 +44,41 @@ import org.littletonrobotics.junction.Logger;
  */
 public class ContinuousPathFollowCommand extends Command {
   private final DriveSubsystem drive;
-  private final List<ContinuousWaypoint> waypoints;
+  private List<ContinuousWaypoint> waypoints;
   private int currentWaypointIndex = 0;
   private boolean isAtFinalTarget = false;
   private final boolean resetPositionToStart;
 
+  // PathPlanner path parameters (for deferred loading/flipping)
+  private final String pathName;
+  private final double defaultSwitchingDistanceMeters;
+  private final boolean flipForAlliance;
+  private final boolean isFromPathPlanner;
+
   // Autopilot components for final waypoint PID control
-  private final APConstraints constraints;
-  private final APProfile profile;
-  private final Autopilot autopilot;
+  private APConstraints constraints;
+  private APProfile profile;
+  private Autopilot autopilot;
 
-  // Rotation PID controller (active throughout entire path)
-  private final PIDController headingController =
-      new PIDController(
-          DriveConstants.AUTOPILOT_HEADING_KP,
-          DriveConstants.AUTOPILOT_HEADING_KI,
-          DriveConstants.AUTOPILOT_HEADING_KD);
+  // Custom Autopilot constraints (optional)
+  private Double customVelocity = null;
+  private Double customAcceleration = null;
+  private Double customJerk = null;
 
-  private final ApplyRobotSpeeds robotSpeedsRequest =
-      new ApplyRobotSpeeds()
+  // Custom max velocity for intermediate waypoints (optional)
+  private Double customMaxVelocity = null;
+
+  // Use FieldCentricFacingAngle with BlueAlliance perspective for proper coordinate system
+  private final FieldCentricFacingAngle facingAngleRequest =
+      new FieldCentricFacingAngle()
           .withDriveRequestType(DriveRequestType.Velocity)
-          .withDesaturateWheelSpeeds(true);
+          .withDesaturateWheelSpeeds(true)
+          .withForwardPerspective(
+              ForwardPerspectiveValue.BlueAlliance) // CRITICAL: Match AutoPilot coords!
+          .withHeadingPID(
+              DriveConstants.AUTOPILOT_HEADING_KP,
+              DriveConstants.AUTOPILOT_HEADING_KI,
+              DriveConstants.AUTOPILOT_HEADING_KD);
 
   /**
    * Creates a new ContinuousPathFollowCommand.
@@ -75,12 +89,129 @@ public class ContinuousPathFollowCommand extends Command {
    * @param resetPositionToStart If true, resets robot odometry to the first waypoint pose on
    *     initialize
    */
+  /** Internal constructor for PathPlanner paths (defers waypoint creation until initialize). */
+  private ContinuousPathFollowCommand(
+      DriveSubsystem drive,
+      String pathName,
+      double defaultSwitchingDistanceMeters,
+      boolean resetPositionToStart,
+      boolean flipForAlliance) {
+    this.drive = drive;
+    this.waypoints = null; // Will be created in initialize()
+    this.resetPositionToStart = resetPositionToStart;
+    this.pathName = pathName;
+    this.defaultSwitchingDistanceMeters = defaultSwitchingDistanceMeters;
+    this.flipForAlliance = flipForAlliance;
+    this.isFromPathPlanner = true;
+
+    // Initialize AutoPilot for final waypoint control
+    this.constraints =
+        new APConstraints()
+            .withVelocity(DriveConstants.kDriveMaxSpeed)
+            .withAcceleration(DriveConstants.AUTOPILOT_MAX_ACCELERATION)
+            .withJerk(DriveConstants.AUTOPILOT_MAX_JERK);
+
+    this.profile =
+        new APProfile(constraints)
+            .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
+            .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
+            .withBeelineRadius(
+                Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
+
+    this.autopilot = new Autopilot(profile);
+
+    addRequirements(drive);
+  }
+
+  /**
+   * Sets custom Autopilot constraints for the final waypoint control.
+   *
+   * <p>This allows fine-tuning of the final approach behavior without affecting intermediate
+   * waypoint navigation.
+   *
+   * @param velocity Maximum velocity in meters per second
+   * @param acceleration Maximum acceleration in meters per second squared
+   * @param jerk Maximum jerk in meters per second cubed
+   * @return This command (for method chaining)
+   */
+  public ContinuousPathFollowCommand withFinalAPConstraints(
+      double velocity, double acceleration, double jerk) {
+    this.customVelocity = velocity;
+    this.customAcceleration = acceleration;
+    this.customJerk = jerk;
+    return this;
+  }
+
+  /**
+   * Sets custom maximum velocity for intermediate waypoints during continuous moves.
+   *
+   * <p>This allows you to slow down or speed up the robot's travel speed through intermediate
+   * waypoints. Does not affect the final waypoint, which uses Autopilot PID.
+   *
+   * @param maxVelocity Maximum velocity in meters per second for intermediate waypoints
+   * @return This command (for method chaining)
+   */
+  public ContinuousPathFollowCommand withMaxVelocity(double maxVelocity) {
+    this.customMaxVelocity = maxVelocity;
+    return this;
+  }
+
+  /** Rebuilds the Autopilot with current constraints (default or custom). */
+  private void rebuildAutopilot() {
+    // Use custom constraints if set, otherwise use defaults
+    double vel = (customVelocity != null) ? customVelocity : DriveConstants.kDriveMaxSpeed;
+    double accel =
+        (customAcceleration != null)
+            ? customAcceleration
+            : DriveConstants.AUTOPILOT_MAX_ACCELERATION;
+    double jerk = (customJerk != null) ? customJerk : DriveConstants.AUTOPILOT_MAX_JERK;
+
+    this.constraints = new APConstraints().withVelocity(vel).withAcceleration(accel).withJerk(jerk);
+
+    this.profile =
+        new APProfile(constraints)
+            .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
+            .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
+            .withBeelineRadius(
+                Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
+
+    this.autopilot = new Autopilot(profile);
+  }
+
+  /** Public constructor for direct waypoint lists. */
   public ContinuousPathFollowCommand(
       DriveSubsystem drive, List<ContinuousWaypoint> waypoints, boolean resetPositionToStart) {
     this.drive = drive;
     this.waypoints = new ArrayList<>(waypoints);
     this.resetPositionToStart = resetPositionToStart;
+    this.pathName = null;
+    this.defaultSwitchingDistanceMeters = 0;
+    this.flipForAlliance = false;
+    this.isFromPathPlanner = false;
 
+    validateWaypoints(waypoints);
+
+    // Initialize AutoPilot for final waypoint control
+    this.constraints =
+        new APConstraints()
+            .withVelocity(DriveConstants.kDriveMaxSpeed)
+            .withAcceleration(DriveConstants.AUTOPILOT_MAX_ACCELERATION)
+            .withJerk(DriveConstants.AUTOPILOT_MAX_JERK);
+
+    this.profile =
+        new APProfile(constraints)
+            .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
+            .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
+            .withBeelineRadius(
+                Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
+
+    this.autopilot = new Autopilot(profile);
+
+    addRequirements(drive);
+  }
+
+  /** Validates that waypoints are properly formatted. */
+  private void validateWaypoints(List<ContinuousWaypoint> waypoints) {
     if (waypoints.size() < 2) {
       throw new IllegalArgumentException(
           "Continuous path must have at least 2 waypoints. Use DriveToPoseAutopilotCommand for single pose navigation.");
@@ -100,27 +231,6 @@ public class ContinuousPathFollowCommand extends Command {
       throw new IllegalArgumentException(
           "The last waypoint must be marked as final. Use ContinuousWaypoint.finalWaypoint() for the last waypoint.");
     }
-
-    // Initialize AutoPilot for final waypoint control
-    this.constraints =
-        new APConstraints()
-            .withVelocity(DriveConstants.kDriveMaxSpeed)
-            .withAcceleration(DriveConstants.AUTOPILOT_MAX_ACCELERATION)
-            .withJerk(DriveConstants.AUTOPILOT_MAX_JERK);
-
-    this.profile =
-        new APProfile(constraints)
-            .withErrorXY(Centimeters.of(DriveConstants.AUTOPILOT_ERROR_XY_METERS * 100))
-            .withErrorTheta(Degrees.of(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES))
-            .withBeelineRadius(
-                Centimeters.of(DriveConstants.AUTOPILOT_BEELINE_RADIUS_METERS * 100));
-
-    this.autopilot = new Autopilot(profile);
-
-    headingController.enableContinuousInput(-Math.PI, Math.PI);
-    headingController.setTolerance(Math.toRadians(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES));
-
-    addRequirements(drive);
   }
 
   /**
@@ -246,13 +356,9 @@ public class ContinuousPathFollowCommand extends Command {
       double defaultSwitchingDistanceMeters,
       boolean resetPositionToStart,
       boolean flipForAlliance) {
-    try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      return fromPathPlannerPath(
-          drive, path, defaultSwitchingDistanceMeters, resetPositionToStart, flipForAlliance);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load PathPlanner path: " + pathName, e);
-    }
+    // Use private constructor that defers path loading until initialize()
+    return new ContinuousPathFollowCommand(
+        drive, pathName, defaultSwitchingDistanceMeters, resetPositionToStart, flipForAlliance);
   }
 
   /**
@@ -336,42 +442,9 @@ public class ContinuousPathFollowCommand extends Command {
     return fromPathPlannerPath(drive, pathName, false, true);
   }
 
-  /**
-   * Creates a continuous path from an already loaded PathPlanner path.
-   *
-   * @param drive The drive subsystem
-   * @param path The PathPlanner path
-   * @param defaultSwitchingDistanceMeters Switching distance for intermediate waypoints
-   * @param resetPositionToStart If true, resets robot odometry to the first waypoint pose
-   * @param flipForAlliance If true, flips the path for red alliance
-   * @return A new ContinuousPathFollowCommand
-   */
-  public static ContinuousPathFollowCommand fromPathPlannerPath(
-      DriveSubsystem drive,
-      PathPlannerPath path,
-      double defaultSwitchingDistanceMeters,
-      boolean resetPositionToStart,
-      boolean flipForAlliance) {
-    // Flip path if needed for red alliance
-    boolean shouldFlip =
-        flipForAlliance
-            && DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
-
-    if (shouldFlip) {
-      path = path.flipPath();
-      Logger.recordOutput("ContinuousPathFollow/PathFlipped", true);
-      Logger.recordOutput(
-          "ContinuousPathFollow/Alliance", DriverStation.getAlliance().get().toString());
-    } else {
-      Logger.recordOutput("ContinuousPathFollow/PathFlipped", false);
-      Logger.recordOutput(
-          "ContinuousPathFollow/Alliance",
-          DriverStation.getAlliance().isPresent()
-              ? DriverStation.getAlliance().get().toString()
-              : "None");
-      Logger.recordOutput("ContinuousPathFollow/FlipForAllianceFlag", flipForAlliance);
-    }
+  /** Extracts waypoints from a PathPlanner path. */
+  private static List<ContinuousWaypoint> extractWaypointsFromPath(
+      PathPlannerPath path, double defaultSwitchingDistanceMeters) {
     // Extract waypoint poses from PathPlanner path
     List<Pose2d> poses = new ArrayList<>();
 
@@ -455,54 +528,72 @@ public class ContinuousPathFollowCommand extends Command {
       poses.add(new Pose2d(position, rotation));
     }
 
-    // Create the command with the reset flag
+    // Create waypoints from poses
     List<ContinuousWaypoint> waypoints = new ArrayList<>();
     for (int i = 0; i < poses.size() - 1; i++) {
       waypoints.add(new ContinuousWaypoint(poses.get(i), defaultSwitchingDistanceMeters, false));
     }
     waypoints.add(ContinuousWaypoint.finalWaypoint(poses.get(poses.size() - 1)));
 
-    return new ContinuousPathFollowCommand(drive, waypoints, resetPositionToStart);
-  }
-
-  /**
-   * Creates a continuous path from an already loaded PathPlanner path with alliance flipping
-   * enabled by default.
-   *
-   * @param drive The drive subsystem
-   * @param path The PathPlanner path
-   * @param defaultSwitchingDistanceMeters Switching distance for intermediate waypoints
-   * @param resetPositionToStart If true, resets robot odometry to the first waypoint pose
-   * @return A new ContinuousPathFollowCommand
-   */
-  public static ContinuousPathFollowCommand fromPathPlannerPath(
-      DriveSubsystem drive,
-      PathPlannerPath path,
-      double defaultSwitchingDistanceMeters,
-      boolean resetPositionToStart) {
-    return fromPathPlannerPath(
-        drive, path, defaultSwitchingDistanceMeters, resetPositionToStart, true);
-  }
-
-  /**
-   * Creates a continuous path from an already loaded PathPlanner path without resetting position,
-   * with alliance flipping enabled by default.
-   *
-   * @param drive The drive subsystem
-   * @param path The PathPlanner path
-   * @param defaultSwitchingDistanceMeters Switching distance for intermediate waypoints
-   * @return A new ContinuousPathFollowCommand
-   */
-  public static ContinuousPathFollowCommand fromPathPlannerPath(
-      DriveSubsystem drive, PathPlannerPath path, double defaultSwitchingDistanceMeters) {
-    return fromPathPlannerPath(drive, path, defaultSwitchingDistanceMeters, false, true);
+    return waypoints;
   }
 
   @Override
   public void initialize() {
+    // If this is a PathPlanner path, load and flip it NOW (respecting current alliance color)
+    if (isFromPathPlanner) {
+      try {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+        // Check alliance color NOW, not at construction time
+        boolean shouldFlip =
+            flipForAlliance
+                && DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+
+        if (shouldFlip) {
+          path = path.flipPath();
+          Logger.recordOutput("ContinuousPathFollow/PathFlipped", true);
+          Logger.recordOutput(
+              "ContinuousPathFollow/Alliance", DriverStation.getAlliance().get().toString());
+        } else {
+          Logger.recordOutput("ContinuousPathFollow/PathFlipped", false);
+          Logger.recordOutput(
+              "ContinuousPathFollow/Alliance",
+              DriverStation.getAlliance().isPresent()
+                  ? DriverStation.getAlliance().get().toString()
+                  : "None");
+          Logger.recordOutput("ContinuousPathFollow/FlipForAllianceFlag", flipForAlliance);
+        }
+
+        // Extract waypoints from the path
+        waypoints = extractWaypointsFromPath(path, defaultSwitchingDistanceMeters);
+        validateWaypoints(waypoints);
+
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to load PathPlanner path: " + pathName, e);
+      }
+    }
+
+    // Rebuild Autopilot with custom constraints if they were set
+    if (customVelocity != null || customAcceleration != null || customJerk != null) {
+      rebuildAutopilot();
+      Logger.recordOutput("Commands/" + getName() + "/CustomAPConstraints", true);
+      Logger.recordOutput(
+          "Commands/" + getName() + "/APVelocity",
+          customVelocity != null ? customVelocity : DriveConstants.kDriveMaxSpeed);
+      Logger.recordOutput(
+          "Commands/" + getName() + "/APAcceleration",
+          customAcceleration != null
+              ? customAcceleration
+              : DriveConstants.AUTOPILOT_MAX_ACCELERATION);
+      Logger.recordOutput(
+          "Commands/" + getName() + "/APJerk",
+          customJerk != null ? customJerk : DriveConstants.AUTOPILOT_MAX_JERK);
+    }
+
     currentWaypointIndex = 0;
     isAtFinalTarget = false;
-    headingController.reset();
 
     // Reset robot position to first waypoint if flag is set
     if (resetPositionToStart && !waypoints.isEmpty()) {
@@ -564,26 +655,25 @@ public class ContinuousPathFollowCommand extends Command {
           Math.atan2(
               targetPose.getY() - currentPose.getY(), targetPose.getX() - currentPose.getX());
 
-      // Command full velocity in the direction of the target
-      double velocity = DriveConstants.CONTINUOUS_PATH_INTERMEDIATE_VELOCITY;
+      // Command velocity in the direction of the target (use custom if set)
+      double velocity =
+          (customMaxVelocity != null)
+              ? customMaxVelocity
+              : DriveConstants.CONTINUOUS_PATH_INTERMEDIATE_VELOCITY;
       vxFieldRelative = velocity * Math.cos(angleToTarget);
       vyFieldRelative = velocity * Math.sin(angleToTarget);
 
       isAtFinalTarget = false;
     }
 
-    // Calculate heading control (ALWAYS ACTIVE for all waypoints)
-    double headingVelocity =
-        headingController.calculate(
-            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-
-    // Convert field-relative velocities to robot-relative
-    ChassisSpeeds speeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            vxFieldRelative, vyFieldRelative, headingVelocity, currentPose.getRotation());
-
-    // Apply robot-relative speeds
-    drive.setControl(robotSpeedsRequest.withSpeeds(speeds));
+    // Apply field-relative velocities with FieldCentricFacingAngle
+    // With ForwardPerspective set to BlueAlliance, this matches AutoPilot's coordinate system
+    // CTRE handles heading control internally
+    drive.setControl(
+        facingAngleRequest
+            .withVelocityX(vxFieldRelative)
+            .withVelocityY(vyFieldRelative)
+            .withTargetDirection(targetPose.getRotation()));
 
     // Comprehensive logging
     Logger.recordOutput("Commands/" + getName() + "/CurrentWaypointIndex", currentWaypointIndex);
@@ -597,15 +687,23 @@ public class ContinuousPathFollowCommand extends Command {
         "Commands/" + getName() + "/IsFinalWaypoint", currentWaypoint.isFinalWaypoint());
     Logger.recordOutput("Commands/" + getName() + "/FieldRelVelX", vxFieldRelative);
     Logger.recordOutput("Commands/" + getName() + "/FieldRelVelY", vyFieldRelative);
-    Logger.recordOutput("Commands/" + getName() + "/HeadingVelocity", headingVelocity);
-    Logger.recordOutput("Commands/" + getName() + "/AppliedSpeeds", speeds);
+    Logger.recordOutput("Commands/" + getName() + "/TargetRotation", targetPose.getRotation());
     Logger.recordOutput("Commands/" + getName() + "/AtFinalTarget", isAtFinalTarget);
+    Logger.recordOutput(
+        "Commands/" + getName() + "/MaxVelocity",
+        customMaxVelocity != null
+            ? customMaxVelocity
+            : DriveConstants.CONTINUOUS_PATH_INTERMEDIATE_VELOCITY);
   }
 
   @Override
   public void end(boolean interrupted) {
     // Stop the robot
-    drive.setControl(robotSpeedsRequest.withSpeeds(new ChassisSpeeds()));
+    drive.setControl(
+        facingAngleRequest
+            .withVelocityX(0.0)
+            .withVelocityY(0.0)
+            .withTargetDirection(RobotState.getGlobalPose().getRotation()));
 
     Logger.recordOutput("Commands/" + getName() + "/Active", false);
     Logger.recordOutput("Commands/" + getName() + "/Interrupted", interrupted);

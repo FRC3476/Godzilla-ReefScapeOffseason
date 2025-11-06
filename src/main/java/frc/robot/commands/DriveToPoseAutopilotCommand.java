@@ -5,13 +5,13 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.therekrab.autopilot.APConstraints;
 import com.therekrab.autopilot.APProfile;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot;
 import com.therekrab.autopilot.Autopilot.APResult;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,16 +38,16 @@ public class DriveToPoseAutopilotCommand extends Command {
   // Track if we're at target to ensure proper stopping
   private boolean isAtTarget = false;
 
-  private final ApplyRobotSpeeds robotSpeedsRequest =
-      new ApplyRobotSpeeds()
+  private final FieldCentricFacingAngle facingAngleRequest =
+      new FieldCentricFacingAngle()
           .withDriveRequestType(DriveRequestType.Velocity)
-          .withDesaturateWheelSpeeds(true);
-
-  private final PIDController headingController =
-      new PIDController(
-          DriveConstants.AUTOPILOT_HEADING_KP,
-          DriveConstants.AUTOPILOT_HEADING_KI,
-          DriveConstants.AUTOPILOT_HEADING_KD);
+          .withDesaturateWheelSpeeds(true)
+          .withForwardPerspective(
+              ForwardPerspectiveValue.BlueAlliance) // CRITICAL: Match AutoPilot coords!
+          .withHeadingPID(
+              DriveConstants.AUTOPILOT_HEADING_KP,
+              DriveConstants.AUTOPILOT_HEADING_KI,
+              DriveConstants.AUTOPILOT_HEADING_KD);
 
   /**
    * Creates a new DriveToPoseAutopilotCommand.
@@ -75,9 +75,6 @@ public class DriveToPoseAutopilotCommand extends Command {
 
     this.autopilot = new Autopilot(profile);
 
-    headingController.enableContinuousInput(-Math.PI, Math.PI);
-    headingController.setTolerance(Math.toRadians(DriveConstants.AUTOPILOT_ERROR_THETA_DEGREES));
-
     addRequirements(drive);
   }
 
@@ -94,7 +91,6 @@ public class DriveToPoseAutopilotCommand extends Command {
   @Override
   public void initialize() {
     isAtTarget = false;
-    headingController.reset();
     Logger.recordOutput("Commands/" + getName() + "/Active", true);
   }
 
@@ -121,21 +117,13 @@ public class DriveToPoseAutopilotCommand extends Command {
     // Check if we're at target
     isAtTarget = autopilot.atTarget(currentPose, target);
 
-    // Calculate heading control
-    double headingVelocity =
-        headingController.calculate(
-            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-
-    // Convert field-relative velocities to robot-relative
-    ChassisSpeeds speeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            result.vx().in(MetersPerSecond),
-            result.vy().in(MetersPerSecond),
-            headingVelocity,
-            currentPose.getRotation());
-
-    // Apply robot-relative speeds
-    drive.setControl(robotSpeedsRequest.withSpeeds(speeds));
+    // Apply field-relative velocities with FieldCentricFacingAngle
+    // With ForwardPerspective set to BlueAlliance, this should match AutoPilot's coordinate system
+    drive.setControl(
+        facingAngleRequest
+            .withVelocityX(result.vx().in(MetersPerSecond))
+            .withVelocityY(result.vy().in(MetersPerSecond))
+            .withTargetDirection(result.targetAngle()));
 
     // Log telemetry
     Logger.recordOutput("Commands/" + getName() + "/CurrentPose", currentPose);
@@ -146,8 +134,6 @@ public class DriveToPoseAutopilotCommand extends Command {
     Logger.recordOutput("Commands/" + getName() + "/RobotRelativeSpeeds", robotRelativeSpeeds);
     Logger.recordOutput("Commands/" + getName() + "/FieldRelVelX", result.vx());
     Logger.recordOutput("Commands/" + getName() + "/FieldRelVelY", result.vy());
-    Logger.recordOutput("Commands/" + getName() + "/HeadingVelocity", headingVelocity);
-    Logger.recordOutput("Commands/" + getName() + "/AppliedSpeeds", speeds);
     Logger.recordOutput("Commands/" + getName() + "/CurrentRotation", currentPose.getRotation());
     Logger.recordOutput("Commands/" + getName() + "/TargetAngle", result.targetAngle());
     Logger.recordOutput("Commands/" + getName() + "/AtTarget", isAtTarget);
@@ -156,7 +142,11 @@ public class DriveToPoseAutopilotCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // Stop the robot
-    drive.setControl(robotSpeedsRequest.withSpeeds(new ChassisSpeeds()));
+    drive.setControl(
+        facingAngleRequest
+            .withVelocityX(0.0)
+            .withVelocityY(0.0)
+            .withTargetDirection(RobotState.getGlobalPose().getRotation()));
 
     Logger.recordOutput("Commands/" + getName() + "/Active", false);
     Logger.recordOutput("Commands/" + getName() + "/Interrupted", interrupted);
