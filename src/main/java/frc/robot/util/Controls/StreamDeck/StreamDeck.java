@@ -3,6 +3,7 @@ package frc.robot.util.Controls.StreamDeck;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,7 +27,7 @@ public class StreamDeck extends SubsystemBase {
       LoggedNetworkBoolean toggled,
       BooleanSupplier selected,
       BooleanPublisher activePub,
-      ButtonType type) {}
+      StreamDeckButtonType type) {}
 
   @Override
   public void periodic() {
@@ -34,7 +35,7 @@ public class StreamDeck extends SubsystemBase {
         .values()
         .forEach(
             button -> {
-              if (button.type == ButtonType.TOGGLE
+              if (button.type == StreamDeckButtonType.TOGGLE
                   && button.pressed.get()
                   && !button.pressedPrev.get()) {
                 button.toggled.set(!button.toggled.get());
@@ -81,7 +82,7 @@ public class StreamDeck extends SubsystemBase {
     configuration.buttonConfigurations.forEach(
         (button, pair) -> {
           Optional<BooleanSupplier> selected = pair.getFirst();
-          ButtonType type = pair.getSecond();
+          StreamDeckButtonType type = pair.getSecond();
           var table = deckTable.getSubTable("Button/" + button.getIndex());
           List<String> dataToPublish = button.getDataToPublish();
           IntStream.range(0, Math.min(networkTableKeys.size(), dataToPublish.size()))
@@ -103,7 +104,7 @@ public class StreamDeck extends SubsystemBase {
                   loggedBooleanPrev,
                   loggedBooleanToggled,
                   selected.orElse(
-                      type == ButtonType.TOGGLE
+                      type == StreamDeckButtonType.TOGGLE
                           ? () -> loggedBooleanToggled.get()
                           : loggedBoolean::get),
                   table.getBooleanTopic("Selected").publish(),
@@ -113,6 +114,31 @@ public class StreamDeck extends SubsystemBase {
     deckTable.getIntegerTopic("LastModified").publish().set(Logger.getTimestamp());
 
     return this;
+  }
+
+  public Trigger button(String key) {
+    for (StreamDeckButton button : buttonMap.keySet()) {
+      if (button.getKey() == key) {
+        return this.button(button);
+      }
+    }
+    StreamDeckAlert.warning(
+              "Stream Deck button trigger added for invalid button key " + key)
+          .enable();
+    return new Trigger(() -> false); 
+  }
+
+  public Trigger button(int row, int column) {
+    int index = StreamDeckButton.calculate_index(row, column);
+    for (StreamDeckButton button : buttonMap.keySet()) {
+      if (button.getIndex() == index) {
+        return this.button(button);
+      }
+    }
+    StreamDeckAlert.warning(
+              "Stream Deck button trigger added for invalid button index " + index)
+          .enable();
+    return new Trigger(() -> false); 
   }
 
   public Trigger button(StreamDeckButton button) {
@@ -129,31 +155,131 @@ public class StreamDeck extends SubsystemBase {
   // public ButtonGroup buttonGroup() {
   //   return new ButtonGroup();
   // }
+  
+  // add non-custom button without commands
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button) {
+    assert buttonType != StreamDeckButtonType.CUSTOM;
+    return this.addButton(buttonType, button, () -> false, Set.of());
+  }
+  
+  // add non-custom button with one command
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, StreamDeckCommand streamDeckCommand) {
+    assert buttonType != StreamDeckButtonType.CUSTOM;
+    return this.addButton(buttonType, button, () -> false, streamDeckCommand);
+  }
+  
+  // add non-custom button with commands
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, Set<StreamDeckCommand> streamDeckCommands) {
+    assert buttonType != StreamDeckButtonType.CUSTOM;
+    return this.addButton(buttonType, button, () -> false, streamDeckCommands);
+  }
+  
+  // add custom button without commands
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier) {
+    assert buttonType == StreamDeckButtonType.CUSTOM;
+    return this.addButton(buttonType, button, activeSupplier, Set.of());
+  }
+  
+  // add custom button with one command
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier, StreamDeckCommand streamDeckCommand) {
+    assert buttonType == StreamDeckButtonType.CUSTOM;
+    return this.addButton(buttonType, button, activeSupplier, Set.of(streamDeckCommand));
+  }
+  
+  // add a button
+  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier, Set<StreamDeckCommand> streamDeckCommands) {
+    // setup button
+    switch (buttonType) {
+      case DISPLAY:
+        this.configureCustomButtons(Map.of(button, () -> false));
+      case PRESS:
+        this.configureDefaultButtons(Set.of(button));
+        break;
+      case TOGGLE:
+        this.configureToggleButtons(Set.of(button));
+        break;
+      case CUSTOM:
+        this.configureCustomButtons(Map.of(button, activeSupplier));
+        break;
+    }
 
-  public enum ButtonType {
+    Trigger buttonTrigger = this.button(button);
+
+    // bind button triggers
+    for (StreamDeckCommand sdc : streamDeckCommands) {
+      Command command = sdc.getCommand();
+      command = command.withName(
+        command.getName()
+        + " | from SD button "
+        + button.getKey()
+        + " " + sdc.commandType.toString());
+      switch (sdc.commandType) {
+        case NONE:
+          continue;
+        case ON_TRUE:
+          buttonTrigger.onTrue(sdc.getCommand());
+          break;
+        case ON_FALSE:
+          buttonTrigger.onFalse(sdc.getCommand());
+          break;
+        case WHILE_TRUE:
+          buttonTrigger.whileTrue(sdc.getCommand());
+          break;
+        case WHILE_FALSE:
+          buttonTrigger.whileFalse(sdc.getCommand());
+          break;
+      }
+    }
+    return this;
+  }
+
+  public static class StreamDeckCommand {
+    private CommandType commandType;
+    private Command command;
+
+    public StreamDeckCommand(CommandType commandType, Command command) {
+      this.commandType = commandType;
+      this.command = command;
+    }
+    public Command getCommand() {
+      return command;
+    }
+
+  }
+
+  public enum CommandType {
+    NONE,
+    ON_TRUE,
+    ON_FALSE,
+    WHILE_TRUE,
+    WHILE_FALSE
+  }
+
+  public enum StreamDeckButtonType {
+    DISPLAY,
     PRESS,
     TOGGLE,
     CUSTOM
   }
 
   public class ButtonConfiguration {
-    private final Map<StreamDeckButton, Pair<Optional<BooleanSupplier>, ButtonType>>
+    private final Map<StreamDeckButton, Pair<Optional<BooleanSupplier>, StreamDeckButtonType>>
         buttonConfigurations = new HashMap<>();
 
     private ButtonConfiguration() {}
 
     public ButtonConfiguration addDefault(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.PRESS));
+      buttonConfigurations.put(button, Pair.of(Optional.empty(), StreamDeckButtonType.PRESS));
       return this;
     }
 
     public ButtonConfiguration addToggle(StreamDeckButton button) {
-      buttonConfigurations.put(button, Pair.of(Optional.empty(), ButtonType.TOGGLE));
+      buttonConfigurations.put(button, Pair.of(Optional.empty(), StreamDeckButtonType.TOGGLE));
       return this;
     }
 
     public ButtonConfiguration add(StreamDeckButton button, BooleanSupplier selected) {
-      buttonConfigurations.put(button, Pair.of(Optional.of(selected), ButtonType.CUSTOM));
+      buttonConfigurations.put(button, Pair.of(Optional.of(selected), StreamDeckButtonType.CUSTOM));
       return this;
     }
   }
