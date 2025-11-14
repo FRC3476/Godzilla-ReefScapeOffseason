@@ -21,7 +21,7 @@ public class StreamDeckButton {
     this.key = key;
   }
 
-  public static int calculate_index(int row, int col){
+  public static int calculate_index(int row, int col) {
     return row * 8 + col % 8;
   }
 

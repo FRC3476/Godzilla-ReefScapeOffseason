@@ -122,10 +122,9 @@ public class StreamDeck extends SubsystemBase {
         return this.button(button);
       }
     }
-    StreamDeckAlert.warning(
-              "Stream Deck button trigger added for invalid button key " + key)
-          .enable();
-    return new Trigger(() -> false); 
+    StreamDeckAlert.warning("Stream Deck button trigger added for invalid button key " + key)
+        .enable();
+    return new Trigger(() -> false);
   }
 
   public Trigger button(int row, int column) {
@@ -135,10 +134,9 @@ public class StreamDeck extends SubsystemBase {
         return this.button(button);
       }
     }
-    StreamDeckAlert.warning(
-              "Stream Deck button trigger added for invalid button index " + index)
-          .enable();
-    return new Trigger(() -> false); 
+    StreamDeckAlert.warning("Stream Deck button trigger added for invalid button index " + index)
+        .enable();
+    return new Trigger(() -> false);
   }
 
   public Trigger button(StreamDeckButton button) {
@@ -155,39 +153,54 @@ public class StreamDeck extends SubsystemBase {
   // public ButtonGroup buttonGroup() {
   //   return new ButtonGroup();
   // }
-  
+
   // add non-custom button without commands
   public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button) {
     assert buttonType != StreamDeckButtonType.CUSTOM;
     return this.addButton(buttonType, button, () -> false, Set.of());
   }
-  
+
   // add non-custom button with one command
-  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, StreamDeckCommand streamDeckCommand) {
+  public StreamDeck addButton(
+      StreamDeckButtonType buttonType,
+      StreamDeckButton button,
+      StreamDeckCommand streamDeckCommand) {
     assert buttonType != StreamDeckButtonType.CUSTOM;
     return this.addButton(buttonType, button, () -> false, streamDeckCommand);
   }
-  
+
   // add non-custom button with commands
-  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, Set<StreamDeckCommand> streamDeckCommands) {
+  public StreamDeck addButton(
+      StreamDeckButtonType buttonType,
+      StreamDeckButton button,
+      Set<StreamDeckCommand> streamDeckCommands) {
     assert buttonType != StreamDeckButtonType.CUSTOM;
     return this.addButton(buttonType, button, () -> false, streamDeckCommands);
   }
-  
+
   // add custom button without commands
-  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier) {
+  public StreamDeck addButton(
+      StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier) {
     assert buttonType == StreamDeckButtonType.CUSTOM;
     return this.addButton(buttonType, button, activeSupplier, Set.of());
   }
-  
+
   // add custom button with one command
-  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier, StreamDeckCommand streamDeckCommand) {
+  public StreamDeck addButton(
+      StreamDeckButtonType buttonType,
+      StreamDeckButton button,
+      BooleanSupplier activeSupplier,
+      StreamDeckCommand streamDeckCommand) {
     assert buttonType == StreamDeckButtonType.CUSTOM;
     return this.addButton(buttonType, button, activeSupplier, Set.of(streamDeckCommand));
   }
-  
+
   // add a button
-  public StreamDeck addButton(StreamDeckButtonType buttonType, StreamDeckButton button, BooleanSupplier activeSupplier, Set<StreamDeckCommand> streamDeckCommands) {
+  public StreamDeck addButton(
+      StreamDeckButtonType buttonType,
+      StreamDeckButton button,
+      BooleanSupplier activeSupplier,
+      Set<StreamDeckCommand> streamDeckCommands) {
     // setup button
     switch (buttonType) {
       case DISPLAY:
@@ -208,11 +221,13 @@ public class StreamDeck extends SubsystemBase {
     // bind button triggers
     for (StreamDeckCommand sdc : streamDeckCommands) {
       Command command = sdc.getCommand();
-      command = command.withName(
-        command.getName()
-        + " | from SD button "
-        + button.getKey()
-        + " " + sdc.commandType.toString());
+      command =
+          command.withName(
+              command.getName()
+                  + " | from SD button "
+                  + button.getKey()
+                  + " "
+                  + sdc.commandType.toString());
       switch (sdc.commandType) {
         case NONE:
           continue;
@@ -241,10 +256,10 @@ public class StreamDeck extends SubsystemBase {
       this.commandType = commandType;
       this.command = command;
     }
+
     public Command getCommand() {
       return command;
     }
-
   }
 
   public enum CommandType {

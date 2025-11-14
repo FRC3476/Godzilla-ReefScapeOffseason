@@ -23,16 +23,11 @@ import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.COColor;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
-import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
-import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
 import frc.robot.util.Controls.StreamDeck.StreamDeck.CommandType;
 import frc.robot.util.Controls.StreamDeck.StreamDeck.StreamDeckButtonType;
 import frc.robot.util.Controls.StreamDeck.StreamDeck.StreamDeckCommand;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
+import frc.robot.util.Controls.StreamDeck.StreamDeckButton;
+import frc.robot.util.Controls.StreamDeck.StreamDeckButtonConfig;
 
 public class OperatorControls {
   private final RobotContainer container;
@@ -89,9 +84,8 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L4)
-            ).ignoringDisable(true))
-    );
+                    () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L4))
+                .ignoringDisable(true)));
 
     // --- Coral L3 ---
     streamdeck.addButton(
@@ -104,9 +98,8 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L3)
-            ).ignoringDisable(true))
-    );
+                    () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L3))
+                .ignoringDisable(true)));
 
     // --- Coral L2 ---
     streamdeck.addButton(
@@ -119,9 +112,8 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L2)
-            ).ignoringDisable(true))
-    );
+                    () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L2))
+                .ignoringDisable(true)));
 
     // --- Coral L1 ---
     streamdeck.addButton(
@@ -134,9 +126,8 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L1)
-            ).ignoringDisable(true))
-    );
+                    () -> robotState.getStoredScorePosition().setCoralScoreLevel(ScoreLevel.L1))
+                .ignoringDisable(true)));
 
     // --- Algae Barge ---
     streamdeck.addButton(
@@ -149,9 +140,8 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setAlgaeScoreLevel(ScoreLevel.BARGE)
-            ).ignoringDisable(true))
-    );
+                    () -> robotState.getStoredScorePosition().setAlgaeScoreLevel(ScoreLevel.BARGE))
+                .ignoringDisable(true)));
 
     // --- Algae L2 ---
     streamdeck.addButton(
@@ -163,15 +153,16 @@ public class OperatorControls {
         () -> robotState.getStoredScorePosition().getAlgaeIntake() == AlgaeIntake.L2_ALGAE,
         new StreamDeckCommand(
             CommandType.ON_TRUE,
-            Commands.runOnce(() -> {
-                ScorePosition stored = robotState.getStoredScorePosition();
-                if (stored.getAlgaeIntake() == AlgaeIntake.L2_ALGAE) {
-                    stored.setAlgaeIntake(AlgaeIntake.NONE);
-                } else {
-                    stored.setAlgaeIntake(AlgaeIntake.L2_ALGAE);
-                }
-            }).ignoringDisable(true))
-    );
+            Commands.runOnce(
+                    () -> {
+                      ScorePosition stored = robotState.getStoredScorePosition();
+                      if (stored.getAlgaeIntake() == AlgaeIntake.L2_ALGAE) {
+                        stored.setAlgaeIntake(AlgaeIntake.NONE);
+                      } else {
+                        stored.setAlgaeIntake(AlgaeIntake.L2_ALGAE);
+                      }
+                    })
+                .ignoringDisable(true)));
 
     // --- Algae L1 ---
     streamdeck.addButton(
@@ -183,15 +174,16 @@ public class OperatorControls {
         () -> robotState.getStoredScorePosition().getAlgaeIntake() == AlgaeIntake.L1_ALGAE,
         new StreamDeckCommand(
             CommandType.ON_TRUE,
-            Commands.runOnce(() -> {
-                ScorePosition stored = robotState.getStoredScorePosition();
-                if (stored.getAlgaeIntake() == AlgaeIntake.L1_ALGAE) {
-                    stored.setAlgaeIntake(AlgaeIntake.NONE);
-                } else {
-                    stored.setAlgaeIntake(AlgaeIntake.L1_ALGAE);
-                }
-            }).ignoringDisable(true))
-    );
+            Commands.runOnce(
+                    () -> {
+                      ScorePosition stored = robotState.getStoredScorePosition();
+                      if (stored.getAlgaeIntake() == AlgaeIntake.L1_ALGAE) {
+                        stored.setAlgaeIntake(AlgaeIntake.NONE);
+                      } else {
+                        stored.setAlgaeIntake(AlgaeIntake.L1_ALGAE);
+                      }
+                    })
+                .ignoringDisable(true)));
 
     // --- Algae Processor ---
     streamdeck.addButton(
@@ -204,9 +196,11 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             Commands.runOnce(
-                () -> robotState.getStoredScorePosition().setAlgaeScoreLevel(ScoreLevel.PROCESSOR)
-            ).ignoringDisable(true))
-    );
+                    () ->
+                        robotState
+                            .getStoredScorePosition()
+                            .setAlgaeScoreLevel(ScoreLevel.PROCESSOR))
+                .ignoringDisable(true)));
 
     // --- Home Elevator ---
     Command homeElevatorButtonCommand =
@@ -218,10 +212,7 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("HE"),
         homeElevatorButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_TRUE,
-            homeElevatorButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_TRUE, homeElevatorButtonCommand));
 
     // --- Zero Gyro ---
     streamdeck.addButton(
@@ -229,15 +220,13 @@ public class OperatorControls {
         new StreamDeckButton(2, 3, "Zero Gyro 1")
             .withInactiveConfig(tealOnWhiteConfig)
             .withActiveConfig(activeConfig)
-            .withText("GZ")
-    );
+            .withText("GZ"));
     streamdeck.addButton(
         StreamDeckButtonType.PRESS,
         new StreamDeckButton(2, 5, "Zero Gyro 2")
             .withInactiveConfig(tealOnWhiteConfig)
             .withActiveConfig(activeConfig)
-            .withText("GZ")
-    );
+            .withText("GZ"));
     streamdeck
         .button("Zero Gyro 1")
         .and(streamdeck.button("Zero Gyro 2"))
@@ -264,69 +253,56 @@ public class OperatorControls {
             .andThen(new WaitCommand(0.25))
             .andThen(climber.climbDeploy())
             .withName("climbDeployButton");
-    Command climbClimbButtonCommand =
-        climber
-            .climbClimb()
-            .withName("climbClimbButton");
+    Command climbClimbButtonCommand = climber.climbClimb().withName("climbClimbButton");
     Command climbManualButtonCommand = climber.climbOut(12).withName("manualClimbButton");
     Command manualClimbOffButtonCommand = climber.climbSTOP().withName("manualClimbButtonOff");
-    StreamDeckButton climbDeployButton1 = new StreamDeckButton(1, 3, "Climb Deploy 1")
-        .withInactiveConfig(yellowConfig)
-        .withActiveConfig(activeConfig)
-        .withText("C");
-    StreamDeckButton climbDeployButton2 = new StreamDeckButton(1, 5, "Climb Deploy 2")
-        .withInactiveConfig(yellowConfig)
-        .withActiveConfig(activeConfig)
-        .withText("C");
-    StreamDeckButton climbClimbButton1 = new StreamDeckButton(0, 3, "Auto Climb 1")
-        .withInactiveConfig(redConfig)
-        .withActiveConfig(activeConfig)
-        .withText("C");
-    StreamDeckButton climbClimbButton2 = new StreamDeckButton(0, 5, "Auto Climb 2")
-        .withInactiveConfig(redConfig)
-        .withActiveConfig(activeConfig)
-        .withText("C");
-    StreamDeckButton climbManualButton = new StreamDeckButton(0, 4, "Manual Climb")
-        .withInactiveConfig(yellowOnBlackConfig)
-        .withActiveConfig(activeConfig)
-        .withText("C");
+    StreamDeckButton climbDeployButton1 =
+        new StreamDeckButton(1, 3, "Climb Deploy 1")
+            .withInactiveConfig(yellowConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbDeployButton2 =
+        new StreamDeckButton(1, 5, "Climb Deploy 2")
+            .withInactiveConfig(yellowConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbClimbButton1 =
+        new StreamDeckButton(0, 3, "Auto Climb 1")
+            .withInactiveConfig(redConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbClimbButton2 =
+        new StreamDeckButton(0, 5, "Auto Climb 2")
+            .withInactiveConfig(redConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
+    StreamDeckButton climbManualButton =
+        new StreamDeckButton(0, 4, "Manual Climb")
+            .withInactiveConfig(yellowOnBlackConfig)
+            .withActiveConfig(activeConfig)
+            .withText("C");
     streamdeck.addButton(
         StreamDeckButtonType.CUSTOM,
         climbDeployButton1,
         climbDeployButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_FALSE,
-            manualClimbOffButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_FALSE, manualClimbOffButtonCommand));
     streamdeck.addButton(
         StreamDeckButtonType.CUSTOM,
         climbDeployButton2,
         climbDeployButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_FALSE,
-            manualClimbOffButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_FALSE, manualClimbOffButtonCommand));
     streamdeck.addButton(
         StreamDeckButtonType.CUSTOM,
         climbClimbButton1,
         climbClimbButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_FALSE,
-            manualClimbOffButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_FALSE, manualClimbOffButtonCommand));
     streamdeck.addButton(
         StreamDeckButtonType.CUSTOM,
         climbClimbButton2,
         climbClimbButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_FALSE,
-            manualClimbOffButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_FALSE, manualClimbOffButtonCommand));
     streamdeck.addButton(
-        StreamDeckButtonType.CUSTOM,
-        climbManualButton,
-        climbManualButtonCommand::isScheduled
-    );
+        StreamDeckButtonType.CUSTOM, climbManualButton, climbManualButtonCommand::isScheduled);
     streamdeck
         .button(climbDeployButton1)
         .and(streamdeck.button(climbDeployButton2))
@@ -360,10 +336,7 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("CR0"),
         climbRollerStopButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.ON_TRUE,
-            climbRollerStopButtonCommand)
-    );
+        new StreamDeckCommand(CommandType.ON_TRUE, climbRollerStopButtonCommand));
 
     // --- Auto Score Left ---
     streamdeck.addButton(
@@ -375,8 +348,7 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             // left and right are swapped on purpose to match the scoring POV
-            Commands.runOnce(() -> robotState.offsetRight()))
-    );
+            Commands.runOnce(() -> robotState.offsetRight())));
 
     // --- Auto Score Right ---
     streamdeck.addButton(
@@ -388,8 +360,7 @@ public class OperatorControls {
         new StreamDeckCommand(
             CommandType.ON_TRUE,
             // left and right are swapped on purpose to match the scoring POV
-            Commands.runOnce(() -> robotState.offsetLeft()))
-    );
+            Commands.runOnce(() -> robotState.offsetLeft())));
 
     // --- Auto Score Forward ---
     streamdeck.addButton(
@@ -399,9 +370,7 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("F+1"),
         new StreamDeckCommand(
-            CommandType.ON_TRUE,
-            Commands.runOnce(() -> robotState.offsetForward()))
-    );
+            CommandType.ON_TRUE, Commands.runOnce(() -> robotState.offsetForward())));
 
     // --- Auto Score Backward ---
     streamdeck.addButton(
@@ -411,9 +380,7 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("B+1"),
         new StreamDeckCommand(
-            CommandType.ON_TRUE,
-            Commands.runOnce(() -> robotState.offsetBackward()))
-    );
+            CommandType.ON_TRUE, Commands.runOnce(() -> robotState.offsetBackward())));
 
     // --- Auto Score Zero ---
     streamdeck.addButton(
@@ -423,9 +390,7 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("AS0"),
         new StreamDeckCommand(
-            CommandType.ON_TRUE,
-            Commands.runOnce(() -> robotState.offsetZero()))
-    );
+            CommandType.ON_TRUE, Commands.runOnce(() -> robotState.offsetZero())));
 
     // --- Superstructure Manual Override ---
     streamdeck.addButton(
@@ -439,9 +404,7 @@ public class OperatorControls {
         () -> RobotState.getSuperstructureManualOverrideMode(),
         new StreamDeckCommand(
             CommandType.ON_TRUE,
-            Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode())
-        )
-    );
+            Commands.runOnce(() -> RobotState.toggleSuperstructureManualOverrideMode())));
 
     // --- Drive To Coral ---
     Command driveToCoralButtonCommand = new DriveToCoralCommand(drive, vision);
@@ -452,11 +415,6 @@ public class OperatorControls {
             .withActiveConfig(activeConfig)
             .withText("DTC"),
         driveToCoralButtonCommand::isScheduled,
-        new StreamDeckCommand(
-            CommandType.WHILE_TRUE,
-            driveToCoralButtonCommand
-        )
-    );
-
+        new StreamDeckCommand(CommandType.WHILE_TRUE, driveToCoralButtonCommand));
   }
 }
