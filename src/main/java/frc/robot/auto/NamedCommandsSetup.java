@@ -6,10 +6,12 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Field.FieldConstants;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreLevel;
+import frc.robot.commands.ContinuousPathFollowCommand;
 import frc.robot.commands.ContinuousPathTestCommand;
 import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.DriveToPoseAutopilotCommand;
@@ -77,7 +79,7 @@ public class NamedCommandsSetup {
     NamedCommands.registerCommand(
         "AutoPilotLeftPoleAlign",
         new DriveToPoseAutopilotCommand(
-                drive,
+                container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().leftPole.getPose(),
@@ -87,7 +89,7 @@ public class NamedCommandsSetup {
     NamedCommands.registerCommand(
         "AutoPilotRightPoleAlign",
         new DriveToPoseAutopilotCommand(
-                drive,
+                container,
                 () ->
                     PoseUtils.getPerpendicularOffsetPose(
                         FieldUtils.getClosestReef().rightPole.getPose(),
@@ -139,20 +141,81 @@ public class NamedCommandsSetup {
     // ====================CONTINUOUS PATH TEST COMMANDS====================
     // Test commands for Team 2056's continuous path following approach
     NamedCommands.registerCommand(
-        "ContinuousPathSquareTest", ContinuousPathTestCommand.squareTest(drive));
+        "ContinuousPathSquareTest", ContinuousPathTestCommand.squareTest(container));
 
     NamedCommands.registerCommand(
-        "ContinuousPathZigzagTest", ContinuousPathTestCommand.zigzagTest(drive));
+        "ContinuousPathZigzagTest", ContinuousPathTestCommand.zigzagTest(container));
 
     NamedCommands.registerCommand(
-        "ContinuousPathForwardTest", ContinuousPathTestCommand.forwardPathTest(drive));
+        "ContinuousPathForwardTest", ContinuousPathTestCommand.forwardPathTest(container));
 
     NamedCommands.registerCommand(
         "ContinuousPathVariableSwitchingTest",
-        ContinuousPathTestCommand.variableSwitchingDistanceTest(drive));
+        ContinuousPathTestCommand.variableSwitchingDistanceTest(container));
 
     NamedCommands.registerCommand(
-        "ContinuousPathRightRawTest", ContinuousPathTestCommand.rightRawPathTest(drive));
+        "ContinuousPathRightRawTest", ContinuousPathTestCommand.rightRawPathTest(container));
+
+    NamedCommands.registerCommand(
+        "RightRaw1", ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw1", true));
+    NamedCommands.registerCommand(
+        "RedRightCD_Left",
+        new DriveToPoseAutopilotCommand(
+            container,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getReefPole(FieldConstants.redReefCD, true).getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+    NamedCommands.registerCommand(
+        "RedRightCD_Right",
+        new DriveToPoseAutopilotCommand(
+            container,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getReefPole(FieldConstants.redReefCD, false).getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+    NamedCommands.registerCommand(
+        "RedRightEF_Left",
+        new DriveToPoseAutopilotCommand(
+            container,
+            () ->
+                PoseUtils.getPerpendicularOffsetPose(
+                    FieldUtils.getReefPole(FieldConstants.redReefEF, true).getPose(),
+                    DriveConstants.AUTO_ALIGN_PERPENDICULAR_OFFSET)));
+    NamedCommands.registerCommand(
+        "RightRaw1", ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw1", true));
+    NamedCommands.registerCommand(
+        "RightRaw2",
+        ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw2", false)
+            .withFinalAPConstraints(
+                DriveConstants.kDriveMaxSpeed, // velocity (keep default)
+                DriveConstants.AUTOPILOT_MAX_ACCELERATION, // acceleration (keep default)
+                8.0)); // jerk (faster than default 4.0)
+    NamedCommands.registerCommand(
+        "RightRaw3",
+        ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw3", false)
+            .withFinalAPConstraints(
+                DriveConstants.kDriveMaxSpeed, // velocity (keep default)
+                DriveConstants.AUTOPILOT_MAX_ACCELERATION, // acceleration (keep default)
+                8.0)); // jerk (faster than default 4.0)
+    NamedCommands.registerCommand(
+        "RightRaw4",
+        ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw4", false)
+            .withFinalAPConstraints(
+                DriveConstants.kDriveMaxSpeed, // velocity (keep default)
+                DriveConstants.AUTOPILOT_MAX_ACCELERATION, // acceleration (keep default)
+                8.0));
+    NamedCommands.registerCommand(
+        "RightRaw5", ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw5", false));
+    NamedCommands.registerCommand(
+        "RightRaw6",
+        ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw6", false)
+            .withFinalAPConstraints(
+                DriveConstants.kDriveMaxSpeed, // velocity (keep default)
+                DriveConstants.AUTOPILOT_MAX_ACCELERATION, // acceleration (keep default)
+                8.0));
+    NamedCommands.registerCommand(
+        "RightRaw7", ContinuousPathFollowCommand.fromPathPlannerPath(drive, "RightRaw7", false));
 
     // ====================PID DRIVE COMMANDS====================
     // NamedCommands.registerCommand("DriveStraightRed", new DriveToPosePIDCommand(drive, () -> new

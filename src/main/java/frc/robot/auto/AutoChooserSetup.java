@@ -2,8 +2,8 @@ package frc.robot.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.commands.ContinuousPathTestCommand;
-import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutoChooserSetup {
@@ -11,28 +11,29 @@ public class AutoChooserSetup {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  public AutoChooserSetup(DriveSubsystem drive) {
+  public AutoChooserSetup(RobotContainer container) {
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Continuous Path Following Test Commands (Team 2056 approach)
     autoChooser.addOption(
-        "Continuous Path: Forward Test", ContinuousPathTestCommand.forwardPathTest(drive));
+        "Continuous Path: Forward Test", ContinuousPathTestCommand.forwardPathTest(container));
     autoChooser.addOption(
-        "Continuous Path: Square Test", ContinuousPathTestCommand.squareTest(drive));
+        "Continuous Path: Square Test", ContinuousPathTestCommand.squareTest(container));
     autoChooser.addOption(
-        "Continuous Path: Zigzag Test", ContinuousPathTestCommand.zigzagTest(drive));
+        "Continuous Path: Zigzag Test", ContinuousPathTestCommand.zigzagTest(container));
     autoChooser.addOption(
         "Continuous Path: Variable Switching Test",
-        ContinuousPathTestCommand.variableSwitchingDistanceTest(drive));
+        ContinuousPathTestCommand.variableSwitchingDistanceTest(container));
     autoChooser.addOption(
         "Continuous Path: Right Raw Test (RightRaw1 -> RightRaw2)",
-        ContinuousPathTestCommand.rightRawPathTest(drive));
+        ContinuousPathTestCommand.rightRawPathTest(container));
     autoChooser.addOption(
-        "Continuous Path: Comprehensive Test", ContinuousPathTestCommand.comprehensiveTest(drive));
+        "Continuous Path: Comprehensive Test",
+        ContinuousPathTestCommand.comprehensiveTest(container));
     autoChooser.addOption(
         "Continuous Path: Comparison Test (vs Point-to-Point)",
-        ContinuousPathTestCommand.comparisonTest(drive));
+        ContinuousPathTestCommand.comparisonTest(container));
 
     // Set up SysId routines
     // autoChooser.addOption(

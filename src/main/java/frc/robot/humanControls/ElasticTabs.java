@@ -354,7 +354,7 @@ public class ElasticTabs {
     tab.addButton("AutoPilot: Drive to Reef Pole")
         .setupWhileHeldCommand(
             new DriveToPoseAutopilotCommand(
-                drive,
+                container,
                 () -> {
                   Pose2d targetPose;
                   switch (robotState.getStoredScorePosition().getCoralBranch()) {
@@ -375,7 +375,7 @@ public class ElasticTabs {
     tab.addButton("AutoPilot: Drive Forward 2m")
         .setupWhileHeldCommand(
             new DriveToPoseAutopilotCommand(
-                drive,
+                container,
                 () -> {
                   Pose2d currentPose = RobotState.getGlobalPose();
                   return new Pose2d(

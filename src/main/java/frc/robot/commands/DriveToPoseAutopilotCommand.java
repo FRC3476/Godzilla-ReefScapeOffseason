@@ -12,13 +12,19 @@ import com.therekrab.autopilot.APProfile;
 import com.therekrab.autopilot.APTarget;
 import com.therekrab.autopilot.Autopilot;
 import com.therekrab.autopilot.Autopilot.APResult;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.led.Led;
+import frc.robot.subsystems.led.Led.DEFAULT_LED_STATE;
+import frc.robot.subsystems.superstructure.SuperstructureState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,7 +39,9 @@ public class DriveToPoseAutopilotCommand extends Command {
   private APProfile profile;
   private final Autopilot autopilot;
   private final DriveSubsystem drive;
+  private final Led led;
   private final Supplier<Pose2d> targetPoseSupplier;
+  Debouncer debouncer = new Debouncer(0.1);
 
   // Track if we're at target to ensure proper stopping
   private boolean isAtTarget = false;
@@ -53,10 +61,13 @@ public class DriveToPoseAutopilotCommand extends Command {
    * Creates a new DriveToPoseAutopilotCommand.
    *
    * @param drive The drive subsystem to control
+   * @param led The LED subsystem to control
    * @param targetPoseSupplier Supplier that provides the target pose to drive to
    */
-  public DriveToPoseAutopilotCommand(DriveSubsystem drive, Supplier<Pose2d> targetPoseSupplier) {
-    this.drive = drive;
+  public DriveToPoseAutopilotCommand(
+      RobotContainer container, Supplier<Pose2d> targetPoseSupplier) {
+    this.drive = container.getDrive();
+    this.led = container.getLed();
     this.targetPoseSupplier = targetPoseSupplier;
 
     // Initialize AutoPilot with ALL constraints including velocity
@@ -82,15 +93,17 @@ public class DriveToPoseAutopilotCommand extends Command {
    * Creates a new DriveToPoseAutopilotCommand with a fixed target pose.
    *
    * @param drive The drive subsystem to control
+   * @param led The LED subsystem to control
    * @param targetPose The target pose to drive to
    */
-  public DriveToPoseAutopilotCommand(DriveSubsystem drive, Pose2d targetPose) {
-    this(drive, () -> targetPose);
+  public DriveToPoseAutopilotCommand(RobotContainer container, Pose2d targetPose) {
+    this(container, () -> targetPose);
   }
 
   @Override
   public void initialize() {
     isAtTarget = false;
+    RobotState.setReadyToScore(false);
     Logger.recordOutput("Commands/" + getName() + "/Active", true);
   }
 
@@ -115,15 +128,38 @@ public class DriveToPoseAutopilotCommand extends Command {
     double distanceToTarget = Math.hypot(offsetX, offsetY);
 
     // Check if we're at target
-    isAtTarget = autopilot.atTarget(currentPose, target);
+    isAtTarget = debouncer.calculate(autopilot.atTarget(currentPose, target));
 
     // Apply field-relative velocities with FieldCentricFacingAngle
     // With ForwardPerspective set to BlueAlliance, this should match AutoPilot's coordinate system
+    // CRITICAL: Always send control command, but with 0 velocities when at target
+    // This prevents oscillation from the robot coasting after reaching target
+    double vx = isAtTarget ? 0.0 : result.vx().in(MetersPerSecond);
+    double vy = isAtTarget ? 0.0 : result.vy().in(MetersPerSecond);
+
     drive.setControl(
         facingAngleRequest
-            .withVelocityX(result.vx().in(MetersPerSecond))
-            .withVelocityY(result.vy().in(MetersPerSecond))
+            .withVelocityX(vx)
+            .withVelocityY(vy)
             .withTargetDirection(result.targetAngle()));
+
+    // Turn on LEDs when at the right position and in a coral scoring state
+    // If in L4_AIM, do that only if the robot is stable
+    if (isAtTarget
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
+        && RobotState.getSuperstructureState().isCoralScoringState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || drive.isRobotStable())) {
+      led.setLedState(DEFAULT_LED_STATE.GARAGE_DRIVE_ALIGNED);
+    }
+
+    // Set ready to score when at target and in appropriate state
+    if (RobotState.getSuperstructureState().isCoralScoringState()
+        && RobotState.getSuperstructureState() == RobotState.getSuperstructureTargetState()
+        && (RobotState.getSuperstructureState() != SuperstructureState.L4_AIM
+            || (drive.isRobotStable() && isAtTarget))) {
+      RobotState.setReadyToScore(true);
+    }
 
     // Log telemetry
     Logger.recordOutput("Commands/" + getName() + "/CurrentPose", currentPose);
@@ -132,8 +168,10 @@ public class DriveToPoseAutopilotCommand extends Command {
     Logger.recordOutput("Commands/" + getName() + "/OffsetY", offsetY);
     Logger.recordOutput("Commands/" + getName() + "/DistanceToTarget", distanceToTarget);
     Logger.recordOutput("Commands/" + getName() + "/RobotRelativeSpeeds", robotRelativeSpeeds);
-    Logger.recordOutput("Commands/" + getName() + "/FieldRelVelX", result.vx());
-    Logger.recordOutput("Commands/" + getName() + "/FieldRelVelY", result.vy());
+    Logger.recordOutput("Commands/" + getName() + "/AutoPilotVelX", result.vx());
+    Logger.recordOutput("Commands/" + getName() + "/AutoPilotVelY", result.vy());
+    Logger.recordOutput("Commands/" + getName() + "/AppliedVelX", vx);
+    Logger.recordOutput("Commands/" + getName() + "/AppliedVelY", vy);
     Logger.recordOutput("Commands/" + getName() + "/CurrentRotation", currentPose.getRotation());
     Logger.recordOutput("Commands/" + getName() + "/TargetAngle", result.targetAngle());
     Logger.recordOutput("Commands/" + getName() + "/AtTarget", isAtTarget);
@@ -148,15 +186,20 @@ public class DriveToPoseAutopilotCommand extends Command {
             .withVelocityY(0.0)
             .withTargetDirection(RobotState.getGlobalPose().getRotation()));
 
+    led.setLedState(DEFAULT_LED_STATE.NONE);
+    RobotState.setReadyToScore(false);
+
     Logger.recordOutput("Commands/" + getName() + "/Active", false);
     Logger.recordOutput("Commands/" + getName() + "/Interrupted", interrupted);
   }
 
   @Override
   public boolean isFinished() {
-    // Use the isAtTarget flag updated in execute()
-    return isAtTarget;
+    return DriverStation.isAutonomous() && isAtTarget;
   }
+
+  // Note: No isFinished() override - command runs until button is released or interrupted
+  // This matches the behavior of GarageDriveToPoseCommand
 
   /**
    * Returns a trigger that is true when the robot is at the target pose.

@@ -500,7 +500,18 @@ public class RobotState extends MagicVirtualSubsystem {
             && endEffectorToRight > EndEffectorConstants.END_EFFECTOR_POLES_CLEARANCE_METERS;
     Logger.recordOutput("RobotState/Reef Clearance/EEClearsPoles", endEffectorClearsPoles);
 
-    return !endEffectorIntersectsReef && endEffectorClearsPoles;
+    // Check if robot is far enough from the reef face
+    // Use absolute value of dot product to get perpendicular distance to reef plane
+    double robotDistanceFromReef = Math.abs(reefToRobotDotProduct);
+    Logger.recordOutput("RobotState/Reef Clearance/RobotDistanceFromReef", robotDistanceFromReef);
+    boolean farEnoughFromReef =
+        robotDistanceFromReef > EndEffectorConstants.REEF_FACE_SAFE_DISTANCE_METERS;
+    Logger.recordOutput("RobotState/Reef Clearance/FarEnoughFromReef", farEnoughFromReef);
+
+    // Safe to stow if:
+    // 1. Robot is far enough from reef, OR
+    // 2. End effector doesn't intersect reef AND clears poles
+    return farEnoughFromReef || (!endEffectorIntersectsReef && endEffectorClearsPoles);
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Stow?")

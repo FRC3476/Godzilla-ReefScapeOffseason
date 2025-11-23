@@ -173,7 +173,7 @@ public class RobotContainer {
     // namedCommands = new NamedCommandsSetup(this, robotState);
     new NamedCommandsSetup(this, robotState);
     // Set up auto routines
-    autoChooserSetup = new AutoChooserSetup(drive);
+    autoChooserSetup = new AutoChooserSetup(this);
 
     // Configure default commands for subsystems
     RegisterDefaultCommands();

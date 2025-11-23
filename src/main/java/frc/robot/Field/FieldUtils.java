@@ -102,6 +102,10 @@ public class FieldUtils {
     return chosenReefPole;
   }
 
+  public static ReefPole getReefPole(ReefFace reefFace, boolean isLeft) {
+    return isLeft ? reefFace.leftPole : reefFace.rightPole;
+  }
+
   public static AprilTagStruct getClosestHPSTag() {
     List<AprilTagStruct> hpsTags =
         FieldUtils.isBlueAlliance() ? FieldConstants.blueHPSTags : FieldConstants.redHPSTags;

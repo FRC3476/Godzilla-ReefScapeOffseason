@@ -147,9 +147,9 @@ public final class Constants {
     // AutoPilot Constants
     public static final double AUTOPILOT_MAX_ACCELERATION = 15.0; // m/s^2
     public static final double AUTOPILOT_MAX_JERK =
-        8; // m/s^3 (increased for better responsiveness)
+        4; // m/s^3 (increased for better responsiveness)
     public static final double AUTOPILOT_ERROR_XY_METERS = Units.inchesToMeters(0.5); // 2 inches
-    public static final double AUTOPILOT_ERROR_THETA_DEGREES = 0.5; // degrees
+    public static final double AUTOPILOT_ERROR_THETA_DEGREES = 1.5; // degrees
     public static final double AUTOPILOT_BEELINE_RADIUS_METERS =
         Units.inchesToMeters(4.0); // 8 inches
     public static final double AUTOPILOT_HEADING_KP = 5.0;
@@ -727,6 +727,8 @@ public final class Constants {
         Units.inchesToMeters(
             36); // distance from the center of the robot to the end of the end effector
     public static final double END_EFFECTOR_POLES_CLEARANCE_METERS = Units.inchesToMeters(6);
+    public static final double REEF_FACE_SAFE_DISTANCE_METERS =
+        Units.inchesToMeters(40); // minimum distance from reef face to be safe to stow
   }
 
   // ====================Climb (6_)====================

@@ -40,9 +40,9 @@
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "RIghtRaw1"
+                  "name": "RightRaw1"
                 }
               }
             ]
@@ -71,9 +71,22 @@
                 }
               },
               {
-                "type": "path",
+                "type": "race",
                 "data": {
-                  "pathName": "RightRaw2"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInFeeder"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RightRaw2"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -164,15 +177,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "RightRaw3"
+                  "name": "AimL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "AimL4"
+                  "name": "RedRightCD_Left"
                 }
               }
             ]
@@ -201,9 +214,22 @@
                 }
               },
               {
-                "type": "path",
+                "type": "race",
                 "data": {
-                  "pathName": "RightRaw4"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInFeeder"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RightRaw4"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -294,15 +320,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "RightRaw5"
+                  "name": "AimL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "AimL4"
+                  "name": "RedRightCD_Right"
                 }
               }
             ]
@@ -319,12 +345,6 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "RightRaw6"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "StowRobotState"
@@ -334,6 +354,25 @@
                 "type": "named",
                 "data": {
                   "name": "IntakeEnable"
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IsCoralInFeeder"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RightRaw6"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -424,15 +463,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "RightRaw7"
+                  "name": "AimL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "AimL4"
+                  "name": "RightRaw7"
                 }
               }
             ]

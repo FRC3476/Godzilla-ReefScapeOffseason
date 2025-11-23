@@ -19,7 +19,7 @@ import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.GarageDriveToPoseCommand;
+import frc.robot.commands.DriveToPoseAutopilotCommand;
 import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.climb.ClimbRoller;
@@ -137,7 +137,7 @@ public class DriverControls {
                       }
                     },
                     Set.of(drive)),
-                new GarageDriveToPoseCommand(
+                new DriveToPoseAutopilotCommand(
                     container,
                     () ->
                         PoseUtils.getPerpendicularOffsetPose(

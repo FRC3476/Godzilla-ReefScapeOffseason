@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.util.ContinuousWaypoint;
@@ -27,13 +28,13 @@ public class ContinuousPathTestCommand {
    * <p>The robot will drive in a square pattern with 4 waypoints, maintaining velocity through the
    * first 3 corners and stopping at the final corner.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that executes the square test pattern
    */
-  public static Command squareTest(DriveSubsystem drive) {
+  public static Command squareTest(RobotContainer container) {
     return Commands.sequence(
         Commands.runOnce(() -> System.out.println("Starting Continuous Path Square Test")),
-        createSquarePath(drive, 2.0), // 2 meter square
+        createSquarePath(container, 2.0), // 2 meter square
         Commands.runOnce(() -> System.out.println("Completed Continuous Path Square Test")));
   }
 
@@ -43,13 +44,13 @@ public class ContinuousPathTestCommand {
    * <p>The robot will drive in a zigzag pattern, demonstrating how it handles continuous moves with
    * larger angle changes between waypoints.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that executes the zigzag test pattern
    */
-  public static Command zigzagTest(DriveSubsystem drive) {
+  public static Command zigzagTest(RobotContainer container) {
     return Commands.sequence(
         Commands.runOnce(() -> System.out.println("Starting Continuous Path Zigzag Test")),
-        createZigzagPath(drive),
+        createZigzagPath(container),
         Commands.runOnce(() -> System.out.println("Completed Continuous Path Zigzag Test")));
   }
 
@@ -59,32 +60,33 @@ public class ContinuousPathTestCommand {
    * <p>Each intermediate waypoint uses a different switching distance to show how this affects the
    * path smoothness and when waypoint transitions occur.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that executes the variable switching distance test
    */
-  public static Command variableSwitchingDistanceTest(DriveSubsystem drive) {
+  public static Command variableSwitchingDistanceTest(RobotContainer container) {
     return Commands.sequence(
         Commands.runOnce(() -> System.out.println("Starting Variable Switching Distance Test")),
-        createVariableSwitchingPath(drive),
+        createVariableSwitchingPath(container),
         Commands.runOnce(() -> System.out.println("Completed Variable Switching Distance Test")));
   }
 
   /**
    * Creates a simple forward path (single line) with intermediate waypoints.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that drives forward through multiple waypoints
    */
-  public static Command forwardPathTest(DriveSubsystem drive) {
+  public static Command forwardPathTest(RobotContainer container) {
     return Commands.sequence(
         Commands.runOnce(() -> System.out.println("Starting Forward Path Test")),
-        createForwardPath(drive, 4.0), // 4 meters forward with waypoints
+        createForwardPath(container, 4.0), // 4 meters forward with waypoints
         Commands.runOnce(() -> System.out.println("Completed Forward Path Test")));
   }
 
   // ==================== Path Creation Methods ====================
 
-  private static Command createSquarePath(DriveSubsystem drive, double sideLength) {
+  private static Command createSquarePath(RobotContainer container, double sideLength) {
+    DriveSubsystem drive = container.getDrive();
     Pose2d startPose = RobotState.getGlobalPose();
 
     List<ContinuousWaypoint> waypoints = new ArrayList<>();
@@ -122,7 +124,8 @@ public class ContinuousPathTestCommand {
     return new ContinuousPathFollowCommand(drive, waypoints);
   }
 
-  private static Command createZigzagPath(DriveSubsystem drive) {
+  private static Command createZigzagPath(RobotContainer container) {
+    DriveSubsystem drive = container.getDrive();
     Pose2d startPose = RobotState.getGlobalPose();
     double zigzagDistance = 1.5; // 1.5 meters per leg
     double zigzagWidth = 1.0; // 1 meter offset
@@ -151,7 +154,8 @@ public class ContinuousPathTestCommand {
     return new ContinuousPathFollowCommand(drive, waypoints);
   }
 
-  private static Command createVariableSwitchingPath(DriveSubsystem drive) {
+  private static Command createVariableSwitchingPath(RobotContainer container) {
+    DriveSubsystem drive = container.getDrive();
     Pose2d startPose = RobotState.getGlobalPose();
 
     List<ContinuousWaypoint> waypoints = new ArrayList<>();
@@ -187,7 +191,8 @@ public class ContinuousPathTestCommand {
     return new ContinuousPathFollowCommand(drive, waypoints);
   }
 
-  private static Command createForwardPath(DriveSubsystem drive, double totalDistance) {
+  private static Command createForwardPath(RobotContainer container, double totalDistance) {
+    DriveSubsystem drive = container.getDrive();
     Pose2d startPose = RobotState.getGlobalPose();
     int numWaypoints = 5; // 5 waypoints including start and end
     double distancePerWaypoint = totalDistance / (numWaypoints - 1);
@@ -215,10 +220,10 @@ public class ContinuousPathTestCommand {
    *
    * <p>This is useful for thorough validation of the continuous path following system.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that runs all test patterns
    */
-  public static Command comprehensiveTest(DriveSubsystem drive) {
+  public static Command comprehensiveTest(RobotContainer container) {
     return Commands.sequence(
         Commands.runOnce(
             () ->
@@ -230,12 +235,12 @@ public class ContinuousPathTestCommand {
         Commands.waitSeconds(1.0),
         // Test 1: Simple forward path
         Commands.runOnce(() -> System.out.println("\n--- Test 1: Forward Path ---")),
-        forwardPathTest(drive),
+        forwardPathTest(container),
         Commands.waitSeconds(2.0),
         // Test 2: Variable switching distances
         Commands.runOnce(
             () -> System.out.println("\n--- Test 2: Variable Switching Distances ---")),
-        variableSwitchingDistanceTest(drive),
+        variableSwitchingDistanceTest(container),
         Commands.waitSeconds(2.0),
         Commands.runOnce(
             () ->
@@ -253,10 +258,11 @@ public class ContinuousPathTestCommand {
    * position will be reset to the start of RightRaw1 path to ensure accurate path following. The
    * paths will automatically flip for red alliance (default behavior).
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A command that follows RightRaw1 then RightRaw2 paths
    */
-  public static Command rightRawPathTest(DriveSubsystem drive) {
+  public static Command rightRawPathTest(RobotContainer container) {
+    DriveSubsystem drive = container.getDrive();
     return Commands.sequence(
         Commands.runOnce(
             () -> System.out.println("Starting Right Raw Path Test (RightRaw1 -> RightRaw2)")),
@@ -275,10 +281,11 @@ public class ContinuousPathTestCommand {
    * <p>Runs the same path twice: once with continuous following, once with standard
    * DriveToPoseAutopilotCommand for each waypoint.
    *
-   * @param drive The drive subsystem
+   * @param container The robot container
    * @return A comparison test command
    */
-  public static Command comparisonTest(DriveSubsystem drive) {
+  public static Command comparisonTest(RobotContainer container) {
+    DriveSubsystem drive = container.getDrive();
     Pose2d startPose = RobotState.getGlobalPose();
 
     // Define waypoints for the test
@@ -308,7 +315,7 @@ public class ContinuousPathTestCommand {
             () -> System.out.println("\n--- Running POINT-TO-POINT (Standard AutoPilot) ---")),
         Commands.sequence(
             testPoses.stream()
-                .map(pose -> new DriveToPoseAutopilotCommand(drive, pose))
+                .map(pose -> new DriveToPoseAutopilotCommand(container, pose))
                 .toArray(Command[]::new)),
         Commands.runOnce(
             () ->
