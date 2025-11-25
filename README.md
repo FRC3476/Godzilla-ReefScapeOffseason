@@ -2,7 +2,7 @@ Code Orange's (3476) Reefscape 2025 Offseason Bot's repository
 
 See also https://github.com/FRC3476/StreamDeck2025 for the driver station side Stream Deck code, thanks mainly to Robocubs, https://github.com/Robocubs/2024-StreamDeck.
 
-Much of the code of our robot is inspired by Team 254's 2025 code at https://github.com/Team254/FRC-2025-Public.
+Much of the robot code is inspired by Team 254's 2025 code at https://github.com/Team254/FRC-2025-Public.
 
 `Field`
 Information and trackers specific to the Reefscape field.
