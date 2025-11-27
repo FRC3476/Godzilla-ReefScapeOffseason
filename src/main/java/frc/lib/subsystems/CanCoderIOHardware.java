@@ -2,13 +2,18 @@ package frc.lib.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.util.CANStatusLogger;
 import frc.lib.util.CTREUtil;
+import frc.robot.Constants;
+import frc.robot.util.Util;
 
 public class CanCoderIOHardware implements CanCoderIO {
   protected final CANcoder canCoder;
@@ -56,5 +61,23 @@ public class CanCoderIOHardware implements CanCoderIO {
 
     inputs.absolutePositionRotations = positionSignal.getValue().in(Rotations);
     inputs.velocityRotations = velocitySignal.getValue().in(RotationsPerSecond);
+  }
+
+  @Override
+  public void setMagnetOffset(double offset) {
+    MagnetSensorConfigs currentConfigs = new MagnetSensorConfigs();
+    canCoder.getConfigurator().refresh(currentConfigs);
+    canCoder.getConfigurator().apply(currentConfigs.withMagnetOffset(offset));
+    Util.sleep(200);
+  }
+
+  @Override
+  public double getAbsolutePositionSlow() {
+    return canCoder.getAbsolutePosition().getValueAsDouble();
+  }
+
+  @Override
+  public void setPosition(double position) {
+    canCoder.setPosition(position);
   }
 }

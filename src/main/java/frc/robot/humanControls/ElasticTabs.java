@@ -145,23 +145,23 @@ public class ElasticTabs {
     tab.addButton("Claw None").setupOnPressCommand(claw.setClawStateCommand(ClawState.NONE));
     tab.addButton("Pivot Safe Up (When Pressed)")
         .setupOnPressCommand(
-            endEffector.rotatePivotCommand(
+            endEffector.motionMagicSetpointCommand(
                 () -> Constants.EndEffectorConstants.MAX_ANGLE_ROTATIONS));
     tab.addButton("Pivot Fully Up (When Pressed)")
         .setupOnPressCommand(
-            endEffector.rotatePivotCommand(
+            endEffector.motionMagicSetpointCommand(
                 () -> Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS));
     tab.addButton("Pivot Safe Down (When Pressed)")
         .setupOnPressCommand(
-            endEffector.rotatePivotCommand(
+            endEffector.motionMagicSetpointCommand(
                 () -> Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS));
     tab.addButton("Pivot Fully Down (When Pressed)")
         .setupOnPressCommand(
-            endEffector.rotatePivotCommand(
+            endEffector.motionMagicSetpointCommand(
                 () -> Constants.EndEffectorConstants.MIN_ANGLE_ROTATIONS));
     tab.addButton("Pivot Middle (When Pressed)")
         .setupOnPressCommand(
-            endEffector.rotatePivotCommand(
+            endEffector.motionMagicSetpointCommand(
                 () ->
                     (Constants.EndEffectorConstants.MIN_SAFE_ANGLE_ROTATIONS
                             + Constants.EndEffectorConstants.MAX_SAFE_ANGLE_ROTATIONS)

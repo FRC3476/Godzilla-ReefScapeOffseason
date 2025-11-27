@@ -40,4 +40,26 @@ public class ServoMotorSubsystemWithCanCoder<
     // Don't set boolean above to left main thread still do it as well.
     io.setCurrentPosition(cancoderInputs.absolutePositionRotations * conf.cancoderToUnitsRatio);
   }
+
+  public void resetOffset(int canCoderRotations) {
+    io.setCurrentPosition((cancoderInputs.absolutePositionRotations - canCoderRotations) * conf.cancoderToUnitsRatio);
+  }
+
+  public void zeroMagnetOffset() {
+    cancoderIO.setMagnetOffset(0);
+  }
+
+  public void zeroMagnetOffset(double expectedZeroingPositionUnits, ) {
+    cancoderIO.setMagnetOffset(0);
+    double absoluteRotationsAtZeroingPosition = expectedZeroingPositionUnits * conf.cancoderToUnitsRatio;
+    double magnetOffset = 
+        absoluteRotationsAtZeroingPosition - cancoderIO.getAbsolutePositionSlow();
+    magnetOffset = Util.rangeModulo(
+      magnetOffset, 
+      conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint,
+      conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint - 1);
+
+    cancoderIO.setMagnetOffset(magnetOffset);
+    cancoderIO.setPosition(cancoderIO.getAbsolutePositionSlow() + Math.round(absoluteRotationsAtZeroingPosition));
+  }
 }

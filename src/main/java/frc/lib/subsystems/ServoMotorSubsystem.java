@@ -274,6 +274,10 @@ public class ServoMotorSubsystem<T extends MotorInputsAutoLogged, U extends Moto
     return motionMagicSetpointCommandBlocking(setpoint, tolerance, 0);
   }
 
+  public Command motionMagicSetpointCommandBlocking(DoubleSupplier setpoint, double tolerance, Supplier<Integer> slot) {
+    return motionMagicSetpointCommandBlocking(setpoint, tolerance, slot.get());
+  }
+
   public Command motionMagicSetpointCommandBlocking(
       DoubleSupplier setpoint, Supplier<MotionMagicConfigs> configSupplier, double tolerance) {
     return motionMagicSetpointCommandBlocking(setpoint, configSupplier, tolerance, 0);
