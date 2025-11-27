@@ -653,11 +653,11 @@ public final class Constants {
         kEndEffectorConfig.fxConfig.Slot0.kA = EndEffectorConstants.Tunable_PIVOT_kA;
 
         kEndEffectorConfig.fxConfig.MotionMagic = kEndEffectorMotionMagicConfig;
-        kEndEffectorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        kEndEffectorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // software limit switches at min/max positions
-        kEndEffectorConfig.kMinPositionUnits = ElevatorConstants.MIN_HEIGHT_METERS;
-        kEndEffectorConfig.kMaxPositionUnits = ElevatorConstants.MAX_HEIGHT_METERS;
+        kEndEffectorConfig.kMinPositionUnits = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+        kEndEffectorConfig.kMaxPositionUnits = EndEffectorConstants.MAX_ANGLE_ROTATIONS;
         kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
             kEndEffectorConfig.kMaxPositionUnits / kEndEffectorConfig.unitToRotorRatio;
@@ -669,7 +669,7 @@ public final class Constants {
         kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_CURRENT_LIMIT_AMPS;
 
-        kEndEffectorConfig.cancoderToUnitsRatio = EndEffectorConstants.PIVOT_STM;
+        kEndEffectorConfig.cancoderToUnitsRatio = 1 / EndEffectorConstants.PIVOT_STM;
         kEndEffectorConfig.ratioForSim = kEndEffectorConfig.cancoderToUnitsRatio;
 
         CanCoderConfig canCoderConfig = new CanCoderConfig();
