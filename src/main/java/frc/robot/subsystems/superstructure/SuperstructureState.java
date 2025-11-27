@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -114,7 +115,9 @@ public enum SuperstructureState {
     this.commandSupplier =
         (container) ->
             new ParallelCommandGroup(
-                container.getElevator().moveElevatorCommand(() -> elevatorHeight),
+                container
+                    .getElevator()
+                    .moveElevatorCommand(() -> Units.inchesToMeters(elevatorHeight)),
                 container
                     .getEndEffector()
                     .moveEndEffectorCommand(
@@ -129,7 +132,7 @@ public enum SuperstructureState {
   }
 
   public double getElevatorHeight() {
-    return this.elevatorHeight;
+    return Units.inchesToMeters(this.elevatorHeight);
   }
 
   public double getEndEffectorRotation() {
