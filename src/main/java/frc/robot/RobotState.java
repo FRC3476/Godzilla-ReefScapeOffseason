@@ -505,8 +505,7 @@ public class RobotState extends MagicVirtualSubsystem {
 
   @AutoLogOutput(key = "RobotState/Safe to Stow?")
   public boolean isSafeToStow() {
-    return endEffectorClearsReef()
-        || (robotContainer.getEndEffector().getCurrentPivotPosition() < 0);
+    return endEffectorClearsReef() || (robotContainer.getEndEffector().getCurrentPosition() < 0);
   }
 
   @AutoLogOutput(key = "RobotState/Safe to Raise?")

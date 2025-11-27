@@ -103,7 +103,7 @@ public class Superstructure extends SubsystemBase {
 
     // Get subsystem positions
     double elevatorHeight = elevator.getCurrentPosition(); // inches
-    double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
+    double endEffectorPivotPosition = endEffector.getCurrentPosition(); // rotations
 
     //  E- elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
     double dynamicLimit =
@@ -124,7 +124,7 @@ public class Superstructure extends SubsystemBase {
   public double calculateDynamicRotationalAccelLimit() {
     // Get subsystem positions
     double elevatorHeight = elevator.getCurrentPosition(); // inches
-    double endEffectorPivotPosition = endEffector.getCurrentPivotPosition(); // radians
+    double endEffectorPivotPosition = endEffector.getCurrentPosition(); // rotations
 
     //  E  - elevator.height*b - intakePivot.height*c-(endEffectorPivot.height*a+elevator.height)*d
     double dynamicLimit =
