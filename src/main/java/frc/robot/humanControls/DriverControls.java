@@ -231,8 +231,10 @@ public class DriverControls {
                         && claw.isCoralInClaw()
                         && (robotState.getSuperstructureScoreAimState()
                                 == SuperstructureState.L4_AIM
-                            || robotState.getSuperstructureScoreAimState()
-                                == SuperstructureState.L3_AIM)));
+                            || (robotState.getSuperstructureScoreAimState()
+                                    == SuperstructureState.L3_AIM
+                                && RobotState.getSuperstructureState()
+                                    != SuperstructureState.L4_PRESCORE))));
 
     scoreCommandNoRumble =
         Commands.sequence(
