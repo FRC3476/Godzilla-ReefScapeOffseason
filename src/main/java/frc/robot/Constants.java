@@ -441,8 +441,8 @@ public final class Constants {
 
       static {
         kDefaultElevatorConfig.MotionMagicCruiseVelocity = 300;
-        kDefaultElevatorConfig.MotionMagicCruiseVelocity = 3000;
-        kDefaultElevatorConfig.MotionMagicCruiseVelocity = 10000;
+        kDefaultElevatorConfig.MotionMagicAcceleration = 3000;
+        kDefaultElevatorConfig.MotionMagicJerk = 10000;
       }
 
       public static final ServoMotorSubsystemWithFollowersConfig.FollowerConfig

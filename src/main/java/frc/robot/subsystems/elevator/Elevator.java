@@ -58,15 +58,15 @@ public class Elevator extends ServoMotorSubsystemWithFollowers<MotorInputsAutoLo
   }
 
   public Command elevatorSTOP() {
-    return dutyCycleCommand(() -> 0);
+    return voltageCommand(() -> 0);
   }
 
   public Command elevatorUP() {
-    return dutyCycleCommand(() -> elevatorVolts.getAsDouble());
+    return voltageCommand(() -> elevatorVolts.getAsDouble());
   }
 
   public Command elevatorDWN() {
-    return dutyCycleCommand(() -> -elevatorVolts.getAsDouble());
+    return voltageCommand(() -> -elevatorVolts.getAsDouble());
   }
 
   public double getMotorVelocityRPS() {
