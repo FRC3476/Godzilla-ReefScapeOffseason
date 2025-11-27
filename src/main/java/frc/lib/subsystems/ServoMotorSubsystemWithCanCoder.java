@@ -1,5 +1,6 @@
 package frc.lib.subsystems;
 
+import frc.robot.util.Util;
 import org.littletonrobotics.junction.Logger;
 
 public class ServoMotorSubsystemWithCanCoder<
@@ -42,24 +43,27 @@ public class ServoMotorSubsystemWithCanCoder<
   }
 
   public void resetOffset(int canCoderRotations) {
-    io.setCurrentPosition((cancoderInputs.absolutePositionRotations - canCoderRotations) * conf.cancoderToUnitsRatio);
+    io.setCurrentPosition(
+        (cancoderInputs.absolutePositionRotations - canCoderRotations) * conf.cancoderToUnitsRatio);
   }
 
   public void zeroMagnetOffset() {
     cancoderIO.setMagnetOffset(0);
   }
 
-  public void zeroMagnetOffset(double expectedZeroingPositionUnits, ) {
+  public void zeroMagnetOffset(double expectedZeroingPositionUnits) {
     cancoderIO.setMagnetOffset(0);
-    double absoluteRotationsAtZeroingPosition = expectedZeroingPositionUnits * conf.cancoderToUnitsRatio;
-    double magnetOffset = 
-        absoluteRotationsAtZeroingPosition - cancoderIO.getAbsolutePositionSlow();
-    magnetOffset = Util.rangeModulo(
-      magnetOffset, 
-      conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint,
-      conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint - 1);
+    double absoluteRotationsAtZeroingPosition =
+        expectedZeroingPositionUnits * conf.cancoderToUnitsRatio;
+    double magnetOffset = absoluteRotationsAtZeroingPosition - cancoderIO.getAbsolutePositionSlow();
+    magnetOffset =
+        Util.rangeModulo(
+            magnetOffset,
+            conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint,
+            conf.canCoderConfig.config.MagnetSensor.AbsoluteSensorDiscontinuityPoint - 1);
 
     cancoderIO.setMagnetOffset(magnetOffset);
-    cancoderIO.setPosition(cancoderIO.getAbsolutePositionSlow() + Math.round(absoluteRotationsAtZeroingPosition));
+    cancoderIO.setPosition(
+        cancoderIO.getAbsolutePositionSlow() + Math.round(absoluteRotationsAtZeroingPosition));
   }
 }

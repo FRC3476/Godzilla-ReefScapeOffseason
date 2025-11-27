@@ -11,4 +11,3 @@ public interface CanCoderIO {
 
   void setPosition(double position);
 }
-

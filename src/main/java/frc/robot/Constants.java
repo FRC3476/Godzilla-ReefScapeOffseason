@@ -35,7 +35,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.drivers.CANDeviceId;
 import frc.lib.subsystems.CanCoderConfig;
-import frc.lib.subsystems.ServoMotorSubsystemConfig;
 import frc.lib.subsystems.ServoMotorSubsystemWithCanCoderConfig;
 import frc.lib.subsystems.ServoMotorSubsystemWithFollowersConfig;
 import frc.lib.subsystems.SimElevator;
@@ -628,60 +627,60 @@ public final class Constants {
   // ====================End Effector (5_)====================
   public static class EndEffectorConstants {
     public static class EndEffectorConstants2 {
-        public static MotionMagicConfigs kEndEffectorMotionMagicConfig = new MotionMagicConfigs();
+      public static MotionMagicConfigs kEndEffectorMotionMagicConfig = new MotionMagicConfigs();
 
-        static{
-            kEndEffectorMotionMagicConfig.MotionMagicCruiseVelocity = 1000;
-            kEndEffectorMotionMagicConfig.MotionMagicAcceleration = 9;
-            kEndEffectorMotionMagicConfig.MotionMagicJerk = 1000;
-        }
+      static {
+        kEndEffectorMotionMagicConfig.MotionMagicCruiseVelocity = 1000;
+        kEndEffectorMotionMagicConfig.MotionMagicAcceleration = 9;
+        kEndEffectorMotionMagicConfig.MotionMagicJerk = 1000;
+      }
 
-        public static final ServoMotorSubsystemWithCanCoderConfig kEndEffectorConfig =
+      public static final ServoMotorSubsystemWithCanCoderConfig kEndEffectorConfig =
           new ServoMotorSubsystemWithCanCoderConfig();
 
-        static {
-            kEndEffectorConfig.name = "EndEffector";
-            kEndEffectorConfig.talonCANID =
-                new CANDeviceId(EndEffectorConstants.pivotID, MISC_CANIVORE);
-            kEndEffectorConfig.unitToRotorRatio = 1 / EndEffectorConstants.PIVOT_GEAR_RATIO;
+      static {
+        kEndEffectorConfig.name = "EndEffector";
+        kEndEffectorConfig.talonCANID =
+            new CANDeviceId(EndEffectorConstants.pivotID, MISC_CANIVORE);
+        kEndEffectorConfig.unitToRotorRatio = 1 / EndEffectorConstants.PIVOT_GEAR_RATIO;
 
-            kEndEffectorConfig.fxConfig.Slot0.kG = EndEffectorConstants.Tunable_PIVOT_kG;
-            kEndEffectorConfig.fxConfig.Slot0.kS = EndEffectorConstants.Tunable_PIVOT_kS;
-            kEndEffectorConfig.fxConfig.Slot0.kP = EndEffectorConstants.Tunable_PIVOT_kI;
-            kEndEffectorConfig.fxConfig.Slot0.kI = EndEffectorConstants.Tunable_PIVOT_kP;
-            kEndEffectorConfig.fxConfig.Slot0.kD = EndEffectorConstants.Tunable_PIVOT_kD;
-            kEndEffectorConfig.fxConfig.Slot0.kV = EndEffectorConstants.Tunable_PIVOT_kV;
-            kEndEffectorConfig.fxConfig.Slot0.kA = EndEffectorConstants.Tunable_PIVOT_kA;
-    
-            kEndEffectorConfig.fxConfig.MotionMagic = kEndEffectorMotionMagicConfig;
-            kEndEffectorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    
-            // software limit switches at min/max positions
-            kEndEffectorConfig.kMinPositionUnits = ElevatorConstants.MIN_HEIGHT_METERS;
-            kEndEffectorConfig.kMaxPositionUnits = ElevatorConstants.MAX_HEIGHT_METERS;
-            kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-            kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        kEndEffectorConfig.fxConfig.Slot0.kG = EndEffectorConstants.Tunable_PIVOT_kG;
+        kEndEffectorConfig.fxConfig.Slot0.kS = EndEffectorConstants.Tunable_PIVOT_kS;
+        kEndEffectorConfig.fxConfig.Slot0.kP = EndEffectorConstants.Tunable_PIVOT_kI;
+        kEndEffectorConfig.fxConfig.Slot0.kI = EndEffectorConstants.Tunable_PIVOT_kP;
+        kEndEffectorConfig.fxConfig.Slot0.kD = EndEffectorConstants.Tunable_PIVOT_kD;
+        kEndEffectorConfig.fxConfig.Slot0.kV = EndEffectorConstants.Tunable_PIVOT_kV;
+        kEndEffectorConfig.fxConfig.Slot0.kA = EndEffectorConstants.Tunable_PIVOT_kA;
+
+        kEndEffectorConfig.fxConfig.MotionMagic = kEndEffectorMotionMagicConfig;
+        kEndEffectorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        // software limit switches at min/max positions
+        kEndEffectorConfig.kMinPositionUnits = ElevatorConstants.MIN_HEIGHT_METERS;
+        kEndEffectorConfig.kMaxPositionUnits = ElevatorConstants.MAX_HEIGHT_METERS;
+        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
             kEndEffectorConfig.kMaxPositionUnits / kEndEffectorConfig.unitToRotorRatio;
-            kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-            kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
             kEndEffectorConfig.kMinPositionUnits / kEndEffectorConfig.unitToRotorRatio;
-    
-            kEndEffectorConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-            kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_CURRENT_LIMIT_AMPS;
 
-            kEndEffectorConfig.cancoderToUnitsRatio = EndEffectorConstants.PIVOT_STM;
-            kEndEffectorConfig.ratioForSim = kEndEffectorConfig.cancoderToUnitsRatio;
-            
-            CanCoderConfig canCoderConfig = new CanCoderConfig();
-                canCoderConfig.CANID = new CANDeviceId(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.MISC_CANIVORE)
-                canCoderConfig.config = EndEffectorConstants.PIVOT_CANCODER_CONFIG;
+        kEndEffectorConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_CURRENT_LIMIT_AMPS;
 
-            kEndEffectorConfig.canCoderConfig = canCoderConfig;
-          }
+        kEndEffectorConfig.cancoderToUnitsRatio = EndEffectorConstants.PIVOT_STM;
+        kEndEffectorConfig.ratioForSim = kEndEffectorConfig.cancoderToUnitsRatio;
 
-          
-    }    
+        CanCoderConfig canCoderConfig = new CanCoderConfig();
+        canCoderConfig.CANID =
+            new CANDeviceId(EndEffectorConstants.PIVOT_CANCODER_ID, Constants.MISC_CANIVORE);
+        canCoderConfig.config = EndEffectorConstants.PIVOT_CANCODER_CONFIG;
+
+        kEndEffectorConfig.canCoderConfig = canCoderConfig;
+      }
+    }
+
     public static final int pivotID = 50;
     public static final int rollerID = 51;
     public static final int FIRST_CORAL_CANRANGE_ID = 52;
@@ -1018,7 +1017,7 @@ public final class Constants {
 
     public static double STOW_ELEVATOR_HEIGHT_INCH = ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;
     public static double STOW_ENDEFFECTOR_ROTATION_ROTATIONS =
-    EndEffectorConstants.MIN_ANGLE_ROTATIONS;
+        EndEffectorConstants.MIN_ANGLE_ROTATIONS;
 
     public static double STOW_CORAL_ELEVATOR_HEIGHT_INCH =
         ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH;

@@ -16,9 +16,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.subsystems.CanCoderIOHardware;
+import frc.lib.subsystems.SimCanCoderIO;
 import frc.lib.subsystems.SimElevator;
+import frc.lib.subsystems.SimTalonFXWithCancoder;
 import frc.lib.subsystems.TalonFXIO;
 import frc.robot.Constants.ElevatorConstants.Elevator2Constants;
+import frc.robot.Constants.EndEffectorConstants.EndEffectorConstants2;
 import frc.robot.arbitraryTriggers.ArbitraryTriggers;
 import frc.robot.auto.AutoChooserSetup;
 import frc.robot.auto.NamedCommandsSetup;
@@ -44,9 +48,6 @@ import frc.robot.subsystems.end_effector.ClawIO;
 import frc.robot.subsystems.end_effector.ClawIOReal;
 import frc.robot.subsystems.end_effector.ClawIOSim;
 import frc.robot.subsystems.end_effector.EndEffector;
-import frc.robot.subsystems.end_effector.EndEffectorIO;
-import frc.robot.subsystems.end_effector.EndEffectorIOReal;
-import frc.robot.subsystems.end_effector.EndEffectorIOSim;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOReal;
@@ -111,12 +112,21 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     elevator = buildElevator2();
+    final SimTalonFXWithCancoder simulatedEndEffectorMotor =
+        Robot.isSimulation()
+            ? new SimTalonFXWithCancoder(EndEffectorConstants2.kEndEffectorConfig)
+            : null;
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         feeder = new Feeder(new FeederIOReal());
         intake = new Intake(new IntakeIOReal(), feeder);
-        endEffector = new EndEffector(new EndEffectorIOReal());
+        endEffector =
+            new EndEffector(
+                EndEffectorConstants2.kEndEffectorConfig,
+                new TalonFXIO(EndEffectorConstants2.kEndEffectorConfig),
+                new CanCoderIOHardware(EndEffectorConstants2.kEndEffectorConfig.canCoderConfig),
+                robotState);
         claw = new Claw(new ClawIOReal() {});
         // elevator = new ElevatorOld(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
@@ -137,7 +147,15 @@ public class RobotContainer {
         // Sim robot, instantiate physics sim IO implementations
         feeder = new Feeder(new FeederIOSim());
         intake = new Intake(new IntakeIOSim(), feeder);
-        endEffector = new EndEffector(new EndEffectorIOSim());
+        endEffector =
+            new EndEffector(
+                EndEffectorConstants2.kEndEffectorConfig,
+                simulatedEndEffectorMotor,
+                new SimCanCoderIO(
+                    EndEffectorConstants2.kEndEffectorConfig.canCoderConfig,
+                    simulatedEndEffectorMotor.getSupplierForCancoder(
+                        EndEffectorConstants2.kEndEffectorConfig)),
+                robotState);
         // elevator = new ElevatorOld(new ElevatorIOSim());
         claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
@@ -158,7 +176,15 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         feeder = new Feeder(new FeederIO() {});
         intake = new Intake(new IntakeIO() {}, feeder);
-        endEffector = new EndEffector(new EndEffectorIO() {});
+        endEffector =
+            new EndEffector(
+                EndEffectorConstants2.kEndEffectorConfig,
+                simulatedEndEffectorMotor,
+                new SimCanCoderIO(
+                    EndEffectorConstants2.kEndEffectorConfig.canCoderConfig,
+                    simulatedEndEffectorMotor.getSupplierForCancoder(
+                        EndEffectorConstants2.kEndEffectorConfig)),
+                robotState);
         claw = new Claw(new ClawIO() {});
         // elevator = new ElevatorOld(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);

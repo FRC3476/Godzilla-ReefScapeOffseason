@@ -2,8 +2,6 @@ package frc.lib.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -12,7 +10,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.util.CANStatusLogger;
 import frc.lib.util.CTREUtil;
-import frc.robot.Constants;
 import frc.robot.util.Util;
 
 public class CanCoderIOHardware implements CanCoderIO {

@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class EndEffector extends SubsystemBase {
+public class EndEffectorOld extends SubsystemBase {
 
   private final EndEffectorIO io;
   private final EndEffectorIOInputsAutoLogged inputs = new EndEffectorIOInputsAutoLogged();
@@ -45,7 +45,7 @@ public class EndEffector extends SubsystemBase {
   private static final LoggedTunableNumber pivotJerk =
       new LoggedTunableNumber("EndEffector/PivotJerk", EndEffectorConstants.Tunable_PIVOT_Jerk);
 
-  public EndEffector(EndEffectorIO io) {
+  public EndEffectorOld(EndEffectorIO io) {
     this.io = io;
     System.out.println("====================EndEffector Subsystem Online====================");
   }
