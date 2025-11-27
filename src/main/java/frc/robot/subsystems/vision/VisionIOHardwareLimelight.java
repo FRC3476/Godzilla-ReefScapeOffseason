@@ -7,7 +7,6 @@ import frc.robot.Constants.VisionConstants;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
 public class VisionIOHardwareLimelight implements VisionIO {
@@ -105,63 +104,67 @@ public class VisionIOHardwareLimelight implements VisionIO {
   // our code c:
   // object detection methods
 
-  @Override
-  @AutoLogOutput(key = "Vision/Coral Detected?")
-  public boolean isCoralDetected() {
-    return LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
-  }
+  // @Override
+  // @AutoLogOutput(key = "Vision/Coral Detected?")
+  // public boolean isCoralDetected() {
+  //   return
+  // LimelightHelpers.getDetectorClass(VisionConstants.DETECTION_LIMELIGHT).equals("CORAL");
+  // }
 
-  @Override
-  public double getCoralTx() {
-    coral_tx =
-        isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) : coral_tx;
-    return coral_tx;
-  }
+  // @Override
+  // public double getCoralTx() {
+  //   coral_tx =
+  //       isCoralDetected() ? LimelightHelpers.getTX(VisionConstants.DETECTION_LIMELIGHT) :
+  // coral_tx;
+  //   return coral_tx;
+  // }
 
-  @Override
-  public double getCoralTy() {
-    coral_ty =
-        isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) : coral_ty;
-    return coral_ty;
-  }
+  // @Override
+  // public double getCoralTy() {
+  //   coral_ty =
+  //       isCoralDetected() ? LimelightHelpers.getTY(VisionConstants.DETECTION_LIMELIGHT) :
+  // coral_ty;
+  //   return coral_ty;
+  // }
 
-  @Override
-  public double getCoralTxNc() {
-    coral_txnc =
-        isCoralDetected()
-            ? LimelightHelpers.getTXNC(VisionConstants.DETECTION_LIMELIGHT)
-            : coral_txnc;
-    return coral_txnc;
-  }
+  // @Override
+  // public double getCoralTxNc() {
+  //   coral_txnc =
+  //       isCoralDetected()
+  //           ? LimelightHelpers.getTXNC(VisionConstants.DETECTION_LIMELIGHT)
+  //           : coral_txnc;
+  //   return coral_txnc;
+  // }
 
-  @Override
-  public double getCoralTyNc() {
-    coral_tync =
-        isCoralDetected()
-            ? LimelightHelpers.getTYNC(VisionConstants.DETECTION_LIMELIGHT)
-            : coral_tync;
-    return coral_tync;
-  }
+  // @Override
+  // public double getCoralTyNc() {
+  //   coral_tync =
+  //       isCoralDetected()
+  //           ? LimelightHelpers.getTYNC(VisionConstants.DETECTION_LIMELIGHT)
+  //           : coral_tync;
+  //   return coral_tync;
+  // }
 
-  @Override
-  public Optional<ArrayList<Pair<Double, Double>>> getAllCoralTNCs() {
-    if (!isCoralDetected()) {
-      return Optional.empty();
-    }
-    LimelightHelpers.RawDetection[] detections =
-        LimelightHelpers.getRawDetections(VisionConstants.DETECTION_LIMELIGHT);
-    ArrayList<Pair<Double, Double>> tncs = new ArrayList<Pair<Double, Double>>(detections.length);
-    for (int i = 0; i < detections.length; i++) {
-      tncs.add(
-          new Pair<Double, Double>(
-              detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
-    }
-    if (lastCoralTNCs.isPresent()) {
-      if (lastCoralTNCs.get().equals(tncs)) {
-        // no update from limelight yet
-        return Optional.empty();
-      }
-    }
-    return Optional.of(tncs);
-  }
+  // @Override
+  // public Optional<ArrayList<Pair<Double, Double>>> getAllCoralTNCs() {
+  //   if (!isCoralDetected()) {
+  //     return Optional.empty();
+  //   }
+  //   LimelightHelpers.RawDetection[] detections =
+  //       LimelightHelpers.getRawDetections(VisionConstants.DETECTION_LIMELIGHT);
+  //   ArrayList<Pair<Double, Double>> tncs = new ArrayList<Pair<Double,
+  // Double>>(detections.length);
+  //   for (int i = 0; i < detections.length; i++) {
+  //     tncs.add(
+  //         new Pair<Double, Double>(
+  //             detections[i].txnc, detections[i].tync)); // Assuming 'name' is the member variable
+  //   }
+  //   if (lastCoralTNCs.isPresent()) {
+  //     if (lastCoralTNCs.get().equals(tncs)) {
+  //       // no update from limelight yet
+  //       return Optional.empty();
+  //     }
+  //   }
+  //   return Optional.of(tncs);
+  // }
 }
