@@ -6,10 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
-import frc.lib.subsystems.MotorIO;
-import frc.lib.subsystems.MotorInputsAutoLogged;
-import frc.lib.subsystems.real.ServoMotorSubsystem;
-import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.SuperstructureState;
@@ -17,45 +13,42 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
-public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
+public class ClawOld extends SubsystemBase {
 
-    private final RobotState robotState;
+  private final ClawIO io;
+  private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
 
-
-//   private static final LoggedTunableNumber rollerVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
-//   private static final LoggedTunableNumber rollerIntakeCoralVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
-//   private static final LoggedTunableNumber rollerHoldingCoralVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringVolts =
-//       new LoggedTunableNumber("Claw/RollerScoringVolts", EndEffectorConstants.ROLLER_SCORING_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringL1Volts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+  private static final LoggedTunableNumber rollerVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
+  private static final LoggedTunableNumber rollerIntakeCoralVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
+  private static final LoggedTunableNumber rollerHoldingCoralVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
+  private static final LoggedTunableNumber rollerScoringVolts =
+      new LoggedTunableNumber("Claw/RollerScoringVolts", EndEffectorConstants.ROLLER_SCORING_VOLTS);
+  private static final LoggedTunableNumber rollerScoringL1Volts =
+      new LoggedTunableNumber(
+          "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
+  private static final LoggedTunableNumber rollerScoringAlgaeVolts =
+      new LoggedTunableNumber(
+          "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
   private boolean secondSensorTriggered;
 
-  public Claw(ServoMotorSubsystemConfig config, MotorIO io, RobotState robotState) {
-    super(
-        config,
-        new MotorInputsAutoLogged(),
-        io
-    );
-    this.robotState = robotState;
+  public ClawOld(ClawIO io) {
+    this.io = io;
   }
 
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
-    super.periodic();
+    io.updateInputs(inputs);
+    Logger.processInputs("Claw", inputs);
+    Logger.recordOutput("Claw/CurrentState", currentState);
 
     firstSensorTriggered =
         inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
@@ -66,6 +59,12 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
 
     RobotState.setHasAlgae(hasAlgae());
+
+    Logger.recordOutput(
+        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(
+        "Claw/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
   }
 
   public void setRollerVoltage(double voltage) {

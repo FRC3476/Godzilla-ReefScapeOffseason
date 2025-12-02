@@ -8,7 +8,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.climb.Climber.ClimbState;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.led.Led;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
@@ -17,7 +17,7 @@ import org.littletonrobotics.junction.Logger;
 public class TeleopLedCommand extends Command {
   private final RobotContainer container;
   private final Led led;
-  private final Claw claw;
+  private final ClawOld claw;
   private final DriveSubsystem drive;
   private final Climber climber;
   private final RobotState robotState;

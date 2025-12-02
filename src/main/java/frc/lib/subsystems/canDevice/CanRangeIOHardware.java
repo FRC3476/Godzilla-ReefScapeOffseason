@@ -1,6 +1,5 @@
 package frc.lib.subsystems.canDevice;
 
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.BaseStatusSignal;

@@ -14,7 +14,7 @@ import frc.robot.commands.DriveToCoralCommand;
 import frc.robot.commands.GarageDriveToPoseAutoCommand;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -27,7 +27,7 @@ public class NamedCommandsSetup {
   public NamedCommandsSetup(RobotContainer container, RobotState robotState) {
     Superstructure superstructure = container.getSuperStructure();
     Intake intake = container.getIntake();
-    Claw claw = container.getClaw();
+    ClawOld claw = container.getClaw();
     Vision vision = container.getVision();
     DriveSubsystem drive = container.getDrive();
 

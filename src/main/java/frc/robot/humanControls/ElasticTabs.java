@@ -19,7 +19,7 @@ import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.led.Led;
@@ -42,7 +42,7 @@ public class ElasticTabs {
   private final ClimbRoller climbRoller;
   private final RobotState robotState;
   private final EndEffector endEffector;
-  private final Claw claw;
+  private final ClawOld claw;
   private final Led led;
   private final Vision vision;
   private final Map<String, ElasticTab> elasticTabMap = new HashMap<>();

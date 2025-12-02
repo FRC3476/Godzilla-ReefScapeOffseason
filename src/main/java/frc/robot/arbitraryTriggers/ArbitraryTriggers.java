@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.end_effector.Claw;
+import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
@@ -24,7 +24,7 @@ public class ArbitraryTriggers {
   private final RobotContainer container;
   private final Superstructure superstructure;
   private final Intake intake;
-  private final Claw claw;
+  private final ClawOld claw;
   private final CommandXboxController controller;
   private final RobotState robotState;
   private final Elevator elevator;
