@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.drivers.CANDeviceId;
@@ -53,6 +54,9 @@ public class CANStatusLogger {
   }
 
   public void registerCANcoder(String name, CANcoder cancoder, int deviceId, String canBus) {
+    // This method is kept for compatibility but doesn't need to track CANcoders
+  }
+  public void registerCANrange(String name, CANrange canrange, int deviceId, String canBus) {
     // This method is kept for compatibility but doesn't need to track CANcoders
   }
 

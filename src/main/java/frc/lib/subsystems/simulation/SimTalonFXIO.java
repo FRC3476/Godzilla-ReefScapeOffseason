@@ -8,6 +8,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.lib.subsystems.TalonFXIO;
+import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
+import frc.lib.subsystems.real.ServoMotorSubsystemWithCanCoderConfig;
 import frc.lib.time.RobotTime;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;

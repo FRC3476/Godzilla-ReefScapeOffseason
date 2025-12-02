@@ -3,6 +3,7 @@ package frc.lib.util;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.S1CloseStateValue;
 import com.ctre.phoenix6.signals.S1FloatStateValue;
@@ -52,12 +53,16 @@ public class CTREUtil {
     return tryUntilOK(() -> motor.getConfigurator().apply(config), motor.getDeviceID());
   }
 
+  public static StatusCode refreshConfiguration(TalonFX motor, TalonFXConfiguration config) {
+    return tryUntilOK(() -> motor.getConfigurator().refresh(config), motor.getDeviceID());
+  }
+
   public static StatusCode applyConfiguration(CANcoder cancoder, CANcoderConfiguration config) {
     return tryUntilOK(() -> cancoder.getConfigurator().apply(config), cancoder.getDeviceID());
   }
 
-  public static StatusCode refreshConfiguration(TalonFX motor, TalonFXConfiguration config) {
-    return tryUntilOK(() -> motor.getConfigurator().refresh(config), motor.getDeviceID());
+  public static StatusCode applyConfiguration(CANrange canrange, CANrangeConfiguration config) {
+    return tryUntilOK(() -> canrange.getConfigurator().apply(config), canrange.getDeviceID());
   }
 
   public static CANdiConfiguration createCandiConfiguration() {
