@@ -1,4 +1,4 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.real;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import frc.lib.drivers.CANDeviceId;

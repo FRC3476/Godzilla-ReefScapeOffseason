@@ -1,4 +1,4 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.canDevice;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import frc.lib.drivers.CANDeviceId;

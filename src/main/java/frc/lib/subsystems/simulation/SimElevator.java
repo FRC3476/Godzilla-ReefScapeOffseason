@@ -1,4 +1,4 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.simulation;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -6,6 +6,9 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.lib.subsystems.TalonFXIO;
+import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
+import frc.lib.subsystems.real.ServoMotorSubsystemWithFollowersConfig;
 import frc.lib.time.RobotTime;
 import java.util.Arrays;
 import org.littletonrobotics.junction.Logger;

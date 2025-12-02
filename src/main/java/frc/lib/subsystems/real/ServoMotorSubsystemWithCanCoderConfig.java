@@ -1,4 +1,6 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.real;
+
+import frc.lib.subsystems.canDevice.CanCoderConfig;
 
 public class ServoMotorSubsystemWithCanCoderConfig extends ServoMotorSubsystemConfig {
   public CanCoderConfig canCoderConfig = new CanCoderConfig();

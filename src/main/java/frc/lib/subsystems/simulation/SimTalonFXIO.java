@@ -1,4 +1,4 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.simulation;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -7,6 +7,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.lib.subsystems.TalonFXIO;
 import frc.lib.time.RobotTime;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;

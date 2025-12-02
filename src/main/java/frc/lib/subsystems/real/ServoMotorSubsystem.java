@@ -1,8 +1,10 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.real;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.lib.subsystems.MotorIO;
+import frc.lib.subsystems.MotorInputsAutoLogged;
 import frc.lib.time.RobotTime;
 import frc.lib.util.Util;
 import frc.robot.util.MotorStallDetection;

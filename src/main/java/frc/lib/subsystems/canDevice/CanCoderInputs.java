@@ -1,4 +1,4 @@
-package frc.lib.subsystems;
+package frc.lib.subsystems.canDevice;
 
 import org.littletonrobotics.junction.AutoLog;
 

@@ -2,12 +2,12 @@ package frc.robot.subsystems.end_effector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.subsystems.CanCoderIO;
 import frc.lib.subsystems.CanCoderInputsAutoLogged;
 import frc.lib.subsystems.MotorIO;
 import frc.lib.subsystems.MotorInputsAutoLogged;
-import frc.lib.subsystems.ServoMotorSubsystemWithCanCoder;
-import frc.lib.subsystems.ServoMotorSubsystemWithCanCoderConfig;
+import frc.lib.subsystems.canDevice.CanCoderIO;
+import frc.lib.subsystems.real.ServoMotorSubsystemWithCanCoder;
+import frc.lib.subsystems.real.ServoMotorSubsystemWithCanCoderConfig;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
