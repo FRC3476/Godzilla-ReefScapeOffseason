@@ -18,7 +18,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.subsystems.TalonFXIO;
 import frc.lib.subsystems.canDevice.CanCoderIOHardware;
+import frc.lib.subsystems.canDevice.CanRangeIOHardware;
 import frc.lib.subsystems.simulation.SimCanCoderIO;
+import frc.lib.subsystems.simulation.SimCanRangeIO;
+import frc.lib.subsystems.simulation.SimCanRangeIO.SimCanRangeState;
 import frc.lib.subsystems.simulation.SimElevator;
 import frc.lib.subsystems.simulation.SimTalonFXWithCancoder;
 import frc.robot.Constants.ElevatorConstants.Elevator2Constants;
@@ -44,10 +47,6 @@ import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
-import frc.robot.subsystems.end_effector.ClawIO;
-import frc.robot.subsystems.end_effector.ClawIOReal;
-import frc.robot.subsystems.end_effector.ClawIOSim;
-import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
@@ -110,6 +109,9 @@ public class RobotContainer {
   // private NamedCommandsSetup namedCommands;
   private AutoChooserSetup autoChooserSetup;
 
+  SimCanRangeState clawSimRange1 = new SimCanRangeState();
+  SimCanRangeState clawSimRange2 = new SimCanRangeState();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     elevator = buildElevator2();
@@ -128,7 +130,13 @@ public class RobotContainer {
                 new TalonFXIO(EndEffectorConstants2.kEndEffectorConfig),
                 new CanCoderIOHardware(EndEffectorConstants2.kEndEffectorConfig.canCoderConfig),
                 robotState);
-        claw = new Claw(new ClawIOReal() {});
+        claw =
+            new Claw(
+                EndEffectorConstants2.kClawConfig,
+                new TalonFXIO(EndEffectorConstants2.kClawConfig),
+                robotState,
+                new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig),
+                new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig2));
         // elevator = new ElevatorOld(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
@@ -158,7 +166,13 @@ public class RobotContainer {
                         EndEffectorConstants2.kEndEffectorConfig)),
                 robotState);
         // elevator = new ElevatorOld(new ElevatorIOSim());
-        claw = new Claw(new ClawIOSim() {});
+        claw =
+            new Claw(
+                EndEffectorConstants2.kClawConfig,
+                simulatedEndEffectorMotor,
+                robotState,
+                new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig, () -> clawSimRange1),
+                new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig2, () -> clawSimRange2));
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
         climbRoller = new ClimbRoller(new ClimbRollerIOSim());
@@ -186,7 +200,13 @@ public class RobotContainer {
                     simulatedEndEffectorMotor.getSupplierForCancoder(
                         EndEffectorConstants2.kEndEffectorConfig)),
                 robotState);
-        claw = new Claw(new ClawIO() {});
+        claw =
+            new Claw(
+                EndEffectorConstants2.kClawConfig,
+                new TalonFXIO(EndEffectorConstants2.kClawConfig),
+                robotState,
+                new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig),
+                new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig2));
         // elevator = new ElevatorOld(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
@@ -312,5 +332,15 @@ public class RobotContainer {
 
   public RobotState getRobotState() {
     return robotState;
+  }
+
+  public void setSimCanRange1(boolean tripped, double distanceMeters) {
+    clawSimRange1.isTripped = tripped;
+    clawSimRange1.distanceMeters = distanceMeters;
+  }
+
+  public void setSimCanRange2(boolean tripped, double distanceMeters) {
+    clawSimRange2.isTripped = tripped;
+    clawSimRange2.distanceMeters = distanceMeters;
   }
 }

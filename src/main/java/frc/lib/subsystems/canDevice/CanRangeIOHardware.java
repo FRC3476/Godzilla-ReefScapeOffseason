@@ -16,41 +16,23 @@ public class CanRangeIOHardware implements CanRangeIO {
 
   private StatusSignal<Boolean> trippedSignal;
   private StatusSignal<Distance> distanceSignal;
-  private StatusSignal<Boolean> trippedSignal;
-  private StatusSignal<Distance> distanceSignal;
 
   public CanRangeIOHardware(CanRangeConfig config) {
-    this.config = config;
-  public CanRangeIOHardware(CanRangeConfig config) {
+    canRange = new CANrange(config.CANID.getDeviceNumber(), config.CANID.getBusName());
     this.config = config;
 
-    canrange = new CANrange(config.CANID.getDeviceNumber(), config.CANID.getBusName());
-    canrange = new CANrange(config.CANID.getDeviceNumber(), config.CANID.getBusName());
-
-    CTREUtil.applyConfiguration(canrange, this.config.config);
-    trippedSignal = canrange.getIsDetected();
-    distanceSignal = canrange.getDistance();
-    CTREUtil.applyConfiguration(canrange, this.config.config);
-    trippedSignal = canrange.getIsDetected();
-    distanceSignal = canrange.getDistance();
+    CTREUtil.applyConfiguration(canRange, this.config.config);
+    trippedSignal = canRange.getIsDetected();
+    distanceSignal = canRange.getDistance();
 
     signals = new BaseStatusSignal[] {trippedSignal, distanceSignal};
-    signals = new BaseStatusSignal[] {trippedSignal, distanceSignal};
 
-    BaseStatusSignal.setUpdateFrequencyForAll(100.0, signals);
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, signals);
 
     CANStatusLogger.getInstance()
         .registerCANrange(
             "CANrange_ID" + config.CANID.getDeviceNumber(),
-            canrange,
-            config.CANID.getDeviceNumber(),
-            config.CANID.getBusName());
-  }
-    CANStatusLogger.getInstance()
-        .registerCANrange(
-            "CANrange_ID" + config.CANID.getDeviceNumber(),
-            canrange,
+            canRange,
             config.CANID.getDeviceNumber(),
             config.CANID.getBusName());
   }
@@ -58,23 +40,11 @@ public class CanRangeIOHardware implements CanRangeIO {
   @Override
   public void readInputs(CanRangeInputs inputs) {
     BaseStatusSignal.refreshAll(signals);
-  @Override
-  public void readInputs(CanRangeInputs inputs) {
-    BaseStatusSignal.refreshAll(signals);
-
     inputs.isTripped = trippedSignal.getValue();
     inputs.distanceMeters = distanceSignal.getValue().in(Meters);
-    inputs.isConnected = canrange.isConnected();
-  }
-    inputs.isTripped = trippedSignal.getValue();
-    inputs.distanceMeters = distanceSignal.getValue().in(Meters);
-    inputs.isConnected = canrange.isConnected();
+    inputs.isConnected = canRange.isConnected();
   }
 
-  @Override
-  public void updateFrequency(double hz) {
-    BaseStatusSignal.setUpdateFrequencyForAll(hz, signals);
-  }
   @Override
   public void updateFrequency(double hz) {
     BaseStatusSignal.setUpdateFrequencyForAll(hz, signals);

@@ -127,12 +127,12 @@ public class ElasticTabs {
     elasticTabMap.put(key, tab);
 
     // Configure the while-held behavior
-    tab.addButton("Roller Forward (While Held)")
-        .setupWhileHeldCommand(claw.rollerFWD(), claw.rollerSTOP());
-    tab.addButton("Roller Reverse (While Held)")
-        .setupWhileHeldCommand(claw.rollerRVS(), claw.rollerSTOP());
-    tab.addButton("Roller Hold (While Held)")
-        .setupWhileHeldCommand(claw.holdAlgae(), claw.holdAlgae());
+    // tab.addButton("Roller Forward (While Held)")
+    //     .setupWhileHeldCommand(claw.rollerFWD(), claw.rollerSTOP());
+    // tab.addButton("Roller Reverse (While Held)")
+    //     .setupWhileHeldCommand(claw.rollerRVS(), claw.rollerSTOP());
+    // tab.addButton("Roller Hold (While Held)")
+    //     .setupWhileHeldCommand(claw.holdAlgae(), claw.holdAlgae());
     tab.addButton("Pivot Up (While Held)")
         .setupWhileHeldCommand(endEffector.pivotUP(), endEffector.pivotSTOP());
     tab.addButton("Pivot Down (While Held)")
@@ -168,6 +168,14 @@ public class ElasticTabs {
                         / 2));
     tab.addButton("Pivot Zero (When Pressed)")
         .setupOnPressCommandIgnoringDisabled(endEffector.setPivotZero());
+
+    tab.addButton("Toggle First Sensor (When Pressed)")
+        .getTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  container.setSimCanRange1(false, 0.0);
+                }));
   }
 
   private void buildElevatorTab() {

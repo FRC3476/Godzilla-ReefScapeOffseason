@@ -309,7 +309,7 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     LoopTimingLogger.startTiming("TestPeriodic");
     // Add any test-specific code here if needed
-    Commands.run(() -> robotContainer.getClaw().setRollerVoltage(1))
+    Commands.run(() -> robotContainer.getClaw().setVoltage(() -> 1))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .schedule();
     Commands.run(() -> robotContainer.getIntake().setRollerVoltage(1))

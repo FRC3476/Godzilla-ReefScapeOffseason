@@ -35,6 +35,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.drivers.CANDeviceId;
 import frc.lib.subsystems.canDevice.CanCoderConfig;
+import frc.lib.subsystems.canDevice.CanRangeConfig;
+import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
 import frc.lib.subsystems.real.ServoMotorSubsystemWithCanCoderConfig;
 import frc.lib.subsystems.real.ServoMotorSubsystemWithFollowersConfig;
 import frc.lib.subsystems.simulation.SimElevator;
@@ -637,6 +639,26 @@ public final class Constants {
 
       public static final ServoMotorSubsystemWithCanCoderConfig kEndEffectorConfig =
           new ServoMotorSubsystemWithCanCoderConfig();
+
+      public static final ServoMotorSubsystemConfig kClawConfig = new ServoMotorSubsystemConfig();
+
+      public static final CanRangeConfig kCanRangeConfig = new CanRangeConfig();
+      public static final CanRangeConfig kCanRangeConfig2 = new CanRangeConfig();
+
+      static {
+        kClawConfig.name = "Claw";
+        kClawConfig.talonCANID = new CANDeviceId(EndEffectorConstants.rollerID, MISC_CANIVORE);
+        kClawConfig.unitToRotorRatio = 1 / EndEffectorConstants.CORAL_GEAR_RATIO;
+
+        kClawConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        kClawConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kClawConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_CURRENT_LIMIT_AMPS;
+
+        kCanRangeConfig.CANID =
+            new CANDeviceId(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
+        kCanRangeConfig2.CANID =
+            new CANDeviceId(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
+      }
 
       static {
         kEndEffectorConfig.name = "EndEffector";

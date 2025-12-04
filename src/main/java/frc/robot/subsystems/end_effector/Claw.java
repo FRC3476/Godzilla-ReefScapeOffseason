@@ -1,9 +1,5 @@
 package frc.robot.subsystems.end_effector;
 
-import java.util.function.DoubleSupplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -20,8 +16,10 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.RobotTime;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
-public class Claw extends SubsystemBase {
+public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
 
   private final RobotState robotState;
   private final CanRangeIO firstCANRangeIO;
@@ -54,8 +52,6 @@ public class Claw extends SubsystemBase {
 
     Logger.processInputs(getName() + "/firstCanRange", firstRangeAutoLog);
     Logger.processInputs(getName() + "/firstCanRange", secondRangeAutoLog);
-
-    
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
@@ -96,7 +92,9 @@ public class Claw extends SubsystemBase {
   }
 
   public boolean hasAlgae() {
-    return isMotorStalled(EndEffectorConstants.ROLLER_STALLED_CURRENT, EndEffectorConstants.ROLLER_STALLED_RPS) && !isCoralInClaw();
+    return isMotorStalled(
+            EndEffectorConstants.ROLLER_STALLED_CURRENT, EndEffectorConstants.ROLLER_STALLED_RPS)
+        && !isCoralInClaw();
   }
 
   public Command clawDefault() {
@@ -217,15 +215,15 @@ public class Claw extends SubsystemBase {
             });
   }
 
-  private Command setVoltage(DoubleSupplier voltageSupplier) {
+  public Command setVoltage(DoubleSupplier voltageSupplier) {
     return new InstantCommand(() -> setVoltageImpl(voltageSupplier.getAsDouble()), this);
   }
 
-  private Command setPosition(DoubleSupplier positionSupplier) {
+  public Command setPosition(DoubleSupplier positionSupplier) {
     return new InstantCommand(() -> setPositionSetpointImpl(positionSupplier.getAsDouble()), this);
   }
 
-  private Command setTorque(DoubleSupplier torqueSupplier) {
+  public Command setTorque(DoubleSupplier torqueSupplier) {
     return new InstantCommand(() -> setTorqueCurrentFOCImpl(torqueSupplier.getAsDouble()), this);
   }
 }

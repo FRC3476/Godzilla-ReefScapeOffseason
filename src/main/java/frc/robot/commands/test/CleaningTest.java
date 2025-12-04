@@ -10,7 +10,7 @@ public class CleaningTest extends ParallelCommandGroup {
 
   public CleaningTest(Intake intake, Claw claw, Feeder feeder) {
     addCommands(
-        new InstantCommand(() -> claw.setRollerVoltage(1)),
+        new InstantCommand(() -> claw.setVoltage(() -> 1)),
         new InstantCommand(() -> intake.setRollerVoltage(1)),
         new InstantCommand(() -> feeder.setRollerVoltage(1)));
   }
