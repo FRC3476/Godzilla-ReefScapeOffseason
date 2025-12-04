@@ -1,9 +1,8 @@
 package frc.lib.subsystems.real;
 
-import org.littletonrobotics.junction.Logger;
-
 import frc.lib.subsystems.MotorIO;
 import frc.lib.subsystems.MotorInputsAutoLogged;
+import org.littletonrobotics.junction.Logger;
 
 public class ServoMotorSubsystemWithFollowers<T extends MotorInputsAutoLogged, U extends MotorIO>
     extends ServoMotorSubsystem<T, U> {

@@ -43,7 +43,7 @@ import frc.robot.subsystems.drive.DriveIOHardware;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.end_effector.ClawOld;
+import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.end_effector.ClawIO;
 import frc.robot.subsystems.end_effector.ClawIOReal;
 import frc.robot.subsystems.end_effector.ClawIOSim;
@@ -79,7 +79,7 @@ public class RobotContainer {
   private final DriveSubsystem drive;
   private final Intake intake;
   private final EndEffector endEffector;
-  private final ClawOld claw;
+  private final Claw claw;
   // private final ElevatorOld elevator;
   private final Superstructure superstructure;
   private final Climber climber;
@@ -127,7 +127,7 @@ public class RobotContainer {
                 new TalonFXIO(EndEffectorConstants2.kEndEffectorConfig),
                 new CanCoderIOHardware(EndEffectorConstants2.kEndEffectorConfig.canCoderConfig),
                 robotState);
-        claw = new ClawOld(new ClawIOReal() {});
+        claw = new Claw(new ClawIOReal() {});
         // elevator = new ElevatorOld(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOReal());
@@ -157,7 +157,7 @@ public class RobotContainer {
                         EndEffectorConstants2.kEndEffectorConfig)),
                 robotState);
         // elevator = new ElevatorOld(new ElevatorIOSim());
-        claw = new ClawOld(new ClawIOSim() {});
+        claw = new Claw(new ClawIOSim() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
         climbRoller = new ClimbRoller(new ClimbRollerIOSim());
@@ -185,7 +185,7 @@ public class RobotContainer {
                     simulatedEndEffectorMotor.getSupplierForCancoder(
                         EndEffectorConstants2.kEndEffectorConfig)),
                 robotState);
-        claw = new ClawOld(new ClawIO() {});
+        claw = new Claw(new ClawIO() {});
         // elevator = new ElevatorOld(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
@@ -277,7 +277,7 @@ public class RobotContainer {
     return intake;
   }
 
-  public ClawOld getClaw() {
+  public Claw getClaw() {
     return claw;
   }
 

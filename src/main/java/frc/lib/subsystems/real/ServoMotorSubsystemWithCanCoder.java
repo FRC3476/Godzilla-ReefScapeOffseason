@@ -1,9 +1,9 @@
 package frc.lib.subsystems.real;
 
-import frc.lib.subsystems.CanCoderInputsAutoLogged;
 import frc.lib.subsystems.MotorIO;
 import frc.lib.subsystems.MotorInputsAutoLogged;
 import frc.lib.subsystems.canDevice.CanCoderIO;
+import frc.lib.subsystems.canDevice.CanCoderInputsAutoLogged;
 import frc.robot.util.Util;
 import org.littletonrobotics.junction.Logger;
 

@@ -25,7 +25,7 @@ import frc.robot.commands.Rumble;
 import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.end_effector.ClawOld;
+import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.end_effector.EndEffector;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
@@ -40,7 +40,7 @@ public class DriverControls {
   private final DriveSubsystem drive;
   private final Superstructure superstructure;
   private final Intake intake;
-  private final ClawOld claw;
+  private final Claw claw;
   private final CommandXboxController controller;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;

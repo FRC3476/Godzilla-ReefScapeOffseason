@@ -2,11 +2,9 @@ package frc.lib.subsystems.simulation;
 
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
-
 import frc.lib.subsystems.canDevice.CanCoderConfig;
 import frc.lib.subsystems.canDevice.CanCoderIOHardware;
 import frc.lib.subsystems.canDevice.CanCoderInputs;
-
 import java.util.function.Supplier;
 
 public class SimCanCoderIO extends CanCoderIOHardware {

@@ -1,8 +1,7 @@
 package frc.lib.subsystems.canDevice;
 
 public interface CanRangeIO {
-    void readInputs(CanRangeInputs inputs);
+  void readInputs(CanRangeInputs inputs);
 
-    void updateFrequency(double hz);
-
+  void updateFrequency(double hz);
 }
