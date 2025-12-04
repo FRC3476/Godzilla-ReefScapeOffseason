@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.subsystems.end_effector.ClawOld;
+import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -21,10 +21,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class Score extends SequentialCommandGroup {
   /** Creates a new score. */
   public Score(
-      Superstructure superstructure,
-      ClawOld claw,
-      RobotState robotState,
-      RobotContainer container) {
+      Superstructure superstructure, Claw claw, RobotState robotState, RobotContainer container) {
     // Add your commands in the addCommands() call, e.g.
     addCommands(
         new WaitUntilCommand(() -> container.getDrive().isRobotStable()),

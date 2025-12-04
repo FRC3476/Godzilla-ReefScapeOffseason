@@ -21,7 +21,7 @@ import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 import frc.robot.util.RobotTime;
 
-public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
+public class Claw extends SubsystemBase {
 
   private final RobotState robotState;
   private final CanRangeIO firstCANRangeIO;
