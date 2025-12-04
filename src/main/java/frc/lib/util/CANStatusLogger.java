@@ -56,6 +56,7 @@ public class CANStatusLogger {
   public void registerCANcoder(String name, CANcoder cancoder, int deviceId, String canBus) {
     // This method is kept for compatibility but doesn't need to track CANcoders
   }
+
   public void registerCANrange(String name, CANrange canrange, int deviceId, String canBus) {
     // This method is kept for compatibility but doesn't need to track CANcoders
   }

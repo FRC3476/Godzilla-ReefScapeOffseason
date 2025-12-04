@@ -1,66 +1,61 @@
 package frc.robot.subsystems.end_effector;
 
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.EndEffectorConstants;
-import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.lib.subsystems.MotorIO;
 import frc.lib.subsystems.MotorInputsAutoLogged;
+import frc.lib.subsystems.canDevice.CanRangeIO;
+import frc.lib.subsystems.canDevice.CanRangeInputsAutoLogged;
 import frc.lib.subsystems.real.ServoMotorSubsystem;
 import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
+import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.Constants.EndEffectorConstants.ClawState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
-import org.littletonrobotics.junction.Logger;
 
 public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
 
-    private final RobotState robotState;
+  private final RobotState robotState;
+  private final CanRangeIO firstCANRangeIO;
+  private final CanRangeIO secondCANRangeIO;
 
-
-//   private static final LoggedTunableNumber rollerVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerVolts", 1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
-//   private static final LoggedTunableNumber rollerIntakeCoralVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerIntakeCoralVolts", EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
-//   private static final LoggedTunableNumber rollerHoldingCoralVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerHoldingCoralVolts", EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringVolts =
-//       new LoggedTunableNumber("Claw/RollerScoringVolts", EndEffectorConstants.ROLLER_SCORING_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringL1Volts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerScoringL1Volts", EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
-//   private static final LoggedTunableNumber rollerScoringAlgaeVolts =
-//       new LoggedTunableNumber(
-//           "Claw/RollerScoringAlgaeVolts", EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
+  private final CanRangeInputsAutoLogged firstRangeAutoLog = new CanRangeInputsAutoLogged();
+  private final CanRangeInputsAutoLogged secondRangeAutoLog = new CanRangeInputsAutoLogged();
 
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
   private boolean secondSensorTriggered;
 
-  public Claw(ServoMotorSubsystemConfig config, MotorIO io, RobotState robotState) {
-    super(
-        config,
-        new MotorInputsAutoLogged(),
-        io
-    );
+  public Claw(
+      ServoMotorSubsystemConfig config,
+      MotorIO io,
+      RobotState robotState,
+      CanRangeIO canRange,
+      CanRangeIO canRange2) {
+    super(config, new MotorInputsAutoLogged(), io);
+    this.firstCANRangeIO = canRange;
+    this.secondCANRangeIO = canRange2;
     this.robotState = robotState;
   }
 
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
     super.periodic();
+    firstCANRangeIO.readInputs(firstRangeAutoLog);
+    secondCANRangeIO.readInputs(secondRangeAutoLog);
 
-    firstSensorTriggered =
-        inputs.firstCANRangeData.rangeIsTripped() && inputs.firstCANRangeData.canRangeConnected();
-    secondSensorTriggered =
-        inputs.secondCANRangeData.rangeIsTripped() && inputs.secondCANRangeData.canRangeConnected();
+    Logger.processInputs(getName() + "/firstCanRange", firstRangeAutoLog);
+    Logger.processInputs(getName() + "/firstCanRange", secondRangeAutoLog);
+
+    
 
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
@@ -68,14 +63,8 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
     RobotState.setHasAlgae(hasAlgae());
   }
 
-  public void setRollerVoltage(double voltage) {
-    io.setRollerVoltage(voltage);
-  }
-
   public boolean isOK() {
-    return inputs.firstCANRangeData.canRangeConnected()
-        && inputs.secondCANRangeData.canRangeConnected()
-        && inputs.rollerData.rollerMotorConnected();
+    return firstRangeAutoLog.isConnected && secondRangeAutoLog.isConnected;
   }
 
   public boolean isClawScoring() {
@@ -99,17 +88,15 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
   }
 
   public boolean isCoralAtFirstSensor() {
-    return inputs.firstCANRangeData.rangeIsTripped()
-        && inputs.firstCANRangeData.canRangeConnected();
+    return firstRangeAutoLog.isTripped && firstRangeAutoLog.isConnected;
   }
 
   public boolean isCoralAtSecondSensor() {
-    return inputs.secondCANRangeData.rangeIsTripped()
-        && inputs.secondCANRangeData.canRangeConnected();
+    return secondRangeAutoLog.isTripped && secondRangeAutoLog.isConnected;
   }
 
   public boolean hasAlgae() {
-    return io.checkRollerStalled() && !isCoralInClaw();
+    return isMotorStalled(EndEffectorConstants.ROLLER_STALLED_CURRENT, EndEffectorConstants.ROLLER_STALLED_RPS) && !isCoralInClaw();
   }
 
   public Command clawDefault() {
@@ -134,9 +121,9 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
               break;
             case SCORING:
               // Transition to IDLE when coral is out of the end effector
-              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
-              //   this.currentState = ClawState.IDLE;
-              // }
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.currentState = ClawState.IDLE;
+              }
               break;
             case SCORING_L1:
               if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
@@ -145,9 +132,9 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
               break;
             case SCORING_ALGAE:
               // Transition to IDLE when coral is out of the end effector
-              // if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
-              //   this.currentState = ClawState.IDLE;
-              // }
+              if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
+                this.currentState = ClawState.IDLE;
+              }
               break;
             case ALGAE:
               if (RobotState.getSuperstructureTargetState() == SuperstructureState.STOW) {
@@ -163,43 +150,43 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
             case NONE:
               break;
             case IDLE:
-              this.io.setRollerVoltage(0);
+              setVoltage(() -> 0);
               break;
             case INTAKING_CORAL:
               if (coralPosition == CoralStateTracker.CoralPosition.NONE) {
-                this.io.setRollerVoltage(0);
+                setVoltage(() -> 0);
 
               } else {
-                this.io.setRollerVoltage(rollerIntakeCoralVolts.get());
+                setVoltage(() -> EndEffectorConstants.ROLLER_INTAKE_CORAL_VOLTS);
               }
               break;
             case HOLDING_CORAL:
               // move coral forward if at first sensor, backward if at second sensor, do nothing if
               // staged
               if (coralPosition == CoralStateTracker.CoralPosition.AT_FIRST_END_EFFECTOR) {
-                this.io.setRollerVoltage(rollerHoldingCoralVolts.get());
+                setVoltage(() -> EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
               } else if (coralPosition == CoralStateTracker.CoralPosition.AT_SECOND_END_EFFECTOR) {
-                this.io.setRollerVoltage(-rollerHoldingCoralVolts.get());
+                setVoltage(() -> -EndEffectorConstants.ROLLER_HOLDING_CORAL_VOLTS);
               } else if (coralPosition == CoralStateTracker.CoralPosition.STAGED_IN_END_EFFECTOR) {
-                this.io.setRollerVoltage(0);
+                setVoltage(() -> 0);
               } else {
-                this.io.setRollerVoltage(0);
+                setVoltage(() -> 0);
               }
               break;
             case SCORING:
-              this.io.setRollerVoltage(rollerScoringVolts.get());
+              setVoltage(() -> EndEffectorConstants.ROLLER_SCORING_VOLTS);
               break;
             case SCORING_L1:
-              this.io.setRollerVoltage(rollerScoringL1Volts.get());
+              setVoltage(() -> EndEffectorConstants.ROLLER_SCORING_L1_VOLTS);
               break;
             case SCORING_ALGAE:
-              this.io.setRollerVoltage(rollerScoringAlgaeVolts.get());
+              setVoltage(() -> EndEffectorConstants.ROLLER_SCORING_ALGAE_VOLTS);
               break;
             case ALGAE:
-              this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
+              setTorque(() -> EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
               break;
             default:
-              this.io.setRollerVoltage(0);
+              setVoltage(() -> 0);
               break;
           }
         },
@@ -230,20 +217,15 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
             });
   }
 
-  public Command rollerFWD() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
+  private Command setVoltage(DoubleSupplier voltageSupplier) {
+    return new InstantCommand(() -> setVoltageImpl(voltageSupplier.getAsDouble()), this);
   }
 
-  public Command rollerRVS() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
+  private Command setPosition(DoubleSupplier positionSupplier) {
+    return new InstantCommand(() -> setPositionSetpointImpl(positionSupplier.getAsDouble()), this);
   }
 
-  public Command rollerSTOP() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(0), this);
-  }
-
-  public Command holdAlgae() {
-    return Commands.runOnce(
-        () -> this.io.setTorqueCurrent(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS), this);
+  private Command setTorque(DoubleSupplier torqueSupplier) {
+    return new InstantCommand(() -> setTorqueCurrentFOCImpl(torqueSupplier.getAsDouble()), this);
   }
 }
