@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Hardware implementation of VisionIO using Limelight cameras. */
-public class VisionIOHardwareLimelight implements VisionIO {
+public class VisionIOHardwareLimelight implements VisionIOLimelight {
   NetworkTable tableA =
       NetworkTableInstance.getDefault().getTable(VisionConstants.kLimelightATableName);
   NetworkTable tableB =

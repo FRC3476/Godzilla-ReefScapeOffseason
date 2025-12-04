@@ -60,8 +60,8 @@ import frc.robot.subsystems.led.LedIOReal;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
-import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSimPhoton;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import java.util.function.Consumer;
@@ -161,7 +161,7 @@ public class RobotContainer {
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIO() {});
         climbRoller = new ClimbRoller(new ClimbRollerIO() {});
-        vision = new Vision(new VisionIO() {}, robotState);
+        vision = new Vision(new VisionIOLimelight() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
         led = new Led(new LedIO() {}, robotState);
         break;

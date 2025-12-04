@@ -26,15 +26,15 @@ import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
-  private final VisionIO io;
+  private final VisionIOLimelight io;
   private final RobotState state;
-  private final VisionIO.VisionIOInputs inputs = new VisionIO.VisionIOInputs();
+  private final VisionIOLimelight.VisionIOInputs inputs = new VisionIOLimelight.VisionIOInputs();
   private final Debouncer debounce = new Debouncer(0.25);
   private final CoralPoseTracker coralPoseTracker = new CoralPoseTracker();
 
   private boolean useVision = true;
 
-  public Vision(VisionIO io, RobotState state) {
+  public Vision(VisionIOLimelight io, RobotState state) {
     this.io = io;
     this.state = state;
   }
@@ -207,7 +207,7 @@ public class Vision extends SubsystemBase {
     return Optional.of(coralPoseTracker.getCoralPose().get());
   }
 
-  private void logCameraInputs(String prefix, VisionIO.VisionIOInputs.CameraInputs cam) {
+  private void logCameraInputs(String prefix, VisionIOLimelight.VisionIOInputs.CameraInputs cam) {
     Logger.recordOutput(prefix + "/SeesTarget", cam.seesTarget);
     Logger.recordOutput(prefix + "/MegatagCount", cam.megatagCount);
 
@@ -261,7 +261,7 @@ public class Vision extends SubsystemBase {
   }
 
   private Optional<VisionFieldPoseEstimate> processCamera(
-      VisionIO.VisionIOInputs.CameraInputs cam, String label, Transform2d robotToCamera) {
+      VisionIOLimelight.VisionIOInputs.CameraInputs cam, String label, Transform2d robotToCamera) {
 
     String logPrefix = "Vision/" + label;
 
@@ -354,7 +354,7 @@ public class Vision extends SubsystemBase {
 
   private Optional<VisionFieldPoseEstimate> fuseWithGyro(
       MegatagPoseEstimate poseEstimate,
-      VisionIO.VisionIOInputs.CameraInputs cam,
+      VisionIOLimelight.VisionIOInputs.CameraInputs cam,
       String logPrefix) {
 
     if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {
@@ -446,7 +446,7 @@ public class Vision extends SubsystemBase {
 
   private Optional<VisionFieldPoseEstimate> processMegatagPoseEstimate(
       MegatagPoseEstimate poseEstimate,
-      VisionIO.VisionIOInputs.CameraInputs cam,
+      VisionIOLimelight.VisionIOInputs.CameraInputs cam,
       String logPrefix) {
 
     if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {
@@ -589,7 +589,7 @@ public class Vision extends SubsystemBase {
 
   private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
       MegatagPoseEstimate poseEstimate,
-      VisionIO.VisionIOInputs.CameraInputs cam,
+      VisionIOLimelight.VisionIOInputs.CameraInputs cam,
       String logPrefix) {
 
     if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {

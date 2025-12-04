@@ -22,7 +22,6 @@ import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.util.RobotTime;
-
 import frc.robot.util.simulations.MapleSimSwerveDrivetrain;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;

@@ -25,9 +25,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -868,6 +872,11 @@ public final class Constants {
     public static final double coralObservationDistanceThreshold = 0.15;
     public static final double coralObservationTimeThreshold = 1.5;
     public static final int coralObservationMinObservations = 3;
+
+    // from 4451
+    public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(4, 4, Double.MAX_VALUE);
+    public static final Matrix<N3, N1> multiTagStdDevs =
+        VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
   }
 
   public static class SuperstructureConstants {

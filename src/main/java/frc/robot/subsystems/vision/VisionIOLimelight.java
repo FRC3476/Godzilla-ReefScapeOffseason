@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 /** Interface for vision system hardware abstraction. */
-public interface VisionIO {
+public interface VisionIOLimelight {
 
   /** Container for all vision input data. */
   class VisionIOInputs {
