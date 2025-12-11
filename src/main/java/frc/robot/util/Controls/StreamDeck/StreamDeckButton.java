@@ -17,8 +17,12 @@ public class StreamDeckButton {
   private boolean inactive_set = false;
 
   public StreamDeckButton(int row, int col, String key) {
-    index = row * 8 + col % 8;
+    index = calculate_index(row, col);
     this.key = key;
+  }
+
+  public static int calculate_index(int row, int col) {
+    return row * 8 + col % 8;
   }
 
   private void setInactiveIfUnconfigured() {
@@ -113,6 +117,10 @@ public class StreamDeckButton {
 
   public int getIndex() {
     return index;
+  }
+
+  public String getKey() {
+    return key;
   }
 
   public static List<String> getNetworkTableKeys() {
