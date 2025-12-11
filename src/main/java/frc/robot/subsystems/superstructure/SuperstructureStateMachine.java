@@ -14,6 +14,7 @@ import frc.robot.subsystems.superstructure.SuperstructureState.TransitionShortcu
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -307,6 +308,8 @@ public class SuperstructureStateMachine {
                             BufferedWriter bw = new BufferedWriter(fw);
                             PrintWriter out = new PrintWriter(bw)) {
                           out.println(logMessage);
+                        } catch (FileNotFoundException e) {
+                          System.out.println(logMessage);
                         } catch (IOException e) {
                           e.printStackTrace();
                         }
