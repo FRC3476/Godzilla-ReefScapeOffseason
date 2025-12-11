@@ -12,7 +12,7 @@ public class COColor {
   public static final COColor kMagenta = new COColor(Color.magenta);
   public static final COColor kYellow = new COColor(Color.yellow);
   public static final COColor kWhite = new COColor(Color.white);
-  public static final COColor kBlack = new COColor(Color.white);
+  public static final COColor kBlack = new COColor(Color.black);
   public static final COColor kOff = kBlack;
   public static final COColor kCOTealPure = new COColor(32, 146, 153);
   public static final COColor kCOOrangePure = new COColor(255, 122, 28);

@@ -220,14 +220,14 @@ public class StreamDeck extends SubsystemBase {
 
     // bind button triggers
     for (StreamDeckCommand sdc : streamDeckCommands) {
-      Command command = sdc.getCommand();
-      command =
-          command.withName(
-              command.getName()
-                  + " | from SD button "
-                  + button.getKey()
-                  + " "
-                  + sdc.commandType.toString());
+      // Command command =
+      //     sdc.getCommand()
+      //         .withName(
+      //             sdc.getCommand().getName()
+      //                 + " | from SD button "
+      //                 + button.getKey()
+      //                 + " "
+      //                 + sdc.commandType.toString());
       switch (sdc.commandType) {
         case NONE:
           continue;
