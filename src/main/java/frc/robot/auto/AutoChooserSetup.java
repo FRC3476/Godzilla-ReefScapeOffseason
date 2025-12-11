@@ -2,6 +2,7 @@ package frc.robot.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutoChooserSetup {
@@ -9,7 +10,7 @@ public class AutoChooserSetup {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  public AutoChooserSetup() {
+  public AutoChooserSetup(RobotContainer container) {
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -33,6 +34,11 @@ public class AutoChooserSetup {
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // autoChooser.addOption("Drivetrain Test", new DrivetrainTest(drive));
+
+    // Superstructure characterization
+    autoChooser.addOption(
+        "Superstructure Transition Time Characterization",
+        container.getSuperStructure().buildCharacterizationCommand());
   }
 
   public Command getAutonomousCommand() {

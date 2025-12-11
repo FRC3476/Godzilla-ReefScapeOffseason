@@ -173,12 +173,7 @@ public class RobotContainer {
     // namedCommands = new NamedCommandsSetup(this, robotState);
     new NamedCommandsSetup(this, robotState);
     // Set up auto routines
-    autoChooserSetup = new AutoChooserSetup();
-
-    // Superstructure characterization
-    autoChooser.addOption(
-        "Superstructure Transition Time Characterization",
-        superstructure.buildCharacterizationCommand());
+    autoChooserSetup = new AutoChooserSetup(this);
 
     // Configure default commands for subsystems
     RegisterDefaultCommands();

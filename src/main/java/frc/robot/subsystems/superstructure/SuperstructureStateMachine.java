@@ -246,10 +246,12 @@ public class SuperstructureStateMachine {
   }
 
   /**
-   * almost the same as https://github.com/Team254/FRC-2025-Public/blob/ae1aa582b1cadb8462e6cb90718880d11a8f42b1/src/main/java/com/team254/frc2025/subsystems/superstructure/SuperstructureStateMachine.java#L392
+   * almost the same as
+   * https://github.com/Team254/FRC-2025-Public/blob/ae1aa582b1cadb8462e6cb90718880d11a8f42b1/src/main/java/com/team254/frc2025/subsystems/superstructure/SuperstructureStateMachine.java#L392
    *
-   * Essentially works by going through every possible transition and executing it while recording the time taken. 
-   * If the transition fails to complete in the allotted time, it records a penalty instead.
+   * <p>Essentially works by going through every possible transition and executing it while
+   * recording the time taken. If the transition fails to complete in the allotted time, it records
+   * a penalty instead.
    */
   public Command buildCharacterizationCommand() {
     Command overallSequence = Commands.none();
@@ -261,52 +263,54 @@ public class SuperstructureStateMachine {
 
       Command transitionSequence =
           Commands.sequence(
-              new InstantCommand(
-                  () -> {
-                    stateManager.setCurrentState(transition.getFromState(), registeredStates);
-                    stateManager.setTargetState(transition.getFromState(), registeredStates);
-                    Logger.recordOutput(
-                        "Superstructure/CharacterizationState",
-                        transition.getFromState() + " to " + transition.getToState());
-                  }),
-              new WaitUntilCommand(() -> isStable()),
-              new InstantCommand(() -> startTime[0] = Timer.getFPGATimestamp()),
-              Commands.sequence(
-                      transition.getToState().getCommand(container),
-                      new InstantCommand(
-                          () -> stateManager.setCurrentState(transition.getToState(), registeredStates)))
-                  .withTimeout(5.0),
-              // Record result
-              new InstantCommand(
-                  () -> {
-                    double duration = Timer.getFPGATimestamp() - startTime[0];
-                    String logMessage;
+                  new InstantCommand(
+                      () -> {
+                        stateManager.setCurrentState(transition.getFromState(), registeredStates);
+                        stateManager.setTargetState(transition.getFromState(), registeredStates);
+                        Logger.recordOutput(
+                            "Superstructure/CharacterizationState",
+                            transition.getFromState() + " to " + transition.getToState());
+                      }),
+                  new WaitUntilCommand(() -> isStable()),
+                  new InstantCommand(() -> startTime[0] = Timer.getFPGATimestamp()),
+                  Commands.sequence(
+                          transition.getToState().getCommand(container),
+                          new InstantCommand(
+                              () ->
+                                  stateManager.setCurrentState(
+                                      transition.getToState(), registeredStates)))
+                      .withTimeout(5.0),
+                  // Record result
+                  new InstantCommand(
+                      () -> {
+                        double duration = Timer.getFPGATimestamp() - startTime[0];
+                        String logMessage;
 
-                    // Check if transition completed successfully
-                    if (!stateManager.getCurrentState().equals(transition.getToState())) {
-                      logMessage =
-                          transition.getFromState().name()
-                              + ","
-                              + transition.getToState().name()
-                              + ",100"; // penalty
-                    } else {
-                      logMessage =
-                          transition.getFromState().name()
-                              + ","
-                              + transition.getToState().name()
-                              + ","
-                              + duration;
-                    }
+                        // Check if transition completed successfully
+                        if (!stateManager.getCurrentState().equals(transition.getToState())) {
+                          logMessage =
+                              transition.getFromState().name()
+                                  + ","
+                                  + transition.getToState().name()
+                                  + ",100"; // penalty
+                        } else {
+                          logMessage =
+                              transition.getFromState().name()
+                                  + ","
+                                  + transition.getToState().name()
+                                  + ","
+                                  + duration;
+                        }
 
-                    // Write to file
-                    try (FileWriter fw = new FileWriter(costFile, true);
-                        BufferedWriter bw = new BufferedWriter(fw);
-                        PrintWriter out = new PrintWriter(bw)) {
-                      out.println(logMessage);
-                    } catch (IOException e) {
-                      e.printStackTrace();
-                    }
-                  }))
+                        // Write to file
+                        try (FileWriter fw = new FileWriter(costFile, true);
+                            BufferedWriter bw = new BufferedWriter(fw);
+                            PrintWriter out = new PrintWriter(bw)) {
+                          out.println(logMessage);
+                        } catch (IOException e) {
+                          e.printStackTrace();
+                        }
+                      }))
               .withTimeout(5.0);
 
       overallSequence = Commands.sequence(overallSequence, transitionSequence);
