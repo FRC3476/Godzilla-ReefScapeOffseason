@@ -1,6 +1,7 @@
 package frc.robot.subsystems.end_effector;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface EndEffectorIO {
@@ -25,7 +26,7 @@ public interface EndEffectorIO {
 
   default void setPivotVoltage(double voltage) {}
 
-  default void setPivotPosition(DoubleSupplier position) {}
+  default void setPivotPosition(DoubleSupplier position, Supplier<Integer> slotSupplier) {}
 
   default void updatePivotPIDFF(
       double kP,
@@ -33,6 +34,8 @@ public interface EndEffectorIO {
       double kD,
       double kG,
       double kS,
+      double kV,
+      double kA,
       double velo,
       double accel,
       double jerk) {}

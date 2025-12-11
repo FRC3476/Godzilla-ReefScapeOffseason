@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
@@ -25,16 +24,13 @@ import org.littletonrobotics.junction.Logger;
 public class IntakeIOReal implements IntakeIO {
   protected TalonFX pivotMotor;
   protected TalonFX rollerMotor;
-  protected TalonFX lvl1blockerMotor;
 
   protected CANcoder canCoder;
   protected CANrange canRange;
 
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0.0);
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0.0);
-  private final VoltageOut lvl1blockerVoltageRequest = new VoltageOut(0.0);
   private final MotionMagicVoltage pivotPositionRequest = new MotionMagicVoltage(0.0);
-  private final MotionMagicVoltage lvl1blockerPositionRequest = new MotionMagicVoltage(0.0);
 
   // Pivot motor status signals
   private final StatusSignal<Voltage> pivotVoltage;
@@ -52,14 +48,6 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Temperature> rollerTemperature;
   private final StatusSignal<AngularVelocity> rollerVelocityRPS;
 
-  // Lvl1Blocker motor status signals
-  private final StatusSignal<Voltage> lvl1blockerVoltage;
-  private final StatusSignal<Current> lvl1blockerSupplyCurrent;
-  private final StatusSignal<Current> lvl1blockerStatorCurrent;
-  private final StatusSignal<Temperature> lvl1blockerTemperature;
-  private final StatusSignal<AngularVelocity> lvl1blockerVelocityRPS;
-  private final StatusSignal<Angle> lvl1blockerPositionRotations;
-
   // CANCoder status signals
   private final StatusSignal<Angle> canCoderPositionRotations;
   private final StatusSignal<AngularVelocity> canCoderVelocityRPS;
@@ -75,7 +63,6 @@ public class IntakeIOReal implements IntakeIO {
     // Initialize hardware
     pivotMotor = new TalonFX(IntakeConstants.intakePivotID, Constants.MISC_CANIVORE);
     rollerMotor = new TalonFX(IntakeConstants.intakeRollerID, Constants.MISC_CANIVORE);
-    lvl1blockerMotor = new TalonFX(IntakeConstants.intakelvl1BlockerID, Constants.MISC_CANIVORE);
     canCoder = new CANcoder(IntakeConstants.CANCODER_ID, Constants.MISC_CANIVORE);
     canRange = new CANrange(IntakeConstants.CANRANGE_ID, Constants.MISC_CANIVORE);
 
@@ -87,18 +74,8 @@ public class IntakeIOReal implements IntakeIO {
     PhoenixUtil.tryUntilOk(
         5, () -> rollerMotor.getConfigurator().apply(IntakeConstants.ROLLER_TALON_CONFIG));
 
-    // Configure lvl1blocker motor
-    PhoenixUtil.tryUntilOk(
-        5, () -> lvl1blockerMotor.getConfigurator().apply(IntakeConstants.L1Bar_TALON_CONFIG));
-
     PhoenixUtil.tryUntilOk(
         5, () -> canRange.getConfigurator().apply(IntakeConstants.CANRANGE_CONFIG));
-
-    // Configure CANRange
-    var canRangeConfig = new CANrangeConfiguration();
-    canRangeConfig.ProximityParams.ProximityThreshold = 0.05; // 5cm detection threshold
-    canRangeConfig.ProximityParams.ProximityHysteresis = 0.01; // 1cm hysteresis
-    PhoenixUtil.tryUntilOk(5, () -> canRange.getConfigurator().apply(canRangeConfig));
 
     // Initialize status signals
     pivotVoltage = pivotMotor.getMotorVoltage();
@@ -114,13 +91,6 @@ public class IntakeIOReal implements IntakeIO {
     rollerStatorCurrent = rollerMotor.getStatorCurrent();
     rollerTemperature = rollerMotor.getDeviceTemp();
     rollerVelocityRPS = rollerMotor.getRotorVelocity();
-
-    lvl1blockerVoltage = lvl1blockerMotor.getMotorVoltage();
-    lvl1blockerSupplyCurrent = lvl1blockerMotor.getSupplyCurrent();
-    lvl1blockerStatorCurrent = lvl1blockerMotor.getStatorCurrent();
-    lvl1blockerTemperature = lvl1blockerMotor.getDeviceTemp();
-    lvl1blockerVelocityRPS = lvl1blockerMotor.getVelocity();
-    lvl1blockerPositionRotations = lvl1blockerMotor.getPosition();
 
     canCoderPositionRotations = canCoder.getAbsolutePosition();
     canCoderVelocityRPS = canCoder.getVelocity();
@@ -143,12 +113,6 @@ public class IntakeIOReal implements IntakeIO {
           rollerStatorCurrent,
           rollerTemperature,
           rollerVelocityRPS,
-          lvl1blockerVoltage,
-          lvl1blockerSupplyCurrent,
-          lvl1blockerStatorCurrent,
-          lvl1blockerTemperature,
-          lvl1blockerVelocityRPS,
-          lvl1blockerPositionRotations,
           canCoderPositionRotations,
           canCoderVelocityRPS,
           canRangeTripped,
@@ -170,12 +134,6 @@ public class IntakeIOReal implements IntakeIO {
         rollerStatorCurrent,
         rollerTemperature,
         rollerVelocityRPS,
-        lvl1blockerVoltage,
-        lvl1blockerSupplyCurrent,
-        lvl1blockerStatorCurrent,
-        lvl1blockerTemperature,
-        lvl1blockerVelocityRPS,
-        lvl1blockerPositionRotations,
         canCoderPositionRotations,
         canCoderVelocityRPS,
         canRangeTripped,
@@ -184,7 +142,6 @@ public class IntakeIOReal implements IntakeIO {
 
     pivotMotor.optimizeBusUtilization();
     rollerMotor.optimizeBusUtilization();
-    lvl1blockerMotor.optimizeBusUtilization();
     canCoder.optimizeBusUtilization();
     canRange.optimizeBusUtilization();
 
@@ -225,22 +182,6 @@ public class IntakeIOReal implements IntakeIO {
             rollerTemperature.getValueAsDouble(),
             rollerVelocityRPS.getValueAsDouble());
 
-    inputs.blockerData =
-        new Lvl1BlockerData(
-            BaseStatusSignal.isAllGood(
-                lvl1blockerVoltage,
-                lvl1blockerSupplyCurrent,
-                lvl1blockerStatorCurrent,
-                lvl1blockerTemperature,
-                lvl1blockerVelocityRPS,
-                lvl1blockerPositionRotations),
-            lvl1blockerVoltage.getValueAsDouble(),
-            lvl1blockerSupplyCurrent.getValueAsDouble(),
-            lvl1blockerStatorCurrent.getValueAsDouble(),
-            lvl1blockerTemperature.getValueAsDouble(),
-            lvl1blockerVelocityRPS.getValueAsDouble(),
-            lvl1blockerPositionRotations.getValueAsDouble());
-
     inputs.canCoderData =
         new CanCoderData(
             BaseStatusSignal.isAllGood(canCoderPositionRotations, canCoderVelocityRPS),
@@ -266,18 +207,8 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
-  public void setLvl1BlockerVoltage(double voltage) {
-    lvl1blockerMotor.setControl(lvl1blockerVoltageRequest.withOutput(voltage));
-  }
-
-  @Override
   public void setPivotPosition(double positionRotations) {
     pivotMotor.setControl(pivotPositionRequest.withPosition(positionRotations));
-  }
-
-  @Override
-  public void setLvl1BlockerPosition(double positionRotations) {
-    lvl1blockerMotor.setControl(lvl1blockerPositionRequest.withPosition(positionRotations));
   }
 
   @Override

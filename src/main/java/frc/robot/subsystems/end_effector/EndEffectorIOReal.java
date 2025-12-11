@@ -18,6 +18,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.Util;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
@@ -116,8 +117,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
   }
 
   @Override
-  public void setPivotPosition(DoubleSupplier position) {
-    pivotTalonFX.setControl(pivot_m_request.withPosition(position.getAsDouble()));
+  public void setPivotPosition(DoubleSupplier position, Supplier<Integer> slotSupplier) {
+    pivotTalonFX.setControl(
+        pivot_m_request.withPosition(position.getAsDouble()).withSlot(slotSupplier.get()));
   }
 
   @Override
@@ -127,6 +129,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
       double kD,
       double kG,
       double kS,
+      double kV,
+      double kA,
       double velo,
       double accel,
       double jerk) {
@@ -137,6 +141,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     pivotConfig.Slot0.kD = kD;
     pivotConfig.Slot0.kG = kG;
     pivotConfig.Slot0.kS = kS;
+    pivotConfig.Slot0.kV = kV;
+    pivotConfig.Slot0.kA = kA;
     pivotConfig.MotionMagic.MotionMagicCruiseVelocity = velo;
     pivotConfig.MotionMagic.MotionMagicAcceleration = accel;
     pivotConfig.MotionMagic.MotionMagicJerk = jerk;

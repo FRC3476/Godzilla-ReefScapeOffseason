@@ -40,8 +40,11 @@ public class ElevatorIOSim extends ElevatorIOReal {
     rightSimState = rightTalon.getSimState();
     leftSimState = leftTalon.getSimState();
 
-    rightSimState.Orientation = ChassisReference.Clockwise_Positive;
+    rightSimState.Orientation = ChassisReference.CounterClockwise_Positive;
     leftSimState.Orientation = ChassisReference.CounterClockwise_Positive;
+
+    // Initialize timestamp before starting simulation updates
+    lastUpdateTimestamp = Timer.getFPGATimestamp();
 
     // Set up a Notifier to periodically update the simulation
     /* Run simulation at a faster rate so PID gains behave more reasonably */
@@ -59,6 +62,12 @@ public class ElevatorIOSim extends ElevatorIOReal {
 
     // Get the applied voltage from the right motor (leader)
     double appliedVoltage = rightSimState.getMotorVoltage();
+
+    // Log control mode and setpoint for debugging
+    Logger.recordOutput(
+        "Elevator/Sim/ControlMode", rightTalon.getControlMode().getValue().toString());
+    Logger.recordOutput(
+        "Elevator/Sim/ClosedLoopReference", rightTalon.getClosedLoopReference().getValueAsDouble());
 
     // Apply the motor voltage to the simulation
     elevatorSim.setInputVoltage(appliedVoltage);

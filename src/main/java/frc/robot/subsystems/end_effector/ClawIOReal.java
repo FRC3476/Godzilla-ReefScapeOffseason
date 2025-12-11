@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -36,6 +37,8 @@ public class ClawIOReal implements ClawIO {
   StatusSignal<Boolean> secondRangeIsTripped;
 
   private final BaseStatusSignal[] signals;
+
+  Debouncer debouncerAlgae = new Debouncer(0.05);
 
   public ClawIOReal() {
     rollerTalonFX = new TalonFX(EndEffectorConstants.rollerID, Constants.MISC_CANIVORE);
@@ -119,10 +122,11 @@ public class ClawIOReal implements ClawIO {
 
   @Override
   public boolean checkRollerStalled() {
-    return MotorStallDetection.isMotorStalled(
-        rollerStatorCurrentAmps.getValueAsDouble(),
-        rollerVelocityRPS.getValueAsDouble(),
-        EndEffectorConstants.ROLLER_STALLED_CURRENT,
-        EndEffectorConstants.ROLLER_STALLED_RPS);
+    return debouncerAlgae.calculate(
+        MotorStallDetection.isMotorStalled(
+            rollerStatorCurrentAmps.getValueAsDouble(),
+            rollerVelocityRPS.getValueAsDouble(),
+            EndEffectorConstants.ROLLER_STALLED_CURRENT,
+            EndEffectorConstants.ROLLER_STALLED_RPS));
   }
 }

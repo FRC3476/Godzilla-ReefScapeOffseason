@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.subsystems.superstructure.SuperstructureState.TransitionShortcutType;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -86,7 +87,6 @@ public class SuperstructureStateMachine {
 
   // Constants
   private static final double DEFAULT_TRANSITION_COST = 1.0;
-  private static final double FUTURE_STATE_TIMEOUT_SECONDS = 3.0;
   private static final String TRANSITION_COSTS_FILE = "transition_costs.txt";
   private static final String TRANSITION_KEY_SEPARATOR = "->";
   private static final String COMMAND_NAME = "SuperstructureMove";
@@ -131,6 +131,10 @@ public class SuperstructureStateMachine {
     precomputeAllPaths();
   }
 
+  public void hardSetIsTransitioning(boolean b) {
+    isTransitioning = b;
+  }
+
   // ==================== PUBLIC API ====================
 
   /**
@@ -151,6 +155,10 @@ public class SuperstructureStateMachine {
     return stateManager.getTargetState();
   }
 
+  public TransitionShortcutType getShortcutType() {
+    return stateManager.getShortcutType();
+  }
+
   /**
    * Gets the immediate next state in the transition path.
    *
@@ -158,6 +166,15 @@ public class SuperstructureStateMachine {
    */
   public SuperstructureState getCurrentTargetState() {
     return stateManager.getCurrentTargetState();
+  }
+
+  /**
+   * Gets the state one after the immediate next state in the transition path.
+   *
+   * @return The current target state, or null if not set
+   */
+  public SuperstructureState getSecondTargetState() {
+    return stateManager.getSecondTargetState();
   }
 
   /**
@@ -177,8 +194,12 @@ public class SuperstructureStateMachine {
    * @throws IllegalArgumentException if the state is not registered
    */
   public void setTargetState(SuperstructureState state) {
-    stateManager.setTargetState(state, registeredStates);
-    continueTransition();
+    if (RobotState.getSuperstructureManualOverrideMode()) {
+      setTargetState(state, true, true);
+    } else {
+      stateManager.setTargetState(state, registeredStates);
+      continueTransition();
+    }
   }
 
   /**
@@ -199,19 +220,10 @@ public class SuperstructureStateMachine {
     stateManager.setTargetState(state, registeredStates);
 
     if (!DriverStation.isAutonomous() && wipeFuture) {
-      stateManager.clearCurrentTargetState();
+      stateManager.forceSetCurrentTargetState(state);
     }
 
     continueTransition();
-  }
-
-  /**
-   * Gets the future desired state if it hasn't timed out.
-   *
-   * @return The future desired state, or null if none or timed out
-   */
-  public SuperstructureState getFutureDesiredState() {
-    return stateManager.getFutureDesiredState();
   }
 
   /**
@@ -314,6 +326,7 @@ public class SuperstructureStateMachine {
    * transition logic and command scheduling.
    */
   public void continueTransition() {
+    Logger.recordOutput("Superstructure/IsTransitioning", isTransitioning);
     if (isTransitioning) {
       return;
     }
@@ -354,7 +367,8 @@ public class SuperstructureStateMachine {
             });
     Command command =
         Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
+                stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand)
+            .withName(stateManager.getCurrentTargetState().name() + "_StateMachineInitial");
     command.schedule();
   }
 
@@ -375,7 +389,57 @@ public class SuperstructureStateMachine {
       return; // No valid transition found
     }
 
-    executeTransition(nextTransition);
+    // the transition after the next
+    SuperstructureTransition secondTransition =
+        findValidSecondTransition(path, currentState, targetState);
+
+    Logger.recordOutput("Superstructure/Transition", nextTransition.toString());
+    isTransitioning = true;
+
+    stateManager.setCurrentTargetState(nextTransition.getToState(), registeredStates);
+    if (secondTransition != null) {
+      stateManager.setSecondTargetState(secondTransition.getToState(), registeredStates);
+    }
+
+    Command checkFinishedCommand =
+        commandFactory.createStateTransitionCommand(
+            () -> {
+              stateManager.setCurrentState(nextTransition.getToState(), registeredStates);
+              isTransitioning = false;
+              if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
+                continueTransition();
+              }
+            });
+
+    stateManager.setShortcutType(TransitionShortcutType.NONE);
+
+    SuperstructureState current = stateManager.getCurrentState();
+    SuperstructureState secondTarget = stateManager.getSecondTargetState();
+    if (secondTarget != null) {
+      if (current.isLowIn() && (secondTarget.isHighOut() || secondTarget.isMiddleOut())) {
+        stateManager.setShortcutType(TransitionShortcutType.LOW_IN_TO_OUT);
+      } else if ((current.isLowOut() || secondTarget.isMiddleOut()) && secondTarget.isHighIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.OUT_TO_HIGH_IN);
+      }
+      if (current.isHighIn() && (secondTarget.isLowOut() || secondTarget.isMiddleOut())) {
+        stateManager.setShortcutType(TransitionShortcutType.HIGH_IN_TO_OUT);
+      } else if ((current.isHighOut() || secondTarget.isMiddleOut()) && secondTarget.isLowIn()) {
+        stateManager.setShortcutType(TransitionShortcutType.OUT_TO_LOW_IN);
+      }
+    }
+
+    Command moveCommand =
+        stateManager
+            .getCurrentTargetState()
+            .getAsTransitionCommand(container, stateManager.getShortcutType());
+
+    Command command =
+        Commands.sequence(moveCommand, checkFinishedCommand)
+            .withName(
+                stateManager.getCurrentTargetState().name()
+                    + "_StateMachineExecute_withShortcut"
+                    + stateManager.getShortcutType().toString());
+    command.schedule();
   }
 
   /** Finds a valid transition from the given path, using dynamic pathfinding if needed. */
@@ -409,28 +473,30 @@ public class SuperstructureStateMachine {
       return null;
     }
   }
+  /** Finds a valid transition from the given path, using dynamic pathfinding if needed. */
+  private SuperstructureTransition findValidSecondTransition(
+      List<SuperstructureTransition> path,
+      SuperstructureState currentState,
+      SuperstructureState targetState) {
 
-  /** Executes a transition by scheduling the appropriate command. */
-  private void executeTransition(SuperstructureTransition transition) {
+    if (path.size() <= 1) {
+      return null;
+    }
 
-    Logger.recordOutput("Superstructure/Transition", transition.toString());
-    isTransitioning = true;
+    SuperstructureTransition secondTransition = path.get(1);
 
-    stateManager.setCurrentTargetState(transition.getToState(), registeredStates);
+    if (!isTransitionBlocked(secondTransition)) {
+      return secondTransition;
+    }
 
-    Command checkFinishedCommand =
-        commandFactory.createStateTransitionCommand(
-            () -> {
-              stateManager.setCurrentState(transition.getToState(), registeredStates);
-              isTransitioning = false;
-              if (!stateManager.getCurrentState().equals(stateManager.getTargetState())) {
-                continueTransition();
-              }
-            });
-    Command command =
-        Commands.sequence(
-            stateManager.getCurrentTargetState().getCommand(container), checkFinishedCommand);
-    command.schedule();
+    // Try dynamic pathfinding for blocked transitions
+    Logger.recordOutput(
+        "Superstructure/BlockedSecondTransition",
+        "Precomputed second transition "
+            + secondTransition.toString()
+            + " is blocked. Searching for alternative.");
+
+    return null;
   }
 
   /** Checks if a transition is blocked by current conditions. */
@@ -513,11 +579,6 @@ public class SuperstructureStateMachine {
         }
       }
     }
-    for (List<SuperstructureTransition>[] from : precomputedPaths) {
-      for (List<SuperstructureTransition> to : from) {
-        System.out.println(to);
-      }
-    }
   }
 
   // ==================== INNER CLASSES ====================
@@ -526,6 +587,8 @@ public class SuperstructureStateMachine {
   private static class StateManager {
     private SuperstructureState currentState;
     private SuperstructureState targetState = SuperstructureState.NONE;
+    private TransitionShortcutType shortcutType = TransitionShortcutType.NONE;
+    private SuperstructureState secondTargetState = null;
     private SuperstructureState currentTargetState = targetState;
     private double currentTargetStateTime = 0;
 
@@ -533,12 +596,24 @@ public class SuperstructureStateMachine {
       return currentState;
     }
 
+    public TransitionShortcutType getShortcutType() {
+      return shortcutType;
+    }
+
     public SuperstructureState getTargetState() {
       return targetState;
     }
 
+    public SuperstructureState getSecondTargetState() {
+      return secondTargetState;
+    }
+
     public SuperstructureState getCurrentTargetState() {
       return currentTargetState;
+    }
+
+    public void setShortcutType(TransitionShortcutType transitionShortcutType) {
+      shortcutType = transitionShortcutType;
     }
 
     public void setCurrentState(SuperstructureState state, Set<SuperstructureState> validStates) {
@@ -558,16 +633,15 @@ public class SuperstructureStateMachine {
       currentTargetStateTime = Timer.getFPGATimestamp();
     }
 
-    public void clearCurrentTargetState() {
-      currentTargetState = null;
+    public void setSecondTargetState(
+        SuperstructureState state, Set<SuperstructureState> validStates) {
+      validateState(state, validStates);
+      secondTargetState = state;
     }
 
-    public SuperstructureState getFutureDesiredState() {
-      if (currentTargetState != null
-          && Timer.getFPGATimestamp() - currentTargetStateTime > FUTURE_STATE_TIMEOUT_SECONDS) {
-        currentTargetState = null;
-      }
-      return currentTargetState;
+    public void forceSetCurrentTargetState(SuperstructureState state) {
+      currentTargetState = state;
+      currentTargetStateTime = Timer.getFPGATimestamp();
     }
 
     private void validateState(SuperstructureState state, Set<SuperstructureState> validStates) {

@@ -23,14 +23,23 @@ public class Feeder extends SubsystemBase {
     Logger.processInputs("Feeder", inputs);
 
     Logger.recordOutput("Feeder/JamDetected", checkForJam());
-    CoralStateTracker.updateFeeder(isCoralInFeeder());
+    CoralStateTracker.updateBackFeeder(isCoralInFeeder());
+
+    CoralStateTracker.updateFrontFeeder(isCoralInFrontFeeder());
 
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(
+        "Feeder/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
   }
 
   public boolean isCoralInFeeder() {
     return inputs.canRangeData.tripped() && inputs.canRangeData.isSensorConnected();
+  }
+
+  public boolean isCoralInFrontFeeder() {
+    return inputs.frontCanRangeData.tripped() && inputs.frontCanRangeData.isSensorConnected();
   }
 
   public void setRollerVoltage(double voltage) {

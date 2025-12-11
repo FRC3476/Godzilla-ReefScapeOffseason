@@ -46,7 +46,8 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    io.setElevatorZero();
+    io.setElevatorPosition(0.0);
+    isZeroed = true;
     System.out.println("====================Elevator Subsystem Online====================");
   }
 
@@ -55,7 +56,7 @@ public class Elevator extends SubsystemBase {
     double timestamp = RobotTime.getTimestampSeconds();
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
-
+    autoHome();
     Logger.recordOutput("Elevator/TargetPosition", setpoint);
     // Logger.recordOutput("Elevator/Profile/IsInTolerance", isInTolerance());
     Logger.recordOutput("Elevator/isZeroed", isZeroed);
@@ -79,7 +80,9 @@ public class Elevator extends SubsystemBase {
           elevatorAccel.get(),
           elevatorJerk.get());
     }
-
+    Logger.recordOutput(
+        "Elevator/currentCommand",
+        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
     Logger.recordOutput(
         getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
@@ -100,14 +103,12 @@ public class Elevator extends SubsystemBase {
         setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_SETPOINT_TOLERANCE_INCH);
   }
 
-  @AutoLogOutput(key = "Elevator/InTransitionTolerance")
-  public boolean isInToleranceTransition() {
-    return MathUtil.isNear(
-        setpoint, this.getCurrentPosition(), ElevatorConstants.ELEVATOR_TRANSITION_TOLERANCE_INCH);
-  }
-
   public double getTargetPosition() {
     return setpoint;
+  }
+
+  public double getMotorVelocityRPS() {
+    return inputs.rightMotorData.velocityRPS();
   }
 
   public Command moveElevatorCommand(DoubleSupplier heightSupplier) {
@@ -116,23 +117,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setTargetPositionCommand(DoubleSupplier heightSupplier) {
-    setpoint = heightSupplier.getAsDouble();
-    return Commands.runOnce(
-        () ->
-            this.io.setElevatorTargetPosition(
-                MathUtil.clamp(
-                    heightSupplier.getAsDouble(),
-                    ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
-                    ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH)),
-        this);
+    setpoint =
+        MathUtil.clamp(
+            heightSupplier.getAsDouble(),
+            ElevatorConstants.ELEVATOR_ZERO_SETPOINT_INCH,
+            ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    return Commands.runOnce(() -> this.io.setElevatorTargetPosition(setpoint), this);
   }
 
   public Command waitUntilTargetPositionCommand() {
     return Commands.waitUntil(() -> isInToleranceSetpoint());
-  }
-
-  public Command waitUntilTransitionPositionCommand() {
-    return Commands.waitUntil(() -> isInToleranceTransition());
   }
 
   public Command elevatorSTOP() {
@@ -152,27 +146,66 @@ public class Elevator extends SubsystemBase {
   }
 
   private boolean checkForJam() {
-    if (isHomingComplete()) {
-      return false;
-    } else if (io.checkMotorsStalled()
-        && getCurrentPosition()
-            >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
-                - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
-      // false alarm, elevator is stalling at the top
-      setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
-      return false;
-    } else {
-      return io.checkMotorsStalled();
-    }
+    return false; // disabling check for Jam since it's untested. At least the homing works now
+
+    // if (isHomingComplete()) {
+    //   return false;
+    // } else if (io.checkMotorsStalled()
+    //     && getCurrentPosition()
+    //         >= ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH
+    //             - ElevatorConstants.STALLED_TOLERANCE_INCHES) {
+    //   // false alarm, elevator is stalling at the top
+    //   setTargetPositionCommand(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+    //   return false;
+    // } else {
+    //   return io.checkMotorsStalled();
+    // }
   }
 
   private boolean isHomingComplete() {
     // Check if homing is complete using the same logic as checkForJam for bottom detection
-    if (io.checkMotorsStalled()
-        && (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)
-            || !isZeroed)) {
+    if (io.checkMotorsStalled() && !isZeroed) {
+      // at the bottom hardstop?
+      if (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(0.0);
+        isZeroed = true;
+        return true;
+      }
+      // at the top hardstop?
+      if (MathUtil.isNear(
+          ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH,
+          getCurrentPosition(),
+          ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+        isZeroed = true;
+        return true;
+      }
+    }
+    return false;
+  }
 
-      io.setElevatorZero();
+  private void autoHome() {
+    // Check if homing is complete using the same logic as checkForJam for bottom detection
+    if (io.checkMotorsStalled()) {
+      // at the bottom hardstop?
+      if (MathUtil.isNear(0.0, getCurrentPosition(), ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(0.0);
+        isZeroed = true;
+      }
+      // at the top hardstop?
+      if (MathUtil.isNear(
+          ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH,
+          getCurrentPosition(),
+          ElevatorConstants.STALLED_TOLERANCE_INCHES)) {
+        io.setElevatorPosition(ElevatorConstants.ELEVATOR_MAX_SETPOINT_INCH);
+        isZeroed = true;
+      }
+    }
+  }
+
+  private boolean isManualHomingComplete() {
+    if (io.checkMotorsStalled()) {
+      io.setElevatorPosition(0.0);
       isZeroed = true;
       return true;
     }
@@ -181,7 +214,7 @@ public class Elevator extends SubsystemBase {
 
   public Command manualSetElevatorZero() {
     isZeroed = true;
-    return Commands.runOnce(() -> io.setElevatorZero(), this);
+    return Commands.runOnce(() -> io.setElevatorPosition(0.0), this);
   }
 
   public Command dejamElevator() {
@@ -200,6 +233,15 @@ public class Elevator extends SubsystemBase {
         .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
         .finallyDo(() -> this.io.setElevatorVoltage(0.0))
         .withName("HomeElevator");
+  }
+  /** Command to home the elevator by running it slowly downward until it zeros. */
+  public Command manualHomeElevator() {
+    return Commands.run(
+            () -> this.io.setElevatorVoltage(ElevatorConstants.ELEVATOR_HOMING_VOLTAGE), this)
+        .until(() -> isManualHomingComplete())
+        .withTimeout(ElevatorConstants.HOMING_TIMEOUT_SECONDS)
+        .finallyDo(() -> this.io.setElevatorVoltage(0.0))
+        .withName("ManualHomeElevator");
   }
 
   public Trigger elevatorObjectTrigger =

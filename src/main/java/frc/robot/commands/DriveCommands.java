@@ -13,11 +13,9 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
+import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -35,28 +33,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.RobotState;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.Util;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 5.0;
-  private static final double ANGLE_KD = 0.4;
-  private static final double ANGLE_MAX_VELOCITY = 8.0;
-  private static final double ANGLE_MAX_ACCELERATION = 20.0;
-  private static final double FF_START_DELAY = 2.0; // Secs
-  private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
-  private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
-  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double DEADBAND = 0.025;
 
   private DriveCommands() {}
 
@@ -78,44 +70,56 @@ public class DriveCommands {
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
   public static Command joystickDrive(
-      Drive drive,
+      DriveSubsystem drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+
+    SwerveRequest.FieldCentric fieldCentricReq =
+        new SwerveRequest.FieldCentric()
+            // .withDeadband(
+            //     Constants.DriveConstants.kDriveMaxSpeed * 0.025) // Add a 5% deadband in open
+            // loop
+            // .withRotationalDeadband(
+            //     Constants.DriveConstants.kDriveMaxAngularRate * Constants.kSteerJoystickDeadband)
+            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+
     return Commands.run(
         () -> {
           // Square linear values for more precise control
           double xJoy = xSupplier.getAsDouble();
           double yJoy = ySupplier.getAsDouble();
+          xJoy = Util.handleDeadband(xJoy, 0.05);
+          yJoy = Util.handleDeadband(yJoy, 0.05);
           xJoy = Math.copySign(xJoy * xJoy, xJoy);
           yJoy = Math.copySign(yJoy * yJoy, yJoy);
 
-          // Get linear velocity
-          Translation2d linearVelocity = getLinearVelocityFromJoysticks(xJoy, yJoy);
-
-          // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          //   // Apply rotation deadband
+          //   double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square rotation value for more precise control
+          double omega = omegaSupplier.getAsDouble();
+          omega = Util.handleDeadband(omega, 0.1);
           omega = Math.copySign(omega * omega, omega);
 
           // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          drive.setControl(
+              fieldCentricReq
+                  .withVelocityX(xJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withVelocityY(yJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withRotationalRate(omega * Constants.DriveConstants.kDriveMaxAngularRate));
         },
         drive);
+  }
+
+  public static Command StopDriveTrain(DriveSubsystem driveSubsystem) {
+    return Commands.run(
+        () ->
+            driveSubsystem.setControl(
+                new SwerveRequest.FieldCentric()
+                    .withVelocityX(0.0)
+                    .withVelocityY(0.0)
+                    .withRotationalRate(0.0)));
   }
 
   /**
@@ -124,57 +128,58 @@ public class DriveCommands {
    * absolute rotation with a joystick.
    */
   public static Command driveAtAngle(
-      Drive drive,
+      DriveSubsystem drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Rotation2d> rotationSupplier) {
 
-    // Create PID controller
-    ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            ANGLE_KP,
-            0.0,
-            ANGLE_KD,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-
     // Construct command
     return Commands.run(
-            () -> {
-              // Get linear velocity
-              Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        () -> {
+          double xJoy = xSupplier.getAsDouble();
+          double yJoy = ySupplier.getAsDouble();
+          xJoy = Util.handleDeadband(xJoy, 0.05);
+          yJoy = Util.handleDeadband(yJoy, 0.05);
+          xJoy = Math.copySign(xJoy * xJoy, xJoy);
+          yJoy = Math.copySign(yJoy * yJoy, yJoy);
 
-              // Calculate angular speed
-              double omega =
-                  angleController.calculate(
-                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+          // Create PID controller
+          ProfiledPIDController angleController =
+              new ProfiledPIDController(
+                  DriveConstants.ANGLE_KP,
+                  0.0,
+                  DriveConstants.ANGLE_KD,
+                  new TrapezoidProfile.Constraints(
+                      DriveConstants.kDriveMaxAngularRate, DriveConstants.ANGLE_MAX_ACCELERATION));
+          angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-              // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega);
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
-            },
-            drive)
+          SwerveRequest.FieldCentricFacingAngle facingAngle =
+              new SwerveRequest.FieldCentricFacingAngle()
+                  .withDriveRequestType(DriveRequestType.Velocity)
+                  .withHeadingPID(DriveConstants.ANGLE_KP, 0.0, DriveConstants.ANGLE_KD)
+                  .withDesaturateWheelSpeeds(true);
 
-        // Reset PID controller when command starts
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+          Rotation2d rotTarget = Rotation2d.kZero;
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            if (alliance.get() == Alliance.Red) {
+              rotTarget = Rotation2d.kPi;
+            }
+          }
+
+          drive.setControl(
+              facingAngle
+                  .withVelocityX(xJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withVelocityY(yJoy * Constants.DriveConstants.kDriveMaxSpeed)
+                  .withTargetDirection(rotationSupplier.get().rotateBy(rotTarget)));
+        },
+        drive);
   }
 
   // drive using object detection for coral
 
-  public static Command driveToCoral(Drive drive, Vision vision) {
+  public static Command driveToCoral(DriveSubsystem drive, Vision vision) {
     boolean isFlipped =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
@@ -189,68 +194,11 @@ public class DriveCommands {
     Supplier<Rotation2d> rotSupplier =
         () ->
             Rotation2d.fromDegrees(
-                drive.getPose().getRotation().getDegrees()
+                RobotState.getGlobalPose().getRotation().getDegrees()
                     - vision.getCoralTx()
                     + (isFlipped ? 180 : 0));
     return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
         .onlyWhile(() -> CoralStateTracker.getCurrentPosition() == CoralPosition.NONE);
-  }
-
-  // raw drive to specific pose2d
-
-  public static Command driveToPosePID(Drive drive, Pose2d targetPose) {
-    Supplier<Rotation2d> rotSupplier = () -> targetPose.getRotation();
-    Pose2d targetPoseRotationZero =
-        new Pose2d(targetPose.getX(), targetPose.getY(), Rotation2d.kZero);
-    Supplier<Pose2d> transformSupplier = () -> drive.getPose().relativeTo(targetPoseRotationZero);
-    DoubleSupplier xSupplier =
-        () -> {
-          double deltaX = transformSupplier.get().getX();
-          if (MathUtil.isNear(0.0, deltaX, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
-            return 0.0;
-          }
-          return (deltaX * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
-              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaX);
-        };
-    DoubleSupplier ySupplier =
-        () -> {
-          double deltaY = transformSupplier.get().getY();
-          if (MathUtil.isNear(0.0, deltaY, DriveConstants.AUTO_ALIGN_AXIS_TOLERANCE)) {
-            return 0.0;
-          }
-          return (deltaY * DriveConstants.AUTO_ALIGN_SPEED_MULTIPLIER)
-              + Math.copySign(DriveConstants.AUTO_ALIGN_FEEDFORWARD, deltaY);
-        };
-    return driveAtAngle(drive, xSupplier, ySupplier, rotSupplier)
-        .onlyWhile(
-            () ->
-                drive.getPose().minus(targetPose).getTranslation().getNorm()
-                        > DriveConstants.AUTO_ALIGN_NORM_TOLERANCE
-                    || (Math.abs(rotSupplier.get().minus(drive.getRotation()).getDegrees())
-                        > DriveConstants.AUTO_ALIGN_DEGREE_TOLERANCE));
-  }
-
-  // pathfind to pose with pathplanner
-
-  public static Command pathfindToPose(Drive drive, Pose2d targetPose) {
-    return AutoBuilder.pathfindToPose(
-        targetPose,
-        new PathConstraints(
-            TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-            DriveConstants.MAX_TRANSLATIONAL_ACCEL,
-            TunerConstants.kAngularSpeedAt12Volts.in(RadiansPerSecond),
-            DriveConstants.MAX_ROTATIONAL_ACCEL),
-        0.0);
-  }
-
-  // drive to pose final
-
-  public static Command driveToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    if (drive.getPose().minus(targetPoseSupplier.get()).getTranslation().getNorm() < 1) {
-      return driveToPosePID(drive, targetPoseSupplier.get());
-    }
-    return pathfindToPose(drive, targetPoseSupplier.get())
-        .andThen(driveToPosePID(drive, targetPoseSupplier.get()));
   }
 
   /**
@@ -258,7 +206,7 @@ public class DriveCommands {
    *
    * <p>This command should only be used in voltage control mode.
    */
-  public static Command feedforwardCharacterization(Drive drive) {
+  public static Command feedforwardCharacterization(DriveSubsystem drive) {
     List<Double> velocitySamples = new LinkedList<>();
     List<Double> voltageSamples = new LinkedList<>();
     Timer timer = new Timer();
@@ -277,7 +225,7 @@ public class DriveCommands {
                   drive.runCharacterization(0.0);
                 },
                 drive)
-            .withTimeout(FF_START_DELAY),
+            .withTimeout(Constants.DriveConstants.FF_START_DELAY),
 
         // Start timer
         Commands.runOnce(timer::restart),
@@ -285,7 +233,7 @@ public class DriveCommands {
         // Accelerate and gather data
         Commands.run(
                 () -> {
-                  double voltage = timer.get() * FF_RAMP_RATE;
+                  double voltage = timer.get() * Constants.DriveConstants.FF_RAMP_RATE;
                   drive.runCharacterization(voltage);
                   velocitySamples.add(drive.getFFCharacterizationVelocity());
                   voltageSamples.add(voltage);
@@ -316,111 +264,115 @@ public class DriveCommands {
                 }));
   }
 
-  /** Measures the wheel slip current by driving against a wall (wall test). */
-  public static Command slipCurrentCharacterization(Drive drive) {
-    List<Double> currentSamples = new LinkedList<>();
-    List<Double> velocitySamples = new LinkedList<>();
-    List<Double> voltageSamples = new LinkedList<>();
-    Timer timer = new Timer();
+  // /** Measures the wheel slip current by driving against a wall (wall test). */
+  // public static Command slipCurrentCharacterization(Drive drive) {
+  //   List<Double> currentSamples = new LinkedList<>();
+  //   List<Double> velocitySamples = new LinkedList<>();
+  //   List<Double> voltageSamples = new LinkedList<>();
+  //   Timer timer = new Timer();
 
-    return Commands.sequence(
-        // Reset data
-        Commands.runOnce(
-            () -> {
-              currentSamples.clear();
-              velocitySamples.clear();
-              voltageSamples.clear();
-            }),
+  //   return Commands.sequence(
+  //       // Reset data
+  //       Commands.runOnce(
+  //           () -> {
+  //             currentSamples.clear();
+  //             velocitySamples.clear();
+  //             voltageSamples.clear();
+  //           }),
 
-        // Allow modules to orient and stabilize
-        Commands.run(() -> drive.runCharacterization(0.0), drive)
-            .withTimeout(Constants.DriveConstants.SLIP_START_DELAY),
+  //       // Allow modules to orient and stabilize
+  //       Commands.run(() -> drive.runCharacterization(0.0), drive)
+  //           .withTimeout(Constants.DriveConstants.SLIP_START_DELAY),
 
-        // Start timer
-        Commands.runOnce(timer::restart),
+  //       // Start timer
+  //       Commands.runOnce(timer::restart),
 
-        // Ramp voltage and gather data
-        Commands.run(
-                () -> {
-                  double voltage = timer.get() * Constants.DriveConstants.SLIP_RAMP_RATE;
-                  if (voltage > Constants.DriveConstants.SLIP_MAX_VOLTAGE) {
-                    voltage = Constants.DriveConstants.SLIP_MAX_VOLTAGE;
-                  }
+  //       // Ramp voltage and gather data
+  //       Commands.run(
+  //               () -> {
+  //                 double voltage = timer.get() * Constants.DriveConstants.SLIP_RAMP_RATE;
+  //                 if (voltage > Constants.DriveConstants.SLIP_MAX_VOLTAGE) {
+  //                   voltage = Constants.DriveConstants.SLIP_MAX_VOLTAGE;
+  //                 }
 
-                  drive.runCharacterization(voltage);
+  //                 drive.runCharacterization(voltage);
 
-                  // Collect data from all modules
-                  double[] currents = drive.getSlipCharacterizationCurrents();
-                  double avgCurrent = 0.0;
-                  for (double current : currents) {
-                    avgCurrent += current / 4.0;
-                  }
+  //                 // Collect data from all modules
+  //                 double[] currents = drive.getSlipCharacterizationCurrents();
+  //                 double avgCurrent = 0.0;
+  //                 for (double current : currents) {
+  //                   avgCurrent += current / 4.0;
+  //                 }
 
-                  currentSamples.add(avgCurrent);
-                  velocitySamples.add(drive.getFFCharacterizationVelocity());
-                  voltageSamples.add(voltage);
-                },
-                drive)
+  //                 currentSamples.add(avgCurrent);
+  //                 velocitySamples.add(drive.getFFCharacterizationVelocity());
+  //                 voltageSamples.add(voltage);
+  //               },
+  //               drive)
 
-            // When cancelled, calculate and print results
-            .finallyDo(
-                () -> {
+  //           // When cancelled, calculate and print results
+  //           .finallyDo(
+  //               () -> {
 
-                  // Analyze data for slip detection
-                  double[] currents = drive.getSlipCharacterizationCurrents();
-                  double slipCurrent = detectSlipCurrent(currentSamples, velocitySamples);
+  //                 // Analyze data for slip detection
+  //                 double[] currents = drive.getSlipCharacterizationCurrents();
+  //                 double slipCurrent = detectSlipCurrent(currentSamples, velocitySamples);
 
-                  NumberFormat formatter = new DecimalFormat("#0.0");
-                  System.out.println(
-                      "\tDetected Slip Current: " + formatter.format(slipCurrent) + " A");
-                  System.out.println("\tIndividual Module Currents:");
-                  for (int i = 0; i < 4; i++) {
-                    System.out.println(
-                        "\t\tModule " + i + ": " + formatter.format(currents[i]) + " A");
-                  }
-                }));
-  }
-  // based on
+  //                 NumberFormat formatter = new DecimalFormat("#0.0");
+  //                 System.out.println(
+  //                     "\tDetected Slip Current: " + formatter.format(slipCurrent) + " A");
+  //                 System.out.println("\tIndividual Module Currents:");
+  //                 for (int i = 0; i < 4; i++) {
+  //                   System.out.println(
+  //                       "\t\tModule " + i + ": " + formatter.format(currents[i]) + " A");
+  //                 }
+  //               }));
+  // }
+  // // based on
+  // //
   // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/docs/getting-started/template-projects/talonfx-swerve-template.md#L116-L239
-  /**
-   * Detects the slip current from collected data samples. Slip occurs when wheels first start
-   * spinning significantly (velocity derivative increases).
-   */
-  private static double detectSlipCurrent(
-      List<Double> currentSamples, List<Double> velocitySamples) {
+  // /**
+  //  * Detects the slip current from collected data samples. Slip occurs when wheels first start
+  //  * spinning significantly (velocity derivative increases).
+  //  */
+  // private static double detectSlipCurrent(
+  //     List<Double> currentSamples, List<Double> velocitySamples) {
 
-    // Thresholds for slip detection - using Constants from Constants.java
-    final double VELOCITY_THRESHOLD =
-        Constants.DriveConstants
-            .SLIP_VELOCITY_THRESHOLD; // Velocity derivative indicating wheels started spinning
-    final double MIN_CURRENT_THRESHOLD =
-        Constants.DriveConstants.SLIP_MIN_CURRENT_THRESHOLD; // Minimum current just in case
+  //   // Thresholds for slip detection - using Constants from Constants.java
+  //   final double VELOCITY_THRESHOLD =
+  //       Constants.DriveConstants
+  //           .SLIP_VELOCITY_THRESHOLD; // Velocity derivative indicating wheels started spinning
+  //   final double MIN_CURRENT_THRESHOLD =
+  //       Constants.DriveConstants.SLIP_MIN_CURRENT_THRESHOLD; // Minimum current just in case
 
-    double maxCurrent = 0.0;
-    int slipIndex = currentSamples.size() - 1;
+  //   double maxCurrent = 0.0;
+  //   int slipIndex = currentSamples.size() - 1;
 
-    // Check all samples for slip detection
-    for (int i = 1; i < currentSamples.size() - 1; i++) {
-      // Calculate velocity derivative
-      double velocityDerivative = velocitySamples.get(i + 1) - velocitySamples.get(i - 1);
-      double currentValue = currentSamples.get(i);
+  //   // Check all samples for slip detection
+  //   for (int i = 1; i < currentSamples.size() - 1; i++) {
+  //     // Calculate velocity derivative
+  //     double velocityDerivative = velocitySamples.get(i + 1) - velocitySamples.get(i - 1);
+  //     double currentValue = currentSamples.get(i);
 
-      // This indicates wheels have overcome grip have begun to slip
-      if (velocityDerivative > VELOCITY_THRESHOLD && currentValue > MIN_CURRENT_THRESHOLD) {
-        slipIndex = i;
-        break;
-      }
+  //     // This indicates wheels have overcome grip have begun to slip
+  //     if (velocityDerivative > VELOCITY_THRESHOLD && currentValue > MIN_CURRENT_THRESHOLD) {
+  //       slipIndex = i;
+  //       break;
+  //     }
 
-      maxCurrent = Math.max(maxCurrent, currentValue);
-    }
+  //     maxCurrent = Math.max(maxCurrent, currentValue);
+  //   }
 
-    return slipIndex < currentSamples.size() ? currentSamples.get(slipIndex) : maxCurrent;
-  }
+  //   return slipIndex < currentSamples.size() ? currentSamples.get(slipIndex) : maxCurrent;
+  // }
 
   /** Measures the robot's wheel radius by spinning in a circle. */
-  public static Command wheelRadiusCharacterization(Drive drive) {
-    SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
+  public static Command wheelRadiusCharacterization(DriveSubsystem drive) {
+    SlewRateLimiter limiter = new SlewRateLimiter(Constants.DriveConstants.WHEEL_RADIUS_RAMP_RATE);
     WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
+    Logger.recordOutput(
+        "Commands/WheelRadiusCharacterization/DriveBaseRadius",
+        Constants.DriveConstants.DRIVE_BASE_RADIUS);
 
     return Commands.parallel(
         // Drive control sequence
@@ -434,8 +386,14 @@ public class DriveCommands {
             // Turn in place, accelerating up to full speed
             Commands.run(
                 () -> {
-                  double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
-                  drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
+                  double speed =
+                      limiter.calculate(Constants.DriveConstants.WHEEL_RADIUS_MAX_VELOCITY);
+                  Logger.recordOutput("Commands/WheelRadiusCharacterization/Speed", speed);
+                  drive.setControl(
+                      new SwerveRequest.ApplyRobotSpeeds()
+                          .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed))
+                          .withDriveRequestType(DriveRequestType.Velocity)
+                          .withDesaturateWheelSpeeds(true));
                 },
                 drive)),
 
@@ -468,7 +426,9 @@ public class DriveCommands {
                       for (int i = 0; i < 4; i++) {
                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                       }
-                      double wheelRadius = (state.gyroDelta * Drive.DRIVE_BASE_RADIUS) / wheelDelta;
+                      double wheelRadius =
+                          (state.gyroDelta * Constants.DriveConstants.DRIVE_BASE_RADIUS)
+                              / wheelDelta;
 
                       NumberFormat formatter = new DecimalFormat("#0.000");
                       System.out.println(
