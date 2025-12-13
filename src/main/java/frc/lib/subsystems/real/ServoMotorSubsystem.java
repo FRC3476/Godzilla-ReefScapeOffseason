@@ -2,6 +2,8 @@ package frc.lib.subsystems.real;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.subsystems.MotorIO;
 import frc.lib.subsystems.MotorInputsAutoLogged;
@@ -22,6 +24,7 @@ public class ServoMotorSubsystem<T extends MotorInputsAutoLogged, U extends Moto
   protected U io;
   protected T inputs;
   protected double positionSetpointUnits = 0.0;
+  protected double velocitySetpointUnitsPerSecond = 0.0;
 
   protected ServoMotorSubsystemConfig conf;
 
@@ -113,6 +116,7 @@ public class ServoMotorSubsystem<T extends MotorInputsAutoLogged, U extends Moto
   }
 
   protected void setVelocitySetpointImpl(double unitsPerSecond, int slot) {
+    velocitySetpointUnitsPerSecond = unitsPerSecond;
     Logger.recordOutput(getName() + "/API/setVelocitySetpointImpl/UnitsPerS", unitsPerSecond);
     io.setVelocitySetpoint(unitsPerSecond, slot);
   }
@@ -127,6 +131,18 @@ public class ServoMotorSubsystem<T extends MotorInputsAutoLogged, U extends Moto
 
   public double getPositionSetpointUnits() {
     return positionSetpointUnits;
+  }
+
+  public double getVelocitySetpointUnitsPerSecond() {
+    return velocitySetpointUnitsPerSecond;
+  }
+
+  public boolean isAtSetPosition(double toleranceUnits) {
+    return MathUtil.isNear(getPositionSetpointUnits(), getCurrentPosition(), toleranceUnits);
+  }
+
+  public boolean isAtSetVelocity(double toleranceUnitsPerSecond) {
+    return MathUtil.isNear(getVelocitySetpointUnitsPerSecond(), getCurrentVelocity(), toleranceUnitsPerSecond);
   }
 
   public Command setMotionMagicConfigCommand(MotionMagicConfigs configs) {

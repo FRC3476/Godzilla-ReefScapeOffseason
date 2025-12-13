@@ -17,7 +17,7 @@ import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.Climber;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
@@ -35,7 +35,7 @@ public class OperatorControls {
   private final Elevator elevator;
   private final DriveSubsystem drive;
   private final Superstructure superstructure;
-  private final Intake intake;
+  private final IntakeOld intake;
   private final Climber climber;
   private final StreamDeck streamdeck;
   private final ClimbRoller climbRoller;

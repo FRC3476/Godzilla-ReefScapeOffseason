@@ -13,7 +13,7 @@ import frc.robot.RobotState;
 import frc.robot.commands.Rumble;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.ClawOld;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.subsystems.superstructure.CoralStateTracker.CoralPosition;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -23,7 +23,7 @@ import java.util.Set;
 public class ArbitraryTriggers {
   private final RobotContainer container;
   private final Superstructure superstructure;
-  private final Intake intake;
+  private final IntakeOld intake;
   private final ClawOld claw;
   private final CommandXboxController controller;
   private final RobotState robotState;

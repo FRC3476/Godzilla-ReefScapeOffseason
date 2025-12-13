@@ -21,7 +21,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.end_effector.EndEffector;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 import frc.robot.subsystems.led.Led;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -37,7 +37,7 @@ public class ElasticTabs {
   private final Elevator elevator;
   private final DriveSubsystem drive;
   private final Superstructure superstructure;
-  private final Intake intake;
+  private final IntakeOld intake;
   private final Climber climber;
   private final ClimbRoller climbRoller;
   private final RobotState robotState;

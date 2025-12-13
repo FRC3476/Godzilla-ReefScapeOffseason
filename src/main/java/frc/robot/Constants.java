@@ -35,6 +35,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.drivers.CANDeviceId;
 import frc.lib.subsystems.canDevice.CanCoderConfig;
+import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
 import frc.lib.subsystems.real.ServoMotorSubsystemWithCanCoderConfig;
 import frc.lib.subsystems.real.ServoMotorSubsystemWithFollowersConfig;
 import frc.lib.subsystems.simulation.SimElevator;
@@ -42,6 +43,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
 import frc.robot.subsystems.drive.SimTunerConstants;
+import frc.robot.subsystems.intake.IntakeOld;
+
 import java.util.Arrays;
 
 /**
@@ -255,6 +258,78 @@ public final class Constants {
 
   // ====================Intake (3_)====================
   public static class IntakeConstants {
+    public static class IntakePivotConstants {
+        public static MotionMagicConfigs kIntakeMotionMagicConfig = new MotionMagicConfigs();
+
+        static {
+            kIntakeMotionMagicConfig.MotionMagicCruiseVelocity = 50;
+            kIntakeMotionMagicConfig.MotionMagicAcceleration = 1000;
+            kIntakeMotionMagicConfig.MotionMagicJerk = 1000;
+        }
+
+        public static final ServoMotorSubsystemWithCanCoderConfig kIntakePivotConfig =
+            new ServoMotorSubsystemWithCanCoderConfig();
+
+        static {
+            kIntakePivotConfig.name = "Intake Pivot";
+            kIntakePivotConfig.talonCANID = 
+                new CANDeviceId(IntakeConstants.intakePivotID, MISC_CANIVORE);
+            kIntakePivotConfig.unitToRotorRatio = 1 / IntakeConstants.PIVOT_GEAR_RATIO;
+
+            kIntakePivotConfig.fxConfig.Slot0.kG = IntakeConstants.Tuneable_pivotKG;
+            kIntakePivotConfig.fxConfig.Slot0.kS = IntakeConstants.Tuneable_pivotKS;
+            kIntakePivotConfig.fxConfig.Slot0.kP = IntakeConstants.Tuneable_pivotKP;
+            kIntakePivotConfig.fxConfig.Slot0.kI = IntakeConstants.Tuneable_pivotKI;
+            kIntakePivotConfig.fxConfig.Slot0.kD = IntakeConstants.Tuneable_pivotKD;
+            kIntakePivotConfig.fxConfig.Slot0.kV = 0;
+            kIntakePivotConfig.fxConfig.Slot0.kA = 0;
+
+            kIntakePivotConfig.fxConfig.MotionMagic = kIntakeMotionMagicConfig;
+            kIntakePivotConfig.fxConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+            //software limit switches at min/max positions
+            kIntakePivotConfig.kMinPositionUnits = IntakeConstants.PIVOT_INTAKE_POSITION;
+            kIntakePivotConfig.kMaxPositionUnits = IntakeConstants.PIVOT_UP_POSITION;
+            kIntakePivotConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            kIntakePivotConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+                kIntakePivotConfig.kMaxPositionUnits / kIntakePivotConfig.unitToRotorRatio;
+            kIntakePivotConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+            kIntakePivotConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+                kIntakePivotConfig.kMinPositionUnits / kIntakePivotConfig.unitToRotorRatio;
+            
+            kIntakePivotConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            kIntakePivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            kIntakePivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_MAX_SUPPLY_CURRENT_LIMIT;
+
+            kIntakePivotConfig.cancoderToUnitsRatio = 1 / IntakeConstants.PIVOT_STM;
+            kIntakePivotConfig.ratioForSim = kIntakePivotConfig.cancoderToUnitsRatio;
+
+            CanCoderConfig canCoderConfig = new CanCoderConfig();
+            canCoderConfig.CANID = 
+                new CANDeviceId(IntakeConstants.CANCODER_ID, Constants.MISC_CANIVORE);
+            canCoderConfig.config = IntakeConstants.CANCODER_CONFIG;
+
+            kIntakePivotConfig.canCoderConfig = canCoderConfig;
+        }
+    }
+
+    public static class IntakeRollerConstants {
+        public static final ServoMotorSubsystemConfig kIntakeRollerConfig =
+            new ServoMotorSubsystemConfig();
+
+        static {
+            kIntakeRollerConfig.name = "Intake Roller";
+            kIntakeRollerConfig.talonCANID = 
+                new CANDeviceId(IntakeConstants.intakeRollerID, MISC_CANIVORE);
+            kIntakeRollerConfig.unitToRotorRatio = 1 / IntakeConstants.ROLLER_GEAR_RATIO;
+            kIntakeRollerConfig.fxConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+            
+            kIntakeRollerConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            kIntakeRollerConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            kIntakeRollerConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_MAX_SUPPLY_CURRENT_LIMIT;
+        }
+    }
+    
 
     // Motor IDs
     public static final int intakePivotID = 30;

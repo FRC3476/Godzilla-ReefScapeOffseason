@@ -52,7 +52,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOReal;
 import frc.robot.subsystems.feeder.FeederIOSim;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -77,7 +77,7 @@ import java.util.function.Consumer;
 public class RobotContainer {
   // Subsystems
   private final DriveSubsystem drive;
-  private final Intake intake;
+  private final IntakeOld intake;
   private final EndEffector endEffector;
   private final ClawOld claw;
   // private final ElevatorOld elevator;
@@ -120,7 +120,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         feeder = new Feeder(new FeederIOReal());
-        intake = new Intake(new IntakeIOReal(), feeder);
+        intake = new IntakeOld(new IntakeIOReal(), feeder);
         endEffector =
             new EndEffector(
                 EndEffectorConstants2.kEndEffectorConfig,
@@ -146,7 +146,7 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         feeder = new Feeder(new FeederIOSim());
-        intake = new Intake(new IntakeIOSim(), feeder);
+        intake = new IntakeOld(new IntakeIOSim(), feeder);
         endEffector =
             new EndEffector(
                 EndEffectorConstants2.kEndEffectorConfig,
@@ -175,7 +175,7 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         feeder = new Feeder(new FeederIO() {});
-        intake = new Intake(new IntakeIO() {}, feeder);
+        intake = new IntakeOld(new IntakeIO() {}, feeder);
         endEffector =
             new EndEffector(
                 EndEffectorConstants2.kEndEffectorConfig,
@@ -273,7 +273,7 @@ public class RobotContainer {
     return endEffector;
   }
 
-  public Intake getIntake() {
+  public IntakeOld getIntake() {
     return intake;
   }
 

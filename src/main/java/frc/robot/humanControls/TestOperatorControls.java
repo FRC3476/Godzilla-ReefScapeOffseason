@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 import frc.robot.subsystems.led.LedState;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
@@ -19,7 +19,7 @@ import java.util.function.BooleanSupplier;
 public class TestOperatorControls {
   private final RobotContainer container;
   private final Superstructure superstructure;
-  private final Intake intake;
+  private final IntakeOld intake;
   private final StreamDeck streamdeck;
   private final RobotState robotState;
 

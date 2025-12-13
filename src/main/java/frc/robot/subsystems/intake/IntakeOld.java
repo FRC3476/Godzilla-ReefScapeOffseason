@@ -15,7 +15,7 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase {
+public class IntakeOld extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private Feeder feeder;
@@ -50,7 +50,7 @@ public class Intake extends SubsystemBase {
 
   private IntakeState currentState = IntakeState.NONE;
 
-  public Intake(IntakeIO io, Feeder feeder) {
+  public IntakeOld(IntakeIO io, Feeder feeder) {
     this.io = io;
     this.feeder = feeder;
   }

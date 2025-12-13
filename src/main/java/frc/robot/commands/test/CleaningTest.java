@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.end_effector.ClawOld;
 import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 
 public class CleaningTest extends ParallelCommandGroup {
 
-  public CleaningTest(Intake intake, ClawOld claw, Feeder feeder) {
+  public CleaningTest(IntakeOld intake, ClawOld claw, Feeder feeder) {
     addCommands(
         new InstantCommand(() -> claw.setRollerVoltage(1)),
         new InstantCommand(() -> intake.setRollerVoltage(1)),

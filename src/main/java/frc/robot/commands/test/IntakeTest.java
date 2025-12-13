@@ -2,11 +2,11 @@ package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeOld;
 
 public class IntakeTest extends SequentialCommandGroup {
   /** Creates a new IntakeTest. */
-  public IntakeTest(Intake intake) {
+  public IntakeTest(IntakeOld intake) {
     addCommands(
         intake.intakeFWD(),
         new WaitCommand(2.0),
