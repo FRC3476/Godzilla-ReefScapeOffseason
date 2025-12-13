@@ -2,6 +2,9 @@ package frc.robot.subsystems.end_effector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
@@ -22,6 +25,7 @@ public class ClawIOReal implements ClawIO {
   protected TalonFX rollerTalonFX;
   private CANrange firstCoralCANRange;
   private CANrange secondCoralCANRange;
+  private CANrange scoringCANRange;
 
   private TorqueCurrentFOC roller_c_request =
       new TorqueCurrentFOC(EndEffectorConstants.CLAW_HOLD_ALGAE_AMPS);
@@ -46,12 +50,26 @@ public class ClawIOReal implements ClawIO {
         new CANrange(EndEffectorConstants.FIRST_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
     secondCoralCANRange =
         new CANrange(EndEffectorConstants.SECOND_CORAL_CANRANGE_ID, Constants.MISC_CANIVORE);
+    scoringCANRange = new CANrange(34, Constants.MISC_CANIVORE);
     PhoenixUtil.tryUntilOk(
         5, () -> firstCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
     PhoenixUtil.tryUntilOk(
         5, () -> secondCoralCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
     PhoenixUtil.tryUntilOk(
-        5, () -> rollerTalonFX.getConfigurator().apply(EndEffectorConstants.ROLLER_TALON_CONFIG));
+        5, () -> scoringCANRange.getConfigurator().apply(EndEffectorConstants.CANRANGE_CONFIG));
+    PhoenixUtil.tryUntilOk(
+        5,
+        () ->
+            rollerTalonFX
+                .getConfigurator()
+                .apply(
+                    EndEffectorConstants.ROLLER_TALON_CONFIG
+                        .withHardwareLimitSwitch(
+                            new HardwareLimitSwitchConfigs()
+                                .withReverseLimitAutosetPositionEnable(true)
+                                .withReverseLimitAutosetPositionValue(-100)
+                                .withReverseLimitRemoteCANrange(scoringCANRange))
+                        .withSlot0(new Slot0Configs().withKP(100))));
 
     rollerVelocityRPS = rollerTalonFX.getRotorVelocity();
     rollerAppliedVolts = rollerTalonFX.getMotorVoltage();
@@ -118,6 +136,16 @@ public class ClawIOReal implements ClawIO {
   @Override
   public void setRollerVoltage(double voltage) {
     rollerTalonFX.setControl(roller_m_request.withOutput(voltage));
+  }
+
+  @Override
+  public void setRollerPosition(double position) {
+    rollerTalonFX.setPosition(0);
+  }
+
+  @Override
+  public void setRollerTargetPosition(double position) {
+    rollerTalonFX.setControl(new PositionVoltage(position));
   }
 
   @Override

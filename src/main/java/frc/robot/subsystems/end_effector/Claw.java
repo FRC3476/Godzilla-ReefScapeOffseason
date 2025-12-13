@@ -2,6 +2,7 @@ package frc.robot.subsystems.end_effector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.EndEffectorConstants;
@@ -39,6 +40,7 @@ public class Claw extends SubsystemBase {
   private ClawState currentState = ClawState.NONE;
   private boolean firstSensorTriggered;
   private boolean secondSensorTriggered;
+  private boolean autoScoring = false;
 
   public Claw(ClawIO io) {
     this.io = io;
@@ -81,6 +83,13 @@ public class Claw extends SubsystemBase {
     return currentState == ClawState.SCORING
         || currentState == ClawState.SCORING_L1
         || currentState == ClawState.SCORING_ALGAE;
+  }
+
+  public Command autoScoreWhenPoleSensed() {
+    return new InstantCommand(() -> io.setRollerPosition(0), this)
+        .alongWith(new InstantCommand(() -> io.setRollerTargetPosition(0)))
+        .until(
+            () -> CoralStateTracker.getCurrentPosition() == CoralStateTracker.CoralPosition.NONE);
   }
 
   public boolean isCoralInClaw() {
