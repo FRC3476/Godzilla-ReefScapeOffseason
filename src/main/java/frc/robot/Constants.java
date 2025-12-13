@@ -648,7 +648,7 @@ public final class Constants {
       static {
         kClawConfig.name = "Claw";
         kClawConfig.talonCANID = new CANDeviceId(EndEffectorConstants.rollerID, MISC_CANIVORE);
-        kClawConfig.unitToRotorRatio = 1 / EndEffectorConstants.CORAL_GEAR_RATIO;
+        kClawConfig.unitToRotorRatio = EndEffectorConstants.CORAL_GEAR_RATIO;
 
         kClawConfig.fxConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         kClawConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -665,34 +665,15 @@ public final class Constants {
         kEndEffectorConfig.talonCANID =
             new CANDeviceId(EndEffectorConstants.pivotID, MISC_CANIVORE);
         kEndEffectorConfig.unitToRotorRatio = 1 / EndEffectorConstants.PIVOT_GEAR_RATIO;
-
-        kEndEffectorConfig.fxConfig.Slot0.kG = EndEffectorConstants.Tunable_PIVOT_kG;
-        kEndEffectorConfig.fxConfig.Slot0.kS = EndEffectorConstants.Tunable_PIVOT_kS;
-        kEndEffectorConfig.fxConfig.Slot0.kP = EndEffectorConstants.Tunable_PIVOT_kI;
-        kEndEffectorConfig.fxConfig.Slot0.kI = EndEffectorConstants.Tunable_PIVOT_kP;
-        kEndEffectorConfig.fxConfig.Slot0.kD = EndEffectorConstants.Tunable_PIVOT_kD;
-        kEndEffectorConfig.fxConfig.Slot0.kV = EndEffectorConstants.Tunable_PIVOT_kV;
-        kEndEffectorConfig.fxConfig.Slot0.kA = EndEffectorConstants.Tunable_PIVOT_kA;
-
-        kEndEffectorConfig.fxConfig.MotionMagic = kEndEffectorMotionMagicConfig;
-        kEndEffectorConfig.fxConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kEndEffectorConfig.fxConfig = EndEffectorConstants.PIVOT_TALON_CONFIG;
 
         // software limit switches at min/max positions
         kEndEffectorConfig.kMinPositionUnits = EndEffectorConstants.MIN_ANGLE_ROTATIONS;
         kEndEffectorConfig.kMaxPositionUnits = EndEffectorConstants.MAX_ANGLE_ROTATIONS;
-        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-            kEndEffectorConfig.kMaxPositionUnits / kEndEffectorConfig.unitToRotorRatio;
-        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        kEndEffectorConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-            kEndEffectorConfig.kMinPositionUnits / kEndEffectorConfig.unitToRotorRatio;
 
-        kEndEffectorConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kEndEffectorConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_CURRENT_LIMIT_AMPS;
-
-        kEndEffectorConfig.cancoderToUnitsRatio = 1 / EndEffectorConstants.PIVOT_STM;
-        kEndEffectorConfig.ratioForSim = kEndEffectorConfig.cancoderToUnitsRatio;
+        kEndEffectorConfig.momentOfInertia = 0.01; // kg*m² for pivot simulation
+        kEndEffectorConfig.ratioForSim = kEndEffectorConfig.unitToRotorRatio;
+        kEndEffectorConfig.cancoderUnitsForSim = 1.0 / EndEffectorConstants.PIVOT_STM;
 
         CanCoderConfig canCoderConfig = new CanCoderConfig();
         canCoderConfig.CANID =
@@ -700,6 +681,7 @@ public final class Constants {
         canCoderConfig.config = EndEffectorConstants.PIVOT_CANCODER_CONFIG;
 
         kEndEffectorConfig.canCoderConfig = canCoderConfig;
+        kEndEffectorConfig.isFusedCancoder = true;
       }
     }
 
@@ -805,7 +787,7 @@ public final class Constants {
                     .withRotorToSensorRatio(PIVOT_RTS)
                     .withFeedbackRemoteSensorID(PIVOT_CANCODER_ID)
                     .withSensorToMechanismRatio(PIVOT_STM)
-                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder))
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder))
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withSupplyCurrentLimitEnable(true)

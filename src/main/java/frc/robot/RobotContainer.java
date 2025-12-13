@@ -23,6 +23,7 @@ import frc.lib.subsystems.simulation.SimCanCoderIO;
 import frc.lib.subsystems.simulation.SimCanRangeIO;
 import frc.lib.subsystems.simulation.SimCanRangeIO.SimCanRangeState;
 import frc.lib.subsystems.simulation.SimElevator;
+import frc.lib.subsystems.simulation.SimTalonFXIO;
 import frc.lib.subsystems.simulation.SimTalonFXWithCancoder;
 import frc.robot.Constants.ElevatorConstants.Elevator2Constants;
 import frc.robot.Constants.EndEffectorConstants.EndEffectorConstants2;
@@ -119,6 +120,9 @@ public class RobotContainer {
         Robot.isSimulation()
             ? new SimTalonFXWithCancoder(EndEffectorConstants2.kEndEffectorConfig)
             : null;
+
+    final SimTalonFXIO simulatedClawMotor =
+        Robot.isSimulation() ? new SimTalonFXIO(EndEffectorConstants2.kClawConfig) : null;
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -169,7 +173,7 @@ public class RobotContainer {
         claw =
             new Claw(
                 EndEffectorConstants2.kClawConfig,
-                simulatedEndEffectorMotor,
+                simulatedClawMotor,
                 robotState,
                 new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig, () -> clawSimRange1),
                 new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig2, () -> clawSimRange2));
