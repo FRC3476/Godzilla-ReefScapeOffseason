@@ -24,6 +24,19 @@ public class ClimbRollerOld extends SubsystemBase {
       new LoggedTunableNumber("ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS);
 
   private boolean climbing = false;
+  public enum ClimbState {
+    STOWED,
+    DEPLOYING,
+    DEPLOYED,
+    CLIMBING,
+    CLIMBED
+  }
+
+  public enum LimitSwitchState {
+    NONE,
+    LATCHING,
+    LATCHED
+  }
 
   public ClimbRollerOld(ClimbRollerIO io) {
     this.io = io;
@@ -73,7 +86,7 @@ public class ClimbRollerOld extends SubsystemBase {
   }
 
   public boolean hasCage() {
-    return ClimberOld.limitSwitchState == LimitSwitchState.LATCHED
+    return ClimbRoller.limitSwitchState == ClimbRoller.limitSwitchState.LATCHED
         && climbing
         && io.checkRollerStalled();
   }
