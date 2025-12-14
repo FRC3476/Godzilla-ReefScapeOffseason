@@ -1,80 +1,62 @@
 package frc.robot.subsystems.climb;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ClimbConstants;
-import frc.robot.subsystems.climb.Climber.LimitSwitchState;
-import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
-public class ClimbRoller extends SubsystemBase {
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.subsystems.MotorIO;
+import frc.lib.subsystems.MotorInputsAutoLogged;
+import frc.lib.subsystems.real.ServoMotorSubsystem;
+import frc.lib.subsystems.real.ServoMotorSubsystemConfig;
+import frc.robot.Constants.ClimbConstants;
+import frc.robot.util.LoggedTunableNumber;
 
-  private final ClimbRollerIO io;
-  private final ClimbRollerIOInputsAutoLogged inputs = new ClimbRollerIOInputsAutoLogged();
-
-  private static final LoggedTunableNumber rollerVolts =
+public class ClimbRoller
+    extends ServoMotorSubsystem<
+        MotorInputsAutoLogged, MotorIO> {
+    private final RobotState robotState;
+    private boolean isZeroed = false;
+    private static final LoggedTunableNumber rollerTestVolts =
       new LoggedTunableNumber(
           "ClimbRoller/TunableVolts",
-          1.0); // It was already set to 1.0 and used in rollerFWD and rollerRVS
-  private static final LoggedTunableNumber rollerHoldingCageAmps =
+          1.0);
+    private static final LoggedTunableNumber rollerTestHoldingCageAmps =
       new LoggedTunableNumber("ClimbRoller/HoldingCageAmps", ClimbConstants.ROLLER_HOLD_CAGE_AMPS);
-  private static final LoggedTunableNumber rollerBackOutvolts =
-      new LoggedTunableNumber("ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS);
+        
+    public ClimbRoller(ServoMotorSubsystemConfig config, MotorIO io, RobotState robotState) {
+    super(config, new MotorInputsAutoLogged(), io);
+    this.robotState = robotState;
+    setDefaultCommand(
+        motionMagicSetpointCommand(this::getPositionSetpointUnits)
+            .withName(getName() + " Default Command Hold Position")
+            .ignoringDisable(true));
+    }
+    
+    @Override
+    public void periodic() {
+        super.periodic();
 
-  private boolean climbing = false;
+        Logger.recordOutput(getName() + "/positionRotations", getCurrentPosition());
+    }
 
-  public ClimbRoller(ClimbRollerIO io) {
-    this.io = io;
-  }
+    public void setRollerVoltage(double voltage) {
+        io.setRollerVoltage(voltage);
+    }
 
-  public void periodic() {
-    double timestamp = RobotTime.getTimestampSeconds();
-    io.updateInputs(inputs);
-    Logger.processInputs("ClimbRoller", inputs);
+    public Command rollerFWD() {
+        return voltageCommand(() -> rollerTestVolts.getAsDouble());
+    }
 
-    Logger.recordOutput("ClimbRoller/climbing", climbing);
-    Logger.recordOutput("ClimbRoller/hasCage", hasCage());
+    public Command rollerRVS() {
+        return voltageCommand(() -> -rollerTestVolts.getAsDouble());
+    }
 
-    Logger.recordOutput(
-        "ClimbRoller/currentCommand",
-        (getCurrentCommand() == null) ? "Default" : getCurrentCommand().getName());
-    Logger.recordOutput(
-        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
-  }
+    public Command rollerSTOP() {
+        return voltageCommand(() -> 0);
+    }
 
-  public void setRollerVoltage(double voltage) {
-    io.setRollerVoltage(voltage);
-  }
-
-  public Command rollerFWD() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(rollerVolts.get()), this);
-  }
-
-  public Command rollerRVS() {
-    return Commands.runOnce(() -> this.io.setRollerVoltage(-rollerVolts.get()), this);
-  }
-
-  public Command rollerSTOP() {
-    return Commands.run(() -> this.io.setRollerVoltage(0), this);
-  }
-
-  public Command holdCage() {
-    return Commands.runOnce(() -> this.io.setTorqueCurrent(rollerHoldingCageAmps.get()), this);
-  }
-
-  public void setClimbing(boolean climbing) {
-    this.climbing = climbing;
-  }
-
-  public boolean getClimbing() {
-    return climbing;
-  }
-
-  public boolean hasCage() {
-    return Climber.limitSwitchState == LimitSwitchState.LATCHED
-        && climbing
-        && io.checkRollerStalled();
-  }
-}
+    public Command holdCage() {
+        return setTorqueCurrentFOC(() -> rollerTestHoldingCageAmps.get());
+    
+    }

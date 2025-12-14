@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.subsystems.climb.Climber;
-import frc.robot.subsystems.climb.Climber.ClimbState;
+import frc.robot.subsystems.climb.ClimberOld;
+import frc.robot.subsystems.climb.ClimberOld.ClimbState;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.end_effector.Claw;
 import frc.robot.subsystems.led.Led;
@@ -19,7 +19,7 @@ public class TeleopLedCommand extends Command {
   private final Led led;
   private final Claw claw;
   private final DriveSubsystem drive;
-  private final Climber climber;
+  private final ClimberOld climber;
   private final RobotState robotState;
 
   private enum TELEOP_LED_STATE {
@@ -95,16 +95,16 @@ public class TeleopLedCommand extends Command {
     if (!claw.isOK()) {
       state = TELEOP_LED_STATE.CAN_DOWN_MISC;
     }
-    if (Climber.getClimbState() == ClimbState.CLIMBED) {
+    if (ClimberOld.getClimbState() == ClimbState.CLIMBED) {
       state = TELEOP_LED_STATE.CLIMB_CLIMBED;
     }
-    if (Climber.getClimbState() == ClimbState.CLIMBING) {
+    if (ClimberOld.getClimbState() == ClimbState.CLIMBING) {
       state = TELEOP_LED_STATE.CLIMB_CLIMBING;
     }
-    if (Climber.getClimbState() == ClimbState.DEPLOYED) {
+    if (ClimberOld.getClimbState() == ClimbState.DEPLOYED) {
       state = TELEOP_LED_STATE.CLIMB_DEPLOYED;
     }
-    if (Climber.getClimbState() == ClimbState.DEPLOYING) {
+    if (ClimberOld.getClimbState() == ClimbState.DEPLOYING) {
       state = TELEOP_LED_STATE.CLIMB_DEPLOYING;
     }
     if (!climber.isOK()) {

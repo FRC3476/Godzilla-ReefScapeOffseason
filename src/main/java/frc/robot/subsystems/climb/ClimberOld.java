@@ -11,7 +11,7 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RobotTime;
 import org.littletonrobotics.junction.Logger;
 
-public class Climber extends SubsystemBase {
+public class ClimberOld extends SubsystemBase {
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
@@ -40,7 +40,7 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber climberVolts =
       new LoggedTunableNumber("Climber/DeployVolts", 1);
 
-  public Climber(ClimberIO io) {
+  public ClimberOld(ClimberIO io) {
     this.io = io;
     io.setZero();
     limitSwitchLatching()
@@ -103,15 +103,15 @@ public class Climber extends SubsystemBase {
   public Command climbDeploy() {
     return climbDeployToPosition(
             ClimbConstants.CLIMB_DEPLOY_POSITION, ClimbConstants.CLIMB_DEPLOY_VOLTAGE)
-        .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYING)))
-        .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.DEPLOYED)));
+        .alongWith(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.DEPLOYING)))
+        .andThen(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.DEPLOYED)));
   }
 
   public Command climbClimb() {
     return climbDeployToPosition(
             ClimbConstants.CLIMB_CLIMB_POSITION, ClimbConstants.CLIMB_CLIMB_VOLTAGE)
-        .alongWith(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBING)))
-        .andThen(Commands.runOnce(() -> Climber.setClimbState(ClimbState.CLIMBED)));
+        .alongWith(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.CLIMBING)))
+        .andThen(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.CLIMBED)));
   }
 
   public Command climbDeployToPosition(double position, double voltage) {
