@@ -42,6 +42,8 @@ import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
 import frc.robot.subsystems.drive.SimTunerConstants;
 import java.util.Arrays;
+import java.util.Optional;
+import org.photonvision.simulation.VisionSystemSim;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -788,6 +790,11 @@ public final class Constants {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
     public static final AprilTagFieldLayout kAprilTagLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
+    public static final Optional<VisionSystemSim> visionSim =
+        Constants.currentMode == Mode.SIM
+            ? Optional.of(new VisionSystemSim("photonSim"))
+            : Optional.empty();
 
     // Camera A (left side)
     public static final double kCameraAPitchDegrees = 11.57;

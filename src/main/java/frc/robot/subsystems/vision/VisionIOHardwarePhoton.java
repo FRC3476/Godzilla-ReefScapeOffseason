@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -26,17 +24,32 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
       new double[VisionConstants.kExpectedStdDevArrayLength];
 
   protected final PhotonPoseEstimator estimator;
+  private final String cameraName;
+  private final Transform3d robotToCamera;
 
   public VisionIOHardwarePhoton(String cameraName, Transform3d robotToCamera) {
+    this.cameraName = cameraName;
+    this.robotToCamera = robotToCamera;
     camera = new PhotonCamera(cameraName);
 
     estimator =
         new PhotonPoseEstimator(
-            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark),
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            VisionConstants.kAprilTagLayout,
+            // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            PoseStrategy.LOWEST_AMBIGUITY,
             robotToCamera);
 
     estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  }
+
+  @Override
+  public String getName() {
+    return cameraName;
+  }
+
+  @Override
+  public Transform3d getRobotToCamera() {
+    return robotToCamera;
   }
 
   @Override
@@ -52,6 +65,8 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
       if (estimatedPoseOptional.isEmpty()) {
         continue;
       }
+      // GET RID OF THIS LATER
+      System.out.println("If you see this it is working");
       EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
       Matrix<N3, N1> stdDevs =
           AprilTagAlgorithms.getEstimationStdDevs(
