@@ -29,8 +29,8 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
   private final CanRangeInputsAutoLogged secondRangeAutoLog = new CanRangeInputsAutoLogged();
 
   private ClawState currentState = ClawState.NONE;
-  private boolean firstSensorTriggered;
-  private boolean secondSensorTriggered;
+  private boolean firstSensorTriggered = false;
+  private boolean secondSensorTriggered = false;
 
   public Claw(
       ServoMotorSubsystemConfig config,
@@ -50,11 +50,11 @@ public class Claw extends ServoMotorSubsystem<MotorInputsAutoLogged, MotorIO> {
     firstCANRangeIO.readInputs(firstRangeAutoLog);
     secondCANRangeIO.readInputs(secondRangeAutoLog);
 
-    Logger.processInputs(getName() + "/firstCanRange", firstRangeAutoLog);
-    Logger.processInputs(getName() + "/firstCanRange", secondRangeAutoLog);
-
     CoralStateTracker.updateFirstEndEffector(firstSensorTriggered);
     CoralStateTracker.updateSecondEndEffector(secondSensorTriggered);
+
+    Logger.processInputs(getName() + "/firstCanRange", firstRangeAutoLog);
+    Logger.processInputs(getName() + "/firstCanRange", secondRangeAutoLog);
 
     RobotState.setHasAlgae(hasAlgae());
   }
