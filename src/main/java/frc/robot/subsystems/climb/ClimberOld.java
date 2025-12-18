@@ -81,8 +81,8 @@ public class ClimberOld extends SubsystemBase {
   // State");
   // }
 
-  public static void setClimbState(ClimbState state) {
-    climbState = state;
+  public static void setClimbState(ClimbState deploying) {
+    climbState = deploying;
   }
 
   public static ClimbState getClimbState() {
@@ -113,7 +113,6 @@ public class ClimberOld extends SubsystemBase {
         .alongWith(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.CLIMBING)))
         .andThen(Commands.runOnce(() -> ClimberOld.setClimbState(ClimbState.CLIMBED)));
   }
-
 
   public Command climbDeployToPosition(double position, double voltage) {
     if (inputs.data.positionRads() > position) {

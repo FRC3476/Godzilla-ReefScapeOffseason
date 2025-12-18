@@ -16,8 +16,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
@@ -36,7 +34,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,6 +55,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.CompTunerConstants;
 import frc.robot.subsystems.drive.SimTunerConstants;
+import java.util.Arrays;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -862,87 +860,92 @@ public final class Constants {
   public static class ClimbConstants {
     public static class Climb2Constants {
 
-    public static final ServoMotorSubsystemConfig kClimberPivotConfig = new ServoMotorSubsystemConfig();
+      public static final ServoMotorSubsystemConfig kClimberPivotConfig =
+          new ServoMotorSubsystemConfig();
+      public static final ServoMotorSubsystemConfig kClimbRollerConfig =
+          new ServoMotorSubsystemConfig();
 
-    public static final CanRangeConfig kCanRangeConfig = new CanRangeConfig();
-    public static final CanRangeConfig kCanRangeConfig2 = new CanRangeConfig();
+      public static final CanRangeConfig kCanRangeConfig = new CanRangeConfig();
+      public static final CanRangeConfig kCanRangeConfig2 = new CanRangeConfig();
 
-    static{
+      static {
         kClimberPivotConfig.name = "ClimberPivot";
         kClimberPivotConfig.talonCANID = new CANDeviceId(ClimbConstants.ID, MISC_CANIVORE);
         kClimberPivotConfig.unitToRotorRatio = Units.rotationsToRadians(1);
         kClimberPivotConfig.fxConfig = ClimbConstants.CLIMB_TALON_CONFIG;
 
         kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = ClimbConstants.PIVOT_CURRENT_LIMIT_AMPS;
+        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit =
+            ClimbConstants.PIVOT_CURRENT_LIMIT_AMPS;
 
-        kCanRangeConfig.CANID = 
-            new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
+        kCanRangeConfig.CANID = new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
+      }
+
+      static {
+        kClimbRollerConfig.name = "ClimberRoller";
+        kClimbRollerConfig.talonCANID = new CANDeviceId(ClimbConstants.rollerID, MISC_CANIVORE);
+        kClimbRollerConfig.unitToRotorRatio = Units.rotationsToRadians(1);
+        kClimbRollerConfig.fxConfig = ROLLER_TALON_CONFIG;
+
+        kClimbRollerConfig.ratioForSim = kClimbRollerConfig.unitToRotorRatio;
+
+        kClimbRollerConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit =
+            ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS;
+
+        kCanRangeConfig.CANID = new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
+      }
     }
-    static{
-        kClimberPivotConfig.name = "ClimberRoller";
-        kClimberPivotConfig.talonCANID = new CANDeviceId(ClimbConstants.rollerID, MISC_CANIVORE);
-        kClimberPivotConfig.unitToRotorRatio = Units.rotationsToRadians(1);
-        kClimberPivotConfig.fxConfig = ROLLER_TALON_CONFIG;
 
-        kClimberPivotConfig.ratioForSim = k;
+    public static final double reduction = (1 / 23.11);
+    public static final double climbMOI = 0.01;
 
-        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit = ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS;
+    public static final int ID = 60;
+    public static final int rollerID = 61;
 
-        kCanRangeConfig.CANID = 
-            new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
-    }
-    }   
-        public static final double reduction = (1 / 23.11);
-        public static final double climbMOI = 0.01;
+    public static final double ROLLER_MOI = 0.001;
+    public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
 
-        public static final int ID = 60;
-        public static final int rollerID = 61;
+    public static final double CLIMB_DEPLOY_POSITION = 91;
+    public static final double CLIMB_CLIMB_POSITION = 209;
+    public static final double CLIMB_DEPLOY_VOLTAGE = 12;
+    public static final double CLIMB_CLIMB_VOLTAGE = 12;
+    public static final double STALL_AMPS = 1000.0;
+    public static final double STALL_VELOCITY = 0.0;
+    public static final double CLIMB_ANGLE_SNAP = 109.69;
 
-        public static final double ROLLER_MOI = 0.001;
-        public static final double ROLLER_GEAR_RATIO = 4; // TODO : update with true value
+    public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
 
-        public static final double CLIMB_DEPLOY_POSITION = 91;
-        public static final double CLIMB_CLIMB_POSITION = 209;
-        public static final double CLIMB_DEPLOY_VOLTAGE = 12;
-        public static final double CLIMB_CLIMB_VOLTAGE = 12;
-        public static final double STALL_AMPS = 1000.0;
-        public static final double STALL_VELOCITY = 0.0;
-        public static final double CLIMB_ANGLE_SNAP = 109.69;
+    public static final TalonFXConfiguration CLIMB_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
 
-        public static final double PIVOT_CURRENT_LIMIT_AMPS = 120;
+    public static final double ROLLER_HOLD_CAGE_AMPS = -60.0; // TODO fine-adjust
+    public static final double ROLLER_BACKOUT_VOLTS = 0.5; // TODO fine-adjust
+    public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
+    public static final double ROLLER_STALLED_RPS = 10; // TODO fine-adjust
+    public static final double ROLLER_STALLED_CURRENT = 40.0; // TODO fine-adjust
 
-        public static final TalonFXConfiguration CLIMB_TALON_CONFIG =
-            new TalonFXConfiguration()
-                .withMotorOutput(
-                    new MotorOutputConfigs()
-                        .withInverted(InvertedValue.Clockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Brake))
-                .withCurrentLimits(
-                    new CurrentLimitsConfigs()
-                        .withSupplyCurrentLimitEnable(true)
-                        .withSupplyCurrentLimit(PIVOT_CURRENT_LIMIT_AMPS));
-
-        public static final double ROLLER_HOLD_CAGE_AMPS = -60.0; // TODO fine-adjust
-        public static final double ROLLER_BACKOUT_VOLTS = 0.5; // TODO fine-adjust
-        public static final double ROLLER_CURRENT_LIMIT_AMPS = 80.0;
-        public static final double ROLLER_STALLED_RPS = 10; // TODO fine-adjust
-        public static final double ROLLER_STALLED_CURRENT = 40.0; // TODO fine-adjust
-
-        public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
-            new TalonFXConfiguration()
-                .withMotorOutput(
-                    new MotorOutputConfigs()
-                        .withInverted(InvertedValue.CounterClockwise_Positive)
-                        .withNeutralMode(NeutralModeValue.Brake))
-                .withCurrentLimits(
-                    new CurrentLimitsConfigs()
-                        .withSupplyCurrentLimitEnable(true)
-                        .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
-        public static final int LIMIT_SWITCH_PIN = 9;
-        public static final double CLIMB_LATCHED_RESET_SECONDS = 0.5;
-    }
+    public static final TalonFXConfiguration ROLLER_TALON_CONFIG =
+        new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withSupplyCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS));
+    public static final int LIMIT_SWITCH_PIN = 9;
+    public static final double CLIMB_LATCHED_RESET_SECONDS = 0.5;
+  }
 
   // ====================LED (8_)====================
   public static final class LedConstants {

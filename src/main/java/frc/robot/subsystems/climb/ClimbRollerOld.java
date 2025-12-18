@@ -24,6 +24,7 @@ public class ClimbRollerOld extends SubsystemBase {
       new LoggedTunableNumber("ClimbRoller/ScoringVolts", ClimbConstants.ROLLER_BACKOUT_VOLTS);
 
   private boolean climbing = false;
+
   public enum ClimbState {
     STOWED,
     DEPLOYING,
