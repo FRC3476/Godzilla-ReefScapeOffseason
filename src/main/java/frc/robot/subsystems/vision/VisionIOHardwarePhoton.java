@@ -35,8 +35,8 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
     estimator =
         new PhotonPoseEstimator(
             VisionConstants.kAprilTagLayout,
-            // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            PoseStrategy.LOWEST_AMBIGUITY,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            // PoseStrategy.LOWEST_AMBIGUITY,
             robotToCamera);
 
     estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -58,15 +58,15 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
 
     List<Pose3d> aprilTagPoses = new ArrayList<>();
     List<Pose3d> poses = new ArrayList<>();
+    List<Pose3d> invalidPoses = new ArrayList<>();
     List<PoseObservation> poseObservations = new ArrayList<>();
+    List<PoseObservation> invalidPoseObservations = new ArrayList<>();
 
     for (PhotonPipelineResult result : unreadResults) {
       Optional<EstimatedRobotPose> estimatedPoseOptional = estimator.update(result);
       if (estimatedPoseOptional.isEmpty()) {
         continue;
       }
-      // GET RID OF THIS LATER
-      System.out.println("If you see this it is working");
       EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
       Matrix<N3, N1> stdDevs =
           AprilTagAlgorithms.getEstimationStdDevs(
@@ -102,9 +102,13 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
                 target.fiducialId,
                 stdDevs);
 
-        // ADD REJECTION
-        poseObservations.add(observation);
-        poses.add(observation.robotPose());
+        if (AprilTagAlgorithms.isValidObservation(observation)) {
+          poseObservations.add(observation);
+          poses.add(observation.robotPose());
+        } else {
+          invalidPoseObservations.add(observation);
+          invalidPoses.add(observation.robotPose());
+        }
       }
     }
 
@@ -112,5 +116,7 @@ public class VisionIOHardwarePhoton implements VisionIOPhoton {
     inputs.aprilTagPoses = aprilTagPoses.toArray(Pose3d[]::new);
     inputs.poses = poses.toArray(Pose3d[]::new);
     inputs.poseObservations = poseObservations.toArray(PoseObservation[]::new);
+    inputs.invalidPoses = invalidPoses.toArray(Pose3d[]::new);
+    inputs.invalidPoseObservations = invalidPoseObservations.toArray(PoseObservation[]::new);
   }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Field.FieldUtils;
 import java.util.List;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -43,5 +44,10 @@ public class AprilTagAlgorithms {
     stdDevs = stdDevs.times(1 + (avgDistance * avgDistance / 30.0));
 
     return stdDevs;
+  }
+
+  public static boolean isValidObservation(PoseObservation observation) {
+    return FieldUtils.isInsideField(observation.robotPose().toPose2d())
+        && observation.ambiguity() < VisionConstants.ambiguityCutoff;
   }
 }

@@ -884,6 +884,7 @@ public final class Constants {
     public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(4, 4, Double.MAX_VALUE);
     public static final Matrix<N3, N1> multiTagStdDevs =
         VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
+    public static final double ambiguityCutoff = 0.05;
   }
 
   public static class SuperstructureConstants {

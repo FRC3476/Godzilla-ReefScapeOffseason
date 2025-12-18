@@ -62,7 +62,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionFieldPoseEstimate;
 import frc.robot.subsystems.vision.VisionIOHardwareLimelight;
 import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOSimPhotonLL;
 import frc.robot.util.Controls.StreamDeck.StreamDeck;
 import java.util.function.Consumer;
 
@@ -140,7 +139,8 @@ public class RobotContainer {
         superstructure = new Superstructure(elevator, endEffector, this);
         climber = new Climber(new ClimberIOSim());
         climbRoller = new ClimbRoller(new ClimbRollerIOSim());
-        vision = new Vision(new VisionIOSimPhotonLL(), robotState);
+        // vision = new Vision(new VisionIOSimPhotonLL(), robotState);
+        vision = new Vision(robotState);
         led = new Led(new LedIO() {}, robotState);
         drive =
             new DriveSubsystem(

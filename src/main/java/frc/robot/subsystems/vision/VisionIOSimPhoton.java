@@ -38,7 +38,6 @@ public class VisionIOSimPhoton extends VisionIOHardwarePhoton {
 
   @Override
   public void updateInputs(VisionIOPhotonInputs inputs) {
-    super.updateInputs(inputs);
 
     VisionConstants.visionSim.ifPresent(
         visionSim -> {
@@ -50,5 +49,6 @@ public class VisionIOSimPhoton extends VisionIOHardwarePhoton {
             visionEstimation.setPoses();
           }
         });
+    super.updateInputs(inputs);
   }
 }

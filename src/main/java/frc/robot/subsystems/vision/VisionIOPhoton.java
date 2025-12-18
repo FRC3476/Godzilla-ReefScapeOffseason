@@ -12,8 +12,10 @@ public interface VisionIOPhoton {
     public Pose3d[] aprilTagPoses = new Pose3d[0];
 
     public Pose3d[] poses = new Pose3d[0];
+    public Pose3d[] invalidPoses = new Pose3d[0];
 
     public PoseObservation[] poseObservations = new PoseObservation[0];
+    public PoseObservation[] invalidPoseObservations = new PoseObservation[0];
   }
 
   public default void updateInputs(VisionIOPhotonInputs inputs) {}

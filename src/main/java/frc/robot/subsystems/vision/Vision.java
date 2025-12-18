@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -30,6 +31,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionIOLimelight io;
+  private final VisionIOPhoton pio;
   private final RobotState state;
   private final VisionIOLimelight.VisionIOInputs inputs = new VisionIOLimelight.VisionIOInputs();
   private final Debouncer debounce = new Debouncer(0.25);
@@ -48,20 +50,33 @@ public class Vision extends SubsystemBase {
 
   public Vision(VisionIOLimelight io, RobotState state) {
     this.io = io;
+    this.pio = null;
+    this.state = state;
+  }
+
+  // new!! below - - - - - - - - - - - - - - - -
+
+  public Vision(RobotState state) {
+    // this.io = io;
+    this.io = null;
     this.state = state;
 
-    VisionIOPhoton pio;
-    pio =
-        new VisionIOSimPhoton(
-            "camera1",
-            new Transform3d(
+    VisionConstants.visionSim.ifPresent(
+        visionSim -> visionSim.addAprilTags(VisionConstants.kAprilTagLayout));
+
+    Transform3d robotToCameraA =
+        new Transform3d(
+            new Translation3d(
                 VisionConstants.kRobotToCameraAForward,
                 VisionConstants.kRobotToCameraASide,
-                VisionConstants.kCameraAHeightOffGroundMeters,
-                new Rotation3d(
-                    Units.degreesToRadians(VisionConstants.kCameraARollDegrees),
-                    Units.degreesToRadians(VisionConstants.kCameraAPitchDegrees),
-                    0)));
+                VisionConstants.kCameraAHeightOffGroundMeters),
+            new Rotation3d(
+                0.0, // Roll
+                -VisionConstants.kCameraAPitchRads, // Pitch
+                VisionConstants.kCameraAYawOffset.getRadians() // Yaw
+                ));
+
+    this.pio = new VisionIOSimPhoton("camera1", robotToCameraA);
 
     Alert disconnectedAlert = new Alert(pio.getName() + " disconnected", AlertType.kWarning);
 
@@ -188,7 +203,8 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     double startTime = RobotTime.getTimestampSeconds();
-    io.updateInputs(inputs);
+    // io.updateInputs(inputs);
+    // pio.updateInputs(inputs);
 
     // logCameraInputs("Vision/CameraA", inputs.cameraA);
     // logCameraInputs("Vision/CameraB", inputs.cameraB);
@@ -235,10 +251,10 @@ public class Vision extends SubsystemBase {
       // rejectedIds.addAll(Arrays.stream(cam.inputs.rejectedIds).boxed().toList());
 
       validPoseObservations.addAll(Arrays.asList(cam.inputs.poseObservations));
-      // rejectedPoseObservations.addAll(Arrays.asList(cam.inputs.rejectedPoseObservations));
+      rejectedPoseObservations.addAll(Arrays.asList(cam.inputs.invalidPoseObservations));
 
       validPoses.addAll(Arrays.asList(cam.inputs.poses));
-      // rejectedPoses.addAll(Arrays.asList(cam.inputs.rejectedPoses));
+      rejectedPoses.addAll(Arrays.asList(cam.inputs.invalidPoses));
 
       validAprilTagPoses.addAll(Arrays.asList(cam.inputs.aprilTagPoses));
       // rejectedAprilTagPoses.addAll(Arrays.asList(cam.inputs.rejectedAprilTagPoses));
@@ -257,7 +273,12 @@ public class Vision extends SubsystemBase {
                 observation.timestampSeconds(),
                 observation.stdDevs(),
                 1,
-                observation.ambiguity()));
+                VisionConstants.kAprilTagLayout
+                    .getTagPose(observation.id())
+                    .get()
+                    .minus(new Pose3d(RobotState.getGlobalPose()))
+                    .getTranslation()
+                    .getNorm()));
       }
     }
 
