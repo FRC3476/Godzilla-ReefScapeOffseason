@@ -665,6 +665,7 @@ public final class Constants {
         kEndEffectorConfig.talonCANID =
             new CANDeviceId(EndEffectorConstants.pivotID, MISC_CANIVORE);
         kEndEffectorConfig.unitToRotorRatio = 1 / EndEffectorConstants.PIVOT_GEAR_RATIO;
+        kEndEffectorConfig.cancoderToUnitsRatio = EndEffectorConstants.PIVOT_STM;
         kEndEffectorConfig.fxConfig = EndEffectorConstants.PIVOT_TALON_CONFIG;
 
         // software limit switches at min/max positions
