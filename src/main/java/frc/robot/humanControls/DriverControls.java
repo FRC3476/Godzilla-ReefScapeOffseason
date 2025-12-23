@@ -22,7 +22,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.GarageDriveToPoseCommand;
 import frc.robot.commands.ParallelDriveCommand;
 import frc.robot.commands.Rumble;
-import frc.robot.subsystems.climb.ClimbRoller;
+import frc.robot.subsystems.climb.ClimbRollerOld;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.end_effector.Claw;
@@ -42,7 +42,7 @@ public class DriverControls {
   private final Intake intake;
   private final Claw claw;
   private final CommandXboxController controller;
-  private final ClimbRoller climbRoller;
+  private final ClimbRollerOld climbRoller;
   private final RobotState robotState;
   private final Elevator elevator;
   private final EndEffector endEffector;

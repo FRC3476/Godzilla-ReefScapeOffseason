@@ -34,14 +34,14 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.humanControls.DriverControls;
 import frc.robot.humanControls.ElasticTabs;
 import frc.robot.humanControls.OperatorControls;
-import frc.robot.subsystems.climb.ClimbRoller;
 import frc.robot.subsystems.climb.ClimbRollerIO;
 import frc.robot.subsystems.climb.ClimbRollerIOReal;
 import frc.robot.subsystems.climb.ClimbRollerIOSim;
-import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimbRollerOld;
 import frc.robot.subsystems.climb.ClimberIO;
 import frc.robot.subsystems.climb.ClimberIOReal;
 import frc.robot.subsystems.climb.ClimberIOSim;
+import frc.robot.subsystems.climb.ClimberOld;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOHardware;
 import frc.robot.subsystems.drive.DriveIOSim;
@@ -83,8 +83,8 @@ public class RobotContainer {
   private final Claw claw;
   // private final ElevatorOld elevator;
   private final Superstructure superstructure;
-  private final Climber climber;
-  private final ClimbRoller climbRoller;
+  private final ClimberOld climber;
+  private final ClimbRollerOld climbRoller;
   private final Feeder feeder;
   private final Vision vision;
   private final Led led;
@@ -143,8 +143,8 @@ public class RobotContainer {
                 new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig2));
         // elevator = new ElevatorOld(new ElevatorIOReal());
         superstructure = new Superstructure(elevator, endEffector, this);
-        climber = new Climber(new ClimberIOReal());
-        climbRoller = new ClimbRoller(new ClimbRollerIOReal());
+        climber = new ClimberOld(new ClimberIOReal());
+        climbRoller = new ClimbRollerOld(new ClimbRollerIOReal());
         vision = new Vision(new VisionIOHardwareLimelight(), robotState);
         led = new Led(new LedIOReal(), robotState);
         drive =
@@ -178,8 +178,8 @@ public class RobotContainer {
                 new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig, () -> clawSimRange1),
                 new SimCanRangeIO(EndEffectorConstants2.kCanRangeConfig2, () -> clawSimRange2));
         superstructure = new Superstructure(elevator, endEffector, this);
-        climber = new Climber(new ClimberIOSim());
-        climbRoller = new ClimbRoller(new ClimbRollerIOSim());
+        climber = new ClimberOld(new ClimberIOSim());
+        climbRoller = new ClimbRollerOld(new ClimbRollerIOSim());
         vision = new Vision(new VisionIOSimPhoton(), robotState);
         led = new Led(new LedIO() {}, robotState);
         drive =
@@ -213,8 +213,8 @@ public class RobotContainer {
                 new CanRangeIOHardware(EndEffectorConstants2.kCanRangeConfig2));
         // elevator = new ElevatorOld(new ElevatorIO() {});
         superstructure = new Superstructure(elevator, endEffector, this);
-        climber = new Climber(new ClimberIO() {});
-        climbRoller = new ClimbRoller(new ClimbRollerIO() {});
+        climber = new ClimberOld(new ClimberIO() {});
+        climbRoller = new ClimbRollerOld(new ClimbRollerIO() {});
         vision = new Vision(new VisionIO() {}, robotState);
         drive = new DriveSubsystem(new DriveIO() {}, robotState);
         led = new Led(new LedIO() {}, robotState);
@@ -310,11 +310,11 @@ public class RobotContainer {
     return feeder;
   }
 
-  public Climber getClimber() {
+  public ClimberOld getClimber() {
     return climber;
   }
 
-  public ClimbRoller getClimbRoller() {
+  public ClimbRollerOld getClimbRoller() {
     return climbRoller;
   }
 

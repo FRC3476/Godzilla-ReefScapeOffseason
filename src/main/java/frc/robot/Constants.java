@@ -17,7 +17,18 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.FovParamsConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.ProximityParamsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -848,6 +859,44 @@ public final class Constants {
 
   // ====================Climb (6_)====================
   public static class ClimbConstants {
+    public static class Climb2Constants {
+
+      public static final ServoMotorSubsystemConfig kClimberPivotConfig =
+          new ServoMotorSubsystemConfig();
+      public static final ServoMotorSubsystemConfig kClimbRollerConfig =
+          new ServoMotorSubsystemConfig();
+
+      public static final CanRangeConfig kCanRangeConfig = new CanRangeConfig();
+      public static final CanRangeConfig kCanRangeConfig2 = new CanRangeConfig();
+
+      static {
+        kClimberPivotConfig.name = "ClimberPivot";
+        kClimberPivotConfig.talonCANID = new CANDeviceId(ClimbConstants.ID, MISC_CANIVORE);
+        kClimberPivotConfig.unitToRotorRatio = Units.rotationsToRadians(1);
+        kClimberPivotConfig.fxConfig = ClimbConstants.CLIMB_TALON_CONFIG;
+
+        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit =
+            ClimbConstants.PIVOT_CURRENT_LIMIT_AMPS;
+
+        kCanRangeConfig.CANID = new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
+      }
+
+      static {
+        kClimbRollerConfig.name = "ClimberRoller";
+        kClimbRollerConfig.talonCANID = new CANDeviceId(ClimbConstants.rollerID, MISC_CANIVORE);
+        kClimbRollerConfig.unitToRotorRatio = Units.rotationsToRadians(1);
+        kClimbRollerConfig.fxConfig = ROLLER_TALON_CONFIG;
+
+        kClimbRollerConfig.ratioForSim = kClimbRollerConfig.unitToRotorRatio;
+
+        kClimbRollerConfig.fxConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kClimberPivotConfig.fxConfig.CurrentLimits.SupplyCurrentLimit =
+            ClimbConstants.ROLLER_CURRENT_LIMIT_AMPS;
+
+        kCanRangeConfig.CANID = new CANDeviceId(ClimbConstants.ID, Constants.MISC_CANIVORE);
+      }
+    }
 
     public static final double reduction = (1 / 23.11);
     public static final double climbMOI = 0.01;

@@ -13,8 +13,8 @@ import frc.robot.RobotState.AlgaeIntake;
 import frc.robot.RobotState.ScoreLevel;
 import frc.robot.RobotState.ScorePosition;
 import frc.robot.commands.DriveToCoralCommand;
-import frc.robot.subsystems.climb.ClimbRoller;
-import frc.robot.subsystems.climb.Climber;
+import frc.robot.subsystems.climb.ClimbRollerOld;
+import frc.robot.subsystems.climb.ClimberOld;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intake.Intake;
@@ -36,9 +36,9 @@ public class OperatorControls {
   private final DriveSubsystem drive;
   private final Superstructure superstructure;
   private final Intake intake;
-  private final Climber climber;
+  private final ClimberOld climber;
   private final StreamDeck streamdeck;
-  private final ClimbRoller climbRoller;
+  private final ClimbRollerOld climbRoller;
   private final RobotState robotState;
   private final Vision vision;
 

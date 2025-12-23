@@ -10,8 +10,8 @@ import frc.robot.Constants.LedConstants.LedStrip;
 import frc.robot.Field.FieldUtils;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.subsystems.climb.Climber;
-import frc.robot.subsystems.climb.Climber.ClimbState;
+import frc.robot.subsystems.climb.ClimberOld;
+import frc.robot.subsystems.climb.ClimberOld.ClimbState;
 import frc.robot.subsystems.superstructure.CoralStateTracker;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
@@ -273,16 +273,16 @@ public class Led extends SubsystemBase {
                 if (!container.getClaw().isOK()) {
                   defaultState = DEFAULT_LED_STATE.CAN_DOWN_MISC;
                 }
-                if (Climber.getClimbState() == ClimbState.CLIMBED) {
+                if (ClimberOld.getClimbState() == ClimbState.CLIMBED) {
                   defaultState = DEFAULT_LED_STATE.CLIMB_CLIMBED;
                 }
-                if (Climber.getClimbState() == ClimbState.CLIMBING) {
+                if (ClimberOld.getClimbState() == ClimbState.CLIMBING) {
                   defaultState = DEFAULT_LED_STATE.CLIMB_CLIMBING;
                 }
-                if (Climber.getClimbState() == ClimbState.DEPLOYED) {
+                if (ClimberOld.getClimbState() == ClimbState.DEPLOYED) {
                   defaultState = DEFAULT_LED_STATE.CLIMB_DEPLOYED;
                 }
-                if (Climber.getClimbState() == ClimbState.DEPLOYING) {
+                if (ClimberOld.getClimbState() == ClimbState.DEPLOYING) {
                   defaultState = DEFAULT_LED_STATE.CLIMB_DEPLOYING;
                 }
                 if (!container.getClimber().isOK()) {
