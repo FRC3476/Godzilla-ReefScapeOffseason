@@ -10,6 +10,10 @@ public interface VisionIOPhoton {
     public boolean connected = false;
 
     public Pose3d[] aprilTagPoses = new Pose3d[0];
+    public Pose3d[] invalidAprilTagPoses = new Pose3d[0];
+
+    public int[] aprilTagIds = new int[0];
+    public int[] invalidAprilTagIds = new int[0];
 
     public Pose3d[] poses = new Pose3d[0];
     public Pose3d[] invalidPoses = new Pose3d[0];

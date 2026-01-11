@@ -216,11 +216,11 @@ public class DriveSubsystem extends SubsystemBase {
     double yawDegrees = inputs.Pose.getRotation().getDegrees();
 
     // Send to both Limelights
-    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
-        Constants.VisionConstants.kLimelightATableName, yawDegrees, 0, 0, 0, 0, 0);
+    // frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+    //     Constants.VisionConstants.kLimelightATableName, yawDegrees, 0, 0, 0, 0, 0);
 
-    frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
-        Constants.VisionConstants.kLimelightBTableName, yawDegrees, 0, 0, 0, 0, 0);
+    // frc.robot.subsystems.vision.LimelightHelpers.SetRobotOrientation(
+    //     Constants.VisionConstants.kLimelightBTableName, yawDegrees, 0, 0, 0, 0, 0);
   }
 
   public MapleSimSwerveDrivetrain getMapleSimDrive() {

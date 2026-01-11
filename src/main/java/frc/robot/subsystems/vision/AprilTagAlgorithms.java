@@ -41,7 +41,7 @@ public class AprilTagAlgorithms {
         numTags == 1 ? VisionConstants.singleTagStdDevs : VisionConstants.multiTagStdDevs;
 
     // Increase std devs based on average distance
-    stdDevs = stdDevs.times(1 + (avgDistance * avgDistance / 30.0));
+    stdDevs = stdDevs.times(1 + (avgDistance * avgDistance * avgDistance));
 
     return stdDevs;
   }

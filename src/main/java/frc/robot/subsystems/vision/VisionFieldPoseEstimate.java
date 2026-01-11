@@ -21,7 +21,7 @@ public class VisionFieldPoseEstimate {
    * @param timestampSeconds The timestamp when this estimate was captured
    * @param visionMeasurementStdDevs Standard deviations representing measurement uncertainty
    * @param numTags Number of AprilTags used in this pose estimate
-   * @param distanceToTag Distance(todo: units) from the AprilTag to camera
+   * @param distanceToTag Distance (meters) from the AprilTag to camera
    */
   public VisionFieldPoseEstimate(
       Pose2d visionRobotPoseMeters,
